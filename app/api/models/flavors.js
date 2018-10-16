@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import paginate from 'mongoose-paginate';
 
 const schema = new Schema(
   {
@@ -6,8 +7,11 @@ const schema = new Schema(
     flavor: String,
     kind: String,
     toppings: [{ type: Schema.Types.Number }],
-    topping_ids: [{ type: Schema.Types.ObjectId, ref: "toppings" }],
-  }
+    pageId: String,
+  },
+  { timestamps: true }
 );
+
+schema.plugin(paginate);
 
 export default mongoose.model("flavors", schema);
