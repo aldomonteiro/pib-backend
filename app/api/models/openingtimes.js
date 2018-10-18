@@ -3,19 +3,20 @@ import mongoose, { Schema } from "mongoose";
 const schema = new Schema(
   {
     store: { type: Schema.ObjectId, ref: 'stores' },
+    store_id: { type: Number },
     pageId: { type: String, required: true },
     // Holydays
-    hol_is_open: { type: Boolean },
+    hol_is_open: { type: Boolean, default: true },
     hol_open: { type: String, required: true },
     hol_close: { type: String, required: true },
     // Weekdays
-    sun_is_open: { type: Boolean },
-    mon_is_open: { type: Boolean },
-    tue_is_open: { type: Boolean },
-    wed_is_open: { type: Boolean },
-    thu_is_open: { type: Boolean },
-    fri_is_open: { type: Boolean },
-    sat_is_open: { type: Boolean },
+    sun_is_open: { type: Boolean, default: true },
+    mon_is_open: { type: Boolean, default: true },
+    tue_is_open: { type: Boolean, default: true },
+    wed_is_open: { type: Boolean, default: true },
+    thu_is_open: { type: Boolean, default: true },
+    fri_is_open: { type: Boolean, default: true },
+    sat_is_open: { type: Boolean, default: true },
     sun_open: { type: String, required: true },
     mon_open: { type: String, required: true },
     tue_open: { type: String, required: true },
@@ -33,8 +34,6 @@ const schema = new Schema(
   }, { timestamps: true },
 );
 
-schema.index({ pageId: 1 }, { unique: true });
-
-schema.plugin(paginate);
+schema.index({ store_id: 1, pageId: 1 });
 
 export default mongoose.model("openingtimes", schema);
