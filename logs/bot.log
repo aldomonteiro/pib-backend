@@ -1,0 +1,244 @@
+["13:07:55.671","info","JSON","pageID: json error: [object Object]"]
+["13:07:55.671","info","JSON","{\"text\":\"\",\"messages\":[{\"platform\":\"PLATFORM_UNSPECIFIED\",\"text\":{\"text\":[\"\"]},\"message\":\"text\"}]}"]
+2018-10-22 13:14:15.617 INFO  pageID: json error: [object Object] 
+2018-10-22 13:14:15.617 INFO  {"text":"","messages":[{"platform":"PLATFORM_UNSPECIFIED","text":{"text":[""]},"message":"text"}]} 
+2018-10-22 13:17:35.506 INFO  pageID: 278383016327989 
+2018-10-22 13:18:53.100 INFO  pageID: 269303613154082 
+2018-10-22 13:47:59.664 INFO  pageID: 269303613154082 
+2018-10-22 13:47:59.664 INFO  {"sender":{"id":"2106559182687668"},"recipient":{"id":"269303613154082"},"timestamp":1540230475757,"message":{"mid":"oVHS2uGtHeyDYLYZ3bLVFvX2U2yo0guvsmFNCG_tuuQ3sgyRle2wfSjIbKEHBXpoujJWO60y0gKjzTk_ji-Zfg","seq":9231,"text":"vocês estão abertos agora?"},"raw_message":{"sender":{"id":"2106559182687668"},"recipient":{"id":"269303613154082"},"timestamp":1540230475757,"message":{"mid":"oVHS2uGtHeyDYLYZ3bLVFvX2U2yo0guvsmFNCG_tuuQ3sgyRle2wfSjIbKEHBXpoujJWO60y0gKjzTk_ji-Zfg","seq":9231,"text":"vocês estão abertos agora?"}},"_pipeline":{"stage":"receive"},"user":"2106559182687668","channel":"2106559182687668","page":"269303613154082","text":"vocês estão abertos agora?","seq":9231,"mid":"oVHS2uGtHeyDYLYZ3bLVFvX2U2yo0guvsmFNCG_tuuQ3sgyRle2wfSjIbKEHBXpoujJWO60y0gKjzTk_ji-Zfg","type":"message_received","intent":"Geral-Horario-aberto-agora","entities":{"date-time":{"date_time":"2018-10-22T17:47:57+00:00"}},"action":"input.aberto-agora","fulfillment":{"text":"","messages":[{"platform":"PLATFORM_UNSPECIFIED","text":{"text":[""]},"message":"text"}]},"confidence":1,"nlpResponse":{"responseId":"60094c4b-ef76-42f0-bc12-1d0d6776d1e8","queryResult":{"fulfillmentMessages":[{"platform":"PLATFORM_UNSPECIFIED","text":{"text":[""]},"message":"text"}],"outputContexts":[{"name":"projects/pizzaibot-db/agent/sessions/3b463bc3d40283010d46c5cb6dddeb4a/contexts/output-welcome","lifespanCount":2,"parameters":{"fields":{"date-time":{"structValue":{"fields":{"date_time":{"stringValue":"2018-10-22T17:47:57+00:00","kind":"stringValue"}}},"kind":"structValue"},"date-time.original":{"stringValue":"agora?","kind":"stringValue"}}}}],"queryText":"vocês estão abertos agora?","speechRecognitionConfidence":0,"action":"input.aberto-agora","parameters":{"fields":{"date-time":{"structValue":{"fields":{"date_time":{"stringValue":"2018-10-22T17:47:57+00:00","kind":"stringValue"}}},"kind":"structValue"}}},"allRequiredParamsPresent":true,"fulfillmentText":"","webhookSource":"","webhookPayload":null,"intent":{"inputContextNames":[],"events":[],"trainingPhrases":[],"outputContexts":[],"parameters":[],"messages":[],"defaultResponsePlatforms":[],"followupIntentInfo":[],"name":"projects/pizzaibot-db/agent/intents/ea716ddb-d75b-495e-8720-d087daf96290","displayName":"Geral-Horario-aberto-agora","priority":0,"isFallback":false,"webhookState":"WEBHOOK_STATE_UNSPECIFIED","action":"","resetContexts":false,"rootFollowupIntentName":"","parentFollowupIntentName":"","mlDisabled":false},"intentDetectionConfidence":1,"diagnosticInfo":{"fields":{"webhook_latency_ms":{"numberValue":137,"kind":"numberValue"}}},"languageCode":"pt-br"},"webhookStatus":{"details":[],"code":5,"message":"Webhook call failed. Error: 404 Not Found"}}} 
+2018-10-22 13:52:22.834 INFO  pageID: 269303613154082 
+2018-10-22 13:52:22.834 INFO  {"sender":{"id":"2106559182687668"},"recipient":{"id":"269303613154082"},"timestamp":1540230735767,"message":{"mid":"lo_9bM5XdDC0ynEhPIb3FfX2U2yo0guvsmFNCG_tuuQ4r6zDyXhYIz6nsRC-at_01zdRpL23MRoLa9-2chiYcw","seq":9235,"text":"tá aberto agora?"},"raw_message":{"sender":{"id":"2106559182687668"},"recipient":{"id":"269303613154082"},"timestamp":1540230735767,"message":{"mid":"lo_9bM5XdDC0ynEhPIb3FfX2U2yo0guvsmFNCG_tuuQ4r6zDyXhYIz6nsRC-at_01zdRpL23MRoLa9-2chiYcw","seq":9235,"text":"tá aberto agora?"}},"_pipeline":{"stage":"receive"},"user":"2106559182687668","channel":"2106559182687668","page":"269303613154082","text":"tá aberto agora?","seq":9235,"mid":"lo_9bM5XdDC0ynEhPIb3FfX2U2yo0guvsmFNCG_tuuQ4r6zDyXhYIz6nsRC-at_01zdRpL23MRoLa9-2chiYcw","type":"message_received","intent":"Geral-Horario-aberto-agora","entities":{"date-time":{"date_time":"2018-10-22T17:52:20+00:00"}},"action":"input.aberto-agora","fulfillment":{"text":"","messages":[{"platform":"PLATFORM_UNSPECIFIED","text":{"text":[""]},"message":"text"}]},"confidence":1,"nlpResponse":{"responseId":"1c6fd4f7-9b37-4d2f-b1d9-c060dbe42226","queryResult":{"fulfillmentMessages":[{"platform":"PLATFORM_UNSPECIFIED","text":{"text":[""]},"message":"text"}],"outputContexts":[{"name":"projects/pizzaibot-db/agent/sessions/3b463bc3d40283010d46c5cb6dddeb4a/contexts/output-welcome","lifespanCount":1,"parameters":{"fields":{"date-time":{"structValue":{"fields":{"date_time":{"stringValue":"2018-10-22T17:52:20+00:00","kind":"stringValue"}}},"kind":"structValue"},"date-time.original":{"stringValue":"agora?","kind":"stringValue"}}}}],"queryText":"tá aberto agora?","speechRecognitionConfidence":0,"action":"input.aberto-agora","parameters":{"fields":{"date-time":{"structValue":{"fields":{"date_time":{"stringValue":"2018-10-22T17:52:20+00:00","kind":"stringValue"}}},"kind":"structValue"}}},"allRequiredParamsPresent":true,"fulfillmentText":"","webhookSource":"","webhookPayload":null,"intent":{"inputContextNames":[],"events":[],"trainingPhrases":[],"outputContexts":[],"parameters":[],"messages":[],"defaultResponsePlatforms":[],"followupIntentInfo":[],"name":"projects/pizzaibot-db/agent/intents/ea716ddb-d75b-495e-8720-d087daf96290","displayName":"Geral-Horario-aberto-agora","priority":0,"isFallback":false,"webhookState":"WEBHOOK_STATE_UNSPECIFIED","action":"","resetContexts":false,"rootFollowupIntentName":"","parentFollowupIntentName":"","mlDisabled":false},"intentDetectionConfidence":1,"diagnosticInfo":{"fields":{"webhook_latency_ms":{"numberValue":91,"kind":"numberValue"}}},"languageCode":"pt-br"},"webhookStatus":{"details":[],"code":5,"message":"Webhook call failed. Error: 404 Not Found"}}} 
+2018-10-22 14:19:14.553 INFO  269303613154082Default-WelcomeAgainHmm, olá novamente! ;) 
+2018-10-22 14:20:27.090 INFO  269303613154082Default Fallback IntentNão consegui compreender, desculpe. 
+2018-10-22 15:00:02.063 INFO  269303613154082Default-WelcomeIntentOlá! Em que posso ajudá-lo? 
+2018-10-22 15:04:30.746 INFO  pageID: 269303613154082 
+2018-10-22 15:04:30.747 INFO  {"sender":{"id":"2106559182687668"},"recipient":{"id":"269303613154082"},"timestamp":1540235064280,"message":{"mid":"RxgxGbP0jodaO_o3gJ6ItfX2U2yo0guvsmFNCG_tuuTu21kxJXLzRLGaUvC6gMJAFAfM0vekzH2hVP2lPB2D8Q","seq":9267,"text":"vocês estão abertos agora?"},"raw_message":{"sender":{"id":"2106559182687668"},"recipient":{"id":"269303613154082"},"timestamp":1540235064280,"message":{"mid":"RxgxGbP0jodaO_o3gJ6ItfX2U2yo0guvsmFNCG_tuuTu21kxJXLzRLGaUvC6gMJAFAfM0vekzH2hVP2lPB2D8Q","seq":9267,"text":"vocês estão abertos agora?"}},"_pipeline":{"stage":"receive"},"user":"2106559182687668","channel":"2106559182687668","page":"269303613154082","text":"vocês estão abertos agora?","seq":9267,"mid":"RxgxGbP0jodaO_o3gJ6ItfX2U2yo0guvsmFNCG_tuuTu21kxJXLzRLGaUvC6gMJAFAfM0vekzH2hVP2lPB2D8Q","type":"message_received","intent":"Geral-Horario-aberto-agora","entities":{"date-time":{"date_time":"2018-10-22T19:04:28+00:00"}},"action":"input.aberto-agora","fulfillment":{"text":"","messages":[{"platform":"PLATFORM_UNSPECIFIED","text":{"text":[""]},"message":"text"}]},"confidence":1,"nlpResponse":{"responseId":"4c463380-6ef9-48b7-9e93-21ed4ca768b0","queryResult":{"fulfillmentMessages":[{"platform":"PLATFORM_UNSPECIFIED","text":{"text":[""]},"message":"text"}],"outputContexts":[{"name":"projects/pizzaibot-db/agent/sessions/3b463bc3d40283010d46c5cb6dddeb4a/contexts/output-welcome","lifespanCount":1,"parameters":{"fields":{"date-time":{"structValue":{"fields":{"date_time":{"stringValue":"2018-10-22T19:04:28+00:00","kind":"stringValue"}}},"kind":"structValue"},"date-time.original":{"stringValue":"agora?","kind":"stringValue"}}}}],"queryText":"vocês estão abertos agora?","speechRecognitionConfidence":0,"action":"input.aberto-agora","parameters":{"fields":{"date-time":{"structValue":{"fields":{"date_time":{"stringValue":"2018-10-22T19:04:28+00:00","kind":"stringValue"}}},"kind":"structValue"}}},"allRequiredParamsPresent":true,"fulfillmentText":"","webhookSource":"","webhookPayload":null,"intent":{"inputContextNames":[],"events":[],"trainingPhrases":[],"outputContexts":[],"parameters":[],"messages":[],"defaultResponsePlatforms":[],"followupIntentInfo":[],"name":"projects/pizzaibot-db/agent/intents/ea716ddb-d75b-495e-8720-d087daf96290","displayName":"Geral-Horario-aberto-agora","priority":0,"isFallback":false,"webhookState":"WEBHOOK_STATE_UNSPECIFIED","action":"","resetContexts":false,"rootFollowupIntentName":"","parentFollowupIntentName":"","mlDisabled":false},"intentDetectionConfidence":1,"diagnosticInfo":{"fields":{"webhook_latency_ms":{"numberValue":33,"kind":"numberValue"}}},"languageCode":"pt-br"},"webhookStatus":{"details":[],"code":5,"message":"Webhook call failed. Error: 404 Not Found"}}} 
+2018-10-22 15:13:00.991 INFO  269303613154082Default-WelcomeIntentOi! 
+2018-10-22 15:13:15.837 INFO  269303613154082Geral-Horario-aberto-agora 
+2018-10-22 15:31:06.860 INFO  PAGE:269303613154082 RECEIVED:oi INTENT: Default-WelcomeAgainSENT: Oi de novo! ;) 
+2018-10-22 15:40:51.856 INFO  PAGE:269303613154082 RECEIVED:quero ver o cardápio INTENT: Geral-CardapioSENT: Vou te mostrar o cardápio... 
+2018-10-22 16:00:42.321 INFO  PAGE:269303613154082 RECEIVED:quero ver o cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 16:01:28.387 INFO  PAGE:269303613154082 RECEIVED:quero ver o cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 16:02:30.116 INFO  PAGE:269303613154082 RECEIVED:quero ver o cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 16:06:41.475 INFO  PAGE:423247368207185 RECEIVED:quero ver o cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 16:11:17.013 INFO  PAGE:423247368207185 RECEIVED:quero ver o cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 16:16:19.665 INFO  PAGE:423247368207185 RECEIVED:olá INTENT: Default-WelcomeAgain SENT: Oi de novo! ;) 
+2018-10-22 16:18:08.124 INFO  PAGE:269303613154082 RECEIVED:olá INTENT: Default-WelcomeIntent SENT: Oi! 
+2018-10-22 16:21:52.142 INFO  PAGE:269303613154082 RECEIVED:quero ver o cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 16:25:01.910 INFO  PAGE:269303613154082 RECEIVED:quero ver o cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 16:27:09.154 INFO  PAGE:269303613154082 RECEIVED:quero ver o cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 16:29:29.396 INFO  PAGE:269303613154082 RECEIVED:quero ver o cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 16:31:14.966 INFO  PAGE:269303613154082 RECEIVED:quero ver o cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 16:32:21.390 INFO  PAGE:269303613154082 RECEIVED:quero ver o cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 16:40:32.037 INFO  PAGE:269303613154082 RECEIVED:quero ver o cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 17:33:02.796 INFO  PAGE:269303613154082 RECEIVED:quero vero o cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 17:37:13.740 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 17:48:26.765 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 17:48:40.602 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 17:49:30.185 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 17:50:45.145 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 17:52:55.224 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-22 17:58:32.922 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 06:18:55.499 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 06:20:42.960 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 06:23:20.362 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 06:24:22.832 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 06:25:31.510 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 06:37:37.444 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 06:37:58.019 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 07:28:05.861 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 09:25:26.632 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 09:26:48.367 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 09:27:03.494 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 10:11:45.449 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 10:12:15.852 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 10:13:59.574 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 10:15:23.075 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 10:15:32.680 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 10:18:57.823 INFO  PAGE:269303613154082 RECEIVED:topping INTENT: Default Fallback Intent SENT: Infelizmente, não captei o que deseja. 
+2018-10-23 10:19:03.801 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 10:21:30.156 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 10:24:57.508 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 10:25:38.415 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 10:28:40.607 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 10:31:22.883 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 10:32:26.100 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 10:44:57.938 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 10:46:05.731 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 10:47:38.926 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 13:32:19.033 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 13:34:07.823 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 13:35:17.641 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 13:36:28.116 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 13:40:58.094 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 13:43:41.746 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 13:44:49.111 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 13:45:36.469 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 13:46:47.027 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 13:47:21.431 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 13:51:33.036 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 13:57:46.455 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 13:58:54.912 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 13:59:43.176 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 14:01:41.657 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 14:05:25.157 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 14:06:02.203 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 14:09:52.617 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 14:09:53.273 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 14:11:08.773 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 14:22:13.644 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 14:24:55.444 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 14:26:55.853 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 14:31:11.387 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 14:34:32.146 INFO  PAGE:423247368207185 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 14:34:42.833 INFO  PAGE:423247368207185 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 14:35:35.987 INFO  PAGE:423247368207185 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 14:35:50.141 INFO  PAGE:269303613154082 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 14:36:27.089 INFO  PAGE:278383016327989 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-23 15:13:56.387 INFO  PAGE:423247368207185 RECEIVED:cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-24 08:24:36.315 INFO  PAGE:423247368207185 RECEIVED:olá INTENT: Default-WelcomeIntent SENT: Olá! Em que posso ajudá-lo? 
+2018-10-24 08:24:52.634 INFO  PAGE:423247368207185 RECEIVED:quero ver o cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-24 08:25:33.375 INFO  PAGE:423247368207185 RECEIVED:ops, nao veio.. manda de novo o cardápio INTENT: Default Fallback Intent SENT: Lamento, mas não compreendi. 
+2018-10-24 08:25:42.568 INFO  PAGE:423247368207185 RECEIVED:quero ver o cardápio INTENT: Geral-Cardapio SENT:  
+2018-10-24 08:26:37.981 INFO  PAGE:423247368207185 RECEIVED:que horas vocês abrem? INTENT: Default-Horario SENT: Olá, começamos as trabalhar as 18h00 e fechamos meia-noite. 
+2018-10-24 09:39:08.022 INFO  PAGE:423247368207185 RECEIVED:cardápio INTENT: Geral-Cardapio SENT: Seguem as pizzas do nosso cardápio:
+*Escarola*
+Bacon, Escarola e Mussarela
+*Frango Com Catupiry*
+Catupiry, Frango e Mussarela
+*Quatro Queijos*
+Catupiry, Cheddar, Gorgonzola e Mussarela
+ 
+2018-10-24 09:39:37.435 INFO  PAGE:423247368207185 RECEIVED:cardápio INTENT: Geral-Cardapio SENT: Seguem as pizzas do nosso cardápio:
+*Escarola*
+Bacon, Escarola e Mussarela
+*Frango Com Catupiry*
+Catupiry, Frango e Mussarela
+*Quatro Queijos*
+Catupiry, Cheddar, Gorgonzola e Mussarela
+ 
+2018-10-24 09:39:57.354 INFO  PAGE:423247368207185 RECEIVED:que horas vocês abrem? INTENT: Default-Horario SENT: Olá, estamos abertos das 18h00 até a meia-noite. 
+2018-10-24 09:48:34.743 INFO  PAGE:423247368207185 RECEIVED:que horas vocês abrem? INTENT: Geral-Horario SENT: Ops, estamos com um probleminha técnico 
+2018-10-24 09:53:10.567 INFO  PAGE:423247368207185 RECEIVED:que horas vocês abrem? INTENT: Geral-Horario SENT: Ops, estamos com um probleminha técnico 
+2018-10-24 09:55:20.059 INFO  PAGE:423247368207185 RECEIVED:que horas vocês abrem? INTENT: Geral-Horario SENT: Ops, estamos com um probleminha técnico 
+2018-10-24 10:03:31.400 INFO  PAGE:423247368207185 RECEIVED:cardápio INTENT: Geral-Cardapio SENT: Seguem as pizzas do nosso cardápio:
+*Escarola*
+Bacon, Escarola e Mussarela
+*Frango Com Catupiry*
+Catupiry, Frango e Mussarela
+*Quatro Queijos*
+Catupiry, Cheddar, Gorgonzola e Mussarela
+ 
+2018-10-24 10:03:39.066 INFO  PAGE:423247368207185 RECEIVED:horário INTENT: Default Fallback Intent SENT: Desculpe, mas não compreendi. 
+2018-10-24 10:10:06.137 INFO  PAGE:423247368207185 RECEIVED:horário INTENT: Geral-Horario SENT: Olá, hoje nosso horário de funcionamento é a partir das 2018-10-19T21:00:50.210Z horas, até às 2018-10-20T02:30:50.216Z horas. 
+2018-10-25 20:08:27.399 INFO  PAGE:423247368207185 RECEIVED:olá INTENT: Default-WelcomeIntent SENT: Olá! Em que posso ajudá-lo? 
+2018-10-25 20:08:35.076 INFO  PAGE:423247368207185 RECEIVED:cardápio INTENT: Geral-Cardapio SENT: Seguem as pizzas do nosso cardápio:
+*Escarola Com Bacon*
+Bacon, Escarola e Mussarela
+*Frango Com Catupiry*
+Catupiry, Frango e Mussarela
+*Picanha*
+Mussarela e Picanha
+*Quatro Queijos*
+Catupiry, Cheddar, Gorgonzola e Mussarela
+ 
+2018-10-25 20:08:44.907 INFO  PAGE:423247368207185 RECEIVED:horário INTENT: Geral-Horario SENT: Ops, estamos com um probleminha técnico 
+2018-10-25 20:10:14.806 INFO  PAGE:423247368207185 RECEIVED:horário INTENT: Geral-Horario SENT: Olá, hoje nosso horário de funcionamento é a partir das 18:0 horas, até às 23:30 horas. 
+2018-10-25 20:13:19.398 INFO  PAGE:423247368207185 RECEIVED:horário INTENT: Geral-Horario SENT: Olá, hoje nosso horário de funcionamento é a partir das 18:00 horas, até às 23:30 horas. 
+2018-10-26 07:17:02.640 INFO  PAGE:423247368207185 RECEIVED:eu quero uma pizza grande INTENT: order_pizza SENT: Quais os sabores das pizzas? 
+2018-10-26 07:17:30.506 INFO  PAGE:423247368207185 RECEIVED:calabresa INTENT: order_pizza SENT: Ops, estamos com um probleminha técnico. 
+2018-10-26 07:32:26.965 INFO  PAGE:423247368207185 RECEIVED:eu quero 2 pizzas grandes INTENT: order_pizza_1 SENT: Qual sabor? 
+2018-10-26 07:33:02.932 INFO  PAGE:423247368207185 RECEIVED:calabresa e escarola INTENT: order_pizza_1 SENT: Ops, estamos com um probleminha técnico. 
+2018-10-26 07:40:30.641 INFO  PAGE:423247368207185 RECEIVED:eu quero 2 pizzas grandes INTENT: order_pizza_1 SENT: Qual sabor? 
+2018-10-26 07:40:40.450 INFO  PAGE:423247368207185 RECEIVED:escarola e calabresa INTENT: order_pizza_1 SENT: Ops, estamos com um probleminha técnico. 
+2018-10-26 08:19:09.669 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande INTENT: order_pizza_1 SENT: Qual sabor? 
+2018-10-26 08:19:35.747 INFO  PAGE:423247368207185 RECEIVED:calabresa INTENT: order_pizza_1 SENT: Qual o tamanho da pizza? 
+2018-10-26 08:20:05.548 INFO  PAGE:423247368207185 RECEIVED:grande INTENT: order_pizza_1 SENT: Ops, estamos com um probleminha técnico. 
+2018-10-26 08:30:40.717 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande INTENT: order_pizza_1 SENT: Qual sabor? 
+2018-10-26 08:30:45.697 INFO  PAGE:423247368207185 RECEIVED:escarola INTENT: order_pizza_1 SENT: Qual o tamanho da pizza? 
+2018-10-26 08:30:55.445 INFO  PAGE:423247368207185 RECEIVED:grande INTENT: order_pizza_1 SENT: Ops, estamos com um probleminha técnico. 
+2018-10-26 09:09:05.650 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande INTENT: order_pizza_1 SENT: Qual sabor? 
+2018-10-26 09:09:11.719 INFO  PAGE:423247368207185 RECEIVED:escarola INTENT: order_pizza_1 SENT: Qual o tamanho da pizza? 
+2018-10-26 09:09:17.119 INFO  PAGE:423247368207185 RECEIVED:grande INTENT: order_pizza_1 SENT: Ok, o seu pedido é 1 pizza grande de escarola 
+2018-10-26 09:21:02.112 INFO  PAGE:423247368207185 RECEIVED:Eu quero 2 pizzas grandes de quatro queijos INTENT: order_pizza_1 SENT: Ok, o seu pedido é 2 pizza grande de quatro queijos 
+2018-10-26 09:30:41.062 INFO  PAGE:423247368207185 RECEIVED:eu quero 2 pizzas grandes de quatro queijos e frango com catupiry INTENT: order_pizza_1 SENT: Ops, estamos com um probleminha técnico. 
+2018-10-26 10:59:12.175 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande INTENT: order_pizza_1 SENT: Qual sabor? 
+2018-10-26 10:59:17.599 INFO  PAGE:423247368207185 RECEIVED:calabresa INTENT: order_pizza_1 SENT: Ops, estamos com um probleminha técnico. 
+2018-10-26 11:04:03.149 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de calabresa INTENT: order_pizza_1 SENT: Ops, estamos com um probleminha técnico 
+2018-10-26 11:05:24.844 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de calabresa INTENT: order_pizza_1 SENT: Algum problema com tamanho ou sabor... 
+2018-10-26 11:08:15.059 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de calabresa INTENT: order_pizza_1 SENT: Ops, estamos com um probleminha técnico 
+2018-10-26 11:09:07.559 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de calabresa INTENT: order_pizza_1 SENT: Ops, estamos com um probleminha técnico 
+2018-10-26 11:13:12.301 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de calabresa INTENT: order_pizza_1 SENT: Ops, estamos com um probleminha técnico 
+2018-10-26 11:16:51.276 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de calalbresa INTENT: order_pizza_1 SENT: Qual o tamanho da pizza? 
+2018-10-26 11:17:36.109 INFO  PAGE:423247368207185 RECEIVED:grande INTENT: order_pizza_1 SENT: Ops, estamos com um probleminha técnico 
+2018-10-26 11:18:50.242 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de calalbresa INTENT: order_pizza_1 SENT: Qual o tamanho da pizza? 
+2018-10-26 11:18:57.406 INFO  PAGE:423247368207185 RECEIVED:grande INTENT: order_pizza_1 SENT: Ops, estamos com um probleminha técnico 
+2018-10-26 11:20:01.306 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de calabresa INTENT: order_pizza_1 SENT: Ops, estamos com um probleminha técnico 
+2018-10-26 11:21:08.593 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de calalbresa INTENT: order_pizza_1 SENT: Qual o tamanho da pizza? 
+2018-10-26 11:21:15.942 INFO  PAGE:423247368207185 RECEIVED:grande INTENT: order_pizza_1 SENT: Ops, estamos com um probleminha técnico 
+2018-10-26 11:22:19.843 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de calalbresa INTENT: order_pizza_1 SENT: Qual o tamanho da pizza? 
+2018-10-26 11:22:25.321 INFO  PAGE:423247368207185 RECEIVED:grande INTENT: order_pizza_1 SENT: Ops, estamos com um probleminha técnico 
+2018-10-26 11:27:00.938 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de calalbresa INTENT: order_pizza_1 SENT: Qual o tamanho da pizza? 
+2018-10-26 11:27:10.672 INFO  PAGE:423247368207185 RECEIVED:grande INTENT: order_pizza_1 SENT: Ops, estamos com um probleminha técnico 
+2018-10-26 11:28:50.978 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de callabrresa INTENT: order_pizza_1 SENT: Qual o tamanho da pizza? 
+2018-10-26 11:28:57.811 INFO  PAGE:423247368207185 RECEIVED:grande INTENT: order_pizza_1 SENT: Ops, estamos com um probleminha técnico 
+2018-10-26 11:30:13.474 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza média de calabresa INTENT: order_pizza_1 SENT: Não temos o sabor calabresa 
+2018-10-26 11:30:26.434 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande quatro queijos INTENT: order_pizza_1 SENT: Qual o tamanho da pizza? 
+2018-10-26 11:30:31.582 INFO  PAGE:423247368207185 RECEIVED:grande INTENT: order_pizza_1 SENT: Algum problema com tamanho ou sabor... 
+2018-10-26 11:33:56.393 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de quatro queijos INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Não temos o sabor quatro queijos 
+2018-10-26 11:34:16.026 INFO  PAGE:423247368207185 RECEIVED:cardápio INTENT: Geral-Cardapio ACTION: input.cardapio SENT: Seguem as pizzas do nosso cardápio:
+*Escarola Com Bacon*
+Bacon, Escarola e Mussarela
+*Frango Com Catupiry*
+Catupiry, Frango e Mussarela
+*Picanha*
+Mussarela e Picanha
+*Quatro Queijos*
+Catupiry, Cheddar, Gorgonzola e Mussarela
+ 
+2018-10-26 11:34:37.144 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de Picanha INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Qual o tamanho da pizza? 
+2018-10-26 11:34:43.196 INFO  PAGE:423247368207185 RECEIVED:grande INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Não temos o sabor Picanha 
+2018-10-26 11:36:29.973 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de quatro queijos INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Não temos o sabor quatro queijos 
+2018-10-26 11:38:22.665 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de quatro queijos INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Não temos o sabor quatro queijos 
+2018-10-26 11:40:55.387 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de quatro queijos INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Ok, o seu pedido é : 
+1 pizza grande de Quatro QueijosPara confirmar, digite SIM. Se tem algum problema, digite NÃO 
+2018-10-26 11:41:28.097 INFO  PAGE:423247368207185 RECEIVED:SIM INTENT: Default Fallback Intent ACTION: input.unknown SENT: Infelizmente, não captei o que deseja. 
+2018-10-26 14:15:57.401 INFO  PAGE:423247368207185 RECEIVED:eu quero uma pizza grande de quatro queijos INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Ok, o seu pedido é : 
+1 pizza grande de Quatro QueijosPara confirmar, digite SIM. Se tem algum problema, digite NÃO 
+2018-10-26 14:16:11.866 INFO  PAGE:423247368207185 RECEIVED:sim INTENT: order_pizza - yes ACTION: order_pizza.confirmation SENT: Excelente, vamos processar o seu pedido! 
+2018-10-26 14:26:36.588 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de frango com catupiry INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Ok, o seu pedido é : 
+1 pizza grande de Frango Com Catupiry
+Para confirmar, digite SIM. Se tem algum problema, diga pra mim o que está errado 
+2018-10-26 14:27:01.200 INFO  PAGE:423247368207185 RECEIVED:SIM INTENT: order_pizza - yes ACTION: order_pizza.confirmation SENT: Excelente, vamos processar o seu pedido! 
+2018-10-26 14:30:26.271 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de quatro queihos INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Ok, o seu pedido é : 
+1 pizza grande de Quatro Queijos
+Para confirmar, digite SIM. Se tem algum problema, diga pra mim o que está errado 
+2018-10-26 14:30:39.559 INFO  PAGE:423247368207185 RECEIVED:SIM INTENT: order_pizza - yes ACTION: order_pizza.confirmation SENT: Excelente, vamos processar o seu pedido! 
+2018-10-26 14:32:57.641 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Qual sabor? 
+2018-10-26 14:33:00.132 INFO  PAGE:423247368207185 RECEIVED:de quatro queijos INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Ok, o seu pedido é : 
+1 pizza grande de Quatro Queijos
+Para confirmar, digite SIM. Se tem algum problema, diga pra mim o que está errado 
+2018-10-26 14:33:11.277 INFO  PAGE:423247368207185 RECEIVED:SIM INTENT: order_pizza - yes ACTION: order_pizza.confirmation SENT: Excelente, vamos processar o seu pedido! 
+2018-10-26 14:52:54.895 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de quatro-queijos INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Ok, o seu pedido é : 
+1 pizza grande de Quatro Queijos
+Para confirmar, digite SIM. Se tem algum problema, diga pra mim o que está errado 
+2018-10-26 14:53:12.883 INFO  PAGE:423247368207185 RECEIVED:SIM INTENT: order_pizza - yes ACTION: order_pizza.confirmation SENT: Excelente, vamos processar o seu pedido! 
+2018-10-26 14:56:22.638 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Qual sabor? 
+2018-10-26 14:56:28.043 INFO  PAGE:423247368207185 RECEIVED:de quatro queijos INTENT: Default Fallback Intent ACTION: input.unknown SENT: Infelizmente, não captei o que deseja. 
+2018-10-26 14:56:47.605 INFO  PAGE:423247368207185 RECEIVED:quatro queijos INTENT: Default Fallback Intent ACTION: input.unknown SENT: Infelizmente, não captei o que deseja. 
+2018-10-26 15:03:54.190 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Qual sabor? 
+2018-10-26 15:03:55.254 INFO  PAGE:423247368207185 RECEIVED:de quatro queijos INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Ok, o seu pedido é : 
+1 pizza grande de Quatro Queijos
+Para confirmar, digite SIM. Se tem algum problema, diga pra mim o que está errado 
+2018-10-26 15:04:12.284 INFO  PAGE:423247368207185 RECEIVED:errado INTENT: Default Fallback Intent ACTION: input.unknown SENT: Ops, não entendi o que você quis dizer. 
+2018-10-26 15:12:17.730 INFO  PAGE:423247368207185 RECEIVED:kct INTENT: Default Fallback Intent ACTION: input.unknown SENT: Ops, não entendi o que você quis dizer. 
+2018-10-26 15:15:05.189 INFO  PAGE:423247368207185 RECEIVED:quero 1 pizza grande INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Qual sabor? 
+2018-10-26 15:15:08.918 INFO  PAGE:423247368207185 RECEIVED:de quatro quiejos INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Qual sabor? 
+2018-10-26 15:15:17.778 INFO  PAGE:423247368207185 RECEIVED:quatro queijos INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Ok, o seu pedido é : 
+4 pizza grande de Quatro Queijos
+Para confirmar, digite SIM. Se tem algum problema, diga pra mim o que está errado 
+2018-10-26 15:15:28.821 INFO  PAGE:423247368207185 RECEIVED:errado INTENT: Default Fallback Intent ACTION: input.unknown SENT: Ops, não entendi o que você quis dizer. 
+2018-10-26 15:30:29.382 INFO  PAGE:423247368207185 RECEIVED:eu quero 1 pizza grande de quatro queijos INTENT: order_pizza_1 ACTION: order_pizza.validation SENT: Ok, o seu pedido é : 
+1 pizza grande de Quatro Queijos
+Para confirmar, digite SIM. Se tem algum problema, diga pra mim o que está errado 
+2018-10-26 15:30:39.545 INFO  PAGE:423247368207185 RECEIVED:errada a quantidade INTENT: Default Fallback Intent ACTION: input.unknown SENT: Ops, não entendi o que você quis dizer. 
