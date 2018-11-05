@@ -13,6 +13,8 @@ const schema = new Schema({
   location_url: { type: String },
   phone: { type: String },
   address: { type: String },
+  qty_total: { type: Number },
+  item_complete: { type: Number },
 }, { timestamps: true });
 
 schema.plugin(paginate);

@@ -9,24 +9,26 @@ const ITEMSTATUS_COMPLETED = 1;
 export const updateItem = async orderData => {
     const { orderId, userId, pageId, qty, sizeId, flavorId } = orderData;
 
-    const item = await Items.findOne({ orderId: orderId, status: ITEMSTATUS_PENDING }).exec();
-    if (item) {
-        if (qty) item.qty = qty;
-        if (sizeId) item.sizeId = sizeId;
-        if (flavorId) item.flavorId = flavorId;
-        await item.save();
-    }
-    else {
-        const record = new Items({
-            orderId: orderId,
-            userId: userId,
-            pageId: pageId,
-            qty: qty,
-            sizeId: sizeId,
-            flavorId: flavorId,
-            status: ITEMSTATUS_PENDING,
-        });
-        await record.save();
+    if (qty || sizeId || flavorId) {
+        const item = await Items.findOne({ orderId: orderId, status: ITEMSTATUS_PENDING }).exec();
+        if (item) {
+            if (qty) item.qty = qty;
+            if (sizeId) item.sizeId = sizeId;
+            if (flavorId) item.flavorId = flavorId;
+            await item.save();
+        }
+        else {
+            const record = new Items({
+                orderId: orderId,
+                userId: userId,
+                pageId: pageId,
+                qty: qty,
+                sizeId: sizeId,
+                flavorId: flavorId,
+                status: ITEMSTATUS_PENDING,
+            });
+            await record.save();
+        }
     }
 }
 

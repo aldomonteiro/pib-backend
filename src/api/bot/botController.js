@@ -12,7 +12,8 @@ import {
     validateBotOrder,
 } from "./actionsController";
 import { getSizes } from '../controllers/sizesController';
-import { updateOrder, showOrderPending } from '../controllers/ordersController';
+import { updateOrder, getOrderPending } from '../controllers/ordersController';
+import { getAddressLocation, getCustomerAddress, formatAddrData } from '../controllers/customersController';
 
 // TODO: create a debugger with json format
 var log_file = fs.createWriteStream(__dirname + '/debug.log', { flags: 'w' });
@@ -86,16 +87,91 @@ export const askForLocation = async () => {
     return out;
 }
 
-export const showLocation = async (pageId, userId, location) => {
-
-    // TODO: check if the location is in the neighborhood.
+export const confirmLocationAddress = async (pageId, userId, location) => {
 
     await updateOrder({ pageId, userId, location });
 
+    const addresses = await getAddressLocation(location);
+
+    if (addresses && addresses.length && addresses.length > 0) {
+
+        const out = new Elements();
+        out.setListStyle('compact');
+
+        let foundAnyCompleteAddress = false;
+        for (let i = 0; i < 4; i++) {
+            const element = addresses[i];
+            if (element.address_components && element.address_components.length >= 6) {
+                foundAnyCompleteAddress = true;
+                const _data = { formatted_address: element.formatted_address, address_components: element.address_components };
+                const buttons = new Buttons();
+                buttons.add({ text: 'Esse!', data: _data, event: 'LOCATION_ADDRESS' });
+                let addressNumber = i + 1;
+                out.add({ text: 'Endereço ' + addressNumber, subtext: element.formatted_address, buttons });
+            }
+        }
+
+        if (foundAnyCompleteAddress) {
+            const buttonsOpt = new Buttons();
+            buttonsOpt.add({ text: 'Não aparece o meu endereço..', data: "incorrect_address", event: 'LOCATION_ADDRESS' });
+            out.add({ buttons: buttonsOpt, isOnlyButtons: true });
+            return out;
+        } else {
+            return await askToTypeAddress(pageId, userId);
+        }
+    }
+    else {
+        return await askToTypeAddress(pageId, userId);
+    }
+}
+
+export const confirmAddressOrAskLocation = async (pageId, userId, user) => {
+
+    await updateOrder({ pageId, userId, user });
+
+    // TODO: check if the location is in the neighborhood.
+    // TODO: check if the location is the same as stored in db.
+    const addrData = await getCustomerAddress(pageId, userId);
+
+    if (addrData) {
+        const out = new Elements();
+
+        let _replyText = 'A entrega será para esse endereço?\n';
+        _replyText = _replyText + addrData.formattedAddress;
+
+        out.add({ text: _replyText });
+
+        const replies = new QuickReplies();
+        replies.add({ text: 'Sim', data: addrData, event: 'CORRECT_SAVED_ADDRESS' });
+        replies.add({ text: 'Não', data: addrData, event: 'WRONG_SAVED_ADDRESS' });
+        out.setQuickReplies(replies);
+
+        return out;
+    } else {
+        return await askForLocation();
+    }
+}
+
+export const askToTypeAddress = async (pageId, userId) => {
     const out = new Elements();
-    out.add({ text: 'Ok, verifiquei que o seu endereço está dentro da nossa área de entrega.' });
+    out.add({ text: 'Não foi possível localizar um endereço válido. Pode digitar o seu endereço completo por favor?' });
     return out;
 }
+
+export const showAddress = async (pageId, userId, addrData) => {
+    if (addrData && addrData.address_components) {
+        const formattedAddrData = await formatAddrData(addrData);
+        await updateOrder({ pageId, userId, addrData: formattedAddrData });
+    }
+    else {
+        await updateOrder({ pageId, userId, addrData });
+    }
+
+    const out = new Elements();
+    out.add({ text: 'Ok, entregaremos nesse endereço.' });
+    return out;
+}
+
 
 export const askForPhone = async () => {
     const out = new Elements();
@@ -169,18 +245,34 @@ export const showQuantity = async (pageId, userId, data) => {
     return out;
 }
 
-export const askForSize = async (pageID) => {
-    const out = new Elements();
-    out.add({ text: 'Qual o tamanho da pizza?' });
+export const askForSize = async (pageID, userID) => {
 
-    const replies = new QuickReplies();
-    const sizesWithPricing = await getPricingSizing(pageID); // only sizes with pricing
-    const sizes = await getSizes(pageID, sizesWithPricing);
-    for (var i = 0; i < sizes.length; i++) {
-        const _data = { id: sizes[i].id, size: sizes[i].size };
-        replies.add({ text: sizes[i].size, data: _data, event: 'ORDER_SIZE' });
+    const out = new Elements();
+    const order = getOrderPending({ pageId: pageID, userId: userID, isComplete: false });
+    if (order) {
+        let _text = '';
+
+        if (order.qty_total === 1) {
+            _text = 'Qual o tamanho da pizza?';
+        } else {
+            _text = 'Agora vou pegar os detalhes da ' + (order.item_complete + 1) + 'a. pizza.\n';
+            _text = _text + 'Qual o tamanho dela?';
+        }
+        out.add({ text: _text });
+
+        const replies = new QuickReplies();
+        const sizesWithPricing = await getPricingSizing(pageID); // only sizes with pricing
+        const sizes = await getSizes(pageID, sizesWithPricing);
+        for (var i = 0; i < sizes.length; i++) {
+            const _data = { id: sizes[i].id, size: sizes[i].size };
+            replies.add({ text: sizes[i].size, data: _data, event: 'ORDER_SIZE' });
+        }
+        out.setQuickReplies(replies);
     }
-    out.setQuickReplies(replies);
+    else {
+        out.add({ text: MSG_GENERAL_ERROR });
+    }
+
     return out;
 }
 
@@ -228,7 +320,7 @@ export const showFlavor = async (pageId, userId, data) => {
 }
 
 export const showOrder = async (pageId, userId) => {
-    const order = await showOrderPending({ pageId: pageId, userId: userId });
+    const order = await getOrderPending({ pageId: pageId, userId: userId, isComplete: true });
 
     const out = new Elements();
 

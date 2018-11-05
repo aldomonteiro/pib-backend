@@ -25,7 +25,9 @@ import {
   showFlavor,
   showOrder,
   askForLocation,
-  showLocation,
+  confirmAddressOrAskLocation,
+  confirmLocationAddress,
+  showAddress,
 } from './api/bot/botController';
 
 const
@@ -151,10 +153,13 @@ bot.on('MAIN-MENU', async (message, data) => {
     } else if (data === 'PEDIDO_PAYLOAD') {
       global.orderState[keyState] = ORDER_STATE_QUANTITY;
 
-      const out = await askForLocation();
+      // Show saved address or ask for location
+      await bot.startTyping(sender.id);
       await Bot.wait(1000);
+      const user = await bot.fetchUser(sender.id);
+      const answer = await confirmAddressOrAskLocation(recipient.id, sender.id, user);
       await bot.stopTyping(sender.id);
-      await bot.send(sender.id, out);
+      await bot.send(sender.id, answer);
     }
   } catch (err) {
     await bot.stopTyping(sender.id);
@@ -180,15 +185,10 @@ bot.on('message', async (message) => {
 
     await bot.startTyping(sender.id);
     await Bot.wait(1000);
-    const answer = await showLocation(recipient.id, sender.id, location);
+    const user = await bot.fetchUser(sender.id);
+    const answer = await confirmLocationAddress(recipient.id, sender.id, location, user);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, answer);
-
-    // next question
-    const out = await askForPhone();
-    await Bot.wait(1000);
-    await bot.stopTyping(sender.id);
-    await bot.send(sender.id, out);
   }
 });
 
@@ -219,6 +219,61 @@ bot.on('quick-reply', async (message, quick_reply) => {
   }
 });
 
+/**
+ * answered CORRECT_SAVED_ADDRESS
+ * gonna ask for phone
+ */
+bot.on('CORRECT_SAVED_ADDRESS', async (message, data) => {
+  const { sender, recipient } = message;
+
+  // show what the user chose
+  await bot.startTyping(sender.id);
+  await Bot.wait(1000);
+  const answer = await showAddress(recipient.id, sender.id, data);
+  await bot.stopTyping(sender.id);
+  await bot.send(sender.id, answer);
+
+  // next question
+  const out = await askForPhone();
+  await Bot.wait(1000);
+  await bot.stopTyping(sender.id);
+  await bot.send(sender.id, out);
+});
+
+/**
+ * answered CORRECT_SAVED_ADDRESS
+ * gonna ask for phone
+ */
+bot.on('LOCATION_ADDRESS', async (message, data) => {
+  const { sender, recipient } = message;
+
+  // show what the user chose
+  await bot.startTyping(sender.id);
+  await Bot.wait(1000);
+  const answer = await showAddress(recipient.id, sender.id, data);
+  await bot.stopTyping(sender.id);
+  await bot.send(sender.id, answer);
+
+  // next question
+  const out = await askForPhone();
+  await Bot.wait(1000);
+  await bot.stopTyping(sender.id);
+  await bot.send(sender.id, out);
+});
+
+
+/**
+ * answered CORRECT_SAVED_ADDRESS
+ * gonna ask for phone
+ */
+bot.on('WRONG_SAVED_ADDRESS', async (message, data) => {
+  const { sender, recipient } = message;
+
+  const out = await askForLocation();
+  await Bot.wait(1000);
+  await bot.stopTyping(sender.id);
+  await bot.send(sender.id, out);
+});
 
 
 /**
@@ -250,7 +305,7 @@ bot.on('ORDER_QTY', async (message, data) => {
     // next question
     await bot.startTyping(sender.id);
     await Bot.wait(1000);
-    const out = await askForSize(recipient.id);
+    const out = await askForSize(recipient.id, sender.id);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, out);
   }

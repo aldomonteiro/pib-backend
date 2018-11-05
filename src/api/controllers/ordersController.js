@@ -1,5 +1,6 @@
 import Order from '../models/orders';
 import { updateItem, getItems } from './itemsController';
+import { customer_update } from './customersController';
 
 const ORDERSTATUS_PENDING = 0;
 const ORDERSTATUS_CONFIRMED = 1;
@@ -7,7 +8,18 @@ const ORDERSTATUS_CANCELLED = 2;
 const ORDERSTATUS_DELIVERED = 3;
 
 export const updateOrder = async orderData => {
-    const { userId, pageId, location, phone } = orderData;
+    const { pageId, userId, qty, location, user, phone, addrData } = orderData;
+
+    if (user) {
+        const { first_name, last_name, profile_pic } = user;
+        await customer_update({ pageId, userId, first_name, last_name, profile_pic })
+    } else if (phone) {
+        await customer_update({ pageId, userId, phone })
+    } else if (location) {
+        await customer_update({ pageId, userId, location })
+    } else if (addrData) {
+        await customer_update({ pageId, userId, addrData })
+    }
 
     const order = await Order.findOne({ userId: userId, pageId: pageId, status: ORDERSTATUS_PENDING }).exec();
 
@@ -18,14 +30,21 @@ export const updateOrder = async orderData => {
             order.location_lat = location.lat;
             order.location_long = location.long;
             order.location_url = location.url;
-            await order.save();
-        } else if (phone) {
+        }
+        if (qty) {
+            order.qty_total = qty;
+        }
+        if (phone) {
             order.phone = phone;
+        }
+        if (addrData) {
+            order.address = addrData.formattedAddress;
+        }
+
+        if (location || phone || qty || addrData)
             await order.save();
-        }
-        else {
-            await updateItem(orderData);
-        }
+
+        await updateItem(orderData);
     } else {
         const count = await Order.find({ pageId: pageId }).count().exec();
         let orderId = 1;
@@ -34,6 +53,7 @@ export const updateOrder = async orderData => {
             id: orderId,
             userId: userId,
             pageId: pageId,
+            qty_total: qty,
             location_lat: location ? location.lat : null,
             location_long: location ? location.long : null,
             location_url: location ? location.url : null,
@@ -45,19 +65,24 @@ export const updateOrder = async orderData => {
     }
 }
 
-export const showOrderPending = async orderData => {
-    const userId = orderData.userId;
-    const pageId = orderData.pageId;
+export const getOrderPending = async orderData => {
+    const { userId, pageId, isComplete } = orderData;
 
     const _order = await Order.findOne({ userId: userId, pageId: pageId, status: ORDERSTATUS_PENDING }).exec();
-    const _items = await getItems({ orderId: _order.id, pageId: pageId });
 
-    const completeOrder = {
-        order: _order,
-        items: _items,
-    };
+    if (isComplete && isComplete === true) {
+        const _items = await getItems({ orderId: _order.id, pageId: pageId });
 
-    console.error({ completeOrder });
+        const completeOrder = {
+            order: _order,
+            items: _items,
+        };
 
-    return completeOrder;
+        return completeOrder;
+    } else {
+        const headerOrder = {
+            order: _order,
+        }
+        return headerOrder;
+    }
 }
