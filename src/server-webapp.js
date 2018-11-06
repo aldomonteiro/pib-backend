@@ -71,14 +71,16 @@ app.use("/openingtimes", openingtimes);
 app.use("/pages", pages);
 app.use("/sizes", sizes);
 app.use("/extras", extras);
+app.listen(8080, () => console.log("Node server listening on port 8080"));
 
-// Lift the https server
-https
-  .createServer(
-    {
-      key: fs.readFileSync("certificates/server_key.pem"),
-      cert: fs.readFileSync("certificates/server_crt.pem")
-    },
-    app
-  )
-  .listen(8080, () => console.log("Node server listening on port 8080"));
+// // dev server
+// // Lift the https server
+// https
+//   .createServer(
+//     {
+//       key: fs.readFileSync("certificates/server_key.pem"),
+//       cert: fs.readFileSync("certificates/server_crt.pem")
+//     },
+//     app
+//   )
+//   .listen(8080, () => console.log("Node server listening on port 8080"));

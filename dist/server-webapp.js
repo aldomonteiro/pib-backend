@@ -92,12 +92,18 @@ app.use("/stores", _stores.default);
 app.use("/openingtimes", _openingtimes.default);
 app.use("/pages", _pages.default);
 app.use("/sizes", _sizes.default);
-app.use("/extras", _extras.default); // Lift the https server
-
-_https.default.createServer({
-  key: _fs.default.readFileSync("certificates/server_key.pem"),
-  cert: _fs.default.readFileSync("certificates/server_crt.pem")
-}, app).listen(8080, function () {
+app.use("/extras", _extras.default);
+app.listen(8080, function () {
   return console.log("Node server listening on port 8080");
-});
+}); // // dev server
+// // Lift the https server
+// https
+//   .createServer(
+//     {
+//       key: fs.readFileSync("certificates/server_key.pem"),
+//       cert: fs.readFileSync("certificates/server_crt.pem")
+//     },
+//     app
+//   )
+//   .listen(8080, () => console.log("Node server listening on port 8080"));
 //# sourceMappingURL=server-webapp.js.map
