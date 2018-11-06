@@ -46,7 +46,7 @@
   },
   "scripts": {
     "dev-bot": "nodemon --inspect --exec babel-node -- src/server-bot.js",
-    "dev-webapp": "nodemon --inspect=9230 --exec babel-node -- src/server-webapp.js",
+    "dev-webapp": "NODE_ENV=dev nodemon --inspect=9230 --exec babel-node -- src/server-webapp.js",
     "dev": "yarn run dev-bot & yarn run dev-webapp",
     "build-babel": "babel -d ./dist ./src -s",
     "debug": "node --inspect-brk ./dist/server-bot.js",
