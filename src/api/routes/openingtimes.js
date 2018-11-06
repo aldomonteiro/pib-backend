@@ -1,6 +1,10 @@
 import express from "express";
 import authenticate from '../controllers/authenticate';
-import { openingtimes_get_all, openingtimes_get_one, openingtimes_create, openingtimes_update, openingtimes_delete } from '../controllers/openingtimesController';
+import {
+    openingtimes_get_all,
+    openingtimes_get_one, openingtimes_create,
+    openingtimes_update, openingtimes_delete
+} from '../controllers/openingTimesController';
 
 const router = express.Router();
 
