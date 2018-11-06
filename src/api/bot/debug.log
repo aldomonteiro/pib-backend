@@ -6,3 +6,1869 @@ GET fields for 321718591988282-Página da Sophia:
 GET fields for 938611509676235-EchoBot:
 GET fields for 423247368207185-Página Teste:
 GET fields for 269303613154082-Koraline:
+Message from 269303613154082
+>>> handleMessage
+{ recipient: { id: '269303613154082' },
+  timestamp: 1541508439737,
+  sender: { id: '2106559182687668' },
+  postback:
+   { payload: '{"data":"PEDIDO_PAYLOAD","event":"MAIN-MENU"}',
+     title: 'Fazer Pedido' } }
+handleMessage <<<
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_on' }
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508439737,
+  messaging:
+   [ { recipient: [Object],
+       timestamp: 1541508439737,
+       sender: [Object],
+       postback: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_on' }
+Message from 269303613154082
+>>> handleMessage
+{ recipient: { id: '269303613154082' },
+  timestamp: 1541508439737,
+  sender: { id: '2106559182687668' },
+  postback: { title: 'Fazer Pedido' } }
+handleMessage <<<
+ERROR parsing postback.payload
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508439737,
+  standby:
+   [ { recipient: [Object],
+       timestamp: 1541508439737,
+       sender: [Object],
+       postback: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message:
+   { text:
+      'A entrega será para esse endereço?\nRua Getúlio Vargas, 1328',
+     quick_replies: [ [Object], [Object] ] } }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508443032,
+  delivery:
+   { mids:
+      [ 'ceKCaqJVpN7ASGlAjYgl5vX2U2yo0guvsmFNCG_tuuQI3Vpxlj5yKbjQyMJ8ZBmEObBl7LiUiGz5BQA_vnEZFw' ],
+     watermark: 1541508442622,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508443053,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508443032,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508443211,
+  delivery:
+   { mids:
+      [ 'ceKCaqJVpN7ASGlAjYgl5vX2U2yo0guvsmFNCG_tuuQI3Vpxlj5yKbjQyMJ8ZBmEObBl7LiUiGz5BQA_vnEZFw' ],
+     watermark: 1541508442622,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508443235,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508443211,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508443190,
+  delivery:
+   { mids:
+      [ 'ceKCaqJVpN7ASGlAjYgl5vX2U2yo0guvsmFNCG_tuuQI3Vpxlj5yKbjQyMJ8ZBmEObBl7LiUiGz5BQA_vnEZFw' ],
+     watermark: 1541508442622,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508443210,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508443190,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508443197,
+  read: { watermark: 1541508442622, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508443203,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508443197,
+       read: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508445193,
+  message:
+   { quick_reply:
+      { payload:
+         '{"data":{"formattedAddress":"Rua Getúlio Vargas, 1328"},"event":"WRONG_SAVED_ADDRESS"}' },
+     mid:
+      'jE_q4Iml9quLrZEJEm8V6PX2U2yo0guvsmFNCG_tuuRkEDM2FtR_BdYyGDSXiQxSHASHQW3dsu4xC1hibLywCg',
+     seq: 15213,
+     text: 'Não' } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508445576,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508445193,
+       message: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message:
+   { text:
+      'Para começar, preciso saber aonde você está. Clique no botão abaixo que receberei a sua localização.',
+     quick_replies: [ [Object] ] } }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508447528,
+  delivery:
+   { mids:
+      [ '0MhHzJvL9lCWhAMzIEGa7fX2U2yo0guvsmFNCG_tuuTxTOMncuN50Hod3k2wVB-H30Lfyz85TjbFgYSuLCwFHw' ],
+     watermark: 1541508447109,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508447549,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508447528,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508447549,
+  delivery:
+   { mids:
+      [ '0MhHzJvL9lCWhAMzIEGa7fX2U2yo0guvsmFNCG_tuuTxTOMncuN50Hod3k2wVB-H30Lfyz85TjbFgYSuLCwFHw' ],
+     watermark: 1541508447109,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508447571,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508447549,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508447750,
+  read: { watermark: 1541508447109, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508447756,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508447750,
+       read: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508447747,
+  delivery:
+   { mids:
+      [ '0MhHzJvL9lCWhAMzIEGa7fX2U2yo0guvsmFNCG_tuuTxTOMncuN50Hod3k2wVB-H30Lfyz85TjbFgYSuLCwFHw' ],
+     watermark: 1541508447109,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508447768,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508447747,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508452707,
+  message:
+   { mid:
+      'W29YpE5cmtphc6dMSIrFivX2U2yo0guvsmFNCG_tuuQEiZNEWMJgZX3BlC2Ds5eE7B2qImbG6dYL9enGWpiN3A',
+     seq: 15217,
+     attachments: [ [Object] ] } }
+handleMessage <<<
+this.emit message
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_on' }
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508453260,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508452707,
+       message: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message: { attachment: { type: 'template', payload: [Object] } } }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508456904,
+  delivery:
+   { mids:
+      [ 'sNkhwdeq_NTtyuTQtqlAz_X2U2yo0guvsmFNCG_tuuSkLbnd-0VeurlvSuN4Ez7-5-eC529K6O5RHPQdV0mclQ' ],
+     watermark: 1541508456515,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508456927,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508456904,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508457044,
+  delivery:
+   { mids:
+      [ 'sNkhwdeq_NTtyuTQtqlAz_X2U2yo0guvsmFNCG_tuuSkLbnd-0VeurlvSuN4Ez7-5-eC529K6O5RHPQdV0mclQ' ],
+     watermark: 1541508456515,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508457064,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508457044,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508457145,
+  read: { watermark: 1541508456515, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508457152,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508457145,
+       read: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508457123,
+  delivery:
+   { mids:
+      [ 'sNkhwdeq_NTtyuTQtqlAz_X2U2yo0guvsmFNCG_tuuSkLbnd-0VeurlvSuN4Ez7-5-eC529K6O5RHPQdV0mclQ' ],
+     watermark: 1541508456515,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508457143,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508457123,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ recipient: { id: '269303613154082' },
+  timestamp: 1541508462396,
+  sender: { id: '2106559182687668' },
+  postback:
+   { payload: '{"data":"incorrect_address","event":"LOCATION_ADDRESS"}',
+     title: 'Não é meu endereço..' } }
+handleMessage <<<
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_on' }
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508462396,
+  messaging:
+   [ { recipient: [Object],
+       timestamp: 1541508462396,
+       sender: [Object],
+       postback: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ recipient: { id: '269303613154082' },
+  timestamp: 1541508462396,
+  sender: { id: '2106559182687668' },
+  postback: { title: 'Não é meu endereço..' } }
+handleMessage <<<
+ERROR parsing postback.payload
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508462396,
+  standby:
+   [ { recipient: [Object],
+       timestamp: 1541508462396,
+       sender: [Object],
+       postback: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message:
+   { text:
+      'Não foi possível localizar um endereço válido. Digite o seu endereço completo por favor.' } }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508464623,
+  delivery:
+   { mids:
+      [ 'xD7WVWLGbgmvZLKbYGK41vX2U2yo0guvsmFNCG_tuuRYMpEtBFvbBUMqdcXhexWnXV6rJaI_Hp-wcxEph37NpA' ],
+     watermark: 1541508464265,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508464643,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508464623,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508464776,
+  read: { watermark: 1541508464265, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508464783,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508464776,
+       read: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508464785,
+  delivery:
+   { mids:
+      [ 'xD7WVWLGbgmvZLKbYGK41vX2U2yo0guvsmFNCG_tuuRYMpEtBFvbBUMqdcXhexWnXV6rJaI_Hp-wcxEph37NpA' ],
+     watermark: 1541508464265,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508464808,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508464785,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508484725,
+  message:
+   { mid:
+      'LhyjuaE9WXHSz5QJq1onoPX2U2yo0guvsmFNCG_tuuRkH7w2Tbqf4Fu2C1Yx2oLfmkJOU0aJyQIAFe9raW-1bA',
+     seq: 15225,
+     text: 'Rua Getúlio Vargas, 1328 Centro' } }
+handleMessage <<<
+this.emit message
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_on' }
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508485074,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508484725,
+       message: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message:
+   { text:
+      'A entrega será para esse endereço?\nRua Getúlio Vargas, 1328 Centro',
+     quick_replies: [ [Object], [Object] ] } }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508487498,
+  delivery:
+   { mids:
+      [ 'ZggsF0WcI-A_DxBOqczBVPX2U2yo0guvsmFNCG_tuuTaHtfooiNXsciEtJWHEFLxwHd1B3xkpQkc8o4TOqmtZw' ],
+     watermark: 1541508487101,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508487519,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508487498,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508487548,
+  delivery:
+   { mids:
+      [ 'ZggsF0WcI-A_DxBOqczBVPX2U2yo0guvsmFNCG_tuuTaHtfooiNXsciEtJWHEFLxwHd1B3xkpQkc8o4TOqmtZw' ],
+     watermark: 1541508487101,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508487571,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508487548,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508487661,
+  delivery:
+   { mids:
+      [ 'ZggsF0WcI-A_DxBOqczBVPX2U2yo0guvsmFNCG_tuuTaHtfooiNXsciEtJWHEFLxwHd1B3xkpQkc8o4TOqmtZw' ],
+     watermark: 1541508487101,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508487684,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508487661,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508487646,
+  read: { watermark: 1541508487101, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508487651,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508487646,
+       read: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508490319,
+  message:
+   { quick_reply:
+      { payload:
+         '{"data":{"manual_addres":true,"formattedAddress":"Rua Getúlio Vargas, 1328 Centro"},"event":"CORRECT_SAVED_ADDRESS"}' },
+     mid:
+      'Zol0fctnym4Urr-BhPvBOvX2U2yo0guvsmFNCG_tuuS92apcVu3H8JkXFwAdXl6ZZAnEJsSTKnr8kDECpBbBMg',
+     seq: 15228,
+     text: 'Sim' } }
+handleMessage <<<
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_on' }
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508490787,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508490319,
+       message: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message: { text: 'Ok, entregaremos nesse endereço.' } }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508493309,
+  delivery:
+   { mids:
+      [ 'CyYBPeOuydc3zoQ-qbapXvX2U2yo0guvsmFNCG_tuuSoA1C_A0MpjS-Kj79pscpgYqD6Ot8LOzpIzsBnRsALrg' ],
+     watermark: 1541508492851,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508493331,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508493309,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508493458,
+  delivery:
+   { mids:
+      [ 'CyYBPeOuydc3zoQ-qbapXvX2U2yo0guvsmFNCG_tuuSoA1C_A0MpjS-Kj79pscpgYqD6Ot8LOzpIzsBnRsALrg' ],
+     watermark: 1541508492851,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508493477,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508493458,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508493465,
+  read: { watermark: 1541508492851, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508493475,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508493465,
+       read: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message:
+   { text:
+      'Pode nos enviar o seu telefone? Para que possamos fazer a confirmação do pedido.',
+     quick_replies: [ [Object] ] } }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508494935,
+  delivery:
+   { mids:
+      [ 'f3OlSW27fXzbZjy9GfmZf_X2U2yo0guvsmFNCG_tuuS1DGhVBWWcdBASujv6J7F28oQJPHxW6H80FSrXjrE42A' ],
+     watermark: 1541508494515,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508494956,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508494935,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508494928,
+  delivery:
+   { mids:
+      [ 'f3OlSW27fXzbZjy9GfmZf_X2U2yo0guvsmFNCG_tuuS1DGhVBWWcdBASujv6J7F28oQJPHxW6H80FSrXjrE42A' ],
+     watermark: 1541508494515,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508494950,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508494928,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508495143,
+  delivery:
+   { mids:
+      [ 'f3OlSW27fXzbZjy9GfmZf_X2U2yo0guvsmFNCG_tuuS1DGhVBWWcdBASujv6J7F28oQJPHxW6H80FSrXjrE42A' ],
+     watermark: 1541508494515,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508495164,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508495143,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508495158,
+  read: { watermark: 1541508494515, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508495174,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508495158,
+       read: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508497465,
+  message:
+   { quick_reply: { payload: '+554184163676' },
+     mid:
+      'Fkhgsc0shSHkPG9zTsBMKvX2U2yo0guvsmFNCG_tuuRtvs7bb2uvg9O6vpilmzk8cwPkFYVW6Y7sJLl3L_ZuzA',
+     seq: 15234,
+     text: '+554184163676' } }
+handleMessage <<<
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_on' }
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508497909,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508497465,
+       message: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message:
+   { text:
+      'Ok, telefone recebido. Agora vamos ao que interessa, informações do pedido.' } }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508500434,
+  delivery:
+   { mids:
+      [ 'UKhNfK5-LP0IpJpluUY81fX2U2yo0guvsmFNCG_tuuTJX7JB3KEJ0QeCTvvr9NMMLQ1aCYXW37kzyumPPS3Wzw' ],
+     watermark: 1541508500036,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508500453,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508500434,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508500388,
+  delivery:
+   { mids:
+      [ 'UKhNfK5-LP0IpJpluUY81fX2U2yo0guvsmFNCG_tuuTJX7JB3KEJ0QeCTvvr9NMMLQ1aCYXW37kzyumPPS3Wzw' ],
+     watermark: 1541508500036,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508500411,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508500388,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508500589,
+  read: { watermark: 1541508500036, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508500595,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508500589,
+       read: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508500574,
+  delivery:
+   { mids:
+      [ 'UKhNfK5-LP0IpJpluUY81fX2U2yo0guvsmFNCG_tuuTJX7JB3KEJ0QeCTvvr9NMMLQ1aCYXW37kzyumPPS3Wzw' ],
+     watermark: 1541508500036,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508500595,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508500574,
+       delivery: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message:
+   { text: 'Quantas pizzas você quer?',
+     quick_replies: [ [Object], [Object], [Object], [Object] ] } }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508501860,
+  delivery:
+   { mids:
+      [ 'r1y9D3AZHBt1AXW8E17JavX2U2yo0guvsmFNCG_tuuR3zOC-xUqdfLoyUkpMng4Ww2PCTmhkwiB5RdysZdTeZw' ],
+     watermark: 1541508501532,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508501921,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508501860,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508501911,
+  delivery:
+   { mids:
+      [ 'r1y9D3AZHBt1AXW8E17JavX2U2yo0guvsmFNCG_tuuR3zOC-xUqdfLoyUkpMng4Ww2PCTmhkwiB5RdysZdTeZw' ],
+     watermark: 1541508501532,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508501931,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508501911,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508501997,
+  read: { watermark: 1541508501532, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508502004,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508501997,
+       read: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508502024,
+  delivery:
+   { mids:
+      [ 'r1y9D3AZHBt1AXW8E17JavX2U2yo0guvsmFNCG_tuuR3zOC-xUqdfLoyUkpMng4Ww2PCTmhkwiB5RdysZdTeZw' ],
+     watermark: 1541508501532,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508502048,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508502024,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508504401,
+  message:
+   { quick_reply: { payload: '{"data":"qty_2","event":"ORDER_QTY"}' },
+     mid:
+      'ByT91WQHfIfkMvzt1I-afPX2U2yo0guvsmFNCG_tuuRlrTaXLEmQ7GYrdW3v_-PScqxSzU-q8D0O5f9MQmwmLA',
+     seq: 15240,
+     text: '2' } }
+handleMessage <<<
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_on' }
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508504786,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508504401,
+       message: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message: { text: '✅ 2 pizzas.' } }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_on' }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508507258,
+  delivery:
+   { mids:
+      [ 'O4r-J5gW0-Dablth_D46LvX2U2yo0guvsmFNCG_tuuTKCldjoJ6NvKypX06E6rqSRHurxyHMxAuQzaGWDLCgYA' ],
+     watermark: 1541508506964,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508507277,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508507258,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508507302,
+  delivery:
+   { mids:
+      [ 'O4r-J5gW0-Dablth_D46LvX2U2yo0guvsmFNCG_tuuTKCldjoJ6NvKypX06E6rqSRHurxyHMxAuQzaGWDLCgYA' ],
+     watermark: 1541508506964,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508507325,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508507302,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508507409,
+  delivery:
+   { mids:
+      [ 'O4r-J5gW0-Dablth_D46LvX2U2yo0guvsmFNCG_tuuTKCldjoJ6NvKypX06E6rqSRHurxyHMxAuQzaGWDLCgYA' ],
+     watermark: 1541508506964,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508507432,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508507409,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508507416,
+  read: { watermark: 1541508506964, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508507422,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508507416,
+       read: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message:
+   { text:
+      'Agora vou pegar os detalhes da 1a. pizza.\nQual o tamanho dela?',
+     quick_replies: [ [Object], [Object], [Object], [Object] ] } }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508509400,
+  delivery:
+   { mids:
+      [ 'AEnDumm5loDAZBZR2z9Y_PX2U2yo0guvsmFNCG_tuuQL-Cg1tzRt79aODtxwvgogCiGNw0dkqZlqzkvvQJPwhA' ],
+     watermark: 1541508509019,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508509421,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508509400,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508509430,
+  delivery:
+   { mids:
+      [ 'AEnDumm5loDAZBZR2z9Y_PX2U2yo0guvsmFNCG_tuuQL-Cg1tzRt79aODtxwvgogCiGNw0dkqZlqzkvvQJPwhA' ],
+     watermark: 1541508509019,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508509452,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508509430,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508509557,
+  read: { watermark: 1541508509019, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508509564,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508509557,
+       read: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508509851,
+  delivery:
+   { mids:
+      [ 'AEnDumm5loDAZBZR2z9Y_PX2U2yo0guvsmFNCG_tuuQL-Cg1tzRt79aODtxwvgogCiGNw0dkqZlqzkvvQJPwhA' ],
+     watermark: 1541508509019,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508509873,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508509851,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508512478,
+  message:
+   { quick_reply:
+      { payload: '{"data":{"id":1,"size":"Gigante"},"event":"ORDER_SIZE"}' },
+     mid:
+      '8EODpaTQ4XfhXl5MBMoMgPX2U2yo0guvsmFNCG_tuuStJ6cV6A0AJTBfZH5AcLNaZoNLLsKs5YPO4IuWlL9Oxg',
+     seq: 15245,
+     text: 'Gigante' } }
+handleMessage <<<
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_on' }
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508512840,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508512478,
+       message: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message: { text: '✅  Tamanho: Gigante' } }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_on' }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508516202,
+  delivery:
+   { mids:
+      [ 'F8dg0R7Ty1Atn2F4iIUFbPX2U2yo0guvsmFNCG_tuuTjsej-aTF40j8Lbu1Hzylfd-XyH3UqKpSJK2V3-xD_QA' ],
+     watermark: 1541508515819,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508516223,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508516202,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508516320,
+  delivery:
+   { mids:
+      [ 'F8dg0R7Ty1Atn2F4iIUFbPX2U2yo0guvsmFNCG_tuuTjsej-aTF40j8Lbu1Hzylfd-XyH3UqKpSJK2V3-xD_QA' ],
+     watermark: 1541508515819,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508516342,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508516320,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508516452,
+  delivery:
+   { mids:
+      [ 'F8dg0R7Ty1Atn2F4iIUFbPX2U2yo0guvsmFNCG_tuuTjsej-aTF40j8Lbu1Hzylfd-XyH3UqKpSJK2V3-xD_QA' ],
+     watermark: 1541508515819,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508516479,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508516452,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508516481,
+  read: { watermark: 1541508515819, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508516487,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508516481,
+       read: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message: { attachment: { type: 'template', payload: [Object] } } }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508519804,
+  delivery:
+   { mids:
+      [ 'fczk_2dXEMKXR3Tp1NMmEPX2U2yo0guvsmFNCG_tuuRM9Jz6a3UmaM6gN8HElvIlx43EbR_jCB-p4w4rL_8UDQ' ],
+     watermark: 1541508519348,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508519824,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508519804,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508519864,
+  delivery:
+   { mids:
+      [ 'fczk_2dXEMKXR3Tp1NMmEPX2U2yo0guvsmFNCG_tuuRM9Jz6a3UmaM6gN8HElvIlx43EbR_jCB-p4w4rL_8UDQ' ],
+     watermark: 1541508519348,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508519884,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508519864,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508519974,
+  read: { watermark: 1541508519348, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508519982,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508519974,
+       read: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508519961,
+  delivery:
+   { mids:
+      [ 'fczk_2dXEMKXR3Tp1NMmEPX2U2yo0guvsmFNCG_tuuRM9Jz6a3UmaM6gN8HElvIlx43EbR_jCB-p4w4rL_8UDQ' ],
+     watermark: 1541508519348,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508519982,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508519961,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ recipient: { id: '269303613154082' },
+  timestamp: 1541508523127,
+  sender: { id: '2106559182687668' },
+  postback:
+   { payload:
+      '{"data":{"id":1,"flavor":"Calabresa"},"event":"ORDER_FLAVOR"}',
+     title: 'Quero' } }
+handleMessage <<<
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_on' }
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508523127,
+  messaging:
+   [ { recipient: [Object],
+       timestamp: 1541508523127,
+       sender: [Object],
+       postback: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ recipient: { id: '269303613154082' },
+  timestamp: 1541508523127,
+  sender: { id: '2106559182687668' },
+  postback: { title: 'Quero' } }
+handleMessage <<<
+ERROR parsing postback.payload
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508523127,
+  standby:
+   [ { recipient: [Object],
+       timestamp: 1541508523127,
+       sender: [Object],
+       postback: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message: { text: '✅  Sabor: Calabresa' } }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_on' }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508526848,
+  delivery:
+   { mids:
+      [ 'zncU3ZPPRrq7mtMQGjT2lvX2U2yo0guvsmFNCG_tuuSxdAKGtkF-aWKtCqPyAbnmIsLOU3huWawHA8ibH--Gug' ],
+     watermark: 1541508526475,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508526869,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508526848,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508526895,
+  delivery:
+   { mids:
+      [ 'zncU3ZPPRrq7mtMQGjT2lvX2U2yo0guvsmFNCG_tuuSxdAKGtkF-aWKtCqPyAbnmIsLOU3huWawHA8ibH--Gug' ],
+     watermark: 1541508526475,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508526917,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508526895,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508526988,
+  delivery:
+   { mids:
+      [ 'zncU3ZPPRrq7mtMQGjT2lvX2U2yo0guvsmFNCG_tuuSxdAKGtkF-aWKtCqPyAbnmIsLOU3huWawHA8ibH--Gug' ],
+     watermark: 1541508526475,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508527009,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508526988,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508527011,
+  read: { watermark: 1541508526475, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508527020,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508527011,
+       read: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message:
+   { text:
+      'Agora vou pegar os detalhes da 2a. pizza.\nQual o tamanho dela?',
+     quick_replies: [ [Object], [Object], [Object], [Object] ] } }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508529564,
+  delivery:
+   { mids:
+      [ 'eBhAVzxyCEiw4gyXvJf5qfX2U2yo0guvsmFNCG_tuuQToHDyzYp3rf6HpiVp7CzU9ajAbmw5AJBcwhSZbrjOMg' ],
+     watermark: 1541508529263,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508529587,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508529564,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508529599,
+  delivery:
+   { mids:
+      [ 'eBhAVzxyCEiw4gyXvJf5qfX2U2yo0guvsmFNCG_tuuQToHDyzYp3rf6HpiVp7CzU9ajAbmw5AJBcwhSZbrjOMg' ],
+     watermark: 1541508529263,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508529623,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508529599,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508529709,
+  delivery:
+   { mids:
+      [ 'eBhAVzxyCEiw4gyXvJf5qfX2U2yo0guvsmFNCG_tuuQToHDyzYp3rf6HpiVp7CzU9ajAbmw5AJBcwhSZbrjOMg' ],
+     watermark: 1541508529263,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508529735,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508529709,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508529734,
+  read: { watermark: 1541508529263, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508529740,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508529734,
+       read: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508533296,
+  message:
+   { quick_reply:
+      { payload: '{"data":{"id":3,"size":"Média"},"event":"ORDER_SIZE"}' },
+     mid:
+      'YD-DxD8PqLd5kdTMl89mbvX2U2yo0guvsmFNCG_tuuTAXJN1Bz87oWGiXE8pECb3V-trL_5PstYHS6vS9CU98A',
+     seq: 15256,
+     text: 'Média' } }
+handleMessage <<<
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_on' }
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508533723,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508533296,
+       message: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message: { text: '✅  Tamanho: Média' } }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_on' }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508537133,
+  delivery:
+   { mids:
+      [ '_cDCaONtwcxIvS2wuy_rNPX2U2yo0guvsmFNCG_tuuTiU09O6UxNjkMiaKVIgAdn5pypqGYma8f2R-vlMZ7jXw' ],
+     watermark: 1541508536757,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508537156,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508537133,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508537188,
+  delivery:
+   { mids:
+      [ '_cDCaONtwcxIvS2wuy_rNPX2U2yo0guvsmFNCG_tuuTiU09O6UxNjkMiaKVIgAdn5pypqGYma8f2R-vlMZ7jXw' ],
+     watermark: 1541508536757,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508537207,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508537188,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508537268,
+  read: { watermark: 1541508536757, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508537275,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508537268,
+       read: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508537267,
+  delivery:
+   { mids:
+      [ '_cDCaONtwcxIvS2wuy_rNPX2U2yo0guvsmFNCG_tuuTiU09O6UxNjkMiaKVIgAdn5pypqGYma8f2R-vlMZ7jXw' ],
+     watermark: 1541508536757,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508537328,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508537267,
+       delivery: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message: { attachment: { type: 'template', payload: [Object] } } }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508540895,
+  delivery:
+   { mids:
+      [ 'fGY5Cl9ib7rScpwLpTBmA_X2U2yo0guvsmFNCG_tuuTFT7Wrp2NAbAhGxJwsvgYRgBe116uFxRqZQtNHmnscRQ' ],
+     watermark: 1541508540465,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508540918,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508540895,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508540900,
+  delivery:
+   { mids:
+      [ 'fGY5Cl9ib7rScpwLpTBmA_X2U2yo0guvsmFNCG_tuuTFT7Wrp2NAbAhGxJwsvgYRgBe116uFxRqZQtNHmnscRQ' ],
+     watermark: 1541508540465,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508540921,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508540900,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508541099,
+  read: { watermark: 1541508540465, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508541106,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508541099,
+       read: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508541095,
+  delivery:
+   { mids:
+      [ 'fGY5Cl9ib7rScpwLpTBmA_X2U2yo0guvsmFNCG_tuuTFT7Wrp2NAbAhGxJwsvgYRgBe116uFxRqZQtNHmnscRQ' ],
+     watermark: 1541508540465,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508541119,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508541095,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ recipient: { id: '269303613154082' },
+  timestamp: 1541508542931,
+  sender: { id: '2106559182687668' },
+  postback:
+   { payload:
+      '{"data":{"id":3,"flavor":"Quatro Queijos"},"event":"ORDER_FLAVOR"}',
+     title: 'Quero' } }
+handleMessage <<<
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_on' }
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508542931,
+  messaging:
+   [ { recipient: [Object],
+       timestamp: 1541508542931,
+       sender: [Object],
+       postback: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ recipient: { id: '269303613154082' },
+  timestamp: 1541508542931,
+  sender: { id: '2106559182687668' },
+  postback: { title: 'Quero' } }
+handleMessage <<<
+ERROR parsing postback.payload
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508542931,
+  standby:
+   [ { recipient: [Object],
+       timestamp: 1541508542931,
+       sender: [Object],
+       postback: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message: { text: '✅  Sabor: Quatro Queijos' } }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_on' }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508546489,
+  delivery:
+   { mids:
+      [ 'xWFJm3zgt3bmvyhvnLKSjfX2U2yo0guvsmFNCG_tuuSOaghzcOZBHIqtekWZwav5FngOFVho7T6jMCJi2QsppA' ],
+     watermark: 1541508546143,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508546512,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508546489,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508546533,
+  delivery:
+   { mids:
+      [ 'xWFJm3zgt3bmvyhvnLKSjfX2U2yo0guvsmFNCG_tuuSOaghzcOZBHIqtekWZwav5FngOFVho7T6jMCJi2QsppA' ],
+     watermark: 1541508546143,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508546557,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508546533,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508546666,
+  read: { watermark: 1541508546143, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508546672,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508546666,
+       read: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508546876,
+  delivery:
+   { mids:
+      [ 'xWFJm3zgt3bmvyhvnLKSjfX2U2yo0guvsmFNCG_tuuSOaghzcOZBHIqtekWZwav5FngOFVho7T6jMCJi2QsppA' ],
+     watermark: 1541508546143,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508546899,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508546876,
+       delivery: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message:
+   { text:
+      'Seguem os detalhes do seu pedido:\n1 pizza Gigante de Calabresa\nundefined pizza Média de Quatro Queijos\nPodemos confirmar o pedido?',
+     quick_replies: [ [Object], [Object] ] } }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508549063,
+  delivery:
+   { mids:
+      [ 'lt5UMPsppLv6H9z8ZoybbPX2U2yo0guvsmFNCG_tuuQhmzR6GC7VWiTDxgQPLhbtpLKuzIVFT55nO8mv2dp_eg' ],
+     watermark: 1541508548746,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508549084,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508549063,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508549107,
+  delivery:
+   { mids:
+      [ 'lt5UMPsppLv6H9z8ZoybbPX2U2yo0guvsmFNCG_tuuQhmzR6GC7VWiTDxgQPLhbtpLKuzIVFT55nO8mv2dp_eg' ],
+     watermark: 1541508548746,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508549134,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508549107,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508549216,
+  delivery:
+   { mids:
+      [ 'lt5UMPsppLv6H9z8ZoybbPX2U2yo0guvsmFNCG_tuuQhmzR6GC7VWiTDxgQPLhbtpLKuzIVFT55nO8mv2dp_eg' ],
+     watermark: 1541508548746,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508549243,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508549216,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508549246,
+  read: { watermark: 1541508548746, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508549253,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508549246,
+       read: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508596853,
+  message:
+   { quick_reply:
+      { payload: '{"data":"confirmation_yes","event":"ORDER_CONFIRMATION"}' },
+     mid:
+      '6KL9CsOj9URcrZY1WRYgvvX2U2yo0guvsmFNCG_tuuTorrOCwewvRmdQFUy8jZPBsUzqn5Fsyj2pX97tMkf2ow',
+     seq: 15268,
+     text: 'Sim' } }
+handleMessage <<<
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_on' }
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508597269,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508596853,
+       message: [Object] } ] }
+{ recipient: { id: '2106559182687668' },
+  senderAction: 'typing_off' }
+{ recipient: { id: '2106559182687668' },
+  message: { text: 'Pedido Confirmado!' } }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508599583,
+  delivery:
+   { mids:
+      [ 'Pwly6zHTZxSJxuhoXoBVFPX2U2yo0guvsmFNCG_tuuRM2hMV3vxqFjovkQNBlTVqjas3buTL-k75DL8VL803fw' ],
+     watermark: 1541508599179,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508599605,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508599583,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508599601,
+  delivery:
+   { mids:
+      [ 'Pwly6zHTZxSJxuhoXoBVFPX2U2yo0guvsmFNCG_tuuRM2hMV3vxqFjovkQNBlTVqjas3buTL-k75DL8VL803fw' ],
+     watermark: 1541508599179,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508599622,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508599601,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508599737,
+  delivery:
+   { mids:
+      [ 'Pwly6zHTZxSJxuhoXoBVFPX2U2yo0guvsmFNCG_tuuRM2hMV3vxqFjovkQNBlTVqjas3buTL-k75DL8VL803fw' ],
+     watermark: 1541508599179,
+     seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508599764,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508599737,
+       delivery: [Object] } ] }
+Message from 269303613154082
+>>> handleMessage
+{ sender: { id: '2106559182687668' },
+  recipient: { id: '269303613154082' },
+  timestamp: 1541508599765,
+  read: { watermark: 1541508599179, seq: 0 } }
+handleMessage <<<
+bot router (req.body.entry[0])
+{ id: '269303613154082',
+  time: 1541508599772,
+  messaging:
+   [ { sender: [Object],
+       recipient: [Object],
+       timestamp: 1541508599765,
+       read: [Object] } ] }

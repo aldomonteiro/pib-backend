@@ -23,11 +23,14 @@ import {
   showSize,
   askForFlavor,
   showFlavor,
-  showOrder,
+  showOrderOrNextItem,
   askForLocation,
   confirmAddressOrAskLocation,
   confirmLocationAddress,
   showAddress,
+  confirmOrder,
+  askToTypeAddress,
+  confirmTypedAddress
 } from './api/bot/botController';
 
 const
@@ -189,6 +192,13 @@ bot.on('message', async (message) => {
     const answer = await confirmLocationAddress(recipient.id, sender.id, location, user);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, answer);
+  } else {
+
+    await bot.startTyping(sender.id);
+    await Bot.wait(1000);
+    const answer = await confirmTypedAddress(recipient.id, sender.id, message);
+    await bot.stopTyping(sender.id);
+    await bot.send(sender.id, answer);
   }
 });
 
@@ -247,18 +257,27 @@ bot.on('CORRECT_SAVED_ADDRESS', async (message, data) => {
 bot.on('LOCATION_ADDRESS', async (message, data) => {
   const { sender, recipient } = message;
 
-  // show what the user chose
-  await bot.startTyping(sender.id);
-  await Bot.wait(1000);
-  const answer = await showAddress(recipient.id, sender.id, data);
-  await bot.stopTyping(sender.id);
-  await bot.send(sender.id, answer);
+  if (data === 'incorrect_address') {
+    await bot.startTyping(sender.id);
+    await Bot.wait(1000);
+    const answer = await askToTypeAddress(recipient.id, sender.id);
+    await bot.stopTyping(sender.id);
+    await bot.send(sender.id, answer);
+  }
+  else {
+    // show what the user chose
+    await bot.startTyping(sender.id);
+    await Bot.wait(1000);
+    const answer = await showAddress(recipient.id, sender.id, data);
+    await bot.stopTyping(sender.id);
+    await bot.send(sender.id, answer);
 
-  // next question
-  const out = await askForPhone();
-  await Bot.wait(1000);
-  await bot.stopTyping(sender.id);
-  await bot.send(sender.id, out);
+    // next question
+    const out = await askForPhone();
+    await Bot.wait(1000);
+    await bot.stopTyping(sender.id);
+    await bot.send(sender.id, out);
+  }
 });
 
 
@@ -358,10 +377,11 @@ bot.on('ORDER_FLAVOR', async (message, data) => {
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, answer);
 
+
     // show summary
     await bot.startTyping(sender.id);
     await Bot.wait(1000);
-    const summary = await showOrder(recipient.id, sender.id);
+    const summary = await showOrderOrNextItem(recipient.id, sender.id);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, summary);
   }
@@ -380,10 +400,9 @@ bot.on('ORDER_CONFIRMATION', async (message, data) => {
   if (data === 'confirmation_yes') {
     await bot.startTyping(sender.id);
     await Bot.wait(1000);
-    const answer = new Elements();
-    answer.add({ text: "Ordem Confirmada, vamos pegar os seus dados pessoais." });
+    const out = await confirmOrder(recipient.id, sender.id);
     await bot.stopTyping(sender.id);
-    await bot.send(sender.id, answer);
+    await bot.send(sender.id, out);
   }
   else {
     await bot.startTyping(sender.id);

@@ -104,6 +104,11 @@ export const customer_update = async (custData) => {
             updateDb = true;
         }
         if (addrData) {
+            if (addrData.manual_address)
+                customer.addr_manual = true;
+            else
+                customer.addr_manual = false;
+
             customer.addr_formatted = addrData.formattedAddress;
             customer.addr_street = addrData.street;
             customer.addr_sublocality = addrData.sublocality;

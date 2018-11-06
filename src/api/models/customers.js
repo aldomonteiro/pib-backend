@@ -13,6 +13,7 @@ const schema = new Schema(
     profile_pic: { type: String },
     email: { type: String },
     phone: { type: String },
+    addr_manual: { type: Boolean, default: false },
     addr_formatted: { type: String },
     addr_street: { type: String },
     addr_streetnumber: { type: String },
