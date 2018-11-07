@@ -51,6 +51,7 @@ mongoose.Promise = Promise;
 const app = express();
 
 const bot = new Bot('verify_my_bot', true);
+
 getAllPages().then(async (pageArray) => {
   for (let i = 0; i < pageArray.length; i++) {
     const page = pageArray[i];
@@ -59,7 +60,8 @@ getAllPages().then(async (pageArray) => {
     const response = await bot.getFields(fields);
     global.pagesKeyID[page.pageID] = accessToken;
 
-    console.log(`GET fields for ${page.pageID}-${page.name}:`, response);
+    console.log(`GET fields for ${page.pageID}-${page.name}:`)
+    console.log(response);
   }
 });
 
@@ -97,10 +99,9 @@ app.use('/buckets/facebook', (req, res, next) => {
           console.log(`Got token from ${pageID}`);
         });
       }
-
-      next();
     }
   }
+  next();
 });
 app.use('/buckets/facebook', bot.router());
 app.listen(process.env.FB_WEBHOOK_PORT, () => console.log(`Bot server listening on port ${process.env.FB_WEBHOOK_PORT}`));
