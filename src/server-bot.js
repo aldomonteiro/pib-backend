@@ -50,7 +50,7 @@ mongoose.Promise = Promise;
 
 const app = express();
 
-const bot = new Bot('verify_my_bot', true);
+const bot = new Bot(process.env.FB_VERIFY_TOKEN, true);
 
 getAllPages().then(async (pageArray) => {
   for (let i = 0; i < pageArray.length; i++) {

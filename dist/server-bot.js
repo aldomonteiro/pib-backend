@@ -46,7 +46,7 @@ _mongoose.default.set('useCreateIndex', true);
 
 _mongoose.default.Promise = Promise;
 var app = (0, _express.default)();
-var bot = new _facebookMessengerBot.Bot('verify_my_bot', true);
+var bot = new _facebookMessengerBot.Bot(process.env.FB_VERIFY_TOKEN, true);
 (0, _pagesController.getAllPages)().then(
 /*#__PURE__*/
 function () {
