@@ -112,7 +112,7 @@ app.use(_bodyParser.default.urlencoded({
 }));
 app.use(_bodyParser.default.json());
 app.use('/buckets/facebook', function (req, res, next) {
-  if (req.body.object === 'page') {
+  if (req.body && req.body.object === 'page') {
     if (req.body.entry.length > 0) {
       // Iterates over each entry - there may be multiple if batched
       // for (let i = 0; i < req.body.entry.length; i++) {
@@ -129,6 +129,8 @@ app.use('/buckets/facebook', function (req, res, next) {
         });
       }
     }
+  } else {
+    console.log('Something came, not a page...');
   }
 
   next();
