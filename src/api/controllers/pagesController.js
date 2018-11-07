@@ -145,7 +145,6 @@ export const page_update = (req, res) => {
     });
 }
 
-//oauth/access_token?grant_type=fb_exchange_token&client_id=267537643995936&client_secret=1b5307cb418218dc1b0d38568be37340&fb_exchange_token=EAADzUvY8AyABALCKnnO0nQKYa5GqwNwIiOn3ZCiUrvCZCiTHFzBZB0GNim12elB7j4WTqZCpQ4q6doZC9ZAmc3K4u1Dz8cCu3vZA8SRy7OqAewcXbPS00XVhAWWLrNkEqevdN9EGNRu2iGpMjTiQ4cxBrrbFmlATwqZCuP0wiRTaOEDcnh66KZABaVHrykAnaAAqNp5On1TvWHQZDZD
 export const subscribedApps = async (pageId, accessToken) => {
 
     // https://graph.facebook.com/v3.1/{page-id}/subscribed_apps?access_token={}
