@@ -62,7 +62,7 @@ function () {
 
           case 1:
             if (!(i < pageArray.length)) {
-              _context.next = 13;
+              _context.next = 14;
               break;
             }
 
@@ -75,14 +75,15 @@ function () {
           case 7:
             response = _context.sent;
             global.pagesKeyID[page.pageID] = accessToken;
-            console.log("GET fields for ".concat(page.pageID, "-").concat(page.name, ":"), response);
+            console.log("GET fields for ".concat(page.pageID, "-").concat(page.name, ":"));
+            console.log(response);
 
-          case 10:
+          case 11:
             i++;
             _context.next = 1;
             break;
 
-          case 13:
+          case 14:
           case "end":
             return _context.stop();
         }
@@ -127,10 +128,10 @@ app.use('/buckets/facebook', function (req, res, next) {
           console.log("Got token from ".concat(pageID));
         });
       }
-
-      next();
     }
   }
+
+  next();
 });
 app.use('/buckets/facebook', bot.router());
 app.listen(process.env.FB_WEBHOOK_PORT, function () {
