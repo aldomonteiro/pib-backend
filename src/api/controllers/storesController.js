@@ -168,11 +168,14 @@ export const store_delete = (req, res) => {
         });
 };
 
+export const getStores = async (pageID) => {
+    // TODO: if is there more than one Store?
+    var query = Store.find({ pageId: pageID });
+    return await query.exec();
+}
 
 export const getOpeningTimes = async (pageID) => {
     // TODO: if is there more than one Store?
     var query = Store.findOne({ pageId: pageID });
-    const result = await query.exec();
-    console.log(result)
-    return result;
+    return await query.exec();
 }

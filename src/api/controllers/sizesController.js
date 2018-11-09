@@ -128,5 +128,8 @@ export const getSize = async (pageID, sizeID) => {
 }
 
 export const getSizes = (pageID, sizeIdArray) => {
-    return Size.find({ pageId: pageID, id: sizeIdArray }).exec();
+    if (sizeIdArray && sizeIdArray.length > 0)
+        return Size.find({ pageId: pageID, id: sizeIdArray }).exec();
+    else
+        return Size.find({ pageId: pageID }).exec();
 }

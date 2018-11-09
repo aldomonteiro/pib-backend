@@ -4,6 +4,7 @@ import User from "../models/users";
 import axios from 'axios';
 import util from 'util';
 import { configSortQuery, configRangeQuery } from '../util/util';
+import { initialSetup } from "./systemController";
 
 // List all flavors
 // TODO: use filters in the query req.query
@@ -22,6 +23,10 @@ export const page_resources_get_all = async (req, res) => {
     };
 
     var query = {};
+
+    if (req.currentUser.activePage) {
+        query = Page.find({ id: req.currentUser.activePage });
+    }
 
     Page.paginate(query, options, async (err, result) => {
         if (err) {
@@ -61,7 +66,7 @@ export const page_resources_delete = (req, res) => {
 
 
 // Update or create a new page
-export const page_update = (req, res) => {
+export const page_update = async (req, res) => {
 
     console.log("page_update");
     console.log(req.body);
@@ -69,12 +74,13 @@ export const page_update = (req, res) => {
     const pageId = req.body.id;
 
     // Find a page by id
-    Page.findOne({ id: pageId }, (err, doc) => {
+    await Page.findOne({ id: pageId }, async (err, doc) => {
         if (err) { // err !== null
             res.status(500).json({ message: err.errmsg });
             return;
         }
-        var record;
+        let record;
+        let isNew = false;
 
         if (doc) {
             record = doc;
@@ -92,8 +98,9 @@ export const page_update = (req, res) => {
                 accessToken: req.body.access_token,
                 userID: req.currentUser.userID,
             });
+            isNew = true;
         }
-        record.save((err, result) => {
+        await record.save((err, result) => {
             if (err) {
                 res.status(500).json({ message: err.errmsg });
             } else {
@@ -114,7 +121,7 @@ export const page_update = (req, res) => {
 
         // update ActivePage for the current user
         if (req.currentUser) {
-            User.findOne({ userID: req.currentUser.userID }, (err, docFind) => {
+            await User.findOne({ userID: req.currentUser.userID }, (err, docFind) => {
                 if (err) {
                     res.status(500).json({ message: err.errmsg });
                     return;
@@ -140,6 +147,10 @@ export const page_update = (req, res) => {
                 else if (err.response)
                     console.log(err.response);
             });
+        }
+
+        if (isNew) {
+            await initialSetup(pageId);
         }
 
     });

@@ -27,8 +27,6 @@ export const flavor_get_all = async (req, res) => {
         query = Flavor.find({ pageId: req.currentUser.activePage });
     }
 
-    var cacheToppings = new Array();
-
     Flavor.paginate(query, options, async (err, result) => {
         if (err) {
             res.status(500).json({ message: err.errmsg });

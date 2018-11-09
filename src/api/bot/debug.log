@@ -1,7 +1,5 @@
 Bot server listening on port 4000
 into getAllPages: 
-GET fields for 237290183773790-Página do Aldo:
-Invalid OAuth access token.
 GET fields for 278383016327989-Pizzaibot:
 Invalid OAuth access token.
 GET fields for 321718591988282-Página da Sophia:
@@ -12,7 +10,5 @@ GET fields for 423247368207185-Página Teste:
 Invalid OAuth access token.
 GET fields for 269303613154082-Koraline:
 Invalid OAuth access token.
-Something came, not a page...
-Something came, not a page...
-Something came, not a page...
-Something came, not a page...
+GET fields for 237290183773790-Página do Aldo:
+Invalid OAuth access token.

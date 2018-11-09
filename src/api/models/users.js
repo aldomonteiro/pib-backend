@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
+// import paginate from 'mongoose-paginate';
 
 const Schema = mongoose.Schema;
 
@@ -41,5 +42,7 @@ schema.methods.toAuthJSON = function toAuthJSON() {
     token: this.generateJWT()
   };
 };
+
+// schema.plugin(paginate);
 
 export default mongoose.model("users", schema);

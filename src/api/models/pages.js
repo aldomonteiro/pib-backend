@@ -11,6 +11,10 @@ const schema = new mongoose.Schema({
     userID: { type: String },
     greetingText: { type: String },
     firstResponseText: { type: String },
+    initialSetupFlavors: { type: Number },
+    initialSetupSizes: { type: Number },
+    initialSetupPricings: { type: Number },
+    initialSetupStores: { type: Number },
 }, { timestamps: true });
 
 //TODO: store access_token expiring date

@@ -119,3 +119,9 @@ export const getPricingSizing = async pageId => {
     const query = Pricing.distinct('sizeId', { pageId: pageId });
     return await query.exec();
 }
+
+export const getPricings = async (pageID) => {
+    let query = Pricing.find({ pageId: pageID });
+    return await query.exec();
+}
+

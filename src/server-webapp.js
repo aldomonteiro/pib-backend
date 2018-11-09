@@ -75,7 +75,7 @@ app.use("/extras", extras);
 const env = process.env.NODE_ENV || 'production';
 
 if (env === 'production')
-  app.listen(8080, () => console.log("Node server listening on port 8080"));
+  app.listen(8080, () => console.log(env + "env. Server listening on port 8080"));
 else {
   // dev server
   // Lift the https server
@@ -87,5 +87,5 @@ else {
       },
       app
     )
-    .listen(8080, () => console.log("Node server listening on port 8080"));
+    .listen(8080, () => console.log(env + " Server listening on port 8080"));
 }

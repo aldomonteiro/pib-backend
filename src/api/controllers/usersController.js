@@ -1,6 +1,8 @@
 import User from "../models/users";
 import axios from 'axios';
 import dotenv from "dotenv";
+import util from "util";
+import { configSortQuery, configRangeQuery } from '../util/util';
 
 export const users_auth = (req, res) => {
     if (req.body) {
@@ -42,9 +44,15 @@ export const users_auth = (req, res) => {
                         newRecord.accessToken = data.access_token;
                         newRecord.save()
                             .then(record => res.status(200).json({ user: record.toAuthJSON() }))
-                            .catch(err => res.status(500).json(err));
+                            .catch((err) => {
+                                console.error(err);
+                                res.status(500).json(err)
+                            });
                     })
-                    .catch(err => res.status(500).json(err));
+                    .catch((err) => {
+                        console.error(err);
+                        res.status(500).json(err)
+                    });
             }
         });
     }
@@ -68,16 +76,117 @@ export const users_create = (req, res) => {
         });
 
         changeAccessToken(newRecord.accessToken)
-            .then(data => {
+            .then((data) => {
                 newRecord.hasLongLivedToken = true;
                 newRecord.accessToken = data.access_token;
                 newRecord.save()
                     .then(record => res.status(200).json({ user: record.toAuthJSON() }))
-                    .catch(err => res.status(500).json(err));
+                    .catch((err) => {
+                        console.error(err);
+                        res.status(500).json(err)
+                    });
             })
-            .catch(err => res.status(500).json(err));
+            .catch((err) => {
+                console.error(err);
+                res.status(500).json(err)
+            });
     }
 }
+
+// List all users
+// TODO: use filters in the query req.query
+export const users_get_all = (req, res) => {
+    // Getting the sort from the requisition
+    // var sortObj = configSortQuery(req.query.sort);
+    // Getting the range from the requisition
+    var rangeObj = configRangeQuery(req.query.range);
+
+    // let options = {
+    //     offset: rangeObj['offset'],
+    //     limit: rangeObj['limit'],
+    //     sort: sortObj,
+    //     lean: true,
+    //     leanWithId: false,
+    // };
+
+    var query = {};
+
+    // User.paginate(query, options, (err, result) => {
+    User.find((err, result) => {
+        if (err) {
+            res.status(500).json({ message: err.errmsg });
+        } else {
+            res.setHeader('Content-Range', util.format("users %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
+            res.status(200).json(result);
+        }
+    });
+}
+
+// List one record by filtering by ID
+export const users_get_one = (req, res) => {
+    if (req.params && req.params.id) {
+
+        User.findOne({ userID: req.params.id }, (err, doc) => {
+            if (err) {
+                res.status(500).json({ message: err.errMsg });
+            }
+            else {
+                res.status(200).json(doc);
+            }
+        });
+    }
+}
+
+// UPDATE
+export const users_update = (req, res) => {
+    let updatedElement = {
+        id: req.body.id,
+        name: sanitizeName(req.body.name),
+        email: req.body.email,
+    };
+
+    User.findOneAndUpdate({ id: req.params.id }, updatedElement)
+        .then((oldResult) => {
+            User.findOne({ id: req.params.id })
+                .then((newResult) => {
+                    res.json({
+                        data: {
+                            _id: newResult._id,
+                            id: newResult.id,
+                            name: newResult.name,
+                            email: newResult.email,
+                        }
+                    });
+                })
+                .catch((err) => {
+                    console.log(err);
+                    res.status(500).json({ success: false, msg: `Something went wrong. ${err}` });
+                    return;
+                });
+        })
+        .catch((err) => {
+            if (err) {
+                console.log(err);
+                res.status(500).json({ success: false, msg: `Something went wrong. ${err}` });
+            }
+        });
+}
+
+// DELETE
+export const users_delete = (req, res) => {
+    User.findOneAndRemove({ id: req.params.id })
+        .then((result) => {
+            res.json({
+                success: true,
+                msg: `It has been deleted.`,
+            });
+        })
+        .catch((err) => {
+            res.status(404).json({ success: false, msg: 'Nothing to delete.' });
+        });
+}
+
+
 
 export const changeAccessToken = async (accessToken) => {
 
