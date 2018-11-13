@@ -179,3 +179,79 @@ export const getOpeningTimes = async (pageID) => {
     var query = Store.findOne({ pageId: pageID });
     return await query.exec();
 }
+
+export const getTodayOpeningTime = async pageID => {
+    const _store = getOpeningTimes(pageID);
+    let _today = new Date();
+
+    let _tomorrow = new Date();
+    _tomorrow.setDate(_today.getDate() + 1);
+
+    let todayOpenAt, todayCloseAt, tomorrowOpenAt, tomorrowCloseAt = '';
+    let todayIsOpen, tomorrowIsOpen = false;
+
+    if (_today.getDay() === 1) {
+        todayIsOpen = _store.sun_is_open;
+        todayOpenAt = _store.sun_open;
+        todayCloseAt = _store.sun_close;
+
+        tomorrowIsOpen = _store.mon_is_open;
+        tomorrowOpenAt = _store.mon_open;
+        tomorrowCloseAt = _store.mon_close;
+    }
+    else if (_today.getDay() === 2) {
+        todayIsOpen = _store.mon_is_open;
+        todayOpenAt = _store.mon_open;
+        todayCloseAt = _store.mon_close;
+
+        tomorrowIsOpen = _store.tue_is_open;
+        tomorrowOpenAt = _store.tue_open;
+        tomorrowCloseAt = _store.tue_close;
+    }
+    else if (_today.getDay() === 3) {
+        todayIsOpen = _store.tue_is_open;
+        todayOpenAt = _store.tue_open;
+        todayCloseAt = _store.tue_close;
+
+        tomorrowIsOpen = _store.wed_is_open;
+        tomorrowOpenAt = _store.wed_open;
+        tomorrowCloseAt = _store.wed_close;
+    }
+    else if (_today.getDay() === 4) {
+        todayIsOpen = _store.wed_is_open;
+        todayOpenAt = _store.wed_open;
+        todayCloseAt = _store.wed_close;
+
+        tomorrowIsOpen = _store.thu_is_open;
+        tomorrowOpenAt = _store.thu_open;
+        tomorrowCloseAt = _store.thu_close;
+    }
+    else if (_today.getDay() === 5) {
+        todayIsOpen = _store.thu_is_open;
+        todayOpenAt = _store.thu_open;
+        todayCloseAt = _store.thu_close;
+
+        tomorrowIsOpen = _store.fri_is_open;
+        tomorrowOpenAt = _store.fri_open;
+        tomorrowCloseAt = _store.fri_close;
+    }
+    else if (_today.getDay() === 6) {
+        todayIsOpen = _store.fri_is_open;
+        todayOpenAt = _store.fri_open;
+        todayCloseAt = _store.fri_close;
+
+        tomorrowIsOpen = _store.sat_is_open;
+        tomorrowOpenAt = _store.sat_open;
+        tomorrowCloseAt = _store.sat_close;
+    }
+    else if (_today.getDay() === 7) {
+        todayIsOpen = _store.sat_is_open;
+        todayOpenAt = _store.sat_open;
+        todayCloseAt = _store.sat_close;
+
+        tomorrowIsOpen = _store.sun_is_open;
+        tomorrowOpenAt = _store.sun_open;
+        tomorrowCloseAt = _store.sun_close;
+    }
+    return { todayIsOpen, todayOpenAt, todayCloseAt, tomorrowIsOpen, tomorrowOpenAt, tomorrowCloseAt };
+}

@@ -12,6 +12,7 @@ import {
     validateBotOrder,
 } from "./actionsController";
 import { getSizes } from '../controllers/sizesController';
+import { getTodayOpeningTime } from '../controllers/storesController';
 import { updateOrder, getOrderPending } from '../controllers/ordersController';
 import { getAddressLocation, getCustomerAddress, formatAddrData } from '../controllers/customersController';
 
@@ -67,6 +68,20 @@ export const sendMainMenu = async () => {
 
     return out;
 }
+
+export const sendHorario = async (pageID) => {
+    const { todayIsOpen, todayOpenAt, todayCloseAt } = await getTodayOpeningTime(pageID);
+    let replyMsg = '';
+    if (todayIsOpen === true) {
+        replyMsg = 'Estamos abertos hoje, a partir das ' + todayOpenAt + ' horas, até às ' + todayCloseAt + ' horas.';
+    } else {
+        replyMsg = 'Infelizmente hoje não estamos abertos, mas você pode consultar nosso cardápio no menu principal.';
+    }
+    const out = new Elements();
+    out.add({ text: replyMsg });
+    return out;
+}
+
 
 export const sendCardapio = async (pageID) => {
     const replyMsg = await getCardapio(pageID);

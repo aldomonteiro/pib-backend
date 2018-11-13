@@ -31,7 +31,8 @@ import {
   showAddress,
   confirmOrder,
   askToTypeAddress,
-  confirmTypedAddress
+  confirmTypedAddress,
+  sendHorario
 } from './api/bot/botController';
 
 const
@@ -168,6 +169,10 @@ bot.on('MAIN-MENU', async (message, data) => {
       const answer = await confirmAddressOrAskLocation(recipient.id, sender.id, user);
       await bot.stopTyping(sender.id);
       await bot.send(sender.id, answer);
+    } else if (data === 'HORARIO_PAYLOAD') {
+      const out = await sendHorario(message.recipient.id);
+      await bot.stopTyping(sender.id);
+      await bot.send(sender.id, out);
     }
   } catch (err) {
     await bot.stopTyping(sender.id);
