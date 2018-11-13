@@ -95,7 +95,7 @@ app.use("/sizes", _sizes.default);
 app.use("/extras", _extras.default);
 var env = process.env.NODE_ENV || 'production';
 if (env === 'production') app.listen(8080, function () {
-  return console.log("Node server listening on port 8080");
+  return console.log(env + "env. Server listening on port 8080");
 });else {
   // dev server
   // Lift the https server
@@ -103,7 +103,7 @@ if (env === 'production') app.listen(8080, function () {
     key: _fs.default.readFileSync("certificates/server_key.pem"),
     cert: _fs.default.readFileSync("certificates/server_crt.pem")
   }, app).listen(8080, function () {
-    return console.log("Node server listening on port 8080");
+    return console.log(env + " Server listening on port 8080");
   });
 }
 //# sourceMappingURL=server-webapp.js.map

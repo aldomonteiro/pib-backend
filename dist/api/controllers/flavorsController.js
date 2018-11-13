@@ -31,7 +31,7 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(req, res) {
-    var sortObj, rangeObj, options, query, cacheToppings;
+    var sortObj, rangeObj, options, query;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -54,8 +54,6 @@ function () {
                 pageId: req.currentUser.activePage
               });
             }
-
-            cacheToppings = new Array();
 
             _flavors.default.paginate(query, options,
             /*#__PURE__*/
@@ -120,7 +118,7 @@ function () {
               };
             }());
 
-          case 7:
+          case 6:
           case "end":
             return _context2.stop();
         }

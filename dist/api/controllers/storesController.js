@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getOpeningTimes = exports.store_delete = exports.store_update = exports.store_create = exports.store_get_one = exports.store_get_all = void 0;
+exports.getTodayOpeningTime = exports.getOpeningTimes = exports.getStores = exports.store_delete = exports.store_update = exports.store_create = exports.store_get_one = exports.store_get_all = void 0;
 
 var _stores = _interopRequireDefault(require("../models/stores"));
 
@@ -203,30 +203,28 @@ var store_delete = function store_delete(req, res) {
 
 exports.store_delete = store_delete;
 
-var getOpeningTimes =
+var getStores =
 /*#__PURE__*/
 function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(pageID) {
-    var query, result;
+    var query;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             // TODO: if is there more than one Store?
-            query = _stores.default.findOne({
+            query = _stores.default.find({
               pageId: pageID
             });
             _context.next = 3;
             return query.exec();
 
           case 3:
-            result = _context.sent;
-            console.log(result);
-            return _context.abrupt("return", result);
+            return _context.abrupt("return", _context.sent);
 
-          case 6:
+          case 4:
           case "end":
             return _context.stop();
         }
@@ -234,10 +232,142 @@ function () {
     }, _callee, this);
   }));
 
-  return function getOpeningTimes(_x) {
+  return function getStores(_x) {
     return _ref.apply(this, arguments);
   };
 }();
 
+exports.getStores = getStores;
+
+var getOpeningTimes =
+/*#__PURE__*/
+function () {
+  var _ref2 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee2(pageID) {
+    var query;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            // TODO: if is there more than one Store?
+            query = _stores.default.findOne({
+              pageId: pageID
+            });
+            _context2.next = 3;
+            return query.exec();
+
+          case 3:
+            return _context2.abrupt("return", _context2.sent);
+
+          case 4:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, this);
+  }));
+
+  return function getOpeningTimes(_x2) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
 exports.getOpeningTimes = getOpeningTimes;
+
+var getTodayOpeningTime =
+/*#__PURE__*/
+function () {
+  var _ref3 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee3(pageID) {
+    var _store, _today, _tomorrow, todayOpenAt, todayCloseAt, tomorrowOpenAt, tomorrowCloseAt, todayIsOpen, tomorrowIsOpen;
+
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _store = getOpeningTimes(pageID);
+            _today = new Date();
+            _tomorrow = new Date();
+
+            _tomorrow.setDate(_today.getDate() + 1);
+
+            tomorrowCloseAt = '';
+            tomorrowIsOpen = false;
+
+            if (_today.getDay() === 1) {
+              todayIsOpen = _store.sun_is_open;
+              todayOpenAt = _store.sun_open;
+              todayCloseAt = _store.sun_close;
+              tomorrowIsOpen = _store.mon_is_open;
+              tomorrowOpenAt = _store.mon_open;
+              tomorrowCloseAt = _store.mon_close;
+            } else if (_today.getDay() === 2) {
+              todayIsOpen = _store.mon_is_open;
+              todayOpenAt = _store.mon_open;
+              todayCloseAt = _store.mon_close;
+              tomorrowIsOpen = _store.tue_is_open;
+              tomorrowOpenAt = _store.tue_open;
+              tomorrowCloseAt = _store.tue_close;
+            } else if (_today.getDay() === 3) {
+              todayIsOpen = _store.tue_is_open;
+              todayOpenAt = _store.tue_open;
+              todayCloseAt = _store.tue_close;
+              tomorrowIsOpen = _store.wed_is_open;
+              tomorrowOpenAt = _store.wed_open;
+              tomorrowCloseAt = _store.wed_close;
+            } else if (_today.getDay() === 4) {
+              todayIsOpen = _store.wed_is_open;
+              todayOpenAt = _store.wed_open;
+              todayCloseAt = _store.wed_close;
+              tomorrowIsOpen = _store.thu_is_open;
+              tomorrowOpenAt = _store.thu_open;
+              tomorrowCloseAt = _store.thu_close;
+            } else if (_today.getDay() === 5) {
+              todayIsOpen = _store.thu_is_open;
+              todayOpenAt = _store.thu_open;
+              todayCloseAt = _store.thu_close;
+              tomorrowIsOpen = _store.fri_is_open;
+              tomorrowOpenAt = _store.fri_open;
+              tomorrowCloseAt = _store.fri_close;
+            } else if (_today.getDay() === 6) {
+              todayIsOpen = _store.fri_is_open;
+              todayOpenAt = _store.fri_open;
+              todayCloseAt = _store.fri_close;
+              tomorrowIsOpen = _store.sat_is_open;
+              tomorrowOpenAt = _store.sat_open;
+              tomorrowCloseAt = _store.sat_close;
+            } else if (_today.getDay() === 7) {
+              todayIsOpen = _store.sat_is_open;
+              todayOpenAt = _store.sat_open;
+              todayCloseAt = _store.sat_close;
+              tomorrowIsOpen = _store.sun_is_open;
+              tomorrowOpenAt = _store.sun_open;
+              tomorrowCloseAt = _store.sun_close;
+            }
+
+            return _context3.abrupt("return", {
+              todayIsOpen: todayIsOpen,
+              todayOpenAt: todayOpenAt,
+              todayCloseAt: todayCloseAt,
+              tomorrowIsOpen: tomorrowIsOpen,
+              tomorrowOpenAt: tomorrowOpenAt,
+              tomorrowCloseAt: tomorrowCloseAt
+            });
+
+          case 8:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3, this);
+  }));
+
+  return function getTodayOpeningTime(_x3) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+exports.getTodayOpeningTime = getTodayOpeningTime;
 //# sourceMappingURL=storesController.js.map

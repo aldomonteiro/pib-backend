@@ -241,9 +241,11 @@ function () {
 exports.getSize = getSize;
 
 var getSizes = function getSizes(pageID, sizeIdArray) {
-  return _sizes.default.find({
+  if (sizeIdArray && sizeIdArray.length > 0) return _sizes.default.find({
     pageId: pageID,
     id: sizeIdArray
+  }).exec();else return _sizes.default.find({
+    pageId: pageID
   }).exec();
 };
 

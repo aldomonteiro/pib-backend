@@ -260,7 +260,8 @@ function () {
   var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee4(message, data) {
-    var sender, recipient, keyState, out, user, answer;
+    var sender, recipient, keyState, out, user, answer, _out;
+
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
@@ -290,12 +291,12 @@ function () {
             return bot.send(sender.id, out);
 
           case 13:
-            _context4.next = 31;
+            _context4.next = 41;
             break;
 
           case 15:
             if (!(data === 'PEDIDO_PAYLOAD')) {
-              _context4.next = 31;
+              _context4.next = 33;
               break;
             }
 
@@ -327,24 +328,46 @@ function () {
             return bot.send(sender.id, answer);
 
           case 31:
-            _context4.next = 38;
+            _context4.next = 41;
             break;
 
           case 33:
-            _context4.prev = 33;
-            _context4.t0 = _context4["catch"](2);
-            _context4.next = 37;
+            if (!(data === 'HORARIO_PAYLOAD')) {
+              _context4.next = 41;
+              break;
+            }
+
+            _context4.next = 36;
+            return (0, _botController.sendHorario)(message.recipient.id);
+
+          case 36:
+            _out = _context4.sent;
+            _context4.next = 39;
             return bot.stopTyping(sender.id);
 
-          case 37:
+          case 39:
+            _context4.next = 41;
+            return bot.send(sender.id, _out);
+
+          case 41:
+            _context4.next = 48;
+            break;
+
+          case 43:
+            _context4.prev = 43;
+            _context4.t0 = _context4["catch"](2);
+            _context4.next = 47;
+            return bot.stopTyping(sender.id);
+
+          case 47:
             if (_context4.t0.response) console.log(_context4.t0.response);else console.log(_context4.t0);
 
-          case 38:
+          case 48:
           case "end":
             return _context4.stop();
         }
       }
-    }, _callee4, this, [[2, 33]]);
+    }, _callee4, this, [[2, 43]]);
   }));
 
   return function (_x6, _x7) {
@@ -743,7 +766,7 @@ function () {
   var _ref10 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee10(message, data) {
-    var sender, recipient, keyState, out, answer, _out;
+    var sender, recipient, keyState, out, answer, _out2;
 
     return regeneratorRuntime.wrap(function _callee10$(_context10) {
       while (1) {
@@ -817,13 +840,13 @@ function () {
             return (0, _botController.askForSize)(recipient.id, sender.id);
 
           case 35:
-            _out = _context10.sent;
+            _out2 = _context10.sent;
             _context10.next = 38;
             return bot.stopTyping(sender.id);
 
           case 38:
             _context10.next = 40;
-            return bot.send(sender.id, _out);
+            return bot.send(sender.id, _out2);
 
           case 40:
           case "end":

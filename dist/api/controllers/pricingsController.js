@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getPricingSizing = exports.pricing_delete = exports.pricing_update = exports.pricing_create = exports.pricing_get_one = exports.pricing_get_all = void 0;
+exports.getPricings = exports.getPricingSizing = exports.pricing_delete = exports.pricing_update = exports.pricing_create = exports.pricing_get_one = exports.pricing_get_all = void 0;
 
 var _pricings = _interopRequireDefault(require("../models/pricings"));
 
@@ -185,4 +185,39 @@ function () {
 }();
 
 exports.getPricingSizing = getPricingSizing;
+
+var getPricings =
+/*#__PURE__*/
+function () {
+  var _ref2 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee2(pageID) {
+    var query;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            query = _pricings.default.find({
+              pageId: pageID
+            });
+            _context2.next = 3;
+            return query.exec();
+
+          case 3:
+            return _context2.abrupt("return", _context2.sent);
+
+          case 4:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, this);
+  }));
+
+  return function getPricings(_x2) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+exports.getPricings = getPricings;
 //# sourceMappingURL=pricingsController.js.map

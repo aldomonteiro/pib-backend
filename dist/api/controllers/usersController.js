@@ -3,13 +3,17 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.changeAccessToken = exports.users_create = exports.users_auth = void 0;
+exports.changeAccessToken = exports.users_delete = exports.users_update = exports.users_get_one = exports.users_get_all = exports.users_create = exports.users_auth = void 0;
 
 var _users = _interopRequireDefault(require("../models/users"));
 
 var _axios = _interopRequireDefault(require("axios"));
 
 var _dotenv = _interopRequireDefault(require("dotenv"));
+
+var _util = _interopRequireDefault(require("util"));
+
+var _util2 = require("../util/util");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -62,10 +66,12 @@ var users_auth = function users_auth(req, res) {
               user: record.toAuthJSON()
             });
           }).catch(function (err) {
-            return res.status(500).json(err);
+            console.error(err);
+            res.status(500).json(err);
           });
         }).catch(function (err) {
-          return res.status(500).json(err);
+          console.error(err);
+          res.status(500).json(err);
         });
       }
     });
@@ -102,15 +108,128 @@ var users_create = function users_create(req, res) {
           user: record.toAuthJSON()
         });
       }).catch(function (err) {
-        return res.status(500).json(err);
+        console.error(err);
+        res.status(500).json(err);
       });
     }).catch(function (err) {
-      return res.status(500).json(err);
+      console.error(err);
+      res.status(500).json(err);
     });
   }
-};
+}; // List all users
+// TODO: use filters in the query req.query
+
 
 exports.users_create = users_create;
+
+var users_get_all = function users_get_all(req, res) {
+  // Getting the sort from the requisition
+  // var sortObj = configSortQuery(req.query.sort);
+  // Getting the range from the requisition
+  var rangeObj = (0, _util2.configRangeQuery)(req.query.range); // let options = {
+  //     offset: rangeObj['offset'],
+  //     limit: rangeObj['limit'],
+  //     sort: sortObj,
+  //     lean: true,
+  //     leanWithId: false,
+  // };
+
+  var query = {}; // User.paginate(query, options, (err, result) => {
+
+  _users.default.find(function (err, result) {
+    if (err) {
+      res.status(500).json({
+        message: err.errmsg
+      });
+    } else {
+      res.setHeader('Content-Range', _util.default.format("users %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
+      res.status(200).json(result);
+    }
+  });
+}; // List one record by filtering by ID
+
+
+exports.users_get_all = users_get_all;
+
+var users_get_one = function users_get_one(req, res) {
+  if (req.params && req.params.id) {
+    _users.default.findOne({
+      userID: req.params.id
+    }, function (err, doc) {
+      if (err) {
+        res.status(500).json({
+          message: err.errMsg
+        });
+      } else {
+        res.status(200).json(doc);
+      }
+    });
+  }
+}; // UPDATE
+
+
+exports.users_get_one = users_get_one;
+
+var users_update = function users_update(req, res) {
+  var updatedElement = {
+    id: req.body.id,
+    name: sanitizeName(req.body.name),
+    email: req.body.email
+  };
+
+  _users.default.findOneAndUpdate({
+    id: req.params.id
+  }, updatedElement).then(function (oldResult) {
+    _users.default.findOne({
+      id: req.params.id
+    }).then(function (newResult) {
+      res.json({
+        data: {
+          _id: newResult._id,
+          id: newResult.id,
+          name: newResult.name,
+          email: newResult.email
+        }
+      });
+    }).catch(function (err) {
+      console.log(err);
+      res.status(500).json({
+        success: false,
+        msg: "Something went wrong. ".concat(err)
+      });
+      return;
+    });
+  }).catch(function (err) {
+    if (err) {
+      console.log(err);
+      res.status(500).json({
+        success: false,
+        msg: "Something went wrong. ".concat(err)
+      });
+    }
+  });
+}; // DELETE
+
+
+exports.users_update = users_update;
+
+var users_delete = function users_delete(req, res) {
+  _users.default.findOneAndRemove({
+    id: req.params.id
+  }).then(function (result) {
+    res.json({
+      success: true,
+      msg: "It has been deleted."
+    });
+  }).catch(function (err) {
+    res.status(404).json({
+      success: false,
+      msg: 'Nothing to delete.'
+    });
+  });
+};
+
+exports.users_delete = users_delete;
 
 var changeAccessToken =
 /*#__PURE__*/

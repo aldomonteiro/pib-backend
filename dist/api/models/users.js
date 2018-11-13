@@ -11,6 +11,7 @@ var _jsonwebtoken = _interopRequireDefault(require("jsonwebtoken"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// import paginate from 'mongoose-paginate';
 var Schema = _mongoose.default.Schema;
 var schema = new Schema({
   userID: {
@@ -76,7 +77,8 @@ schema.methods.toAuthJSON = function toAuthJSON() {
     accessToken: this.accessToken,
     token: this.generateJWT()
   };
-};
+}; // schema.plugin(paginate);
+
 
 var _default = _mongoose.default.model("users", schema);
 

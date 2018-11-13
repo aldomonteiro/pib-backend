@@ -36,6 +36,18 @@ var schema = new _mongoose.default.Schema({
   },
   firstResponseText: {
     type: String
+  },
+  initialSetupFlavors: {
+    type: Number
+  },
+  initialSetupSizes: {
+    type: Number
+  },
+  initialSetupPricings: {
+    type: Number
+  },
+  initialSetupStores: {
+    type: Number
   }
 }, {
   timestamps: true
