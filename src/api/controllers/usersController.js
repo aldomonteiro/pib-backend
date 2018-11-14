@@ -192,11 +192,22 @@ export const changeAccessToken = async (accessToken) => {
 
     dotenv.config();
 
+    const env = process.env.NODE_ENV || 'production';
+    let facebook_app_id, facebook_secret_key = '';
+
+    if (env === 'production') {
+        facebook_app_id = process.env.FACEBOOK_APP_ID;
+        facebook_secret_key = process.env.FACEBOOK_SECRET_KEY;
+    } else {
+        facebook_app_id = process.env.DEV_FACEBOOK_APP_ID;
+        facebook_secret_key = process.env.DEV_FACEBOOK_SECRET_KEY;
+    }
+
     const facebookAccessTokenUrl = process.env.FACEBOOK_URL_OAUTH_ACCESS_TOKEN;
     const params = {
         grant_type: 'fb_exchange_token',
-        client_id: process.env.FACEBOOK_APP_ID,
-        client_secret: process.env.FACEBOOK_SECRET_KEY,
+        client_id: facebook_app_id,
+        client_secret: facebook_secret_key,
         fb_exchange_token: accessToken,
     }
 

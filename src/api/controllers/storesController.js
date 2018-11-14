@@ -181,10 +181,11 @@ export const getOpeningTimes = async (pageID) => {
 }
 
 export const getTodayOpeningTime = async pageID => {
-    const _store = getOpeningTimes(pageID);
+    const _store = await getOpeningTimes(pageID);
     let _today = new Date();
 
     let _tomorrow = new Date();
+    _tomorrow.get
     _tomorrow.setDate(_today.getDate() + 1);
 
     let todayOpenAt, todayCloseAt, tomorrowOpenAt, tomorrowCloseAt = '';
@@ -253,5 +254,12 @@ export const getTodayOpeningTime = async pageID => {
         tomorrowOpenAt = _store.sun_open;
         tomorrowCloseAt = _store.sun_close;
     }
-    return { todayIsOpen, todayOpenAt, todayCloseAt, tomorrowIsOpen, tomorrowOpenAt, tomorrowCloseAt };
+
+    const _openAtHours = new Date(todayOpenAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false })
+    const _closeAtHours = new Date(todayCloseAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false })
+
+    const _openAtHoursTom = new Date(tomorrowOpenAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false })
+    const _closeAtHoursTom = new Date(tomorrowCloseAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false })
+
+    return { todayIsOpen, todayOpenAt: _openAtHours, todayCloseAt: _closeAtHours, tomorrowIsOpen, tomorrowOpenAt: _openAtHoursTom, tomorrowCloseAt: _closeAtHoursTom };
 }

@@ -10,7 +10,7 @@ const ORDERSTATUS_DELIVERED = 3;
 
 export const updateOrder = async orderData => {
     try {
-        const { pageId, userId, qty, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress } = orderData;
+        const { pageId, userId, qty, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, waitingFor } = orderData;
 
         if (user) {
             const { first_name, last_name, profile_pic } = user;
@@ -65,6 +65,11 @@ export const updateOrder = async orderData => {
 
             if (typeof waitingForAddress === 'boolean') {
                 order.waitingForAddress = waitingForAddress;
+                updateOrder = true;
+            }
+
+            if (waitingFor) {
+                order.waitingFor = waitingFor;
                 updateOrder = true;
             }
 

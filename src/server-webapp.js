@@ -82,8 +82,8 @@ else {
   https
     .createServer(
       {
-        key: fs.readFileSync("certificates/server_key.pem"),
-        cert: fs.readFileSync("certificates/server_crt.pem")
+        key: fs.readFileSync("/Users/aldo/.localhost-ssl/localhost.key"),
+        cert: fs.readFileSync("/Users/aldo/.localhost-ssl/localhost.crt")
       },
       app
     )

@@ -32,7 +32,14 @@ import {
   confirmOrder,
   askToTypeAddress,
   confirmTypedAddress,
-  sendHorario
+  sendHorario,
+  basicReply,
+  askForChangeOrder,
+  askForOptionsToChange,
+  askForFlavorOrConfirm,
+  askForSpecificItem,
+  updateItemAskOptions,
+  showOrderOrAskForPhone
 } from './api/bot/botController';
 
 const
@@ -202,8 +209,15 @@ bot.on('message', async (message) => {
     const answer = await confirmLocationAddress(recipient.id, sender.id, location, user);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, answer);
-  } else {
-
+  }
+  else if (message.text === 'hello' || message.text === 'hi') {
+    await bot.startTyping(sender.id);
+    await Bot.wait(1000);
+    const answer = await basicReply();
+    await bot.stopTyping(sender.id);
+    await bot.send(sender.id, answer);
+  }
+  else {
     await bot.startTyping(sender.id);
     await Bot.wait(1000);
     const answer = await confirmTypedAddress(recipient.id, sender.id, message);
@@ -232,7 +246,7 @@ bot.on('quick-reply', async (message, quick_reply) => {
     await bot.send(sender.id, answer);
 
     // next question
-    const out = await askForQuantity();
+    const out = await askForQuantity(recipient.id, sender.id);
     await Bot.wait(1000);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, out);
@@ -283,8 +297,9 @@ bot.on('LOCATION_ADDRESS', async (message, data) => {
     await bot.send(sender.id, answer);
 
     // next question
-    const out = await askForPhone();
+    await bot.startTyping(sender.id);
     await Bot.wait(1000);
+    const out = await showOrderOrAskForPhone(recipient.id, sender.id);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, out);
   }
@@ -360,7 +375,7 @@ bot.on('ORDER_SIZE', async (message, data) => {
   // next question
   await bot.startTyping(sender.id);
   await Bot.wait(2000);
-  const out = await askForFlavor(message.recipient.id);
+  const out = await askForFlavorOrConfirm(message.recipient.id, sender.id, 1);
   await bot.stopTyping(sender.id);
   await bot.send(sender.id, out);
 
@@ -376,8 +391,13 @@ bot.on('ORDER_FLAVOR', async (message, data) => {
 
   global.orderState[keyState] = ORDER_STATE_FLAVOR;
 
-  if (data === 'flavor_more') {
-    // TODO: show more flavors
+  if (data && data.option && data.option === 'flavors_more') {
+    // next question
+    await bot.startTyping(sender.id);
+    await Bot.wait(1000);
+    const out = await askForFlavor(message.recipient.id, sender.id, data.multiple);
+    await bot.stopTyping(sender.id);
+    await bot.send(sender.id, out);
   }
   else {
     // show what the user chose
@@ -414,12 +434,64 @@ bot.on('ORDER_CONFIRMATION', async (message, data) => {
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, out);
   }
-  else {
+  else if (data === 'confirmation_no') {
     await bot.startTyping(sender.id);
     await Bot.wait(1000);
-    const answer = new Elements();
-    answer.add({ text: "Perguntar se precisa corrigir algo..." });
+    const out = await askForChangeOrder(recipient.id, sender.id);
     await bot.stopTyping(sender.id);
-    await bot.send(sender.id, answer);
+    await bot.send(sender.id, out);
   }
 });
+
+/**
+ * answered wants change something in the order
+ */
+bot.on('ORDER_WANT_CHANGE', async (message, data) => {
+  const { sender, recipient } = message;
+  const keyState = sender.id + recipient.id;
+
+  global.orderState[keyState] = ORDER_STATE_FLAVOR;
+
+  await bot.startTyping(sender.id);
+  await Bot.wait(1000);
+  const out = await askForSpecificItem(recipient.id, sender.id);
+  await bot.stopTyping(sender.id);
+  await bot.send(sender.id, out);
+});
+
+bot.on('ORDER_CHANGE', async (message, data) => {
+  const { sender, recipient } = message;
+  const keyState = sender.id + recipient.id;
+
+  global.orderState[keyState] = ORDER_STATE_FLAVOR;
+
+  await bot.startTyping(sender.id);
+  await Bot.wait(1000);
+  let out;
+  if (data === 'change_quantity') {
+    out = await askForQuantity(recipient.id, sender.id);
+  }
+  else if (data === 'change_size') {
+    out = await askForSize(recipient.id, sender.id);
+  }
+  else if (data === 'change_flavor') {
+    out = await askForFlavor(message.recipient.id, sender.id, 1);
+  }
+  else if (data === 'change_address') {
+    out = await askForLocation();
+  }
+  await bot.stopTyping(sender.id);
+  await bot.send(sender.id, out);
+});
+
+bot.on('ORDER_CHANGE_SELECT_ITEM', async (message, data) => {
+  const { sender, recipient } = message;
+
+  await bot.startTyping(sender.id);
+  await Bot.wait(1000);
+  const out = await updateItemAskOptions(recipient.id, sender.id, data);
+  await bot.stopTyping(sender.id);
+  await bot.send(sender.id, out);
+});
+
+

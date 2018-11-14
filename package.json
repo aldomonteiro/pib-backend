@@ -41,11 +41,12 @@
     "eslint-plugin-jsx-a11y": "^5.1.1",
     "eslint-plugin-prettier": "^2.6.2",
     "eslint-plugin-react": "^7.11.1",
+    "mocha": "^5.2.0",
     "nodemon": "^1.18.5",
     "prettier": "^1.14.2"
   },
   "scripts": {
-    "dev-bot": "nodemon --inspect --exec babel-node -- src/server-bot.js",
+    "dev-bot": "NODE_ENV=dev nodemon --inspect --exec babel-node -- src/server-bot.js",
     "dev-webapp": "NODE_ENV=dev nodemon --inspect=9230 --exec babel-node -- src/server-webapp.js",
     "dev": "yarn run dev-bot & yarn run dev-webapp",
     "build-babel": "babel -d ./dist ./src -s",

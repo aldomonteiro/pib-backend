@@ -34,46 +34,44 @@ export const getCustomerAddress = async (pageID, userID) => {
 }
 
 export const getAddressLocation = async (location) => {
+    const response = await googleMapsAPI(location, process.env.GOOGLE_MAPS_APIKEY);
+    console.info({ response });
+    if (response.status === 200) {
+        if (response.data.error_message && response.data.status === 'OVER_QUERY_LIMIT') {
+            const response2 = await googleMapsAPI(location, process.env.GOOGLE_MAPS_APIKEY2);
+            if (response2.status === 200) {
+                if (response2.data.error_message && response2.data.status === 'OVER_QUERY_LIMIT') {
+                    const response3 = await googleMapsAPI(location, process.env.GOOGLE_MAPS_APIKEY3);
+                    if (response3.status === 200) {
+                        if (response3.data.error_message && response3.data.status === 'OVER_QUERY_LIMIT') {
+                            const response4 = await googleMapsAPI(location, process.env.GOOGLE_MAPS_APIKEY4);
+                            if (response4.status === 200) {
+                                if (response4.data.error_message && response4.data.status === 'OVER_QUERY_LIMIT') {
+                                    const response5 = await googleMapsAPI(location, process.env.MY_GOOGLE_MAPS_APIKEY);
+                                    if (response5.status === 200) {
+                                        if (response5.data.error_message && response5.data.status === 'OVER_QUERY_LIMIT') {
+                                            console.error(response5.status, response5.statusText);
+                                            return null;
+                                        } else return response5.data.results;
+                                    } else return null;
+                                } else return response4.data.results;
+                            } else return null;
+                        } else return response3.data.results;
+                    } else return null;
+                } else return response2.data.results;
+            } else return null;
+        } else return response.data.results;
+    } else return null;
+}
 
-    const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+const googleMapsAPI = async (location, API_KEY) => {
+    console.info('using:' + API_KEY);
+    return await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
         params: {
             'latlng': location.lat + ',' + location.long,
-            'key': process.env.GOOGLE_MAPS_APIKEY,
+            'key': API_KEY,
         }
     });
-
-    console.info({ response });
-
-    if (response.status === 200) {
-        if (response.data.error_message) {
-            console.error(response.data.status, response.data.error_message)
-            return null;
-        } else return response.data.results;
-
-        // addressData.formattedAddress = response.data.results[0].formatted_address;
-        // const addComps = response.data.results[0].address_components;
-
-        // addComps.forEach(element => {
-        //     element.types.forEach(type => {
-        //         if (type === 'street_number') {
-        //             addressData.street_number = element.long_name;
-        //         } else if (type === 'route') {
-        //             addressData.street = element.long_name;
-        //         } else if (type === 'sublocality' || type === 'sublocality_level_1') {
-        //             addressData.sublocality = element.long_name;
-        //         } else if (type === 'administrative_area_level_2') {
-        //             addressData.city = element.long_name;
-        //         } else if (type === 'administrative_area_level_1') {
-        //             addressData.state = element.long_name;
-        //         } else if (type === 'postal_code') {
-        //             addressData.postal_code = element.long_name;
-        //         }
-        //     });
-        // });
-    } else {
-        console.error(response.status, response.statusText);
-        return null;
-    }
 }
 
 export const customer_update = async (custData) => {

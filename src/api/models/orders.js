@@ -16,6 +16,7 @@ const schema = new Schema({
   qty_total: { type: Number },
   item_complete: { type: Number },
   waitingForAddress: { type: Boolean },
+  waitingFor: { type: String },
 }, { timestamps: true });
 
 schema.plugin(paginate);
