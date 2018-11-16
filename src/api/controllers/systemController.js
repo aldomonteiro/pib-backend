@@ -41,6 +41,8 @@ export const initialSetup = async pageID => {
         }
         if (haveToUpdate)
             await updatedPage.save();
+
+        return updatedPage;
     } catch (error) {
         console.error("Error on initial setup", error);
     }
@@ -52,7 +54,8 @@ const insertFlavors = async pageID => {
     const _flavors = await getFlavors(basePageID);
 
     const docs = new Array();
-    _flavors.forEach(element => {
+
+    for (const element of _flavors) {
         const newRec = new Flavor({
             id: element.id,
             flavor: element.flavor,
@@ -61,7 +64,7 @@ const insertFlavors = async pageID => {
             pageId: pageID
         });
         docs.push(newRec);
-    });
+    }
 
     await Flavor.insertMany(docs, (err, result) => {
         if (err) {
@@ -82,7 +85,7 @@ const insertSizes = async pageID => {
     const _sizes = await getSizes(basePageID);
 
     const docs = new Array();
-    _sizes.forEach(element => {
+    for (const element of _sizes) {
         const newRec = new Size({
             id: element.id,
             size: element.size,
@@ -91,7 +94,7 @@ const insertSizes = async pageID => {
             pageId: pageID
         });
         docs.push(newRec);
-    });
+    }
 
     await Size.insertMany(docs, (err, result) => {
         if (err) {
@@ -113,7 +116,7 @@ const insertPricings = async pageID => {
     const _pricings = await getPricings(basePageID);
 
     const docs = new Array();
-    _pricings.forEach(element => {
+    for (const element of _pricings) {
         const newRec = new Pricing({
             id: element.id,
             kind: element.kind,
@@ -122,7 +125,7 @@ const insertPricings = async pageID => {
             pageId: pageID
         });
         docs.push(newRec);
-    });
+    }
 
     await Pricing.insertMany(docs, (err, result) => {
         if (err) {
@@ -143,7 +146,7 @@ const insertStores = async (pageID, pageName) => {
     const _stores = await getStores(basePageID);
 
     const docs = new Array();
-    _stores.forEach(element => {
+    for (const element of _stores) {
         const newRec = new Store({
             pageId: pageID,
             name: pageName,
@@ -174,7 +177,7 @@ const insertStores = async (pageID, pageName) => {
             sat_close: element.sat_close,
         });
         docs.push(newRec);
-    });
+    }
 
     await Store.insertMany(docs, (err, result) => {
         if (err) {

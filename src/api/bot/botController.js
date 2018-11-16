@@ -1,7 +1,7 @@
 import util from 'util';
 import fs from 'fs';
 import { Elements, Buttons, QuickReplies } from 'facebook-messenger-bot';
-import { getOnePage, getAllPages, getOnePageData } from '../controllers/pagesController';
+import { getOnePageToken, getAllPages, getOnePageData } from '../controllers/pagesController';
 import { getPricingSizing } from '../controllers/pricingsController';
 import getCardapio from './show_cardapio';
 import {
@@ -36,10 +36,10 @@ const SimpleNodeLogger = require('simple-node-logger'),
     },
     log = SimpleNodeLogger.createSimpleLogger(opts);
 
-export const sendErrorMsg = async () => {
-    await sender.fetch('first_name');
+export const sendErrorMsg = async (_errorMsg) => {
     const out = new Elements();
-    out.add({ text: 'Ops, tivemos um probleminha técnico.' });
+    let _showErrorMsg = _errorMsg ? _errorMsg : 'ERRO DESCONHECIDO';
+    out.add({ text: 'Ops, tivemos um probleminha técnico: ' + _showErrorMsg });
     return out;
 }
 

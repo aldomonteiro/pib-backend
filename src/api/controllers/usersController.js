@@ -4,31 +4,12 @@ import dotenv from "dotenv";
 import util from "util";
 import { configSortQuery, configRangeQuery } from '../util/util';
 
-export const users_auth = (req, res) => {
+export const users_auth = async (req, res) => {
     if (req.body) {
-
-        User.findOne({ userID: req.body.userID }, (err, foundUser) => {
-            if (err) {
-                res.status(500).json(err);
-                return;
-            }
-
-            if (foundUser) {
-                foundUser.lastLogin = Date.now();
-                foundUser.locationName = req.body.locationName;
-                // if (!foundUser.hasLongLivedToken) {
-                changeAccessToken(foundUser.accessToken).then(data => {
-                    foundUser.hasLongLivedToken = true;
-                    foundUser.accessToken = data.access_token;
-                    foundUser.save();
-                    res.status(200).json({ user: foundUser.toAuthJSON() });
-                }).catch(err => console.log(err.response.data));
-                // } else {
-                //     foundUser.save();
-                //     res.status(200).json({ user: foundUser.toAuthJSON() });
-                // }
-            } else {
-                const newRecord = new User({
+        try {
+            let user = await User.findOne({ userID: req.body.userID }).exec();
+            if (!user) {
+                user = new User({
                     userID: req.body.userID,
                     name: req.body.name,
                     email: req.body.email,
@@ -37,24 +18,23 @@ export const users_auth = (req, res) => {
                     timeZone: req.body.timeZone,
                     locationName: req.body.locationName,
                 });
-
-                changeAccessToken(newRecord.accessToken)
-                    .then(data => {
-                        newRecord.hasLongLivedToken = true;
-                        newRecord.accessToken = data.access_token;
-                        newRecord.save()
-                            .then(record => res.status(200).json({ user: record.toAuthJSON() }))
-                            .catch((err) => {
-                                console.error(err);
-                                res.status(500).json(err)
-                            });
-                    })
-                    .catch((err) => {
-                        console.error(err);
-                        res.status(500).json(err)
-                    });
             }
-        });
+
+            user.lastLogin = Date.now();
+            user.locationName = req.body.locationName;
+            user.hasLongLivedToken = true;
+            user.shortLivedToken = user.accessToken; // only for debug analysis
+
+            const respChangeToken = await changeAccessToken(user.accessToken);
+            user.longLivedToken = respChangeToken.access_token; // only for debug analysis
+            user.accessToken = respChangeToken.access_token; // the token used in the system
+
+            await user.save();
+            res.status(200).json({ user: user.toAuthJSON() });
+        } catch (users_auth_error) {
+            console.error({ users_auth_error });
+            res.status(500).json({ message: users_auth_error.message });
+        }
     }
 }
 

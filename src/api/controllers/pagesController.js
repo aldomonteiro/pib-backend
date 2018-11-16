@@ -67,93 +67,53 @@ export const page_resources_delete = (req, res) => {
 
 // Update or create a new page
 export const page_update = async (req, res) => {
-
-    console.log("page_update");
-    console.log(req.body);
-
-    const pageId = req.body.id;
-
-    // Find a page by id
-    await Page.findOne({ id: pageId }, async (err, doc) => {
-        if (err) { // err !== null
-            res.status(500).json({ message: err.errmsg });
-            return;
-        }
-        let record;
+    try {
+        console.info("page_update");
+        const pageId = req.body.id;
         let isNew = false;
-
-        if (doc) {
-            record = doc;
-            if (req.body.greetingText)
-                record.greetingText = req.body.greetingText;
-            if (req.body.firstResponseText)
-                record.firstResponseText = req.body.firstResponseText;
-            if (req.body.access_token)
-                record.accessToken = req.body.access_token;
-            record.userID = req.currentUser.userID;
-        } else {
-            record = new Page({
+        let page = await Page.findOne({ id: pageId }).exec();
+        if (!page) {
+            page = new Page({
                 id: pageId,
                 name: req.body.name,
-                accessToken: req.body.access_token,
                 userID: req.currentUser.userID,
             });
             isNew = true;
         }
-        await record.save((err, result) => {
-            if (err) {
-                res.status(500).json({ message: err.errmsg });
-            } else {
-                subscribedApps(result.id, result.accessToken)
-                    .then(response => {
-                        res.status(200).json(result);
-                    }).catch((err) => {
-                        var errorMessage;
-                        if (err.error) errorMessage = err.error;
-                        if (err.response.data)
-                            if (err.response.data.error)
-                                errorMessage = err.response.data.error.message;
-                        console.log(`subscribed_apps catch err: ${errorMessage}`);
-                        res.status(500).json({ message: errorMessage });
-                    });
-            }
-        });
+        if (req.body.access_token)
+            page.accessToken = req.body.access_token;
+        if (req.body.greetingText)
+            page.greetingText = req.body.greetingText;
+        if (req.body.firstResponseText)
+            page.firstResponseText = req.body.firstResponseText;
 
         // update ActivePage for the current user
         if (req.currentUser) {
-            await User.findOne({ userID: req.currentUser.userID }, (err, docFind) => {
-                if (err) {
-                    res.status(500).json({ message: err.errmsg });
-                    return;
-                }
-
-                if (docFind) {
-                    docFind.activePage = pageId;
-                    docFind.save((err, docSave) => {
-                        if (err) {
-                            res.status(500).json({ message: err.errmsg });
-                        }
-                    })
-                }
-            });
+            page.userID = req.currentUser.userID;
+            const user = await User.findOne({ userID: req.currentUser.userID }).exec();
+            if (user) {
+                user.activePage = pageId;
+                await user.save();
+            }
         }
 
-        if (req.body.greetingText && record && record.accessToken) {
-            setFacebookFields(record.id, record.accessToken, req.body.greetingText).then(response => {
-                console.log('PagesController, response from set fields:', response.result);
-            }).catch(err => {
-                if (err.response && err.response.data && err.response.data.error)
-                    console.log(`PagesController, error from set fields: ${err.response.data.error.message}`);
-                else if (err.response)
-                    console.log(err.response);
-            });
-        }
+        await page.save();
+
+        const response = await subscribedApps(page.id, page.accessToken);
 
         if (isNew) {
-            await initialSetup(pageId);
+            page = await initialSetup(pageId);
+            req.body.greetingText = page.greetingText
         }
 
-    });
+        if (page && page.greetingText && page.accessToken) {
+            const response2 = await setFacebookFields(page.id, page.accessToken, page.greetingText);
+        }
+        res.status(200).json(page);
+    } catch (pageUpdateError) {
+        console.error({ pageUpdateError });
+        res.status(500).json({ message: pageUpdateError.message });
+    }
 }
 
 export const subscribedApps = async (pageId, accessToken) => {
@@ -164,19 +124,17 @@ export const subscribedApps = async (pageId, accessToken) => {
     return await axios.post(facebookUrl);
 }
 
-// used in botController.js
-export const getOnePage = async (pageID) => {
-    let accessToken = '';
-    await Page.findOne({ id: pageID }, (err, result) => {
-        if (err) {
+export const debugToken = async accessToken => {
+    const facebookUrl = `https://graph.facebook.com/v3.1/debug_token?input_token=${accessToken}`
+    return await axios.get(facebookUrl);
+}
 
-        }
-        else {
-            accessToken = result.accessToken;
-        }
-    });
-    if (accessToken !== '')
-        return Promise.resolve(accessToken);
+
+// used in botController.js
+export const getOnePageToken = async (pageID) => {
+    const page = await Page.findOne({ id: pageID }).exec();
+    if (page && page.accessToken)
+        return Promise.resolve(page.accessToken);
     else return Promise.reject();
 }
 
@@ -234,5 +192,114 @@ const setFacebookFields = async (pageId, accessToken, _greeting) => {
         ]
     });
 }
+
+// export const page_update = async (req, res) => {
+
+//     console.info("page_update");
+
+//     const pageId = req.body.id;
+
+//     const record = await Page.findOne({ id: pageId }).exec();
+//     if (!record) {
+//         record = new Page({
+//             id: pageId,
+//             name: req.body.name,
+//             accessToken: req.body.access_token,
+//             userID: req.currentUser.userID,
+//         });
+//         isNew = true;
+//     }
+
+//     // Find a page by id
+//     await Page.findOne({ id: pageId }, async (err, doc) => {
+//         if (err) { // err !== null
+//             res.status(500).json({ message: err.errmsg });
+//             return;
+//         }
+//         let record;
+//         let isNew = false;
+
+//         if (doc) {
+//             record = doc;
+//             if (req.body.greetingText)
+//                 record.greetingText = req.body.greetingText;
+//             if (req.body.firstResponseText)
+//                 record.firstResponseText = req.body.firstResponseText;
+//             if (req.body.access_token)
+//                 record.accessToken = req.body.access_token;
+//             record.userID = req.currentUser.userID;
+//         } else {
+//             record = new Page({
+//                 id: pageId,
+//                 name: req.body.name,
+//                 accessToken: req.body.access_token,
+//                 userID: req.currentUser.userID,
+//             });
+//             isNew = true;
+//         }
+
+//         await record.save();
+//         const response = await subscribedApps(record.id, record.accessToken);
+
+//         // await record.save((err, result) => {
+//         //     if (err) {
+//         //         res.status(500).json({ message: err.errmsg });
+//         //     } else {
+//         //         subscribedApps(result.id, result.accessToken)
+//         //             .then(response => {
+//         //                 res.status(200).json(result);
+//         //             }).catch((err) => {
+//         //                 var errorMessage;
+//         //                 if (err.error) errorMessage = err.error;
+//         //                 if (err.response.data)
+//         //                     if (err.response.data.error)
+//         //                         errorMessage = err.response.data.error.message;
+//         //                 console.log(`subscribed_apps catch err: ${errorMessage}`);
+//         //                 res.status(500).json({ message: errorMessage });
+//         //             });
+
+//         //     }
+//     });
+
+//     // update ActivePage for the current user
+//     if (req.currentUser) {
+//         await User.findOne({ userID: req.currentUser.userID }, (err, docFind) => {
+//             if (err) {
+//                 res.status(500).json({ message: err.errmsg });
+//                 return;
+//             }
+
+//             if (docFind) {
+//                 docFind.activePage = pageId;
+//                 docFind.save((err, docSave) => {
+//                     if (err) {
+//                         res.status(500).json({ message: err.errmsg });
+//                     }
+//                 })
+//             }
+//         });
+//     }
+
+//     if (isNew) {
+//         record = await initialSetup(pageId);
+//         req.body.greetingText = record.greetingText
+//     }
+
+//     if (req.body.greetingText && record && record.accessToken) {
+//         setFacebookFields(record.id, record.accessToken, req.body.greetingText).then(response => {
+//             console.log('PagesController, response from set fields:', response.result);
+//         }).catch(err => {
+//             if (err.response && err.response.data && err.response.data.error)
+//                 console.log(`PagesController, error from set fields: ${err.response.data.error.message}`);
+//             else if (err.response)
+//                 console.log(err.response);
+//         });
+//     }
+
+//     const responseDebug = await debugToken(record.accessToken);
+//     console.info('debugToken', responseDebug);
+// });
+// }
+
 
 
