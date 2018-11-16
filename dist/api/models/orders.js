@@ -51,6 +51,9 @@ var schema = new Schema({
   },
   waitingForAddress: {
     type: Boolean
+  },
+  waitingFor: {
+    type: String
   }
 }, {
   timestamps: true

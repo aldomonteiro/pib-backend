@@ -36,6 +36,12 @@ var schema = new Schema({
   accessToken: {
     type: String
   },
+  shortLivedToken: {
+    type: String
+  },
+  longLivedToken: {
+    type: String
+  },
   expireDate: {
     type: Date
   },

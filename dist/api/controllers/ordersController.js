@@ -30,14 +30,14 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(orderData) {
-    var pageId, userId, qty, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, first_name, last_name, profile_pic, order, _updateOrder, resultLastId, orderId, record, saved;
+    var pageId, userId, qty, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, waitingFor, first_name, last_name, profile_pic, order, _updateOrder, resultLastId, orderId, record, saved;
 
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             _context.prev = 0;
-            pageId = orderData.pageId, userId = orderData.userId, qty = orderData.qty, location = orderData.location, user = orderData.user, phone = orderData.phone, addrData = orderData.addrData, completeItem = orderData.completeItem, confirmOrder = orderData.confirmOrder, waitingForAddress = orderData.waitingForAddress;
+            pageId = orderData.pageId, userId = orderData.userId, qty = orderData.qty, location = orderData.location, user = orderData.user, phone = orderData.phone, addrData = orderData.addrData, completeItem = orderData.completeItem, confirmOrder = orderData.confirmOrder, waitingForAddress = orderData.waitingForAddress, waitingFor = orderData.waitingFor;
 
             if (!user) {
               _context.next = 8;
@@ -117,7 +117,7 @@ function () {
             order = _context.sent;
 
             if (!order) {
-              _context.next = 41;
+              _context.next = 42;
               break;
             }
 
@@ -164,29 +164,34 @@ function () {
               _updateOrder = true;
             }
 
+            if (waitingFor) {
+              order.waitingFor = waitingFor;
+              _updateOrder = true;
+            }
+
             if (!_updateOrder) {
-              _context.next = 37;
+              _context.next = 38;
               break;
             }
 
-            _context.next = 37;
+            _context.next = 38;
             return order.save();
 
-          case 37:
-            _context.next = 39;
+          case 38:
+            _context.next = 40;
             return (0, _itemsController.updateItem)(orderData);
 
-          case 39:
-            _context.next = 54;
+          case 40:
+            _context.next = 55;
             break;
 
-          case 41:
-            _context.next = 43;
+          case 42:
+            _context.next = 44;
             return _orders.default.find({
               pageId: pageId
             }).select('id').sort('-id').limit(1).exec();
 
-          case 43:
+          case 44:
             resultLastId = _context.sent;
             orderId = 1;
             if (resultLastId && resultLastId.length) orderId = resultLastId[0].id + 1;
@@ -204,32 +209,32 @@ function () {
               waitingForAddress: typeof waitingForAddress === 'boolean' ? waitingForAddress : false,
               status: ORDERSTATUS_PENDING
             });
-            _context.next = 50;
+            _context.next = 51;
             return record.save();
 
-          case 50:
+          case 51:
             saved = _context.sent;
             orderData.orderId = saved.id;
-            _context.next = 54;
+            _context.next = 55;
             return (0, _itemsController.updateItem)(orderData);
 
-          case 54:
-            _context.next = 61;
+          case 55:
+            _context.next = 62;
             break;
 
-          case 56:
-            _context.prev = 56;
+          case 57:
+            _context.prev = 57;
             _context.t0 = _context["catch"](0);
             console.error("Error while updating order");
             console.error(_context.t0);
             (0, _rxjs.throwError)(_context.t0);
 
-          case 61:
+          case 62:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this, [[0, 56]]);
+    }, _callee, this, [[0, 57]]);
   }));
 
   return function updateOrder(_x) {

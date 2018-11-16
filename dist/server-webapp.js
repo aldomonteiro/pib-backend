@@ -100,8 +100,8 @@ if (env === 'production') app.listen(8080, function () {
   // dev server
   // Lift the https server
   _https.default.createServer({
-    key: _fs.default.readFileSync("certificates/server_key.pem"),
-    cert: _fs.default.readFileSync("certificates/server_crt.pem")
+    key: _fs.default.readFileSync("/Users/aldo/.localhost-ssl/localhost.key"),
+    cert: _fs.default.readFileSync("/Users/aldo/.localhost-ssl/localhost.crt")
   }, app).listen(8080, function () {
     return console.log(env + " Server listening on port 8080");
   });

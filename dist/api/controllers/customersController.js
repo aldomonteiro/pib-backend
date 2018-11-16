@@ -142,18 +142,13 @@ function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee3(location) {
-    var response;
+    var response, response2, response3, response4, response5;
     return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
             _context3.next = 2;
-            return _axios.default.get('https://maps.googleapis.com/maps/api/geocode/json', {
-              params: {
-                'latlng': location.lat + ',' + location.long,
-                'key': process.env.GOOGLE_MAPS_APIKEY
-              }
-            });
+            return googleMapsAPI(location, process.env.GOOGLE_MAPS_APIKEY);
 
           case 2:
             response = _context3.sent;
@@ -162,30 +157,149 @@ function () {
             });
 
             if (!(response.status === 200)) {
-              _context3.next = 13;
+              _context3.next = 57;
               break;
             }
 
-            if (!response.data.error_message) {
-              _context3.next = 10;
+            if (!(response.data.error_message && response.data.status === 'OVER_QUERY_LIMIT')) {
+              _context3.next = 54;
               break;
             }
 
-            console.error(response.data.status, response.data.error_message);
-            return _context3.abrupt("return", null);
+            _context3.next = 8;
+            return googleMapsAPI(location, process.env.GOOGLE_MAPS_APIKEY2);
 
-          case 10:
-            return _context3.abrupt("return", response.data.results);
+          case 8:
+            response2 = _context3.sent;
 
-          case 11:
-            _context3.next = 15;
-            break;
+            if (!(response2.status === 200)) {
+              _context3.next = 51;
+              break;
+            }
+
+            if (!(response2.data.error_message && response2.data.status === 'OVER_QUERY_LIMIT')) {
+              _context3.next = 48;
+              break;
+            }
+
+            _context3.next = 13;
+            return googleMapsAPI(location, process.env.GOOGLE_MAPS_APIKEY3);
 
           case 13:
-            console.error(response.status, response.statusText);
+            response3 = _context3.sent;
+
+            if (!(response3.status === 200)) {
+              _context3.next = 45;
+              break;
+            }
+
+            if (!(response3.data.error_message && response3.data.status === 'OVER_QUERY_LIMIT')) {
+              _context3.next = 42;
+              break;
+            }
+
+            _context3.next = 18;
+            return googleMapsAPI(location, process.env.GOOGLE_MAPS_APIKEY4);
+
+          case 18:
+            response4 = _context3.sent;
+
+            if (!(response4.status === 200)) {
+              _context3.next = 39;
+              break;
+            }
+
+            if (!(response4.data.error_message && response4.data.status === 'OVER_QUERY_LIMIT')) {
+              _context3.next = 36;
+              break;
+            }
+
+            _context3.next = 23;
+            return googleMapsAPI(location, process.env.MY_GOOGLE_MAPS_APIKEY);
+
+          case 23:
+            response5 = _context3.sent;
+
+            if (!(response5.status === 200)) {
+              _context3.next = 33;
+              break;
+            }
+
+            if (!(response5.data.error_message && response5.data.status === 'OVER_QUERY_LIMIT')) {
+              _context3.next = 30;
+              break;
+            }
+
+            console.error(response5.status, response5.statusText);
             return _context3.abrupt("return", null);
 
-          case 15:
+          case 30:
+            return _context3.abrupt("return", response5.data.results);
+
+          case 31:
+            _context3.next = 34;
+            break;
+
+          case 33:
+            return _context3.abrupt("return", null);
+
+          case 34:
+            _context3.next = 37;
+            break;
+
+          case 36:
+            return _context3.abrupt("return", response4.data.results);
+
+          case 37:
+            _context3.next = 40;
+            break;
+
+          case 39:
+            return _context3.abrupt("return", null);
+
+          case 40:
+            _context3.next = 43;
+            break;
+
+          case 42:
+            return _context3.abrupt("return", response3.data.results);
+
+          case 43:
+            _context3.next = 46;
+            break;
+
+          case 45:
+            return _context3.abrupt("return", null);
+
+          case 46:
+            _context3.next = 49;
+            break;
+
+          case 48:
+            return _context3.abrupt("return", response2.data.results);
+
+          case 49:
+            _context3.next = 52;
+            break;
+
+          case 51:
+            return _context3.abrupt("return", null);
+
+          case 52:
+            _context3.next = 55;
+            break;
+
+          case 54:
+            return _context3.abrupt("return", response.data.results);
+
+          case 55:
+            _context3.next = 58;
+            break;
+
+          case 57:
+            return _context3.abrupt("return", null);
+
+          case 58:
           case "end":
             return _context3.stop();
         }
@@ -200,28 +314,63 @@ function () {
 
 exports.getAddressLocation = getAddressLocation;
 
-var customer_update =
+var googleMapsAPI =
 /*#__PURE__*/
 function () {
   var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee4(custData) {
-    var customer, first_name, last_name, phone, profile_pic, location, addrData, updateDb, resultLastId, lastId, newRecord;
+  regeneratorRuntime.mark(function _callee4(location, API_KEY) {
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            _context4.next = 2;
+            console.info('using:' + API_KEY);
+            _context4.next = 3;
+            return _axios.default.get('https://maps.googleapis.com/maps/api/geocode/json', {
+              params: {
+                'latlng': location.lat + ',' + location.long,
+                'key': API_KEY
+              }
+            });
+
+          case 3:
+            return _context4.abrupt("return", _context4.sent);
+
+          case 4:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4, this);
+  }));
+
+  return function googleMapsAPI(_x7, _x8) {
+    return _ref4.apply(this, arguments);
+  };
+}();
+
+var customer_update =
+/*#__PURE__*/
+function () {
+  var _ref5 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee5(custData) {
+    var customer, first_name, last_name, phone, profile_pic, location, addrData, updateDb, resultLastId, lastId, newRecord;
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            _context5.next = 2;
             return _customers.default.findOne({
               pageId: custData.pageId,
               userId: custData.userId
             }).exec();
 
           case 2:
-            customer = _context4.sent;
+            customer = _context5.sent;
 
             if (!(customer && customer.id)) {
-              _context4.next = 16;
+              _context5.next = 16;
               break;
             }
 
@@ -264,17 +413,17 @@ function () {
             }
 
             if (!updateDb) {
-              _context4.next = 14;
+              _context5.next = 14;
               break;
             }
 
-            _context4.next = 14;
+            _context5.next = 14;
             return customer.save(function (err, result) {
               if (err) throw err;
             });
 
           case 14:
-            _context4.next = 21;
+            _context5.next = 21;
             break;
 
           case 16:
@@ -309,14 +458,14 @@ function () {
 
           case 21:
           case "end":
-            return _context4.stop();
+            return _context5.stop();
         }
       }
-    }, _callee4, this);
+    }, _callee5, this);
   }));
 
-  return function customer_update(_x7) {
-    return _ref4.apply(this, arguments);
+  return function customer_update(_x9) {
+    return _ref5.apply(this, arguments);
   };
 }();
 
@@ -325,13 +474,13 @@ exports.customer_update = customer_update;
 var formatAddrData =
 /*#__PURE__*/
 function () {
-  var _ref5 = _asyncToGenerator(
+  var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee5(addrData) {
+  regeneratorRuntime.mark(function _callee6(addrData) {
     var formattedAddressData, addComps;
-    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+    return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
             formattedAddressData = {};
             formattedAddressData.formattedAddress = addrData.formatted_address;
@@ -353,18 +502,18 @@ function () {
                 }
               });
             });
-            return _context5.abrupt("return", formattedAddressData);
+            return _context6.abrupt("return", formattedAddressData);
 
           case 5:
           case "end":
-            return _context5.stop();
+            return _context6.stop();
         }
       }
-    }, _callee5, this);
+    }, _callee6, this);
   }));
 
-  return function formatAddrData(_x8) {
-    return _ref5.apply(this, arguments);
+  return function formatAddrData(_x10) {
+    return _ref6.apply(this, arguments);
   };
 }();
 

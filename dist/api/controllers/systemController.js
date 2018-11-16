@@ -126,20 +126,19 @@ function () {
             return updatedPage.save();
 
           case 35:
-            _context.next = 40;
-            break;
+            return _context.abrupt("return", updatedPage);
 
-          case 37:
-            _context.prev = 37;
+          case 38:
+            _context.prev = 38;
             _context.t0 = _context["catch"](0);
             console.error("Error on initial setup", _context.t0);
 
-          case 40:
+          case 41:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this, [[0, 37]]);
+    }, _callee, this, [[0, 38]]);
   }));
 
   return function initialSetup(_x) {
@@ -155,7 +154,7 @@ function () {
   var _ref2 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(pageID) {
-    var _newRecords, _flavors, docs;
+    var _newRecords, _flavors, docs, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, element, newRec;
 
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
@@ -168,9 +167,14 @@ function () {
           case 3:
             _flavors = _context2.sent;
             docs = new Array();
+            _iteratorNormalCompletion = true;
+            _didIteratorError = false;
+            _iteratorError = undefined;
+            _context2.prev = 8;
 
-            _flavors.forEach(function (element) {
-              var newRec = new _flavors2.default({
+            for (_iterator = _flavors[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              element = _step.value;
+              newRec = new _flavors2.default({
                 id: element.id,
                 flavor: element.flavor,
                 kind: element.kind,
@@ -178,9 +182,43 @@ function () {
                 pageId: pageID
               });
               docs.push(newRec);
-            });
+            }
 
-            _context2.next = 8;
+            _context2.next = 16;
+            break;
+
+          case 12:
+            _context2.prev = 12;
+            _context2.t0 = _context2["catch"](8);
+            _didIteratorError = true;
+            _iteratorError = _context2.t0;
+
+          case 16:
+            _context2.prev = 16;
+            _context2.prev = 17;
+
+            if (!_iteratorNormalCompletion && _iterator.return != null) {
+              _iterator.return();
+            }
+
+          case 19:
+            _context2.prev = 19;
+
+            if (!_didIteratorError) {
+              _context2.next = 22;
+              break;
+            }
+
+            throw _iteratorError;
+
+          case 22:
+            return _context2.finish(19);
+
+          case 23:
+            return _context2.finish(16);
+
+          case 24:
+            _context2.next = 26;
             return _flavors2.default.insertMany(docs, function (err, result) {
               if (err) {
                 console.error('Error while inserting flavors', err);
@@ -191,15 +229,15 @@ function () {
               }
             });
 
-          case 8:
+          case 26:
             return _context2.abrupt("return", _newRecords);
 
-          case 9:
+          case 27:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee2, this, [[8, 12, 16, 24], [17,, 19, 23]]);
   }));
 
   return function insertFlavors(_x2) {
@@ -213,7 +251,7 @@ function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee3(pageID) {
-    var _newRecords, _sizes, docs;
+    var _newRecords, _sizes, docs, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, element, newRec;
 
     return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
@@ -226,9 +264,14 @@ function () {
           case 3:
             _sizes = _context3.sent;
             docs = new Array();
+            _iteratorNormalCompletion2 = true;
+            _didIteratorError2 = false;
+            _iteratorError2 = undefined;
+            _context3.prev = 8;
 
-            _sizes.forEach(function (element) {
-              var newRec = new _sizes2.default({
+            for (_iterator2 = _sizes[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              element = _step2.value;
+              newRec = new _sizes2.default({
                 id: element.id,
                 size: element.size,
                 slices: element.slices,
@@ -236,9 +279,43 @@ function () {
                 pageId: pageID
               });
               docs.push(newRec);
-            });
+            }
 
-            _context3.next = 8;
+            _context3.next = 16;
+            break;
+
+          case 12:
+            _context3.prev = 12;
+            _context3.t0 = _context3["catch"](8);
+            _didIteratorError2 = true;
+            _iteratorError2 = _context3.t0;
+
+          case 16:
+            _context3.prev = 16;
+            _context3.prev = 17;
+
+            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+              _iterator2.return();
+            }
+
+          case 19:
+            _context3.prev = 19;
+
+            if (!_didIteratorError2) {
+              _context3.next = 22;
+              break;
+            }
+
+            throw _iteratorError2;
+
+          case 22:
+            return _context3.finish(19);
+
+          case 23:
+            return _context3.finish(16);
+
+          case 24:
+            _context3.next = 26;
             return _sizes2.default.insertMany(docs, function (err, result) {
               if (err) {
                 console.error('Error while inserting sizes', err);
@@ -249,15 +326,15 @@ function () {
               }
             });
 
-          case 8:
+          case 26:
             return _context3.abrupt("return", _newRecords);
 
-          case 9:
+          case 27:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, this);
+    }, _callee3, this, [[8, 12, 16, 24], [17,, 19, 23]]);
   }));
 
   return function insertSizes(_x3) {
@@ -271,7 +348,7 @@ function () {
   var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee4(pageID) {
-    var _newRecords, _pricings, docs;
+    var _newRecords, _pricings, docs, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, element, newRec;
 
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
@@ -284,9 +361,14 @@ function () {
           case 3:
             _pricings = _context4.sent;
             docs = new Array();
+            _iteratorNormalCompletion3 = true;
+            _didIteratorError3 = false;
+            _iteratorError3 = undefined;
+            _context4.prev = 8;
 
-            _pricings.forEach(function (element) {
-              var newRec = new _pricings2.default({
+            for (_iterator3 = _pricings[Symbol.iterator](); !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+              element = _step3.value;
+              newRec = new _pricings2.default({
                 id: element.id,
                 kind: element.kind,
                 sizeId: element.sizeId,
@@ -294,9 +376,43 @@ function () {
                 pageId: pageID
               });
               docs.push(newRec);
-            });
+            }
 
-            _context4.next = 8;
+            _context4.next = 16;
+            break;
+
+          case 12:
+            _context4.prev = 12;
+            _context4.t0 = _context4["catch"](8);
+            _didIteratorError3 = true;
+            _iteratorError3 = _context4.t0;
+
+          case 16:
+            _context4.prev = 16;
+            _context4.prev = 17;
+
+            if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
+              _iterator3.return();
+            }
+
+          case 19:
+            _context4.prev = 19;
+
+            if (!_didIteratorError3) {
+              _context4.next = 22;
+              break;
+            }
+
+            throw _iteratorError3;
+
+          case 22:
+            return _context4.finish(19);
+
+          case 23:
+            return _context4.finish(16);
+
+          case 24:
+            _context4.next = 26;
             return _pricings2.default.insertMany(docs, function (err, result) {
               if (err) {
                 console.error('Error while inserting pricings', err);
@@ -307,15 +423,15 @@ function () {
               }
             });
 
-          case 8:
+          case 26:
             return _context4.abrupt("return", _newRecords);
 
-          case 9:
+          case 27:
           case "end":
             return _context4.stop();
         }
       }
-    }, _callee4, this);
+    }, _callee4, this, [[8, 12, 16, 24], [17,, 19, 23]]);
   }));
 
   return function insertPricings(_x4) {
@@ -329,7 +445,7 @@ function () {
   var _ref5 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee5(pageID, pageName) {
-    var _newRecords, _stores, docs;
+    var _newRecords, _stores, docs, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, element, newRec;
 
     return regeneratorRuntime.wrap(function _callee5$(_context5) {
       while (1) {
@@ -342,9 +458,14 @@ function () {
           case 3:
             _stores = _context5.sent;
             docs = new Array();
+            _iteratorNormalCompletion4 = true;
+            _didIteratorError4 = false;
+            _iteratorError4 = undefined;
+            _context5.prev = 8;
 
-            _stores.forEach(function (element) {
-              var newRec = new _stores2.default({
+            for (_iterator4 = _stores[Symbol.iterator](); !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+              element = _step4.value;
+              newRec = new _stores2.default({
                 pageId: pageID,
                 name: pageName,
                 id: element.id,
@@ -374,9 +495,43 @@ function () {
                 sat_close: element.sat_close
               });
               docs.push(newRec);
-            });
+            }
 
-            _context5.next = 8;
+            _context5.next = 16;
+            break;
+
+          case 12:
+            _context5.prev = 12;
+            _context5.t0 = _context5["catch"](8);
+            _didIteratorError4 = true;
+            _iteratorError4 = _context5.t0;
+
+          case 16:
+            _context5.prev = 16;
+            _context5.prev = 17;
+
+            if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
+              _iterator4.return();
+            }
+
+          case 19:
+            _context5.prev = 19;
+
+            if (!_didIteratorError4) {
+              _context5.next = 22;
+              break;
+            }
+
+            throw _iteratorError4;
+
+          case 22:
+            return _context5.finish(19);
+
+          case 23:
+            return _context5.finish(16);
+
+          case 24:
+            _context5.next = 26;
             return _stores2.default.insertMany(docs, function (err, result) {
               if (err) {
                 console.error('Error while inserting stores', err);
@@ -387,15 +542,15 @@ function () {
               }
             });
 
-          case 8:
+          case 26:
             return _context5.abrupt("return", _newRecords);
 
-          case 9:
+          case 27:
           case "end":
             return _context5.stop();
         }
       }
-    }, _callee5, this);
+    }, _callee5, this, [[8, 12, 16, 24], [17,, 19, 23]]);
   }));
 
   return function insertStores(_x5, _x6) {

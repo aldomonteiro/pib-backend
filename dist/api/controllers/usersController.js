@@ -21,62 +21,89 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-var users_auth = function users_auth(req, res) {
-  if (req.body) {
-    _users.default.findOne({
-      userID: req.body.userID
-    }, function (err, foundUser) {
-      if (err) {
-        res.status(500).json(err);
-        return;
-      }
+var users_auth =
+/*#__PURE__*/
+function () {
+  var _ref = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee(req, res) {
+    var user, respChangeToken;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            if (!req.body) {
+              _context.next = 24;
+              break;
+            }
 
-      if (foundUser) {
-        foundUser.lastLogin = Date.now();
-        foundUser.locationName = req.body.locationName; // if (!foundUser.hasLongLivedToken) {
+            _context.prev = 1;
+            _context.next = 4;
+            return _users.default.findOne({
+              userID: req.body.userID
+            }).exec();
 
-        changeAccessToken(foundUser.accessToken).then(function (data) {
-          foundUser.hasLongLivedToken = true;
-          foundUser.accessToken = data.access_token;
-          foundUser.save();
-          res.status(200).json({
-            user: foundUser.toAuthJSON()
-          });
-        }).catch(function (err) {
-          return console.log(err.response.data);
-        }); // } else {
-        //     foundUser.save();
-        //     res.status(200).json({ user: foundUser.toAuthJSON() });
-        // }
-      } else {
-        var newRecord = new _users.default({
-          userID: req.body.userID,
-          name: req.body.name,
-          email: req.body.email,
-          pictureUrl: req.body.pictureUrl,
-          accessToken: req.body.accessToken,
-          timeZone: req.body.timeZone,
-          locationName: req.body.locationName
-        });
-        changeAccessToken(newRecord.accessToken).then(function (data) {
-          newRecord.hasLongLivedToken = true;
-          newRecord.accessToken = data.access_token;
-          newRecord.save().then(function (record) {
-            return res.status(200).json({
-              user: record.toAuthJSON()
+          case 4:
+            user = _context.sent;
+
+            if (!user) {
+              user = new _users.default({
+                userID: req.body.userID,
+                name: req.body.name,
+                email: req.body.email,
+                pictureUrl: req.body.pictureUrl,
+                accessToken: req.body.accessToken,
+                timeZone: req.body.timeZone,
+                locationName: req.body.locationName
+              });
+            }
+
+            user.lastLogin = Date.now();
+            user.locationName = req.body.locationName;
+            user.hasLongLivedToken = true;
+            user.shortLivedToken = user.accessToken; // only for debug analysis
+
+            _context.next = 12;
+            return changeAccessToken(user.accessToken);
+
+          case 12:
+            respChangeToken = _context.sent;
+            user.longLivedToken = respChangeToken.access_token; // only for debug analysis
+
+            user.accessToken = respChangeToken.access_token; // the token used in the system
+
+            _context.next = 17;
+            return user.save();
+
+          case 17:
+            res.status(200).json({
+              user: user.toAuthJSON()
             });
-          }).catch(function (err) {
-            console.error(err);
-            res.status(500).json(err);
-          });
-        }).catch(function (err) {
-          console.error(err);
-          res.status(500).json(err);
-        });
+            _context.next = 24;
+            break;
+
+          case 20:
+            _context.prev = 20;
+            _context.t0 = _context["catch"](1);
+            console.error({
+              users_auth_error: _context.t0
+            });
+            res.status(500).json({
+              message: _context.t0.message
+            });
+
+          case 24:
+          case "end":
+            return _context.stop();
+        }
       }
-    });
-  }
-};
+    }, _callee, this, [[1, 20]]);
+  }));
+
+  return function users_auth(_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}();
 
 exports.users_auth = users_auth;
 
@@ -234,43 +261,54 @@ exports.users_delete = users_delete;
 var changeAccessToken =
 /*#__PURE__*/
 function () {
-  var _ref = _asyncToGenerator(
+  var _ref2 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee(accessToken) {
-    var facebookAccessTokenUrl, params;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+  regeneratorRuntime.mark(function _callee2(accessToken) {
+    var env, facebook_app_id, facebook_secret_key, facebookAccessTokenUrl, params;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
-        switch (_context.prev = _context.next) {
+        switch (_context2.prev = _context2.next) {
           case 0:
             _dotenv.default.config();
+
+            env = process.env.NODE_ENV || 'production';
+            facebook_secret_key = '';
+
+            if (env === 'production') {
+              facebook_app_id = process.env.FACEBOOK_APP_ID;
+              facebook_secret_key = process.env.FACEBOOK_SECRET_KEY;
+            } else {
+              facebook_app_id = process.env.DEV_FACEBOOK_APP_ID;
+              facebook_secret_key = process.env.DEV_FACEBOOK_SECRET_KEY;
+            }
 
             facebookAccessTokenUrl = process.env.FACEBOOK_URL_OAUTH_ACCESS_TOKEN;
             params = {
               grant_type: 'fb_exchange_token',
-              client_id: process.env.FACEBOOK_APP_ID,
-              client_secret: process.env.FACEBOOK_SECRET_KEY,
+              client_id: facebook_app_id,
+              client_secret: facebook_secret_key,
               fb_exchange_token: accessToken
             };
-            _context.next = 5;
+            _context2.next = 8;
             return _axios.default.get(facebookAccessTokenUrl, {
               params: params
             }).then(function (res) {
               return res.data;
             });
 
-          case 5:
-            return _context.abrupt("return", _context.sent);
+          case 8:
+            return _context2.abrupt("return", _context2.sent);
 
-          case 6:
+          case 9:
           case "end":
-            return _context.stop();
+            return _context2.stop();
         }
       }
-    }, _callee, this);
+    }, _callee2, this);
   }));
 
-  return function changeAccessToken(_x) {
-    return _ref.apply(this, arguments);
+  return function changeAccessToken(_x3) {
+    return _ref2.apply(this, arguments);
   };
 }();
 

@@ -281,15 +281,20 @@ function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee3(pageID) {
-    var _store, _today, _tomorrow, todayOpenAt, todayCloseAt, tomorrowOpenAt, tomorrowCloseAt, todayIsOpen, tomorrowIsOpen;
+    var _store, _today, _tomorrow, todayOpenAt, todayCloseAt, tomorrowOpenAt, tomorrowCloseAt, todayIsOpen, tomorrowIsOpen, _openAtHours, _closeAtHours, _openAtHoursTom, _closeAtHoursTom;
 
     return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            _store = getOpeningTimes(pageID);
+            _context3.next = 2;
+            return getOpeningTimes(pageID);
+
+          case 2:
+            _store = _context3.sent;
             _today = new Date();
             _tomorrow = new Date();
+            _tomorrow.get;
 
             _tomorrow.setDate(_today.getDate() + 1);
 
@@ -347,16 +352,36 @@ function () {
               tomorrowCloseAt = _store.sun_close;
             }
 
+            _openAtHours = new Date(todayOpenAt).toLocaleTimeString('pt-BR', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false
+            });
+            _closeAtHours = new Date(todayCloseAt).toLocaleTimeString('pt-BR', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false
+            });
+            _openAtHoursTom = new Date(tomorrowOpenAt).toLocaleTimeString('pt-BR', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false
+            });
+            _closeAtHoursTom = new Date(tomorrowCloseAt).toLocaleTimeString('pt-BR', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false
+            });
             return _context3.abrupt("return", {
               todayIsOpen: todayIsOpen,
-              todayOpenAt: todayOpenAt,
-              todayCloseAt: todayCloseAt,
+              todayOpenAt: _openAtHours,
+              todayCloseAt: _closeAtHours,
               tomorrowIsOpen: tomorrowIsOpen,
-              tomorrowOpenAt: tomorrowOpenAt,
-              tomorrowCloseAt: tomorrowCloseAt
+              tomorrowOpenAt: _openAtHoursTom,
+              tomorrowCloseAt: _closeAtHoursTom
             });
 
-          case 8:
+          case 15:
           case "end":
             return _context3.stop();
         }

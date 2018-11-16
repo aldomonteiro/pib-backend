@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getAllPages = exports.getOnePageData = exports.getOnePage = exports.subscribedApps = exports.page_update = exports.page_resources_delete = exports.page_resources_get_one = exports.page_resources_get_all = void 0;
+exports.getAllPages = exports.getOnePageData = exports.getOnePageToken = exports.debugToken = exports.subscribedApps = exports.page_update = exports.page_resources_delete = exports.page_resources_get_one = exports.page_resources_get_all = void 0;
 
 var _pages = _interopRequireDefault(require("../models/pages"));
 
@@ -142,146 +142,116 @@ var page_update =
 function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee4(req, res) {
-    var pageId;
-    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+  regeneratorRuntime.mark(function _callee3(req, res) {
+    var pageId, isNew, page, user, response, response2;
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context4.prev = _context4.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
-            console.log("page_update");
-            console.log(req.body);
-            pageId = req.body.id; // Find a page by id
-
-            _context4.next = 5;
+            _context3.prev = 0;
+            console.info("page_update");
+            pageId = req.body.id;
+            isNew = false;
+            _context3.next = 6;
             return _pages.default.findOne({
               id: pageId
-            },
-            /*#__PURE__*/
-            function () {
-              var _ref4 = _asyncToGenerator(
-              /*#__PURE__*/
-              regeneratorRuntime.mark(function _callee3(err, doc) {
-                var record, isNew;
-                return regeneratorRuntime.wrap(function _callee3$(_context3) {
-                  while (1) {
-                    switch (_context3.prev = _context3.next) {
-                      case 0:
-                        if (!err) {
-                          _context3.next = 3;
-                          break;
-                        }
+            }).exec();
 
-                        // err !== null
-                        res.status(500).json({
-                          message: err.errmsg
-                        });
-                        return _context3.abrupt("return");
+          case 6:
+            page = _context3.sent;
 
-                      case 3:
-                        isNew = false;
+            if (!page) {
+              page = new _pages.default({
+                id: pageId,
+                name: req.body.name,
+                userID: req.currentUser.userID
+              });
+              isNew = true;
+            }
 
-                        if (doc) {
-                          record = doc;
-                          if (req.body.greetingText) record.greetingText = req.body.greetingText;
-                          if (req.body.firstResponseText) record.firstResponseText = req.body.firstResponseText;
-                          if (req.body.access_token) record.accessToken = req.body.access_token;
-                          record.userID = req.currentUser.userID;
-                        } else {
-                          record = new _pages.default({
-                            id: pageId,
-                            name: req.body.name,
-                            accessToken: req.body.access_token,
-                            userID: req.currentUser.userID
-                          });
-                          isNew = true;
-                        }
+            if (req.body.access_token) page.accessToken = req.body.access_token;
+            if (req.body.greetingText) page.greetingText = req.body.greetingText;
+            if (req.body.firstResponseText) page.firstResponseText = req.body.firstResponseText; // update ActivePage for the current user
 
-                        _context3.next = 7;
-                        return record.save(function (err, result) {
-                          if (err) {
-                            res.status(500).json({
-                              message: err.errmsg
-                            });
-                          } else {
-                            subscribedApps(result.id, result.accessToken).then(function (response) {
-                              res.status(200).json(result);
-                            }).catch(function (err) {
-                              var errorMessage;
-                              if (err.error) errorMessage = err.error;
-                              if (err.response.data) if (err.response.data.error) errorMessage = err.response.data.error.message;
-                              console.log("subscribed_apps catch err: ".concat(errorMessage));
-                              res.status(500).json({
-                                message: errorMessage
-                              });
-                            });
-                          }
-                        });
+            if (!req.currentUser) {
+              _context3.next = 20;
+              break;
+            }
 
-                      case 7:
-                        if (!req.currentUser) {
-                          _context3.next = 10;
-                          break;
-                        }
+            page.userID = req.currentUser.userID;
+            _context3.next = 15;
+            return _users.default.findOne({
+              userID: req.currentUser.userID
+            }).exec();
 
-                        _context3.next = 10;
-                        return _users.default.findOne({
-                          userID: req.currentUser.userID
-                        }, function (err, docFind) {
-                          if (err) {
-                            res.status(500).json({
-                              message: err.errmsg
-                            });
-                            return;
-                          }
+          case 15:
+            user = _context3.sent;
 
-                          if (docFind) {
-                            docFind.activePage = pageId;
-                            docFind.save(function (err, docSave) {
-                              if (err) {
-                                res.status(500).json({
-                                  message: err.errmsg
-                                });
-                              }
-                            });
-                          }
-                        });
+            if (!user) {
+              _context3.next = 20;
+              break;
+            }
 
-                      case 10:
-                        if (req.body.greetingText && record && record.accessToken) {
-                          setFacebookFields(record.id, record.accessToken, req.body.greetingText).then(function (response) {
-                            console.log('PagesController, response from set fields:', response.result);
-                          }).catch(function (err) {
-                            if (err.response && err.response.data && err.response.data.error) console.log("PagesController, error from set fields: ".concat(err.response.data.error.message));else if (err.response) console.log(err.response);
-                          });
-                        }
+            user.activePage = pageId;
+            _context3.next = 20;
+            return user.save();
 
-                        if (!isNew) {
-                          _context3.next = 14;
-                          break;
-                        }
+          case 20:
+            _context3.next = 22;
+            return page.save();
 
-                        _context3.next = 14;
-                        return (0, _systemController.initialSetup)(pageId);
+          case 22:
+            _context3.next = 24;
+            return subscribedApps(page.id, page.accessToken);
 
-                      case 14:
-                      case "end":
-                        return _context3.stop();
-                    }
-                  }
-                }, _callee3, this);
-              }));
+          case 24:
+            response = _context3.sent;
 
-              return function (_x7, _x8) {
-                return _ref4.apply(this, arguments);
-              };
-            }());
+            if (!isNew) {
+              _context3.next = 30;
+              break;
+            }
 
-          case 5:
+            _context3.next = 28;
+            return (0, _systemController.initialSetup)(pageId);
+
+          case 28:
+            page = _context3.sent;
+            req.body.greetingText = page.greetingText;
+
+          case 30:
+            if (!(page && page.greetingText && page.accessToken)) {
+              _context3.next = 34;
+              break;
+            }
+
+            _context3.next = 33;
+            return setFacebookFields(page.id, page.accessToken, page.greetingText);
+
+          case 33:
+            response2 = _context3.sent;
+
+          case 34:
+            res.status(200).json(page);
+            _context3.next = 41;
+            break;
+
+          case 37:
+            _context3.prev = 37;
+            _context3.t0 = _context3["catch"](0);
+            console.error({
+              pageUpdateError: _context3.t0
+            });
+            res.status(500).json({
+              message: _context3.t0.message
+            });
+
+          case 41:
           case "end":
-            return _context4.stop();
+            return _context3.stop();
         }
       }
-    }, _callee4, this);
+    }, _callee3, this, [[0, 37]]);
   }));
 
   return function page_update(_x5, _x6) {
@@ -294,18 +264,51 @@ exports.page_update = page_update;
 var subscribedApps =
 /*#__PURE__*/
 function () {
+  var _ref4 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee4(pageId, accessToken) {
+    var facebookUrl;
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            // https://graph.facebook.com/v3.1/{page-id}/subscribed_apps?access_token={}
+            facebookUrl = "https://graph.facebook.com/v3.1/".concat(pageId, "/subscribed_apps?access_token=").concat(accessToken);
+            _context4.next = 3;
+            return _axios.default.post(facebookUrl);
+
+          case 3:
+            return _context4.abrupt("return", _context4.sent);
+
+          case 4:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4, this);
+  }));
+
+  return function subscribedApps(_x7, _x8) {
+    return _ref4.apply(this, arguments);
+  };
+}();
+
+exports.subscribedApps = subscribedApps;
+
+var debugToken =
+/*#__PURE__*/
+function () {
   var _ref5 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee5(pageId, accessToken) {
+  regeneratorRuntime.mark(function _callee5(accessToken) {
     var facebookUrl;
     return regeneratorRuntime.wrap(function _callee5$(_context5) {
       while (1) {
         switch (_context5.prev = _context5.next) {
           case 0:
-            // https://graph.facebook.com/v3.1/{page-id}/subscribed_apps?access_token={}
-            facebookUrl = "https://graph.facebook.com/v3.1/".concat(pageId, "/subscribed_apps?access_token=").concat(accessToken);
+            facebookUrl = "https://graph.facebook.com/v3.1/debug_token?input_token=".concat(accessToken);
             _context5.next = 3;
-            return _axios.default.post(facebookUrl);
+            return _axios.default.get(facebookUrl);
 
           case 3:
             return _context5.abrupt("return", _context5.sent);
@@ -318,42 +321,39 @@ function () {
     }, _callee5, this);
   }));
 
-  return function subscribedApps(_x9, _x10) {
+  return function debugToken(_x9) {
     return _ref5.apply(this, arguments);
   };
 }(); // used in botController.js
 
 
-exports.subscribedApps = subscribedApps;
+exports.debugToken = debugToken;
 
-var getOnePage =
+var getOnePageToken =
 /*#__PURE__*/
 function () {
   var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee6(pageID) {
-    var accessToken;
+    var page;
     return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
-            accessToken = '';
-            _context6.next = 3;
+            _context6.next = 2;
             return _pages.default.findOne({
               id: pageID
-            }, function (err, result) {
-              if (err) {} else {
-                accessToken = result.accessToken;
-              }
-            });
+            }).exec();
 
-          case 3:
-            if (!(accessToken !== '')) {
+          case 2:
+            page = _context6.sent;
+
+            if (!(page && page.accessToken)) {
               _context6.next = 7;
               break;
             }
 
-            return _context6.abrupt("return", Promise.resolve(accessToken));
+            return _context6.abrupt("return", Promise.resolve(page.accessToken));
 
           case 7:
             return _context6.abrupt("return", Promise.reject());
@@ -366,7 +366,7 @@ function () {
     }, _callee6, this);
   }));
 
-  return function getOnePage(_x11) {
+  return function getOnePageToken(_x10) {
     return _ref6.apply(this, arguments);
   };
 }();
@@ -377,7 +377,7 @@ function () {
  */
 
 
-exports.getOnePage = getOnePage;
+exports.getOnePageToken = getOnePageToken;
 
 var getOnePageData =
 /*#__PURE__*/
@@ -405,7 +405,7 @@ function () {
     }, _callee7, this);
   }));
 
-  return function getOnePageData(_x12) {
+  return function getOnePageData(_x11) {
     return _ref7.apply(this, arguments);
   };
 }();
@@ -523,8 +523,101 @@ function () {
     }, _callee9, this);
   }));
 
-  return function setFacebookFields(_x13, _x14, _x15) {
+  return function setFacebookFields(_x12, _x13, _x14) {
     return _ref9.apply(this, arguments);
   };
-}();
+}(); // export const page_update = async (req, res) => {
+//     console.info("page_update");
+//     const pageId = req.body.id;
+//     const record = await Page.findOne({ id: pageId }).exec();
+//     if (!record) {
+//         record = new Page({
+//             id: pageId,
+//             name: req.body.name,
+//             accessToken: req.body.access_token,
+//             userID: req.currentUser.userID,
+//         });
+//         isNew = true;
+//     }
+//     // Find a page by id
+//     await Page.findOne({ id: pageId }, async (err, doc) => {
+//         if (err) { // err !== null
+//             res.status(500).json({ message: err.errmsg });
+//             return;
+//         }
+//         let record;
+//         let isNew = false;
+//         if (doc) {
+//             record = doc;
+//             if (req.body.greetingText)
+//                 record.greetingText = req.body.greetingText;
+//             if (req.body.firstResponseText)
+//                 record.firstResponseText = req.body.firstResponseText;
+//             if (req.body.access_token)
+//                 record.accessToken = req.body.access_token;
+//             record.userID = req.currentUser.userID;
+//         } else {
+//             record = new Page({
+//                 id: pageId,
+//                 name: req.body.name,
+//                 accessToken: req.body.access_token,
+//                 userID: req.currentUser.userID,
+//             });
+//             isNew = true;
+//         }
+//         await record.save();
+//         const response = await subscribedApps(record.id, record.accessToken);
+//         // await record.save((err, result) => {
+//         //     if (err) {
+//         //         res.status(500).json({ message: err.errmsg });
+//         //     } else {
+//         //         subscribedApps(result.id, result.accessToken)
+//         //             .then(response => {
+//         //                 res.status(200).json(result);
+//         //             }).catch((err) => {
+//         //                 var errorMessage;
+//         //                 if (err.error) errorMessage = err.error;
+//         //                 if (err.response.data)
+//         //                     if (err.response.data.error)
+//         //                         errorMessage = err.response.data.error.message;
+//         //                 console.log(`subscribed_apps catch err: ${errorMessage}`);
+//         //                 res.status(500).json({ message: errorMessage });
+//         //             });
+//         //     }
+//     });
+//     // update ActivePage for the current user
+//     if (req.currentUser) {
+//         await User.findOne({ userID: req.currentUser.userID }, (err, docFind) => {
+//             if (err) {
+//                 res.status(500).json({ message: err.errmsg });
+//                 return;
+//             }
+//             if (docFind) {
+//                 docFind.activePage = pageId;
+//                 docFind.save((err, docSave) => {
+//                     if (err) {
+//                         res.status(500).json({ message: err.errmsg });
+//                     }
+//                 })
+//             }
+//         });
+//     }
+//     if (isNew) {
+//         record = await initialSetup(pageId);
+//         req.body.greetingText = record.greetingText
+//     }
+//     if (req.body.greetingText && record && record.accessToken) {
+//         setFacebookFields(record.id, record.accessToken, req.body.greetingText).then(response => {
+//             console.log('PagesController, response from set fields:', response.result);
+//         }).catch(err => {
+//             if (err.response && err.response.data && err.response.data.error)
+//                 console.log(`PagesController, error from set fields: ${err.response.data.error.message}`);
+//             else if (err.response)
+//                 console.log(err.response);
+//         });
+//     }
+//     const responseDebug = await debugToken(record.accessToken);
+//     console.info('debugToken', responseDebug);
+// });
+// }
 //# sourceMappingURL=pagesController.js.map
