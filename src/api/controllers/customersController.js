@@ -1,5 +1,6 @@
 import Customer from '../models/customers';
 import axios from 'axios';
+import { shuffle } from '../util/util';
 
 export const checkCustomerAddress = async (pageID, userID, location) => {
     let addressData = await getCustomerAddress(pageID, userID);
@@ -34,17 +35,20 @@ export const getCustomerAddress = async (pageID, userID) => {
 }
 
 export const getAddressLocation = async (location) => {
-    const response = await googleMapsAPI(location, process.env.GOOGLE_MAPS_APIKEY);
+    let arr = [1, 2, 3, 4];
+    arr = shuffle(arr); // select the apis randomically
+
+    const response = await googleMapsAPI(location, process.env['GOOGLE_MAPS_APIKEY' + arr[0]]);
     console.info({ response });
     if (response.status === 200) {
         if (response.data.error_message && response.data.status === 'OVER_QUERY_LIMIT') {
-            const response2 = await googleMapsAPI(location, process.env.GOOGLE_MAPS_APIKEY2);
+            const response2 = await googleMapsAPI(location, process.env['GOOGLE_MAPS_APIKEY' + arr[1]]);
             if (response2.status === 200) {
                 if (response2.data.error_message && response2.data.status === 'OVER_QUERY_LIMIT') {
-                    const response3 = await googleMapsAPI(location, process.env.GOOGLE_MAPS_APIKEY3);
+                    const response3 = await googleMapsAPI(location, process.env['GOOGLE_MAPS_APIKEY' + arr[2]]);
                     if (response3.status === 200) {
                         if (response3.data.error_message && response3.data.status === 'OVER_QUERY_LIMIT') {
-                            const response4 = await googleMapsAPI(location, process.env.GOOGLE_MAPS_APIKEY4);
+                            const response4 = await googleMapsAPI(location, process.env['GOOGLE_MAPS_APIKEY' + arr[3]]);
                             if (response4.status === 200) {
                                 if (response4.data.error_message && response4.data.status === 'OVER_QUERY_LIMIT') {
                                     const response5 = await googleMapsAPI(location, process.env.MY_GOOGLE_MAPS_APIKEY);

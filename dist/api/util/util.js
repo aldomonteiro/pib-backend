@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.choices_sizes = exports.configRangeQuery = exports.configSortQuery = void 0;
+exports.shuffle = exports.choices_sizes = exports.configRangeQuery = exports.configSortQuery = void 0;
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -84,6 +84,31 @@ function () {
     return _ref.apply(this, arguments);
   };
 }();
+/**
+ * Shuffle (randomize) the elements of array
+ * @param {*} array 
+ */
+
 
 exports.choices_sizes = choices_sizes;
+
+var shuffle = function shuffle(array) {
+  var currentIndex = array.length,
+      temporaryValue,
+      randomIndex; // While there remain elements to shuffle...
+
+  while (0 !== currentIndex) {
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1; // And swap it with the current element.
+
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+};
+
+exports.shuffle = shuffle;
 //# sourceMappingURL=util.js.map

@@ -9,6 +9,8 @@ var _customers = _interopRequireDefault(require("../models/customers"));
 
 var _axios = _interopRequireDefault(require("axios"));
 
+var _util = require("../util/util");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -142,164 +144,167 @@ function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee3(location) {
-    var response, response2, response3, response4, response5;
+    var arr, response, response2, response3, response4, response5;
     return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            _context3.next = 2;
-            return googleMapsAPI(location, process.env.GOOGLE_MAPS_APIKEY);
+            arr = [1, 2, 3, 4];
+            arr = (0, _util.shuffle)(arr); // select the apis randomically
 
-          case 2:
+            _context3.next = 4;
+            return googleMapsAPI(location, process.env['GOOGLE_MAPS_APIKEY' + arr[0]]);
+
+          case 4:
             response = _context3.sent;
             console.info({
               response: response
             });
 
             if (!(response.status === 200)) {
-              _context3.next = 57;
+              _context3.next = 59;
               break;
             }
 
             if (!(response.data.error_message && response.data.status === 'OVER_QUERY_LIMIT')) {
-              _context3.next = 54;
+              _context3.next = 56;
               break;
             }
 
-            _context3.next = 8;
-            return googleMapsAPI(location, process.env.GOOGLE_MAPS_APIKEY2);
+            _context3.next = 10;
+            return googleMapsAPI(location, process.env['GOOGLE_MAPS_APIKEY' + arr[1]]);
 
-          case 8:
+          case 10:
             response2 = _context3.sent;
 
             if (!(response2.status === 200)) {
-              _context3.next = 51;
+              _context3.next = 53;
               break;
             }
 
             if (!(response2.data.error_message && response2.data.status === 'OVER_QUERY_LIMIT')) {
-              _context3.next = 48;
+              _context3.next = 50;
               break;
             }
 
-            _context3.next = 13;
-            return googleMapsAPI(location, process.env.GOOGLE_MAPS_APIKEY3);
+            _context3.next = 15;
+            return googleMapsAPI(location, process.env['GOOGLE_MAPS_APIKEY' + arr[2]]);
 
-          case 13:
+          case 15:
             response3 = _context3.sent;
 
             if (!(response3.status === 200)) {
-              _context3.next = 45;
+              _context3.next = 47;
               break;
             }
 
             if (!(response3.data.error_message && response3.data.status === 'OVER_QUERY_LIMIT')) {
-              _context3.next = 42;
+              _context3.next = 44;
               break;
             }
 
-            _context3.next = 18;
-            return googleMapsAPI(location, process.env.GOOGLE_MAPS_APIKEY4);
+            _context3.next = 20;
+            return googleMapsAPI(location, process.env['GOOGLE_MAPS_APIKEY' + arr[3]]);
 
-          case 18:
+          case 20:
             response4 = _context3.sent;
 
             if (!(response4.status === 200)) {
-              _context3.next = 39;
+              _context3.next = 41;
               break;
             }
 
             if (!(response4.data.error_message && response4.data.status === 'OVER_QUERY_LIMIT')) {
-              _context3.next = 36;
+              _context3.next = 38;
               break;
             }
 
-            _context3.next = 23;
+            _context3.next = 25;
             return googleMapsAPI(location, process.env.MY_GOOGLE_MAPS_APIKEY);
 
-          case 23:
+          case 25:
             response5 = _context3.sent;
 
             if (!(response5.status === 200)) {
-              _context3.next = 33;
+              _context3.next = 35;
               break;
             }
 
             if (!(response5.data.error_message && response5.data.status === 'OVER_QUERY_LIMIT')) {
-              _context3.next = 30;
+              _context3.next = 32;
               break;
             }
 
             console.error(response5.status, response5.statusText);
             return _context3.abrupt("return", null);
 
-          case 30:
+          case 32:
             return _context3.abrupt("return", response5.data.results);
 
-          case 31:
-            _context3.next = 34;
-            break;
-
           case 33:
-            return _context3.abrupt("return", null);
-
-          case 34:
-            _context3.next = 37;
+            _context3.next = 36;
             break;
+
+          case 35:
+            return _context3.abrupt("return", null);
 
           case 36:
+            _context3.next = 39;
+            break;
+
+          case 38:
             return _context3.abrupt("return", response4.data.results);
 
-          case 37:
-            _context3.next = 40;
-            break;
-
           case 39:
-            return _context3.abrupt("return", null);
-
-          case 40:
-            _context3.next = 43;
+            _context3.next = 42;
             break;
+
+          case 41:
+            return _context3.abrupt("return", null);
 
           case 42:
+            _context3.next = 45;
+            break;
+
+          case 44:
             return _context3.abrupt("return", response3.data.results);
 
-          case 43:
-            _context3.next = 46;
-            break;
-
           case 45:
-            return _context3.abrupt("return", null);
-
-          case 46:
-            _context3.next = 49;
+            _context3.next = 48;
             break;
+
+          case 47:
+            return _context3.abrupt("return", null);
 
           case 48:
+            _context3.next = 51;
+            break;
+
+          case 50:
             return _context3.abrupt("return", response2.data.results);
 
-          case 49:
-            _context3.next = 52;
-            break;
-
           case 51:
-            return _context3.abrupt("return", null);
-
-          case 52:
-            _context3.next = 55;
+            _context3.next = 54;
             break;
+
+          case 53:
+            return _context3.abrupt("return", null);
 
           case 54:
-            return _context3.abrupt("return", response.data.results);
-
-          case 55:
-            _context3.next = 58;
+            _context3.next = 57;
             break;
 
+          case 56:
+            return _context3.abrupt("return", response.data.results);
+
           case 57:
+            _context3.next = 60;
+            break;
+
+          case 59:
             return _context3.abrupt("return", null);
 
-          case 58:
+          case 60:
           case "end":
             return _context3.stop();
         }
