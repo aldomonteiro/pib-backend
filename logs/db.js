@@ -10,17 +10,24 @@ printjson('* Connected to the database');
 for (var i = 0; i < pagesArray.length; i++) {
     var pageID = pagesArray[i];
     ('*** PageID:' + pageID + '***');
-
-    printjson('* Deleting pricings:', db.pricings.deleteMany({ pageId: pageID }));
-    printjson('* Deleting sizes:', db.sizes.deleteMany({ pageId: pageID }));
-    printjson('* Deleting flavors:', db.flavors.deleteMany({ pageId: pageID }));
-    printjson('* Deleting stores:', db.stores.deleteOne({ pageId: pageID }));
-    printjson('* Deleting items:', db.items.deleteMany({ pageId: pageID }));
-    printjson('* Deleting orders:', db.orders.deleteMany({ pageId: pageID }));
-    printjson('* Deleting customers:', db.customers.deleteMany({ pageId: pageID }));
-    printjson('* Deleting page:', db.pages.deleteOne({ id: pageID }));
+    print('* Deleting pricings:');
+    printjson(db.pricings.deleteMany({ pageId: pageID }));
+    print('* Deleting sizes:');
+    printjson(db.sizes.deleteMany({ pageId: pageID }));
+    print('* Deleting flavors:');
+    printjson(db.flavors.deleteMany({ pageId: pageID }));
+    print('* Deleting stores:');
+    printjson(db.stores.deleteOne({ pageId: pageID }));
+    print('* Deleting items:');
+    printjson(db.items.deleteMany({ pageId: pageID }));
+    print('* Deleting orders:');
+    printjson(db.orders.deleteMany({ pageId: pageID }));
+    print('* Deleting customers:');
+    printjson(db.customers.deleteMany({ pageId: pageID }));
+    print('* Deleting page:');
+    printjson(db.pages.deleteOne({ id: pageID }));
 }
-
-printjson('* Deleting user:', db.users.deleteOne({ userID: userID }));
+print('* Deleting user:');
+printjson(db.users.deleteOne({ userID: userID }));
 
 
