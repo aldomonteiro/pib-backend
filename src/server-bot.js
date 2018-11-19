@@ -31,7 +31,7 @@ import {
   showAddress,
   confirmOrder,
   askToTypeAddress,
-  confirmTypedAddress,
+  confirmTypedText,
   sendHorario,
   basicReply,
   askForChangeOrder,
@@ -194,10 +194,10 @@ bot.on('MAIN-MENU', async (message, data) => {
  * gonna ask for QUANTITY
  */
 bot.on('message', async (message) => {
+  const { sender, recipient, location } = message;
+
   try {
     console.info({ message });
-
-    const { sender, recipient, location } = message;
 
     if (location) {
       console.info({ location });
@@ -219,7 +219,7 @@ bot.on('message', async (message) => {
     else {
       await bot.startTyping(sender.id);
       await Bot.wait(1000);
-      const answer = await confirmTypedAddress(recipient.id, sender.id, message);
+      const answer = await confirmTypedText(recipient.id, sender.id, message);
       await bot.stopTyping(sender.id);
       await bot.send(sender.id, answer);
     }
@@ -248,8 +248,9 @@ bot.on('quick-reply', async (message, quick_reply) => {
       await bot.send(sender.id, answer);
 
       // next question
-      const out = await askForQuantity(recipient.id, sender.id);
+      await bot.startTyping(sender.id);
       await Bot.wait(1000);
+      const out = await askForQuantity(recipient.id, sender.id);
       await bot.stopTyping(sender.id);
       await bot.send(sender.id, out);
     }
@@ -276,7 +277,7 @@ bot.on('CORRECT_SAVED_ADDRESS', async (message, data) => {
     await bot.send(sender.id, answer);
 
     // next question
-    const out = await askForPhone();
+    const out = await askForPhone(recipient.id, sender.id);
     await Bot.wait(1000);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, out);
@@ -345,6 +346,40 @@ bot.on('WRONG_SAVED_ADDRESS', async (message, data) => {
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, outError);
   }
+});
+
+bot.on('PHONE_CONFIRMED', async (message, data) => {
+  const { sender, recipient } = message;
+  try {
+    if (data === 'change_phone') {
+      // next question
+      const out = await askForPhone(recipient.id, sender.id);
+      await Bot.wait(1000);
+      await bot.stopTyping(sender.id);
+      await bot.send(sender.id, out);
+    }
+    else {
+      // show what the user typed
+      await bot.startTyping(sender.id);
+      await Bot.wait(1000);
+      const answer = await showPhone(recipient.id, sender.id, data);
+      await bot.stopTyping(sender.id);
+      await bot.send(sender.id, answer);
+
+      // next question
+      await bot.startTyping(sender.id);
+      await Bot.wait(1000);
+      const out = await askForQuantity(recipient.id, sender.id);
+      await bot.stopTyping(sender.id);
+      await bot.send(sender.id, out);
+    }
+  } catch (error) {
+    console.error('PHONE_CONFIRMED:', error.message);
+    const outError = await sendErrorMsg(error.message);
+    await bot.stopTyping(sender.id);
+    await bot.send(sender.id, outError);
+  }
+
 });
 
 

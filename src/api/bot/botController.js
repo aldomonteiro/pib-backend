@@ -182,7 +182,7 @@ export const askToTypeAddress = async (pageID, userID) => {
     return out;
 }
 
-export const confirmTypedAddress = async (pageId, userId, message) => {
+export const confirmTypedText = async (pageId, userId, message) => {
     const pendingOrder = await getOrderPending({ pageId, userId });
 
     console.info({ pendingOrder });
@@ -212,7 +212,9 @@ export const confirmTypedAddress = async (pageId, userId, message) => {
             return out;
         }
         else {
-            if (pendingOrder.order && pendingOrder.order.waitingFor === 'size')
+            if (pendingOrder.order && pendingOrder.order.waitingFor === 'phone')
+                return await confirmTypedPhone(pageId, userId, message.text);
+            else if (pendingOrder.order && pendingOrder.order.waitingFor === 'size')
                 return await askForSize(pageId)
             else if (pendingOrder.order && pendingOrder.order.waitingFor === 'quantity')
                 return await askForQuantity(pageId, userId);
@@ -252,9 +254,12 @@ export const showOrderOrAskForPhone = async (pageId, userId) => {
         return await askForPhone();
 }
 
-export const askForPhone = async () => {
+export const askForPhone = async (pageId, userId) => {
+
+    await updateOrder({ pageId, userId, waitingFor: 'phone' });
+
     const out = new Elements();
-    out.add({ text: 'Pode nos enviar o seu telefone? Para que possamos fazer a confirmação do pedido.' });
+    out.add({ text: 'Pode nos enviar o seu telefone para confirmar o seu pedido? Se não aparecer o seu telefone abaixo, pode digitá-lo por favor.' });
 
     const replies = new QuickReplies();
     replies.add({ text: 'Telefone', isPhoneNumber: true, data: 'phone_number', event: 'PHONE_NUMBER' });
@@ -262,14 +267,26 @@ export const askForPhone = async () => {
     return out;
 }
 
-export const showPhone = async (pageId, userId, phone) => {
-
-    // TODO: check if the location is in the neighborhood.
-
-    await updateOrder({ pageId, userId, phone });
-
+export const confirmTypedPhone = async (pageId, userId, phone) => {
     const out = new Elements();
-    out.add({ text: 'Ok, telefone recebido. Agora vamos ao que interessa, informações do pedido.' });
+
+    await updateOrder({ pageId, userId, waitingFor: 'phone' });
+
+    let _txt = 'O telefone ' + phone + 'está coreto?';
+    out.add({ text: _txt });
+
+    const replies = new QuickReplies();
+    replies.add({ text: "Sim", data: phone, event: 'PHONE_CONFIRMED' });
+    replies.add({ text: "Não, usar outro", data: "change_phone", event: 'PHONE_CONFIRMED' });
+    out.setQuickReplies(replies);
+
+    return out;
+}
+
+
+export const showPhone = async (pageId, userId, phone) => {
+    const out = new Elements();
+    out.add({ text: 'Usaremos o número ' + phone + ' para confirmar o pedido. Agora vamos ao que interessa, informações do pedido.' });
     return out;
 }
 

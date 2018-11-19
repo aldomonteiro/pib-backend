@@ -1,8 +1,11 @@
 var pagesArray = new Array();
 pagesArray.push('947115235484171');
 pagesArray.push('307519123184673');
+pagesArray.push('265213094338977');
 
-var userID = '174457213508641';
+var usersArray = new Array();
+usersArray.push('174457213508641');
+usersArray.push('141606196820358');
 
 printjson('* Connected to the database');
 
@@ -27,7 +30,10 @@ for (var i = 0; i < pagesArray.length; i++) {
     print('* Deleting page:');
     printjson(db.pages.deleteOne({ id: pageID }));
 }
-print('* Deleting user:');
-printjson(db.users.deleteOne({ userID: userID }));
-
+print('* Deleting users:');
+// delete pricings, sizes and flavors for the page:
+for (var i = 0; i < usersArray.length; i++) {
+    var userID = usersArray[i];
+    printjson(db.users.deleteOne({ userID: userID }));
+}
 
