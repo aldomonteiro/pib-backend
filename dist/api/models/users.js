@@ -23,8 +23,7 @@ var schema = new Schema({
     required: true
   },
   email: {
-    type: String,
-    required: true
+    type: String
   },
   pictureUrl: {
     type: String
