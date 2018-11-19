@@ -272,7 +272,7 @@ export const confirmTypedPhone = async (pageId, userId, phone) => {
 
     await updateOrder({ pageId, userId, waitingFor: 'phone' });
 
-    let _txt = 'O telefone ' + phone + 'está coreto?';
+    let _txt = 'O telefone ' + phone + ' está coreto?';
     out.add({ text: _txt });
 
     const replies = new QuickReplies();
@@ -285,8 +285,10 @@ export const confirmTypedPhone = async (pageId, userId, phone) => {
 
 
 export const showPhone = async (pageId, userId, phone) => {
+    await updateOrder({ pageId, userId, waitingFor: 'nothing' });
+
     const out = new Elements();
-    out.add({ text: 'Usaremos o número ' + phone + ' para confirmar o pedido. Agora vamos ao que interessa, informações do pedido.' });
+    out.add({ text: 'Usaremos o número ' + phone + ' para confirmar o pedido. Agora vou pegar as informações do pedido.' });
     return out;
 }
 

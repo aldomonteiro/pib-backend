@@ -911,7 +911,7 @@ function () {
             });
 
           case 3:
-            _txt = 'O telefone ' + phone + 'está coreto?';
+            _txt = 'O telefone ' + phone + ' está coreto?';
             out.add({
               text: _txt
             });
@@ -955,13 +955,21 @@ function () {
       while (1) {
         switch (_context16.prev = _context16.next) {
           case 0:
+            _context16.next = 2;
+            return (0, _ordersController.updateOrder)({
+              pageId: pageId,
+              userId: userId,
+              waitingFor: 'nothing'
+            });
+
+          case 2:
             out = new _facebookMessengerBot.Elements();
             out.add({
-              text: 'Usaremos o número ' + phone + ' para confirmar o pedido. Agora vamos ao que interessa, informações do pedido.'
+              text: 'Usaremos o número ' + phone + ' para confirmar o pedido. Agora vou pegar as informações do pedido.'
             });
             return _context16.abrupt("return", out);
 
-          case 3:
+          case 5:
           case "end":
             return _context16.stop();
         }
