@@ -353,7 +353,10 @@ function () {
               break;
             }
 
-            return _context6.abrupt("return", Promise.resolve(page.accessToken));
+            return _context6.abrupt("return", Promise.resolve({
+              accessToken: page.accessToken,
+              name: page.name
+            }));
 
           case 7:
             return _context6.abrupt("return", Promise.reject());

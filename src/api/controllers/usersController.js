@@ -18,16 +18,25 @@ export const users_auth = async (req, res) => {
                     timeZone: req.body.timeZone,
                     locationName: req.body.locationName,
                 });
+            } else {
+                user.accessToken = req.body.accessToken;
             }
 
             user.lastLogin = Date.now();
             user.locationName = req.body.locationName;
-            user.hasLongLivedToken = true;
             user.shortLivedToken = user.accessToken; // only for debug analysis
 
             const respChangeToken = await changeAccessToken(user.accessToken);
-            user.longLivedToken = respChangeToken.access_token; // only for debug analysis
-            user.accessToken = respChangeToken.access_token; // the token used in the system
+            if (respChangeToken) {
+                if (respChangeToken.hasOwnProperty('data')) {
+                    if (respChangeToken.data.hasOwnProperty('access_token')) {
+                        respChangeToken.access_token = respChangeToken.data.access_token;
+                    }
+                }
+                user.hasLongLivedToken = true;
+                user.longLivedToken = respChangeToken.access_token; // only for debug analysis
+                user.accessToken = respChangeToken.access_token; // the token used in the system
+            }
 
             await user.save();
             res.status(200).json({ user: user.toAuthJSON() });
@@ -169,28 +178,32 @@ export const users_delete = (req, res) => {
 
 
 export const changeAccessToken = async (accessToken) => {
+    try {
+        dotenv.config();
 
-    dotenv.config();
+        const env = process.env.NODE_ENV || 'production';
+        let facebook_app_id, facebook_secret_key = '';
 
-    const env = process.env.NODE_ENV || 'production';
-    let facebook_app_id, facebook_secret_key = '';
+        if (env === 'production') {
+            facebook_app_id = process.env.FACEBOOK_APP_ID;
+            facebook_secret_key = process.env.FACEBOOK_SECRET_KEY;
+        } else {
+            facebook_app_id = process.env.DEV_FACEBOOK_APP_ID;
+            facebook_secret_key = process.env.DEV_FACEBOOK_SECRET_KEY;
+        }
 
-    if (env === 'production') {
-        facebook_app_id = process.env.FACEBOOK_APP_ID;
-        facebook_secret_key = process.env.FACEBOOK_SECRET_KEY;
-    } else {
-        facebook_app_id = process.env.DEV_FACEBOOK_APP_ID;
-        facebook_secret_key = process.env.DEV_FACEBOOK_SECRET_KEY;
+        const facebookAccessTokenUrl = process.env.FACEBOOK_URL_OAUTH_ACCESS_TOKEN;
+        const params = {
+            grant_type: 'fb_exchange_token',
+            client_id: facebook_app_id,
+            client_secret: facebook_secret_key,
+            fb_exchange_token: accessToken,
+        }
+        return await axios.get(facebookAccessTokenUrl, { params });
+    } catch (changeAccessTokenError) {
+        console.error({ changeAccessToken });
+        return null;
     }
-
-    const facebookAccessTokenUrl = process.env.FACEBOOK_URL_OAUTH_ACCESS_TOKEN;
-    const params = {
-        grant_type: 'fb_exchange_token',
-        client_id: facebook_app_id,
-        client_secret: facebook_secret_key,
-        fb_exchange_token: accessToken,
-    }
-
-    return await axios.get(facebookAccessTokenUrl, { params }).then(res => res.data);
+    // return await axios.get(facebookAccessTokenUrl, { params }).then(res => res.data);
 }
 

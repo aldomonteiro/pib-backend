@@ -17,6 +17,7 @@ import {
   sendCardapio,
   askForPhone,
   showPhone,
+  askToTypePhone,
   askForQuantity,
   askForQuantityMore,
   showQuantity,
@@ -35,17 +36,11 @@ import {
   sendHorario,
   basicReply,
   askForChangeOrder,
-  askForOptionsToChange,
   askForFlavorOrConfirm,
   askForSpecificItem,
   updateItemAskOptions,
   showOrderOrAskForPhone
 } from './api/bot/botController';
-
-const
-  ORDER_STATE_QUANTITY = 1,
-  ORDER_STATE_SIZE = 2,
-  ORDER_STATE_FLAVOR = 3;
 
 dotenv.config();
 
@@ -56,24 +51,24 @@ mongoose.connect(
 mongoose.set('useCreateIndex', true);
 mongoose.Promise = Promise;
 
-global.pagesKeyID = new Array();
+global.pagesKeyID = new Object();
 
 const app = express();
 
 const bot = new Bot(process.env.FB_VERIFY_TOKEN, true);
 
-getAllPages().then(async (pageArray) => {
-  for (let i = 0; i < pageArray.length; i++) {
-    const page = pageArray[i];
-    const fields = ['greeting', 'get_started', 'persistent_menu'];
-    bot._token = page.accessToken;
-    const response = await bot.getFields(fields);
-    global.pagesKeyID[page.pageID] = page.accessToken;
+// getAllPages().then(async (pageArray) => {
+//   for (let i = 0; i < pageArray.length; i++) {
+//     const page = pageArray[i];
+//     const fields = ['greeting', 'get_started', 'persistent_menu'];
+//     bot._token = page.accessToken;
+//     const response = await bot.getFields(fields);
+//     global.pagesKeyID[page.pageID] = page.accessToken;
 
-    console.info(`GET fields for ${page.pageID}-${page.name}:`)
-    console.info(response);
-  }
-});
+//     console.info(`GET fields for ${page.pageID}-${page.name}:`)
+//     console.info(response);
+//   }
+// });
 
 
 // Beggining - That is all to log in the local timezone
@@ -91,24 +86,26 @@ app.set('json spaces', 2);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use('/buckets/facebook', async (req, res, next) => {
+  let doNext = true;
   if (req.body && req.body.object === 'page') {
     if (req.body.entry.length > 0) {
       try {
         // Iterates over each entry - there may be multiple if batched
         // for (let i = 0; i < req.body.entry.length; i++) {
         let pageID = req.body.entry[0].id;
-
-        console.info(`Message from ${pageID}`);
-
         if (global.pagesKeyID[pageID] && global.pagesKeyID[pageID] !== '') {
           req.token = global.pagesKeyID[pageID];
         }
         else {
-          const _accessToken = await getOnePageToken(pageID);
-          req.token = _accessToken;
-          global.pagesKeyID[pageID] = _accessToken;
-          console.info(`Got token from ${pageID}`);
+          const { accessToken, name } = await getOnePageToken(pageID);
+          req.token = accessToken;
+          global.pagesKeyID[pageID] = accessToken;
         }
+
+        const _time = req.body.entry[0].time;
+        const messageTime = new Date(_time).toLocaleTimeString('pt-BR');
+        console.info(`${messageTime} From ${pageID} memory tokens:${Object.keys(global.pagesKeyID).length}`);
+
       } catch (expressAppUseGetTokenError) {
         console.error({ expressAppUseGetTokenError });
       }
@@ -117,7 +114,8 @@ app.use('/buckets/facebook', async (req, res, next) => {
   else {
     console.log('Something came, not a page...');
   }
-  next();
+  if (doNext)
+    next();
 });
 
 app.use('/buckets/facebook', bot.router());
@@ -197,8 +195,6 @@ bot.on('message', async (message) => {
   const { sender, recipient, location } = message;
 
   try {
-    console.info({ message });
-
     if (location) {
       console.info({ location });
 
@@ -353,7 +349,7 @@ bot.on('PHONE_CONFIRMED', async (message, data) => {
   try {
     if (data === 'change_phone') {
       // next question
-      const out = await askForPhone(recipient.id, sender.id);
+      const out = await askToTypePhone(recipient.id, sender.id);
       await Bot.wait(1000);
       await bot.stopTyping(sender.id);
       await bot.send(sender.id, out);
@@ -429,14 +425,14 @@ bot.on('ORDER_SIZE', async (message, data) => {
   try {
     // show what the user chose
     await bot.startTyping(sender.id);
-    await Bot.wait(2000);
+    await Bot.wait(1000);
     const answer = await showSize(recipient.id, sender.id, data);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, answer);
 
     // next question
     await bot.startTyping(sender.id);
-    await Bot.wait(2000);
+    await Bot.wait(1000);
     const out = await askForFlavorOrConfirm(message.recipient.id, sender.id, 1);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, out);
@@ -466,7 +462,7 @@ bot.on('ORDER_FLAVOR', async (message, data) => {
     else {
       // show what the user chose
       await bot.startTyping(sender.id);
-      await Bot.wait(2000);
+      await Bot.wait(1000);
       const answer = await showFlavor(recipient.id, sender.id, data);
       await bot.stopTyping(sender.id);
       await bot.send(sender.id, answer);
@@ -501,6 +497,7 @@ bot.on('ORDER_CONFIRMATION', async (message, data) => {
       const out = await confirmOrder(recipient.id, sender.id);
       await bot.stopTyping(sender.id);
       await bot.send(sender.id, out);
+      delete global.pagesKeyID[recipient.id];
     }
     else if (data === 'confirmation_no') {
       await bot.startTyping(sender.id);

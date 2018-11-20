@@ -134,7 +134,7 @@ export const debugToken = async accessToken => {
 export const getOnePageToken = async (pageID) => {
     const page = await Page.findOne({ id: pageID }).exec();
     if (page && page.accessToken)
-        return Promise.resolve(page.accessToken);
+        return Promise.resolve({ accessToken: page.accessToken, name: page.name });
     else return Promise.reject();
 }
 

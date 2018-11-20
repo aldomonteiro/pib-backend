@@ -14,7 +14,7 @@
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "express-range": "^2.0.1",
-    "facebook-messenger-bot": "file:/Users/aldo/PIB/Bot/",
+    "facebook-messenger-bot": "file://Users/aldo/PIB/Bot/",
     "fb": "^2.0.0",
     "https": "^1.0.0",
     "jsonwebtoken": "^8.3.0",

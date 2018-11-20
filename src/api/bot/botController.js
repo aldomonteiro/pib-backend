@@ -259,11 +259,21 @@ export const askForPhone = async (pageId, userId) => {
     await updateOrder({ pageId, userId, waitingFor: 'phone' });
 
     const out = new Elements();
-    out.add({ text: 'Pode nos enviar o seu telefone para confirmar o seu pedido? Se não aparecer o seu telefone abaixo, pode digitá-lo por favor.' });
+    out.add({ text: 'Pode nos enviar o seu telefone para confirmar o seu pedido? Se não aparecer o seu telefone (ou estiver errado), use a opção digitar.' });
 
     const replies = new QuickReplies();
     replies.add({ text: 'Telefone', isPhoneNumber: true, data: 'phone_number', event: 'PHONE_NUMBER' });
+    replies.add({ text: 'Digitar o telefone', data: 'change_phone', event: 'PHONE_CONFIRMED' });
     out.setQuickReplies(replies);
+    return out;
+}
+
+export const askToTypePhone = async (pageId, userId) => {
+
+    await updateOrder({ pageId, userId, waitingFor: 'phone' });
+
+    const out = new Elements();
+    out.add({ text: 'Por favor, digite o número do telefone válido para que possamos confirmar o pedido. Pode digitar:' });
     return out;
 }
 
@@ -285,7 +295,7 @@ export const confirmTypedPhone = async (pageId, userId, phone) => {
 
 
 export const showPhone = async (pageId, userId, phone) => {
-    await updateOrder({ pageId, userId, waitingFor: 'nothing' });
+    await updateOrder({ pageId, userId, phone, waitingFor: 'nothing' });
 
     const out = new Elements();
     out.add({ text: 'Usaremos o número ' + phone + ' para confirmar o pedido. Agora vou pegar as informações do pedido.' });
@@ -483,7 +493,8 @@ export const showOrderOrNextItem = async (pageId, userId) => {
         for (let i = 0; i < po.items.length; i++) {
             _txt = _txt + `${po.items[i].qty} pizza ${po.items[i].size} de ${po.items[i].flavor}\n`;
         }
-        _txt = _txt + 'Endereço de entrega: ' + po.order.address + '\n';
+        _txt = _txt + '*Endereço de entrega:* ' + po.order.address + '\n';
+        _txt = _txt + '*Telefone:* ' + po.order.phone + '\n';
         _txt = _txt + 'Podemos confirmar o pedido?';
 
         out.add({ text: _txt });

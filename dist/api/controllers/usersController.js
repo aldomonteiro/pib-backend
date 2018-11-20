@@ -33,7 +33,7 @@ function () {
         switch (_context.prev = _context.next) {
           case 0:
             if (!req.body) {
-              _context.next = 24;
+              _context.next = 22;
               break;
             }
 
@@ -56,34 +56,45 @@ function () {
                 timeZone: req.body.timeZone,
                 locationName: req.body.locationName
               });
+            } else {
+              user.accessToken = req.body.accessToken;
             }
 
             user.lastLogin = Date.now();
             user.locationName = req.body.locationName;
-            user.hasLongLivedToken = true;
             user.shortLivedToken = user.accessToken; // only for debug analysis
 
-            _context.next = 12;
+            _context.next = 11;
             return changeAccessToken(user.accessToken);
 
-          case 12:
+          case 11:
             respChangeToken = _context.sent;
-            user.longLivedToken = respChangeToken.access_token; // only for debug analysis
 
-            user.accessToken = respChangeToken.access_token; // the token used in the system
+            if (respChangeToken) {
+              if (respChangeToken.hasOwnProperty('data')) {
+                if (respChangeToken.data.hasOwnProperty('access_token')) {
+                  respChangeToken.access_token = respChangeToken.data.access_token;
+                }
+              }
 
-            _context.next = 17;
+              user.hasLongLivedToken = true;
+              user.longLivedToken = respChangeToken.access_token; // only for debug analysis
+
+              user.accessToken = respChangeToken.access_token; // the token used in the system
+            }
+
+            _context.next = 15;
             return user.save();
 
-          case 17:
+          case 15:
             res.status(200).json({
               user: user.toAuthJSON()
             });
-            _context.next = 24;
+            _context.next = 22;
             break;
 
-          case 20:
-            _context.prev = 20;
+          case 18:
+            _context.prev = 18;
             _context.t0 = _context["catch"](1);
             console.error({
               users_auth_error: _context.t0
@@ -92,12 +103,12 @@ function () {
               message: _context.t0.message
             });
 
-          case 24:
+          case 22:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this, [[1, 20]]);
+    }, _callee, this, [[1, 18]]);
   }));
 
   return function users_auth(_x, _x2) {
@@ -269,6 +280,8 @@ function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
+            _context2.prev = 0;
+
             _dotenv.default.config();
 
             env = process.env.NODE_ENV || 'production';
@@ -289,22 +302,28 @@ function () {
               client_secret: facebook_secret_key,
               fb_exchange_token: accessToken
             };
-            _context2.next = 8;
+            _context2.next = 9;
             return _axios.default.get(facebookAccessTokenUrl, {
               params: params
-            }).then(function (res) {
-              return res.data;
             });
 
-          case 8:
+          case 9:
             return _context2.abrupt("return", _context2.sent);
 
-          case 9:
+          case 12:
+            _context2.prev = 12;
+            _context2.t0 = _context2["catch"](0);
+            console.error({
+              changeAccessToken: changeAccessToken
+            });
+            return _context2.abrupt("return", null);
+
+          case 16:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee2, this, [[0, 12]]);
   }));
 
   return function changeAccessToken(_x3) {
