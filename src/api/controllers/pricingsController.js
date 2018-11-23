@@ -1,6 +1,7 @@
 import Pricing from "../models/pricings";
 import util from "util";
 import { configSortQuery, configRangeQuery } from '../util/util';
+import { getSizes } from "./sizesController";
 
 // List all records
 // TODO: use filters in the query req.query
@@ -121,7 +122,27 @@ export const getPricingSizing = async pageId => {
 }
 
 export const getPricings = async (pageID) => {
-    let query = Pricing.find({ pageId: pageID });
+    const query = Pricing.find({ pageId: pageID });
     return await query.exec();
+}
+
+export const getOnePricing = async (pageID, kind, sizeID) => {
+    const query = Pricing.findOne({ pageId: pageID, kind: kind, sizeId: sizeID });
+    return await query.exec();
+}
+
+export const getPricingsWithSize = async pageID => {
+    const query = Pricing.find({ pageId: pageID });
+    query.sort('kind');
+    const pricings = await query.exec();
+    const sizes = await getSizes(pageID);
+    for (let pricing of pricings) {
+        for (let size of sizes) {
+            if (size.id === pricing.sizeId) {
+                pricing.size = size.size;
+            }
+        }
+    }
+    return pricings;
 }
 

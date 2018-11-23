@@ -3,13 +3,15 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getPricings = exports.getPricingSizing = exports.pricing_delete = exports.pricing_update = exports.pricing_create = exports.pricing_get_one = exports.pricing_get_all = void 0;
+exports.getPricingsWithSize = exports.getOnePricing = exports.getPricings = exports.getPricingSizing = exports.pricing_delete = exports.pricing_update = exports.pricing_create = exports.pricing_get_one = exports.pricing_get_all = void 0;
 
 var _pricings = _interopRequireDefault(require("../models/pricings"));
 
 var _util = _interopRequireDefault(require("util"));
 
 var _util2 = require("../util/util");
+
+var _sizesController = require("./sizesController");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -220,4 +222,183 @@ function () {
 }();
 
 exports.getPricings = getPricings;
+
+var getOnePricing =
+/*#__PURE__*/
+function () {
+  var _ref3 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee3(pageID, kind, sizeID) {
+    var query;
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            query = _pricings.default.findOne({
+              pageId: pageID,
+              kind: kind,
+              sizeId: sizeID
+            });
+            _context3.next = 3;
+            return query.exec();
+
+          case 3:
+            return _context3.abrupt("return", _context3.sent);
+
+          case 4:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3, this);
+  }));
+
+  return function getOnePricing(_x3, _x4, _x5) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+exports.getOnePricing = getOnePricing;
+
+var getPricingsWithSize =
+/*#__PURE__*/
+function () {
+  var _ref4 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee4(pageID) {
+    var query, pricings, sizes, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, pricing, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, size;
+
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            query = _pricings.default.find({
+              pageId: pageID
+            });
+            query.sort('kind');
+            _context4.next = 4;
+            return query.exec();
+
+          case 4:
+            pricings = _context4.sent;
+            _context4.next = 7;
+            return (0, _sizesController.getSizes)(pageID);
+
+          case 7:
+            sizes = _context4.sent;
+            _iteratorNormalCompletion = true;
+            _didIteratorError = false;
+            _iteratorError = undefined;
+            _context4.prev = 11;
+            _iterator = pricings[Symbol.iterator]();
+
+          case 13:
+            if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
+              _context4.next = 37;
+              break;
+            }
+
+            pricing = _step.value;
+            _iteratorNormalCompletion2 = true;
+            _didIteratorError2 = false;
+            _iteratorError2 = undefined;
+            _context4.prev = 18;
+
+            for (_iterator2 = sizes[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              size = _step2.value;
+
+              if (size.id === pricing.sizeId) {
+                pricing.size = size.size;
+              }
+            }
+
+            _context4.next = 26;
+            break;
+
+          case 22:
+            _context4.prev = 22;
+            _context4.t0 = _context4["catch"](18);
+            _didIteratorError2 = true;
+            _iteratorError2 = _context4.t0;
+
+          case 26:
+            _context4.prev = 26;
+            _context4.prev = 27;
+
+            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+              _iterator2.return();
+            }
+
+          case 29:
+            _context4.prev = 29;
+
+            if (!_didIteratorError2) {
+              _context4.next = 32;
+              break;
+            }
+
+            throw _iteratorError2;
+
+          case 32:
+            return _context4.finish(29);
+
+          case 33:
+            return _context4.finish(26);
+
+          case 34:
+            _iteratorNormalCompletion = true;
+            _context4.next = 13;
+            break;
+
+          case 37:
+            _context4.next = 43;
+            break;
+
+          case 39:
+            _context4.prev = 39;
+            _context4.t1 = _context4["catch"](11);
+            _didIteratorError = true;
+            _iteratorError = _context4.t1;
+
+          case 43:
+            _context4.prev = 43;
+            _context4.prev = 44;
+
+            if (!_iteratorNormalCompletion && _iterator.return != null) {
+              _iterator.return();
+            }
+
+          case 46:
+            _context4.prev = 46;
+
+            if (!_didIteratorError) {
+              _context4.next = 49;
+              break;
+            }
+
+            throw _iteratorError;
+
+          case 49:
+            return _context4.finish(46);
+
+          case 50:
+            return _context4.finish(43);
+
+          case 51:
+            return _context4.abrupt("return", pricings);
+
+          case 52:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4, this, [[11, 39, 43, 51], [18, 22, 26, 34], [27,, 29, 33], [44,, 46, 50]]);
+  }));
+
+  return function getPricingsWithSize(_x6) {
+    return _ref4.apply(this, arguments);
+  };
+}();
+
+exports.getPricingsWithSize = getPricingsWithSize;
 //# sourceMappingURL=pricingsController.js.map

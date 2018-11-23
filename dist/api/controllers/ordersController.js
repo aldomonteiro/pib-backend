@@ -30,14 +30,14 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(orderData) {
-    var pageId, userId, qty, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, waitingFor, first_name, last_name, profile_pic, order, _updateOrder, resultLastId, orderId, record, saved;
+    var pageId, userId, qty, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, waitingFor, sizeId, first_name, last_name, profile_pic, order, _updateOrder, resultLastId, orderId, record, saved;
 
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             _context.prev = 0;
-            pageId = orderData.pageId, userId = orderData.userId, qty = orderData.qty, location = orderData.location, user = orderData.user, phone = orderData.phone, addrData = orderData.addrData, completeItem = orderData.completeItem, confirmOrder = orderData.confirmOrder, waitingForAddress = orderData.waitingForAddress, waitingFor = orderData.waitingFor;
+            pageId = orderData.pageId, userId = orderData.userId, qty = orderData.qty, location = orderData.location, user = orderData.user, phone = orderData.phone, addrData = orderData.addrData, completeItem = orderData.completeItem, confirmOrder = orderData.confirmOrder, waitingForAddress = orderData.waitingForAddress, waitingFor = orderData.waitingFor, sizeId = orderData.sizeId;
 
             if (!user) {
               _context.next = 8;
@@ -117,7 +117,7 @@ function () {
             order = _context.sent;
 
             if (!order) {
-              _context.next = 42;
+              _context.next = 43;
               break;
             }
 
@@ -149,6 +149,11 @@ function () {
               _updateOrder = true;
             }
 
+            if (sizeId) {
+              order.currentItemSize = sizeId;
+              _updateOrder = true;
+            }
+
             if (completeItem) {
               if (order.item_complete) order.item_complete = order.item_complete + 1;else order.item_complete = 1;
               _updateOrder = true;
@@ -170,28 +175,28 @@ function () {
             }
 
             if (!_updateOrder) {
-              _context.next = 38;
+              _context.next = 39;
               break;
             }
 
-            _context.next = 38;
+            _context.next = 39;
             return order.save();
 
-          case 38:
-            _context.next = 40;
+          case 39:
+            _context.next = 41;
             return (0, _itemsController.updateItem)(orderData);
 
-          case 40:
-            _context.next = 55;
+          case 41:
+            _context.next = 56;
             break;
 
-          case 42:
-            _context.next = 44;
+          case 43:
+            _context.next = 45;
             return _orders.default.find({
               pageId: pageId
             }).select('id').sort('-id').limit(1).exec();
 
-          case 44:
+          case 45:
             resultLastId = _context.sent;
             orderId = 1;
             if (resultLastId && resultLastId.length) orderId = resultLastId[0].id + 1;
@@ -209,32 +214,32 @@ function () {
               waitingForAddress: typeof waitingForAddress === 'boolean' ? waitingForAddress : false,
               status: ORDERSTATUS_PENDING
             });
-            _context.next = 51;
+            _context.next = 52;
             return record.save();
 
-          case 51:
+          case 52:
             saved = _context.sent;
             orderData.orderId = saved.id;
-            _context.next = 55;
+            _context.next = 56;
             return (0, _itemsController.updateItem)(orderData);
 
-          case 55:
-            _context.next = 62;
+          case 56:
+            _context.next = 63;
             break;
 
-          case 57:
-            _context.prev = 57;
+          case 58:
+            _context.prev = 58;
             _context.t0 = _context["catch"](0);
             console.error("Error while updating order");
             console.error(_context.t0);
             (0, _rxjs.throwError)(_context.t0);
 
-          case 62:
+          case 63:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this, [[0, 57]]);
+    }, _callee, this, [[0, 58]]);
   }));
 
   return function updateOrder(_x) {

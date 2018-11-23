@@ -441,7 +441,8 @@ export const askForFlavor = async (pageId, userId, multiple) => {
     const out = new Elements();
     out.setListStyle('compact'); // or 'large'
 
-    const flavorsArray = await getFlavorsAndToppings(pageId);
+    const po = await getOrderPending({ pageId: pageId, userId: userId, isComplete: false });
+    const flavorsArray = await getFlavorsAndToppings(pageId, po.order.currentItemSize);
 
     let _rangeIni = (multiple - 1) * 4;
     let _rangeEnd = multiple * 4;
@@ -453,10 +454,9 @@ export const askForFlavor = async (pageId, userId, multiple) => {
             const buttons = new Buttons();
             buttons.add({ text: 'Quero', data: _data, event: 'ORDER_FLAVOR' });
 
-            let _tn = _fl.toppingsNames;
-            let _subtext = new String();
-            for (let j = 0; j < _tn.length; j++) {
-                _subtext = _subtext.concat(_tn[j].topping, ", ");
+            let _subtext = _fl.toppingsNames.join();
+            if (_fl.price) {
+                _subtext = _subtext.concat('\n R$', _fl.price);
             }
             out.add({ text: _fl.flavor, subtext: _subtext, buttons });
         }

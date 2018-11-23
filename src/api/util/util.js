@@ -31,6 +31,15 @@ export const choices_sizes = async () => {
     ]);
 }
 
+export const choices_kinds = () => {
+    return [
+        { id: 'tradicional', name: 'Tradicional' },
+        { id: 'especial', name: 'Especial' },
+        { id: 'doce', name: 'Doce' },
+    ];
+}
+
+
 /**
  * Shuffle (randomize) the elements of array
  * @param {*} array 

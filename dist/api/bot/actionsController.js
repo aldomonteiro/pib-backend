@@ -11,6 +11,8 @@ var _toppingsController = require("../controllers/toppingsController");
 
 var _storesController = require("../controllers/storesController");
 
+var _pricingsController = require("../controllers/pricingsController");
+
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -22,8 +24,9 @@ var getFlavorsAndToppings =
 function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee(pageID) {
-    var flavorArray, i, flavor, toppingArray;
+  regeneratorRuntime.mark(function _callee(pageID, sizeID) {
+    var flavorArray, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, flavor, pricing;
+
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -34,45 +37,99 @@ function () {
 
           case 3:
             flavorArray = _context.sent;
-            i = 0;
+            _iteratorNormalCompletion = true;
+            _didIteratorError = false;
+            _iteratorError = undefined;
+            _context.prev = 7;
+            _iterator = flavorArray[Symbol.iterator]();
 
-          case 5:
-            if (!(i < flavorArray.length)) {
-              _context.next = 14;
+          case 9:
+            if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
+              _context.next = 22;
               break;
             }
 
-            flavor = flavorArray[i];
-            _context.next = 9;
-            return (0, _toppingsController.getToppings)(flavor.toppings);
+            flavor = _step.value;
 
-          case 9:
-            toppingArray = _context.sent;
-            flavorArray[i].toppingsNames = toppingArray;
+            if (!sizeID) {
+              _context.next = 16;
+              break;
+            }
 
-          case 11:
-            i++;
-            _context.next = 5;
-            break;
+            _context.next = 14;
+            return (0, _pricingsController.getOnePricing)(pageID, flavor.kind, sizeID);
 
           case 14:
+            pricing = _context.sent;
+
+            if (pricing) {
+              flavor.price = pricing.price;
+            }
+
+          case 16:
+            _context.next = 18;
+            return (0, _toppingsController.getToppingsNames)(flavor.toppings);
+
+          case 18:
+            flavor.toppingsNames = _context.sent;
+
+          case 19:
+            _iteratorNormalCompletion = true;
+            _context.next = 9;
+            break;
+
+          case 22:
+            _context.next = 28;
+            break;
+
+          case 24:
+            _context.prev = 24;
+            _context.t0 = _context["catch"](7);
+            _didIteratorError = true;
+            _iteratorError = _context.t0;
+
+          case 28:
+            _context.prev = 28;
+            _context.prev = 29;
+
+            if (!_iteratorNormalCompletion && _iterator.return != null) {
+              _iterator.return();
+            }
+
+          case 31:
+            _context.prev = 31;
+
+            if (!_didIteratorError) {
+              _context.next = 34;
+              break;
+            }
+
+            throw _iteratorError;
+
+          case 34:
+            return _context.finish(31);
+
+          case 35:
+            return _context.finish(28);
+
+          case 36:
             return _context.abrupt("return", flavorArray);
 
-          case 17:
-            _context.prev = 17;
-            _context.t0 = _context["catch"](0);
+          case 39:
+            _context.prev = 39;
+            _context.t1 = _context["catch"](0);
             console.log("err on getFlavorsAndToppings");
-            console.log(_context.t0);
+            console.log(_context.t1);
 
-          case 21:
+          case 43:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this, [[0, 17]]);
+    }, _callee, this, [[0, 39], [7, 24, 28, 36], [29,, 31, 35]]);
   }));
 
-  return function getFlavorsAndToppings(_x) {
+  return function getFlavorsAndToppings(_x, _x2) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -83,22 +140,29 @@ var inputCardapioReplyMsg = function inputCardapioReplyMsg(flavorArray) {
   var replyMsg = '';
 
   if (flavorArray) {
-    for (var i = 0; i < flavorArray.length; i++) {
-      var flavor = flavorArray[i];
-      replyMsg = replyMsg + '*' + flavor.flavor + '*' + '\n';
-      var toppingArray = flavor.toppingsNames;
+    var _iteratorNormalCompletion2 = true;
+    var _didIteratorError2 = false;
+    var _iteratorError2 = undefined;
 
-      if (toppingArray) {
-        for (var k = 0; k < toppingArray.length; k++) {
-          var toppingObj = toppingArray[k];
-          if (k < toppingArray.length - 1) replyMsg = replyMsg + toppingObj.topping + ', ';else {
-            replyMsg = replyMsg.replace(/, $/, ' e '); // replace the last comma
-
-            replyMsg = replyMsg + toppingObj.topping;
-          }
-        }
-
+    try {
+      for (var _iterator2 = flavorArray[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+        var flavor = _step2.value;
+        replyMsg = replyMsg + '*' + flavor.flavor + '*' + '\n';
+        replyMsg = replyMsg + flavor.toppingsNames.join();
         replyMsg = replyMsg + '\n';
+      }
+    } catch (err) {
+      _didIteratorError2 = true;
+      _iteratorError2 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+          _iterator2.return();
+        }
+      } finally {
+        if (_didIteratorError2) {
+          throw _iteratorError2;
+        }
       }
     }
   }
@@ -181,7 +245,7 @@ function () {
     }, _callee2, this);
   }));
 
-  return function getOpenAndClose(_x2) {
+  return function getOpenAndClose(_x3) {
     return _ref2.apply(this, arguments);
   };
 }();
@@ -274,7 +338,7 @@ function () {
     }, _callee3, this);
   }));
 
-  return function validateBotOrder(_x3, _x4) {
+  return function validateBotOrder(_x4, _x5) {
     return _ref3.apply(this, arguments);
   };
 }();

@@ -118,3 +118,12 @@ export const getToppings = async (toppingsArray) => {
     queryTopping.select('topping');
     return await queryTopping.exec();
 }
+
+export const getToppingsNames = async (toppingsArray) => {
+    const toppingsModel = await getToppings(toppingsArray);
+    const toppingsNamesArray = new Array();
+    for (let topObj of toppingsModel) {
+        toppingsNamesArray.push(topObj.topping);
+    }
+    return toppingsNamesArray;
+}

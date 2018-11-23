@@ -1,16 +1,21 @@
 import { getFlavors, getFlavorByName } from "../controllers/flavorsController";
-import { getToppings } from "../controllers/toppingsController";
+import { getToppings, getToppingsNames } from "../controllers/toppingsController";
 import { getOpeningTimes } from '../controllers/storesController';
+import { getOnePricing } from '../controllers/pricingsController';
 
 const QTY_1 = [1, "um", "uma"];
 
-export const getFlavorsAndToppings = async (pageID) => {
+export const getFlavorsAndToppings = async (pageID, sizeID) => {
     try {
         const flavorArray = await getFlavors(pageID);
-        for (let i = 0; i < flavorArray.length; i++) {
-            const flavor = flavorArray[i];
-            const toppingArray = await getToppings(flavor.toppings);
-            flavorArray[i].toppingsNames = toppingArray;
+        for (let flavor of flavorArray) {
+            if (sizeID) {
+                const pricing = await getOnePricing(pageID, flavor.kind, sizeID);
+                if (pricing) {
+                    flavor.price = pricing.price;
+                }
+            }
+            flavor.toppingsNames = await getToppingsNames(flavor.toppings);
         }
         return flavorArray;
     } catch (err) {
@@ -22,22 +27,10 @@ export const getFlavorsAndToppings = async (pageID) => {
 export const inputCardapioReplyMsg = (flavorArray) => {
     let replyMsg = '';
     if (flavorArray) {
-        for (let i = 0; i < flavorArray.length; i++) {
-            const flavor = flavorArray[i];
+        for (const flavor of flavorArray) {
             replyMsg = replyMsg + '*' + flavor.flavor + '*' + '\n';
-            const toppingArray = flavor.toppingsNames;
-            if (toppingArray) {
-                for (let k = 0; k < toppingArray.length; k++) {
-                    const toppingObj = toppingArray[k];
-                    if (k < toppingArray.length - 1)
-                        replyMsg = replyMsg + toppingObj.topping + ', ';
-                    else {
-                        replyMsg = replyMsg.replace(/, $/, ' e '); // replace the last comma
-                        replyMsg = replyMsg + toppingObj.topping;
-                    }
-                }
-                replyMsg = replyMsg + '\n';
-            }
+            replyMsg = replyMsg + flavor.toppingsNames.join();
+            replyMsg = replyMsg + '\n';
         }
     }
     return replyMsg;

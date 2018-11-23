@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.shuffle = exports.choices_sizes = exports.configRangeQuery = exports.configSortQuery = void 0;
+exports.shuffle = exports.choices_kinds = exports.choices_sizes = exports.configRangeQuery = exports.configSortQuery = void 0;
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -84,13 +84,28 @@ function () {
     return _ref.apply(this, arguments);
   };
 }();
+
+exports.choices_sizes = choices_sizes;
+
+var choices_kinds = function choices_kinds() {
+  return [{
+    id: 'tradicional',
+    name: 'Tradicional'
+  }, {
+    id: 'especial',
+    name: 'Especial'
+  }, {
+    id: 'doce',
+    name: 'Doce'
+  }];
+};
 /**
  * Shuffle (randomize) the elements of array
  * @param {*} array 
  */
 
 
-exports.choices_sizes = choices_sizes;
+exports.choices_kinds = choices_kinds;
 
 var shuffle = function shuffle(array) {
   var currentIndex = array.length,

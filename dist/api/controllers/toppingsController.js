@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getToppings = exports.topping_delete = exports.topping_update = exports.topping_create = exports.topping_get_one = exports.topping_get_all = void 0;
+exports.getToppingsNames = exports.getToppings = exports.topping_delete = exports.topping_update = exports.topping_create = exports.topping_get_one = exports.topping_get_all = void 0;
 
 var _toppings = _interopRequireDefault(require("../models/toppings"));
 
@@ -192,4 +192,83 @@ function () {
 }();
 
 exports.getToppings = getToppings;
+
+var getToppingsNames =
+/*#__PURE__*/
+function () {
+  var _ref2 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee2(toppingsArray) {
+    var toppingsModel, toppingsNamesArray, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, topObj;
+
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.next = 2;
+            return getToppings(toppingsArray);
+
+          case 2:
+            toppingsModel = _context2.sent;
+            toppingsNamesArray = new Array();
+            _iteratorNormalCompletion = true;
+            _didIteratorError = false;
+            _iteratorError = undefined;
+            _context2.prev = 7;
+
+            for (_iterator = toppingsModel[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              topObj = _step.value;
+              toppingsNamesArray.push(topObj.topping);
+            }
+
+            _context2.next = 15;
+            break;
+
+          case 11:
+            _context2.prev = 11;
+            _context2.t0 = _context2["catch"](7);
+            _didIteratorError = true;
+            _iteratorError = _context2.t0;
+
+          case 15:
+            _context2.prev = 15;
+            _context2.prev = 16;
+
+            if (!_iteratorNormalCompletion && _iterator.return != null) {
+              _iterator.return();
+            }
+
+          case 18:
+            _context2.prev = 18;
+
+            if (!_didIteratorError) {
+              _context2.next = 21;
+              break;
+            }
+
+            throw _iteratorError;
+
+          case 21:
+            return _context2.finish(18);
+
+          case 22:
+            return _context2.finish(15);
+
+          case 23:
+            return _context2.abrupt("return", toppingsNamesArray);
+
+          case 24:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, this, [[7, 11, 15, 23], [16,, 18, 22]]);
+  }));
+
+  return function getToppingsNames(_x2) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+exports.getToppingsNames = getToppingsNames;
 //# sourceMappingURL=toppingsController.js.map

@@ -1508,7 +1508,7 @@ function () {
   var _ref25 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee24(pageId, userId, multiple) {
-    var out, flavorsArray, _rangeIni, _rangeEnd, i, _fl, _data, buttons, _tn, _subtext, j, buttonsOpt;
+    var out, po, flavorsArray, _rangeIni, _rangeEnd, i, _fl, _data, buttons, _subtext, buttonsOpt;
 
     return regeneratorRuntime.wrap(function _callee24$(_context24) {
       while (1) {
@@ -1518,9 +1518,18 @@ function () {
             out.setListStyle('compact'); // or 'large'
 
             _context24.next = 4;
-            return (0, _actionsController.getFlavorsAndToppings)(pageId);
+            return (0, _ordersController.getOrderPending)({
+              pageId: pageId,
+              userId: userId,
+              isComplete: false
+            });
 
           case 4:
+            po = _context24.sent;
+            _context24.next = 7;
+            return (0, _actionsController.getFlavorsAndToppings)(pageId, po.order.currentItemSize);
+
+          case 7:
             flavorsArray = _context24.sent;
             _rangeIni = (multiple - 1) * 4;
             _rangeEnd = multiple * 4;
@@ -1538,11 +1547,10 @@ function () {
                   data: _data,
                   event: 'ORDER_FLAVOR'
                 });
-                _tn = _fl.toppingsNames;
-                _subtext = new String();
+                _subtext = _fl.toppingsNames.join();
 
-                for (j = 0; j < _tn.length; j++) {
-                  _subtext = _subtext.concat(_tn[j].topping, ", ");
+                if (_fl.price) {
+                  _subtext = _subtext.concat('\n R$', _fl.price);
                 }
 
                 out.add({
@@ -1570,17 +1578,17 @@ function () {
               });
             }
 
-            _context24.next = 11;
+            _context24.next = 14;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
               waitingFor: 'flavor'
             });
 
-          case 11:
+          case 14:
             return _context24.abrupt("return", out);
 
-          case 12:
+          case 15:
           case "end":
             return _context24.stop();
         }

@@ -49,6 +49,9 @@ var schema = new Schema({
   item_complete: {
     type: Number
   },
+  currentItemSize: {
+    type: Number
+  },
   waitingForAddress: {
     type: Boolean
   },
