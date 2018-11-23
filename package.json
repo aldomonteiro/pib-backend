@@ -9,8 +9,6 @@
     "bcrypt": "^3.0.0",
     "bluebird": "^3.5.2",
     "body-parser": "^1.18.3",
-    "botkit": "^0.6.16",
-    "botkit-middleware-dialogflow": "^2.0.4",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "express-range": "^2.0.1",

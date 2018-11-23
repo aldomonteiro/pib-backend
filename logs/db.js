@@ -4,13 +4,25 @@ pagesArray.push('307519123184673');
 pagesArray.push('265213094338977');
 pagesArray.push('2123901781156118');
 pagesArray.push('580559252379681');
+pagesArray.push('183971055882144');
+pagesArray.push('704202906645913');
+pagesArray.push('2121200918121763');
+pagesArray.push('304832226791979');
+pagesArray.push('354668958621601');
+pagesArray.push('756517111367872');
+pagesArray.push('435366270326270');
+pagesArray.push('311527369681227');
 
 var usersArray = new Array();
 usersArray.push('174457213508641');
 usersArray.push('141606196820358');
-usersArray.push('106624043692655');
-usersArray.push('107417596946481');
-usersArray.push('106965730263507');
+usersArray.push('106624043692655'); // y
+usersArray.push('106965730263507'); // y
+usersArray.push('106789207010646'); // y
+usersArray.push('107417596946481'); // y
+usersArray.push('136517473954794'); // y
+usersArray.push('108525270104663'); // y
+
 
 printjson('* Connected to the database');
 
