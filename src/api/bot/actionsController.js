@@ -18,9 +18,8 @@ export const getFlavorsAndToppings = async (pageID, sizeID) => {
             flavor.toppingsNames = await getToppingsNames(flavor.toppings);
         }
         return flavorArray;
-    } catch (err) {
-        console.log("err on getFlavorsAndToppings");
-        console.log(err);
+    } catch (flavorsAndToppingsErr) {
+        console.error({ flavorsAndToppingsErr });
     }
 }
 

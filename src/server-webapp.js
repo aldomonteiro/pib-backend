@@ -19,6 +19,9 @@ import openingtimes from "./api/routes/openingtimes";
 import pages from "./api/routes/pages";
 import extras from "./api/routes/extras";
 import sizes from "./api/routes/sizes";
+import orders from "./api/routes/orders";
+import customers from "./api/routes/customers";
+
 
 const app = express();
 
@@ -71,6 +74,8 @@ app.use("/openingtimes", openingtimes);
 app.use("/pages", pages);
 app.use("/sizes", sizes);
 app.use("/extras", extras);
+app.use("/orders", orders);
+app.use("/customers", customers);
 
 const env = process.env.NODE_ENV || 'production';
 

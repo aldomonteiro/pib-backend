@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 
 const schema = new Schema({
   id: { type: Number, required: true },
+  customerId: { type: Number },
   userId: { type: String, required: true },
   pageId: { type: String, required: true },
   status: { type: Number },
@@ -18,6 +19,7 @@ const schema = new Schema({
   currentItemSize: { type: Number },
   waitingForAddress: { type: Boolean },
   waitingFor: { type: String },
+  total: { type: Number },
 }, { timestamps: true });
 
 schema.plugin(paginate);

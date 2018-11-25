@@ -17,6 +17,9 @@ var schema = new Schema({
     type: Number,
     required: true
   },
+  customerId: {
+    type: Number
+  },
   userId: {
     type: String,
     required: true
@@ -57,6 +60,9 @@ var schema = new Schema({
   },
   waitingFor: {
     type: String
+  },
+  total: {
+    type: Number
   }
 }, {
   timestamps: true

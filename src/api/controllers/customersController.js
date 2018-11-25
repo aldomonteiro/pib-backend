@@ -1,6 +1,55 @@
 import Customer from '../models/customers';
 import axios from 'axios';
+import util from "util";
 import { shuffle } from '../util/util';
+import { configSortQuery, configRangeQuery } from '../util/util';
+
+// List all customers
+// TODO: use filters in the query req.query
+export const customer_get_all = async (req, res) => {
+    // Getting the sort from the requisition
+    var sortObj = configSortQuery(req.query.sort);
+    // Getting the range from the requisition
+    var rangeObj = configRangeQuery(req.query.range);
+
+    let options = {
+        offset: rangeObj['offset'],
+        limit: rangeObj['limit'],
+        sort: sortObj,
+        lean: true,
+        leanWithId: false,
+    };
+
+    var query = {};
+
+    if (req.currentUser.activePage) {
+        query = Customer.find({ pageId: req.currentUser.activePage });
+    }
+
+    Customer.paginate(query, options, async (err, result) => {
+        if (err) {
+            res.status(500).json({ message: err.errmsg });
+        } else {
+            res.setHeader('Content-Range', util.format("customers %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
+            res.status(200).json(result.docs);
+        }
+    });
+};
+
+// List one record by filtering by ID
+export const customer_get_one = (req, res) => {
+    if (req.params && req.params.id) {
+        const pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
+        Customer.findOne({ pageId: pageId, id: req.params.id }, (err, doc) => {
+            if (err) {
+                res.status(500).json({ message: err.errMsg });
+            }
+            else {
+                res.status(200).json(doc);
+            }
+        });
+    }
+}
 
 export const checkCustomerAddress = async (pageID, userID, location) => {
     let addressData = await getCustomerAddress(pageID, userID);
@@ -79,20 +128,18 @@ const googleMapsAPI = async (location, API_KEY) => {
 }
 
 export const customer_update = async (custData) => {
-
+    let customerID = 0;
     const customer = await Customer.findOne({ pageId: custData.pageId, userId: custData.userId }).exec();
 
     if (customer && customer.id) {
+        customerID = customer.id;
         const { first_name, last_name, phone, profile_pic, location, addrData } = custData;
 
         let updateDb = false;
-        if (first_name || last_name) {
+        if (first_name || last_name || profile_pic) {
             customer.first_name = first_name;
             customer.last_name = last_name;
-            updateDb = true;
-        }
-        if (profile_pic) {
-            customer.profilePic = profile_pic;
+            customer.profile_pic = profile_pic;
             updateDb = true;
         }
         if (phone) {
@@ -122,9 +169,7 @@ export const customer_update = async (custData) => {
         }
 
         if (updateDb) {
-            await customer.save((err, result) => {
-                if (err) throw err;
-            });
+            await customer.save();
         }
     } else {
         const resultLastId = Customer.find({ pageId: custData.pageId })
@@ -141,7 +186,7 @@ export const customer_update = async (custData) => {
             pageId: custData.pageId,
             first_name: custData.first_name,
             last_name: custData.last_name,
-            profilePic: custData.profile_pic,
+            profile_pic: custData.profile_pic,
             email: custData.email,
             phone: custData.phone,
             addr_formatted: custData.addr ? custData.addr.formattedAddress : null,
@@ -156,10 +201,10 @@ export const customer_update = async (custData) => {
             location_url: custData.location ? custData.location.url : null,
         });
 
-        newRecord.save((err, result) => {
-            if (err) throw err;
-        });
+        await newRecord.save();
+        customerID = newRecord.id;
     }
+    return customerID;
 }
 
 export const formatAddrData = async addrData => {

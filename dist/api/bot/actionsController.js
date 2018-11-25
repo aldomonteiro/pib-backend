@@ -118,10 +118,11 @@ function () {
           case 39:
             _context.prev = 39;
             _context.t1 = _context["catch"](0);
-            console.log("err on getFlavorsAndToppings");
-            console.log(_context.t1);
+            console.error({
+              flavorsAndToppingsErr: _context.t1
+            });
 
-          case 43:
+          case 42:
           case "end":
             return _context.stop();
         }

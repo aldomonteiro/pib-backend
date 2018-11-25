@@ -40,6 +40,10 @@ var _extras = _interopRequireDefault(require("./api/routes/extras"));
 
 var _sizes = _interopRequireDefault(require("./api/routes/sizes"));
 
+var _orders = _interopRequireDefault(require("./api/routes/orders"));
+
+var _customers = _interopRequireDefault(require("./api/routes/customers"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var app = (0, _express.default)(); // Beggining - That is all to log in the local timezone
@@ -93,6 +97,8 @@ app.use("/openingtimes", _openingtimes.default);
 app.use("/pages", _pages.default);
 app.use("/sizes", _sizes.default);
 app.use("/extras", _extras.default);
+app.use("/orders", _orders.default);
+app.use("/customers", _customers.default);
 var env = process.env.NODE_ENV || 'production';
 if (env === 'production') app.listen(8080, function () {
   return console.log(env + "env. Server listening on port 8080");
