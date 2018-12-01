@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getPricingsWithSize = exports.getOnePricing = exports.getPricings = exports.getPricingSizing = exports.pricing_delete = exports.pricing_update = exports.pricing_create = exports.pricing_get_one = exports.pricing_get_all = void 0;
+exports.getPricingsWithSize = exports.getOnePricingByFlavor = exports.getOnePricing = exports.getPricings = exports.getPricingSizing = exports.pricing_delete = exports.pricing_update = exports.pricing_create = exports.pricing_get_one = exports.pricing_get_all = void 0;
 
 var _pricings = _interopRequireDefault(require("../models/pricings"));
 
@@ -12,6 +12,8 @@ var _util = _interopRequireDefault(require("util"));
 var _util2 = require("../util/util");
 
 var _sizesController = require("./sizesController");
+
+var _flavorsController = require("./flavorsController");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -260,41 +262,87 @@ function () {
 
 exports.getOnePricing = getOnePricing;
 
-var getPricingsWithSize =
+var getOnePricingByFlavor =
 /*#__PURE__*/
 function () {
   var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee4(pageID) {
-    var query, pricings, sizes, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, pricing, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, size;
-
+  regeneratorRuntime.mark(function _callee4(pageID, sizeID, flavorID) {
+    var flavor;
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
+          case 0:
+            _context4.next = 2;
+            return (0, _flavorsController.getFlavor)(pageID, flavorID);
+
+          case 2:
+            flavor = _context4.sent;
+
+            if (!flavor) {
+              _context4.next = 9;
+              break;
+            }
+
+            _context4.next = 6;
+            return getOnePricing(pageID, flavor.kind, sizeID);
+
+          case 6:
+            return _context4.abrupt("return", _context4.sent);
+
+          case 9:
+            return _context4.abrupt("return", null);
+
+          case 10:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4, this);
+  }));
+
+  return function getOnePricingByFlavor(_x6, _x7, _x8) {
+    return _ref4.apply(this, arguments);
+  };
+}();
+
+exports.getOnePricingByFlavor = getOnePricingByFlavor;
+
+var getPricingsWithSize =
+/*#__PURE__*/
+function () {
+  var _ref5 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee5(pageID) {
+    var query, pricings, sizes, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, pricing, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, size;
+
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
           case 0:
             query = _pricings.default.find({
               pageId: pageID
             });
             query.sort('kind');
-            _context4.next = 4;
+            _context5.next = 4;
             return query.exec();
 
           case 4:
-            pricings = _context4.sent;
-            _context4.next = 7;
+            pricings = _context5.sent;
+            _context5.next = 7;
             return (0, _sizesController.getSizes)(pageID);
 
           case 7:
-            sizes = _context4.sent;
+            sizes = _context5.sent;
             _iteratorNormalCompletion = true;
             _didIteratorError = false;
             _iteratorError = undefined;
-            _context4.prev = 11;
+            _context5.prev = 11;
             _iterator = pricings[Symbol.iterator]();
 
           case 13:
             if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-              _context4.next = 37;
+              _context5.next = 37;
               break;
             }
 
@@ -302,7 +350,7 @@ function () {
             _iteratorNormalCompletion2 = true;
             _didIteratorError2 = false;
             _iteratorError2 = undefined;
-            _context4.prev = 18;
+            _context5.prev = 18;
 
             for (_iterator2 = sizes[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
               size = _step2.value;
@@ -312,91 +360,91 @@ function () {
               }
             }
 
-            _context4.next = 26;
+            _context5.next = 26;
             break;
 
           case 22:
-            _context4.prev = 22;
-            _context4.t0 = _context4["catch"](18);
+            _context5.prev = 22;
+            _context5.t0 = _context5["catch"](18);
             _didIteratorError2 = true;
-            _iteratorError2 = _context4.t0;
+            _iteratorError2 = _context5.t0;
 
           case 26:
-            _context4.prev = 26;
-            _context4.prev = 27;
+            _context5.prev = 26;
+            _context5.prev = 27;
 
             if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
               _iterator2.return();
             }
 
           case 29:
-            _context4.prev = 29;
+            _context5.prev = 29;
 
             if (!_didIteratorError2) {
-              _context4.next = 32;
+              _context5.next = 32;
               break;
             }
 
             throw _iteratorError2;
 
           case 32:
-            return _context4.finish(29);
+            return _context5.finish(29);
 
           case 33:
-            return _context4.finish(26);
+            return _context5.finish(26);
 
           case 34:
             _iteratorNormalCompletion = true;
-            _context4.next = 13;
+            _context5.next = 13;
             break;
 
           case 37:
-            _context4.next = 43;
+            _context5.next = 43;
             break;
 
           case 39:
-            _context4.prev = 39;
-            _context4.t1 = _context4["catch"](11);
+            _context5.prev = 39;
+            _context5.t1 = _context5["catch"](11);
             _didIteratorError = true;
-            _iteratorError = _context4.t1;
+            _iteratorError = _context5.t1;
 
           case 43:
-            _context4.prev = 43;
-            _context4.prev = 44;
+            _context5.prev = 43;
+            _context5.prev = 44;
 
             if (!_iteratorNormalCompletion && _iterator.return != null) {
               _iterator.return();
             }
 
           case 46:
-            _context4.prev = 46;
+            _context5.prev = 46;
 
             if (!_didIteratorError) {
-              _context4.next = 49;
+              _context5.next = 49;
               break;
             }
 
             throw _iteratorError;
 
           case 49:
-            return _context4.finish(46);
+            return _context5.finish(46);
 
           case 50:
-            return _context4.finish(43);
+            return _context5.finish(43);
 
           case 51:
-            return _context4.abrupt("return", pricings);
+            return _context5.abrupt("return", pricings);
 
           case 52:
           case "end":
-            return _context4.stop();
+            return _context5.stop();
         }
       }
-    }, _callee4, this, [[11, 39, 43, 51], [18, 22, 26, 34], [27,, 29, 33], [44,, 46, 50]]);
+    }, _callee5, this, [[11, 39, 43, 51], [18, 22, 26, 34], [27,, 29, 33], [44,, 46, 50]]);
   }));
 
-  return function getPricingsWithSize(_x6) {
-    return _ref4.apply(this, arguments);
+  return function getPricingsWithSize(_x9) {
+    return _ref5.apply(this, arguments);
   };
 }();
 

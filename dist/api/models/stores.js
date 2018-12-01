@@ -37,6 +37,9 @@ var schema = new Schema({
   phone: {
     type: String
   },
+  delivery_fee: {
+    type: Number
+  },
   location_lat: {
     type: Number
   },

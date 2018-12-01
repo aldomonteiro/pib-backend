@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.validateBotOrder = exports.inputHorarioReplyMsg = exports.getOpenAndClose = exports.inputCardapioReplyMsg = exports.getFlavorsAndToppings = void 0;
+exports.addQuickReplyOptions = exports.inputHorarioReplyMsg = exports.getOpenAndClose = exports.inputCardapioReplyMsg = exports.getFlavorsAndToppings = void 0;
 
 var _flavorsController = require("../controllers/flavorsController");
 
@@ -18,6 +18,11 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 var QTY_1 = [1, "um", "uma"];
+/**
+ * Returns array of flavors. If sizeID was passed, only returns flavors with price.
+ * @param {*} pageID 
+ * @param {*} sizeID 
+ */
 
 var getFlavorsAndToppings =
 /*#__PURE__*/
@@ -25,7 +30,7 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(pageID, sizeID) {
-    var flavorArray, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, flavor, pricing;
+    var flavorArray, flavorsWithPrice, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, flavor, pricing;
 
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -37,97 +42,121 @@ function () {
 
           case 3:
             flavorArray = _context.sent;
+            flavorsWithPrice = new Array();
             _iteratorNormalCompletion = true;
             _didIteratorError = false;
             _iteratorError = undefined;
-            _context.prev = 7;
+            _context.prev = 8;
             _iterator = flavorArray[Symbol.iterator]();
 
-          case 9:
+          case 10:
             if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-              _context.next = 22;
+              _context.next = 32;
               break;
             }
 
             flavor = _step.value;
 
             if (!sizeID) {
-              _context.next = 16;
+              _context.next = 17;
               break;
             }
 
-            _context.next = 14;
+            _context.next = 15;
             return (0, _pricingsController.getOnePricing)(pageID, flavor.kind, sizeID);
 
-          case 14:
+          case 15:
             pricing = _context.sent;
 
             if (pricing) {
               flavor.price = pricing.price;
             }
 
-          case 16:
-            _context.next = 18;
+          case 17:
+            if (!sizeID) {
+              _context.next = 25;
+              break;
+            }
+
+            if (!flavor.price) {
+              _context.next = 23;
+              break;
+            }
+
+            _context.next = 21;
             return (0, _toppingsController.getToppingsNames)(flavor.toppings);
 
-          case 18:
+          case 21:
             flavor.toppingsNames = _context.sent;
+            flavorsWithPrice.push(flavor);
 
-          case 19:
+          case 23:
+            _context.next = 29;
+            break;
+
+          case 25:
+            _context.next = 27;
+            return (0, _toppingsController.getToppingsNames)(flavor.toppings);
+
+          case 27:
+            flavor.toppingsNames = _context.sent;
+            flavorsWithPrice.push(flavor);
+
+          case 29:
             _iteratorNormalCompletion = true;
-            _context.next = 9;
+            _context.next = 10;
             break;
 
-          case 22:
-            _context.next = 28;
+          case 32:
+            _context.next = 38;
             break;
 
-          case 24:
-            _context.prev = 24;
-            _context.t0 = _context["catch"](7);
+          case 34:
+            _context.prev = 34;
+            _context.t0 = _context["catch"](8);
             _didIteratorError = true;
             _iteratorError = _context.t0;
 
-          case 28:
-            _context.prev = 28;
-            _context.prev = 29;
+          case 38:
+            _context.prev = 38;
+            _context.prev = 39;
 
             if (!_iteratorNormalCompletion && _iterator.return != null) {
               _iterator.return();
             }
 
-          case 31:
-            _context.prev = 31;
+          case 41:
+            _context.prev = 41;
 
             if (!_didIteratorError) {
-              _context.next = 34;
+              _context.next = 44;
               break;
             }
 
             throw _iteratorError;
 
-          case 34:
-            return _context.finish(31);
+          case 44:
+            return _context.finish(41);
 
-          case 35:
-            return _context.finish(28);
+          case 45:
+            return _context.finish(38);
 
-          case 36:
-            return _context.abrupt("return", flavorArray);
+          case 46:
+            return _context.abrupt("return", flavorsWithPrice);
 
-          case 39:
-            _context.prev = 39;
+          case 49:
+            _context.prev = 49;
             _context.t1 = _context["catch"](0);
             console.error({
               flavorsAndToppingsErr: _context.t1
             });
 
-          case 42:
+          case 52:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this, [[0, 39], [7, 24, 28, 36], [29,, 31, 35]]);
+    }, _callee, this, [[0, 49], [8, 34, 38, 46], [39,, 41, 45]]);
   }));
 
   return function getFlavorsAndToppings(_x, _x2) {
@@ -270,107 +299,10 @@ var inputHorarioReplyMsg = function inputHorarioReplyMsg(openAndClose) {
 
   return replyMsg;
 };
-/**
- * validateBotOrder
- * @param {*} pageID 
- * @param {*} entities 
- * @return
- */
-
 
 exports.inputHorarioReplyMsg = inputHorarioReplyMsg;
 
-var validateBotOrder =
-/*#__PURE__*/
-function () {
-  var _ref3 = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee3(pageID, entities) {
-    var quantidade, tamanho, produto, sabor, validated, replyText, order_flavor, order_qty, order_size, order_prod, order_flav;
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
-      while (1) {
-        switch (_context3.prev = _context3.next) {
-          case 0:
-            quantidade = entities.quantidade, tamanho = entities.tamanho, produto = entities.produto, sabor = entities.sabor;
-            validated = basicValidation(quantidade, tamanho, produto, sabor);
-            replyText = new String();
+var addQuickReplyOptions = function addQuickReplyOptions(quickReplyOptions) {};
 
-            if (!(validated === 0)) {
-              _context3.next = 10;
-              break;
-            }
-
-            _context3.next = 6;
-            return (0, _flavorsController.getFlavorByName)(pageID, sabor[0]);
-
-          case 6:
-            order_flavor = _context3.sent;
-
-            if (order_flavor) {
-              order_qty = quantidade[0];
-              order_size = tamanho[0];
-              order_prod = produto.length > 0 ? produto[0] : 'pizza';
-              order_flav = order_flavor.flavor;
-              replyText = 'Ok, o seu pedido é : \n';
-              replyText = replyText.concat(order_qty, ' ', order_prod, ' ', order_size, ' de ', order_flav, '\n');
-              replyText = replyText.concat('Para confirmar, digite SIM. Se tem algum problema, diga pra mim o que está errado');
-            } else {
-              replyText = 'Não temos o sabor ' + sabor[0];
-            }
-
-            _context3.next = 11;
-            break;
-
-          case 10:
-            if (validated === 1) {
-              replyText = 'A quantidade solicitada não bate, vou questionar se está faltando algo...';
-            } else {
-              replyText = 'Algum problema com tamanho ou sabor...';
-            }
-
-          case 11:
-            return _context3.abrupt("return", replyText);
-
-          case 12:
-          case "end":
-            return _context3.stop();
-        }
-      }
-    }, _callee3, this);
-  }));
-
-  return function validateBotOrder(_x4, _x5) {
-    return _ref3.apply(this, arguments);
-  };
-}();
-/**
- * basicValidation
- * @param {*} quantidade 
- * @param {*} tamanho 
- * @param {*} produto 
- * @param {*} sabor 
- * @returns
- *      0 - if the validation passed
- *      1 - if quantidade validation failed
- *      2 - if tamanho validation failed
- *      3 - if produto validation failed
- *      4 - if sabor validation failed
- */
-
-
-exports.validateBotOrder = validateBotOrder;
-
-var basicValidation = function basicValidation(quantidade, tamanho, produto, sabor) {
-  // 1 pizza, 1 sabor, 1 quantidade
-  if (quantidade.length === 1) {
-    // && QTY_1.includes(quantidade[1])) {
-    if (tamanho.length === 1) {
-      if (sabor.length === 1) {
-        return 0;
-      }
-    }
-  }
-
-  return 5;
-};
+exports.addQuickReplyOptions = addQuickReplyOptions;
 //# sourceMappingURL=actionsController.js.map

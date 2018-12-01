@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getOrderPending = exports.updateOrder = exports.order_get_one = exports.order_get_all = void 0;
+exports.getOrdersCustomerStat = exports.getOrderPending = exports.updateOrder = exports.order_get_one = exports.order_get_all = void 0;
 
 var _orders = _interopRequireDefault(require("../models/orders"));
 
@@ -33,136 +33,131 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(req, res) {
-    var sortObj, rangeObj, options, query, pageID;
+    var sortObj, rangeObj, filterObj, queryParam;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            // Getting the sort from the requisition
-            sortObj = (0, _util2.configSortQuery)(req.query.sort); // Getting the range from the requisition
+            try {
+              console.info(req.query.filter);
+              sortObj = (0, _util2.configSortQuery)(req.query.sort);
+              rangeObj = (0, _util2.configRangeQueryNew)(req.query.range);
+              filterObj = (0, _util2.configFilterQuery)(req.query.filter);
+              queryParam = {};
 
-            rangeObj = (0, _util2.configRangeQuery)(req.query.range);
-            options = {
-              offset: rangeObj['offset'],
-              limit: rangeObj['limit'],
-              sort: sortObj,
-              lean: true,
-              leanWithId: false
-            };
-            query = {};
-            pageID = null;
+              if (req.currentUser.activePage) {
+                queryParam['pageId'] = req.currentUser.activePage;
+              }
 
-            if (req.currentUser.activePage) {
-              pageID = req.currentUser.activePage;
-              query = _orders.default.find({
-                pageId: pageID
+              if (filterObj) {
+                if (typeof filterObj.filterValues === 'Array') {
+                  queryParam[filterObj.filterField] = {
+                    $in: filterObj.filterValues
+                  };
+                } else {
+                  queryParam[filterObj.filterField] = filterObj.filterValues;
+                }
+              }
+
+              _orders.default.find(queryParam).sort(sortObj).exec(
+              /*#__PURE__*/
+              function () {
+                var _ref2 = _asyncToGenerator(
+                /*#__PURE__*/
+                regeneratorRuntime.mark(function _callee(findError, result) {
+                  var _rangeIni, _rangeEnd, _totalCount, ordersArray, i, order, items, jsonOrder;
+
+                  return regeneratorRuntime.wrap(function _callee$(_context) {
+                    while (1) {
+                      switch (_context.prev = _context.next) {
+                        case 0:
+                          if (!findError) {
+                            _context.next = 5;
+                            break;
+                          }
+
+                          console.error({
+                            findError: findError
+                          });
+                          res.status(500).json({
+                            message: findError.message
+                          });
+                          _context.next = 23;
+                          break;
+
+                        case 5:
+                          _rangeIni = 0;
+                          _rangeEnd = result.length;
+
+                          if (rangeObj) {
+                            _rangeIni = rangeObj.offset <= result.length ? rangeObj.offset : result.length;
+                            _rangeEnd = rangeObj.offset + rangeObj.limit <= result.length ? rangeObj.offset + rangeObj.limit : result.length;
+                          }
+
+                          _totalCount = result.length;
+                          ordersArray = new Array();
+                          i = _rangeIni;
+
+                        case 11:
+                          if (!(i < _rangeEnd)) {
+                            _context.next = 21;
+                            break;
+                          }
+
+                          order = result[i];
+                          _context.next = 15;
+                          return (0, _itemsController.getItems)({
+                            orderId: order.id,
+                            pageId: order.pageId
+                          });
+
+                        case 15:
+                          items = _context.sent;
+                          jsonOrder = {
+                            id: order.id,
+                            pageId: order.pageId,
+                            customerId: order.customerId,
+                            userId: order.userId,
+                            status: order.status,
+                            status2: order.status2,
+                            qty_total: order.qty_total,
+                            total: order.total,
+                            createdAt: order.createdAt,
+                            items: items
+                          };
+                          ordersArray.push(jsonOrder);
+
+                        case 18:
+                          i++;
+                          _context.next = 11;
+                          break;
+
+                        case 21:
+                          res.setHeader('Content-Range', _util.default.format("orders %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
+                          res.status(200).json(ordersArray);
+
+                        case 23:
+                        case "end":
+                          return _context.stop();
+                      }
+                    }
+                  }, _callee, this);
+                }));
+
+                return function (_x3, _x4) {
+                  return _ref2.apply(this, arguments);
+                };
+              }());
+            } catch (orderGetAllErr) {
+              console.error({
+                orderGetAllErr: orderGetAllErr
+              });
+              res.status(500).json({
+                message: orderGetAllErr.message
               });
             }
 
-            _orders.default.paginate(query, options,
-            /*#__PURE__*/
-            function () {
-              var _ref2 = _asyncToGenerator(
-              /*#__PURE__*/
-              regeneratorRuntime.mark(function _callee(err, result) {
-                var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, order, items;
-
-                return regeneratorRuntime.wrap(function _callee$(_context) {
-                  while (1) {
-                    switch (_context.prev = _context.next) {
-                      case 0:
-                        if (!err) {
-                          _context.next = 4;
-                          break;
-                        }
-
-                        res.status(500).json({
-                          message: err.errmsg
-                        });
-                        _context.next = 34;
-                        break;
-
-                      case 4:
-                        _iteratorNormalCompletion = true;
-                        _didIteratorError = false;
-                        _iteratorError = undefined;
-                        _context.prev = 7;
-                        _iterator = result.docs[Symbol.iterator]();
-
-                      case 9:
-                        if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-                          _context.next = 18;
-                          break;
-                        }
-
-                        order = _step.value;
-                        _context.next = 13;
-                        return (0, _itemsController.getItems)({
-                          orderId: order.id,
-                          pageId: order.pageId
-                        });
-
-                      case 13:
-                        items = _context.sent;
-                        order.items = items;
-
-                      case 15:
-                        _iteratorNormalCompletion = true;
-                        _context.next = 9;
-                        break;
-
-                      case 18:
-                        _context.next = 24;
-                        break;
-
-                      case 20:
-                        _context.prev = 20;
-                        _context.t0 = _context["catch"](7);
-                        _didIteratorError = true;
-                        _iteratorError = _context.t0;
-
-                      case 24:
-                        _context.prev = 24;
-                        _context.prev = 25;
-
-                        if (!_iteratorNormalCompletion && _iterator.return != null) {
-                          _iterator.return();
-                        }
-
-                      case 27:
-                        _context.prev = 27;
-
-                        if (!_didIteratorError) {
-                          _context.next = 30;
-                          break;
-                        }
-
-                        throw _iteratorError;
-
-                      case 30:
-                        return _context.finish(27);
-
-                      case 31:
-                        return _context.finish(24);
-
-                      case 32:
-                        res.setHeader('Content-Range', _util.default.format("orders %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
-                        res.status(200).json(result.docs);
-
-                      case 34:
-                      case "end":
-                        return _context.stop();
-                    }
-                  }
-                }, _callee, this, [[7, 20, 24, 32], [25,, 27, 31]]);
-              }));
-
-              return function (_x3, _x4) {
-                return _ref2.apply(this, arguments);
-              };
-            }());
-
-          case 7:
+          case 1:
           case "end":
             return _context2.stop();
         }
@@ -178,41 +173,107 @@ function () {
 
 exports.order_get_all = order_get_all;
 
-var order_get_one = function order_get_one(req, res) {
-  if (req.params && req.params.id) {
-    var pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
+var order_get_one =
+/*#__PURE__*/
+function () {
+  var _ref3 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee3(req, res) {
+    var pageId, order, items, jsonItems, jsonOrder;
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            if (!(req.params && req.params.id)) {
+              _context3.next = 19;
+              break;
+            }
 
-    _orders.default.findOne({
-      pageId: pageId,
-      id: req.params.id
-    }, function (err, doc) {
-      if (err) {
-        res.status(500).json({
-          message: err.errMsg
-        });
-      } else {
-        res.status(200).json(doc);
+            _context3.prev = 1;
+            pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
+            _context3.next = 5;
+            return _orders.default.findOne({
+              pageId: pageId,
+              id: req.params.id
+            });
+
+          case 5:
+            order = _context3.sent;
+            _context3.next = 8;
+            return (0, _itemsController.getItems)({
+              orderId: order.id,
+              pageId: pageId
+            });
+
+          case 8:
+            items = _context3.sent;
+            jsonItems = [];
+            items.forEach(function (item) {
+              var jsonItem = {
+                id: item.id,
+                flavorId: item.flavorId,
+                sizeId: item.sizeId,
+                price: item.price,
+                qty: item.qty,
+                split: item.split,
+                flavor: item.flavor,
+                size: item.size
+              };
+              jsonItems.push(jsonItem);
+            });
+            jsonOrder = {
+              id: order.id,
+              customerId: order.customerId,
+              createdAt: order.createdAt,
+              qty_total: order.qty_total,
+              status: order.status,
+              status2: order.status2,
+              total: order.total,
+              items: jsonItems
+            };
+            res.status(200).json(jsonOrder);
+            _context3.next = 19;
+            break;
+
+          case 15:
+            _context3.prev = 15;
+            _context3.t0 = _context3["catch"](1);
+            console.error({
+              orderGetOneError: _context3.t0
+            });
+            res.status(500).json({
+              message: _context3.t0.message
+            });
+
+          case 19:
+          case "end":
+            return _context3.stop();
+        }
       }
-    });
-  }
-};
+    }, _callee3, this, [[1, 15]]);
+  }));
+
+  return function order_get_one(_x5, _x6) {
+    return _ref3.apply(this, arguments);
+  };
+}();
 
 exports.order_get_one = order_get_one;
 
 var updateOrder =
 /*#__PURE__*/
 function () {
-  var _ref3 = _asyncToGenerator(
+  var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee3(orderData) {
-    var pageId, userId, qty, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, waitingFor, sizeId, customerID, customerData, first_name, last_name, profile_pic, order, _updateOrder, resultLastId, orderId, record, saved;
+  regeneratorRuntime.mark(function _callee4(orderData) {
+    var pageId, userId, qty, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, waitingFor, currentItem, sizeId, calcTotal, split, originalSplit, eraseSplit, customerID, customerData, first_name, last_name, profile_pic, order, _updateOrder, total, resultLastId, orderId, record;
 
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context4.prev = _context4.next) {
           case 0:
-            _context3.prev = 0;
-            pageId = orderData.pageId, userId = orderData.userId, qty = orderData.qty, location = orderData.location, user = orderData.user, phone = orderData.phone, addrData = orderData.addrData, completeItem = orderData.completeItem, confirmOrder = orderData.confirmOrder, waitingForAddress = orderData.waitingForAddress, waitingFor = orderData.waitingFor, sizeId = orderData.sizeId;
+            _context4.prev = 0;
+            pageId = orderData.pageId, userId = orderData.userId, qty = orderData.qty, location = orderData.location, user = orderData.user, phone = orderData.phone, addrData = orderData.addrData, completeItem = orderData.completeItem, confirmOrder = orderData.confirmOrder, waitingForAddress = orderData.waitingForAddress, waitingFor = orderData.waitingFor, currentItem = orderData.currentItem, sizeId = orderData.sizeId, calcTotal = orderData.calcTotal, split = orderData.split, originalSplit = orderData.originalSplit, eraseSplit = orderData.eraseSplit;
             customerID = 0;
             customerData = {};
             customerData.pageId = pageId;
@@ -228,12 +289,12 @@ function () {
             customerData.phone = phone;
             customerData.location = location;
             customerData.addrData = addrData;
-            _context3.next = 12;
+            _context4.next = 12;
             return (0, _customersController.customer_update)(customerData);
 
           case 12:
-            customerID = _context3.sent;
-            _context3.next = 15;
+            customerID = _context4.sent;
+            _context4.next = 15;
             return _orders.default.findOne({
               pageId: pageId,
               userId: userId,
@@ -241,10 +302,10 @@ function () {
             }).exec();
 
           case 15:
-            order = _context3.sent;
+            order = _context4.sent;
 
             if (!order) {
-              _context3.next = 36;
+              _context4.next = 45;
               break;
             }
 
@@ -258,12 +319,45 @@ function () {
               _updateOrder = true;
             }
 
+            if (currentItem) {
+              order.currentItem = currentItem;
+              _updateOrder = true;
+            }
+
             if (qty) {
               order.qty_total = qty;
               _updateOrder = true; // order has total quantity.
               // items are always 1. this variable will be passed to updateItem
 
               orderData.qty = 1;
+            } // when I have a split, I am forcing size and qty
+
+
+            if (typeof split === 'number') {
+              order.currentItemSplit = split;
+              orderData.sizeId = order.currentItemSize;
+              orderData.qty = 1;
+              _updateOrder = true;
+            }
+
+            if (originalSplit) {
+              // split increments the items number (+originalSplit)
+              //  and removes 1 (that was the original quantity asked by the user)
+              order.qty_total = order.qty_total + originalSplit - 1; // saving the originalSplit in the order and... 
+
+              order.originalSplit = originalSplit; // ...always saving the split as originalSplit in item.
+              // because the split in the order will be decreased until 1
+
+              orderData.split = originalSplit;
+              _updateOrder = true;
+            } // eraseSplit is sent when I am gonna ask the user
+            // about the next pizza.
+
+
+            if (eraseSplit) {
+              order.originalSplit = null;
+              order.currentItemSplit = null;
+              _updateOrder = true;
             }
 
             if (customerID > 0) {
@@ -294,6 +388,14 @@ function () {
             if (confirmOrder) {
               order.status = ORDERSTATUS_CONFIRMED;
               _updateOrder = true;
+            } else {
+              // when updateorder with flavor, I dont have neither split nor originalSplit
+              // but, if the order has an originalSplit, I am going to send it to the item.
+              // This code should run only if I am not confirming the order.
+              if (order.originalSplit && order.originalSplit > 1) {
+                orderData.split = order.originalSplit;
+                _updateOrder = true;
+              }
             }
 
             if (typeof waitingForAddress === 'boolean') {
@@ -306,35 +408,52 @@ function () {
               _updateOrder = true;
             }
 
-            if (!_updateOrder) {
-              _context3.next = 32;
+            if (!(typeof calcTotal === 'boolean')) {
+              _context4.next = 38;
               break;
             }
 
-            _context3.next = 32;
-            return order.save();
-
-          case 32:
-            _context3.next = 34;
-            return (0, _itemsController.updateItem)(orderData);
-
-          case 34:
-            _context3.next = 49;
-            break;
+            _context4.next = 36;
+            return (0, _itemsController.getItemsTotal)({
+              orderId: order.id,
+              pageId: order.pageId
+            });
 
           case 36:
-            _context3.next = 38;
+            total = _context4.sent;
+
+            if (total > 0 && total !== order.total) {
+              order.total = total;
+              _updateOrder = true;
+            }
+
+          case 38:
+            if (!_updateOrder) {
+              _context4.next = 41;
+              break;
+            }
+
+            _context4.next = 41;
+            return order.save();
+
+          case 41:
+            _context4.next = 43;
+            return (0, _itemsController.updateItem)(orderData);
+
+          case 43:
+            _context4.next = 56;
+            break;
+
+          case 45:
+            _context4.next = 47;
             return _orders.default.find({
               pageId: pageId
             }).select('id').sort('-id').limit(1).exec();
 
-          case 38:
-            resultLastId = _context3.sent;
+          case 47:
+            resultLastId = _context4.sent;
             orderId = 1;
             if (resultLastId && resultLastId.length) orderId = resultLastId[0].id + 1;
-            console.info({
-              resultLastId: resultLastId
-            });
             record = new _orders.default({
               id: orderId,
               pageId: pageId,
@@ -346,37 +465,36 @@ function () {
               waitingForAddress: typeof waitingForAddress === 'boolean' ? waitingForAddress : false,
               status: ORDERSTATUS_PENDING
             });
-            _context3.next = 45;
+            _context4.next = 53;
             return record.save();
 
-          case 45:
-            saved = _context3.sent;
-            orderData.orderId = saved.id;
-            _context3.next = 49;
+          case 53:
+            orderData.orderId = record.id;
+            _context4.next = 56;
             return (0, _itemsController.updateItem)(orderData);
 
-          case 49:
-            _context3.next = 55;
+          case 56:
+            _context4.next = 62;
             break;
 
-          case 51:
-            _context3.prev = 51;
-            _context3.t0 = _context3["catch"](0);
+          case 58:
+            _context4.prev = 58;
+            _context4.t0 = _context4["catch"](0);
             console.error({
-              updateOrderError: _context3.t0
+              updateOrderError: _context4.t0
             });
-            throw error;
+            throw _context4.t0;
 
-          case 55:
+          case 62:
           case "end":
-            return _context3.stop();
+            return _context4.stop();
         }
       }
-    }, _callee3, this, [[0, 51]]);
+    }, _callee4, this, [[0, 58]]);
   }));
 
-  return function updateOrder(_x5) {
-    return _ref3.apply(this, arguments);
+  return function updateOrder(_x7) {
+    return _ref4.apply(this, arguments);
   };
 }();
 
@@ -385,17 +503,17 @@ exports.updateOrder = updateOrder;
 var getOrderPending =
 /*#__PURE__*/
 function () {
-  var _ref4 = _asyncToGenerator(
+  var _ref5 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee4(orderData) {
+  regeneratorRuntime.mark(function _callee5(orderData) {
     var userId, pageId, isComplete, _order, _items, completeOrder, headerOrder;
 
-    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
       while (1) {
-        switch (_context4.prev = _context4.next) {
+        switch (_context5.prev = _context5.next) {
           case 0:
             userId = orderData.userId, pageId = orderData.pageId, isComplete = orderData.isComplete;
-            _context4.next = 3;
+            _context5.next = 3;
             return _orders.default.findOne({
               userId: userId,
               pageId: pageId,
@@ -403,57 +521,157 @@ function () {
             }).exec();
 
           case 3:
-            _order = _context4.sent;
+            _order = _context5.sent;
 
             if (!_order) {
-              _context4.next = 17;
+              _context5.next = 17;
               break;
             }
 
             if (!(isComplete && isComplete === true)) {
-              _context4.next = 13;
+              _context5.next = 13;
               break;
             }
 
-            _context4.next = 8;
+            _context5.next = 8;
             return (0, _itemsController.getItems)({
               orderId: _order.id,
               pageId: pageId
             });
 
           case 8:
-            _items = _context4.sent;
+            _items = _context5.sent;
             completeOrder = {
               order: _order,
               items: _items
             };
-            return _context4.abrupt("return", completeOrder);
+            return _context5.abrupt("return", completeOrder);
 
           case 13:
             headerOrder = {
               order: _order
             };
-            return _context4.abrupt("return", headerOrder);
+            return _context5.abrupt("return", headerOrder);
 
           case 15:
-            _context4.next = 18;
+            _context5.next = 18;
             break;
 
           case 17:
-            return _context4.abrupt("return", null);
+            return _context5.abrupt("return", null);
 
           case 18:
           case "end":
-            return _context4.stop();
+            return _context5.stop();
         }
       }
-    }, _callee4, this);
+    }, _callee5, this);
   }));
 
-  return function getOrderPending(_x6) {
-    return _ref4.apply(this, arguments);
+  return function getOrderPending(_x8) {
+    return _ref5.apply(this, arguments);
   };
 }();
 
 exports.getOrderPending = getOrderPending;
+
+var getOrdersCustomerStat =
+/*#__PURE__*/
+function () {
+  var _ref6 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee6(orderData) {
+    var pageId, customerId, orders, total_spent, nb_orders, first_order, last_order, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, order;
+
+    return regeneratorRuntime.wrap(function _callee6$(_context6) {
+      while (1) {
+        switch (_context6.prev = _context6.next) {
+          case 0:
+            pageId = orderData.pageId, customerId = orderData.customerId;
+            _context6.next = 3;
+            return _orders.default.find({
+              pageId: pageId,
+              customerId: customerId
+            }).select('createdAt total').sort('createdAt').exec();
+
+          case 3:
+            orders = _context6.sent;
+            total_spent = 0;
+            nb_orders = 0;
+            first_order = Date.now();
+            last_order = null;
+            _iteratorNormalCompletion = true;
+            _didIteratorError = false;
+            _iteratorError = undefined;
+            _context6.prev = 11;
+
+            for (_iterator = orders[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              order = _step.value;
+              total_spent += order.total;
+              nb_orders += 1;
+
+              if (first_order >= order.createdAt) {
+                first_order = order.createdAt;
+              }
+
+              if (last_order <= order.createdAt) {
+                last_order = order.createdAt;
+              }
+            }
+
+            _context6.next = 19;
+            break;
+
+          case 15:
+            _context6.prev = 15;
+            _context6.t0 = _context6["catch"](11);
+            _didIteratorError = true;
+            _iteratorError = _context6.t0;
+
+          case 19:
+            _context6.prev = 19;
+            _context6.prev = 20;
+
+            if (!_iteratorNormalCompletion && _iterator.return != null) {
+              _iterator.return();
+            }
+
+          case 22:
+            _context6.prev = 22;
+
+            if (!_didIteratorError) {
+              _context6.next = 25;
+              break;
+            }
+
+            throw _iteratorError;
+
+          case 25:
+            return _context6.finish(22);
+
+          case 26:
+            return _context6.finish(19);
+
+          case 27:
+            return _context6.abrupt("return", {
+              total_spent: total_spent,
+              nb_orders: nb_orders,
+              first_order: first_order,
+              last_order: last_order
+            });
+
+          case 28:
+          case "end":
+            return _context6.stop();
+        }
+      }
+    }, _callee6, this, [[11, 15, 19, 27], [20,, 22, 26]]);
+  }));
+
+  return function getOrdersCustomerStat(_x9) {
+    return _ref6.apply(this, arguments);
+  };
+}();
+
+exports.getOrdersCustomerStat = getOrdersCustomerStat;
 //# sourceMappingURL=ordersController.js.map

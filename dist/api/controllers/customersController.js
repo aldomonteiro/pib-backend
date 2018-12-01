@@ -13,6 +13,8 @@ var _util = _interopRequireDefault(require("util"));
 
 var _util2 = require("../util/util");
 
+var _ordersController = require("./ordersController");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -20,75 +22,82 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 // List all customers
-// TODO: use filters in the query req.query
 var customer_get_all =
 /*#__PURE__*/
 function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee2(req, res) {
-    var sortObj, rangeObj, options, query;
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            // Getting the sort from the requisition
-            sortObj = (0, _util2.configSortQuery)(req.query.sort); // Getting the range from the requisition
+  regeneratorRuntime.mark(function _callee(req, res) {
+    var sortObj, rangeObj, _configFilterQuery, filterField, filterValues, queryParam, query, count;
 
-            rangeObj = (0, _util2.configRangeQuery)(req.query.range);
-            options = {
-              offset: rangeObj['offset'],
-              limit: rangeObj['limit'],
-              sort: sortObj,
-              lean: true,
-              leanWithId: false
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.prev = 0;
+            sortObj = req.query.sort ? (0, _util2.configSortQuery)(req.query.sort) : {
+              first_name: 'ASC'
             };
-            query = {};
+            rangeObj = (0, _util2.configRangeQueryNew)(req.query.range);
+            _configFilterQuery = (0, _util2.configFilterQuery)(req.query.filter), filterField = _configFilterQuery.filterField, filterValues = _configFilterQuery.filterValues;
+            queryParam = {};
 
             if (req.currentUser.activePage) {
-              query = _customers.default.find({
-                pageId: req.currentUser.activePage
-              });
+              queryParam['pageId'] = req.currentUser.activePage;
             }
 
-            _customers.default.paginate(query, options,
-            /*#__PURE__*/
-            function () {
-              var _ref2 = _asyncToGenerator(
-              /*#__PURE__*/
-              regeneratorRuntime.mark(function _callee(err, result) {
-                return regeneratorRuntime.wrap(function _callee$(_context) {
-                  while (1) {
-                    switch (_context.prev = _context.next) {
-                      case 0:
-                        if (err) {
-                          res.status(500).json({
-                            message: err.errmsg
-                          });
-                        } else {
-                          res.setHeader('Content-Range', _util.default.format("customers %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
-                          res.status(200).json(result.docs);
-                        }
+            if (filterField && filterValues) {
+              if (typeof filterValues === 'Array') {
+                queryParam[filterField] = {
+                  $in: filterValues
+                };
+              } else {
+                queryParam[filterField] = filterValues;
+              }
+            }
 
-                      case 1:
-                      case "end":
-                        return _context.stop();
-                    }
-                  }
-                }, _callee, this);
-              }));
+            if (rangeObj) {
+              query = _customers.default.find(queryParam).sort(sortObj).skip(rangeObj.offset).limit(rangeObj.limit);
+            } else {
+              query = _customers.default.find(queryParam).sort(sortObj);
+            }
 
-              return function (_x3, _x4) {
-                return _ref2.apply(this, arguments);
-              };
-            }());
+            _context.next = 10;
+            return _customers.default.estimatedDocumentCount({
+              pageId: req.currentUser.activePage
+            });
 
-          case 6:
+          case 10:
+            count = _context.sent;
+            query.exec(function (err, result) {
+              if (err) {
+                res.status(500).json({
+                  message: err.errmsg
+                });
+              } else {
+                res.setHeader('Content-Range', _util.default.format("customers %d-%d/%d", 1, result.length - 1, count));
+                res.status(200).json(result);
+              }
+            });
+            _context.next = 18;
+            break;
+
+          case 14:
+            _context.prev = 14;
+            _context.t0 = _context["catch"](0);
+            console.error({
+              customerGetAllErr: _context.t0
+            });
+            res.status(500).json({
+              message: err.message
+            });
+
+          case 18:
           case "end":
-            return _context2.stop();
+            return _context.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee, this, [[0, 14]]);
   }));
 
   return function customer_get_all(_x, _x2) {
@@ -99,31 +108,112 @@ function () {
 
 exports.customer_get_all = customer_get_all;
 
-var customer_get_one = function customer_get_one(req, res) {
-  if (req.params && req.params.id) {
-    var pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
+var customer_get_one =
+/*#__PURE__*/
+function () {
+  var _ref2 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee2(req, res) {
+    var pageId, customerId, queryParams, customer, _ref3, total_spent, nb_orders, first_order, last_order, jsonCustomer;
 
-    _customers.default.findOne({
-      pageId: pageId,
-      id: req.params.id
-    }, function (err, doc) {
-      if (err) {
-        res.status(500).json({
-          message: err.errMsg
-        });
-      } else {
-        res.status(200).json(doc);
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            if (!(req.params && req.params.id)) {
+              _context2.next = 28;
+              break;
+            }
+
+            _context2.prev = 1;
+            pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
+            customerId = req.params.id;
+            queryParams = {};
+            queryParams['id'] = customerId;
+
+            if (pageId) {
+              queryParams['pageId'] = pageId;
+            }
+
+            _context2.next = 9;
+            return _customers.default.findOne(queryParams).exec();
+
+          case 9:
+            customer = _context2.sent;
+
+            if (!customer) {
+              _context2.next = 22;
+              break;
+            }
+
+            _context2.next = 13;
+            return (0, _ordersController.getOrdersCustomerStat)({
+              pageId: pageId,
+              customerId: customerId
+            });
+
+          case 13:
+            _ref3 = _context2.sent;
+            total_spent = _ref3.total_spent;
+            nb_orders = _ref3.nb_orders;
+            first_order = _ref3.first_order;
+            last_order = _ref3.last_order;
+            jsonCustomer = {
+              id: customer.id,
+              pageId: customer.pageId,
+              first_name: customer.first_name,
+              last_name: customer.last_name,
+              profile_pic: customer.profile_pic,
+              phone: customer.phone,
+              addr_formatted: customer.addr_formatted,
+              addr_city: customer.addr_city,
+              addr_postalcode: customer.addr_postalcode,
+              createdAt: customer.createdAt,
+              updatedAt: customer.updatedAt,
+              total_spent: total_spent,
+              nb_orders: nb_orders,
+              first_order: first_order,
+              last_order: last_order
+            };
+            res.status(200).json(jsonCustomer);
+            _context2.next = 23;
+            break;
+
+          case 22:
+            res.status(500).json({
+              message: 'pos.customer.messages.no_customer_found'
+            });
+
+          case 23:
+            _context2.next = 28;
+            break;
+
+          case 25:
+            _context2.prev = 25;
+            _context2.t0 = _context2["catch"](1);
+            res.status(500).json({
+              message: _context2.t0.message
+            });
+
+          case 28:
+          case "end":
+            return _context2.stop();
+        }
       }
-    });
-  }
-};
+    }, _callee2, this, [[1, 25]]);
+  }));
+
+  return function customer_get_one(_x3, _x4) {
+    return _ref2.apply(this, arguments);
+  };
+}();
 
 exports.customer_get_one = customer_get_one;
 
 var checkCustomerAddress =
 /*#__PURE__*/
 function () {
-  var _ref3 = _asyncToGenerator(
+  var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee3(pageID, userID, location) {
     var addressData;
@@ -170,7 +260,7 @@ function () {
   }));
 
   return function checkCustomerAddress(_x5, _x6, _x7) {
-    return _ref3.apply(this, arguments);
+    return _ref4.apply(this, arguments);
   };
 }();
 
@@ -179,7 +269,7 @@ exports.checkCustomerAddress = checkCustomerAddress;
 var getCustomerAddress =
 /*#__PURE__*/
 function () {
-  var _ref4 = _asyncToGenerator(
+  var _ref5 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee4(pageID, userID) {
     var customer, addressData;
@@ -235,7 +325,7 @@ function () {
   }));
 
   return function getCustomerAddress(_x8, _x9) {
-    return _ref4.apply(this, arguments);
+    return _ref5.apply(this, arguments);
   };
 }();
 
@@ -244,7 +334,7 @@ exports.getCustomerAddress = getCustomerAddress;
 var getAddressLocation =
 /*#__PURE__*/
 function () {
-  var _ref5 = _asyncToGenerator(
+  var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee5(location) {
     var arr, response, response2, response3, response4, response5;
@@ -416,7 +506,7 @@ function () {
   }));
 
   return function getAddressLocation(_x10) {
-    return _ref5.apply(this, arguments);
+    return _ref6.apply(this, arguments);
   };
 }();
 
@@ -425,7 +515,7 @@ exports.getAddressLocation = getAddressLocation;
 var googleMapsAPI =
 /*#__PURE__*/
 function () {
-  var _ref6 = _asyncToGenerator(
+  var _ref7 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee6(location, API_KEY) {
     return regeneratorRuntime.wrap(function _callee6$(_context6) {
@@ -453,14 +543,14 @@ function () {
   }));
 
   return function googleMapsAPI(_x11, _x12) {
-    return _ref6.apply(this, arguments);
+    return _ref7.apply(this, arguments);
   };
 }();
 
 var customer_update =
 /*#__PURE__*/
 function () {
-  var _ref7 = _asyncToGenerator(
+  var _ref8 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee7(custData) {
     var customerID, customer, first_name, last_name, phone, profile_pic, location, addrData, updateDb, resultLastId, lastId, newRecord;
@@ -527,17 +617,21 @@ function () {
             return customer.save();
 
           case 15:
-            _context7.next = 24;
+            _context7.next = 26;
             break;
 
           case 17:
-            resultLastId = _customers.default.find({
+            _context7.next = 19;
+            return _customers.default.find({
               pageId: custData.pageId
             }).select('id').sort('-id').limit(1).exec();
-            lastId = 0;
-            if (resultLastId && resultLastId.length) lastId = resultLastId[0];
+
+          case 19:
+            resultLastId = _context7.sent;
+            lastId = 1;
+            if (resultLastId && resultLastId.length) lastId = resultLastId[0].id + 1;
             newRecord = new _customers.default({
-              id: lastId + 1,
+              id: lastId,
               userId: custData.userId,
               pageId: custData.pageId,
               first_name: custData.first_name,
@@ -556,16 +650,16 @@ function () {
               location_long: custData.location ? custData.location.long : null,
               location_url: custData.location ? custData.location.url : null
             });
-            _context7.next = 23;
+            _context7.next = 25;
             return newRecord.save();
 
-          case 23:
+          case 25:
             customerID = newRecord.id;
 
-          case 24:
+          case 26:
             return _context7.abrupt("return", customerID);
 
-          case 25:
+          case 27:
           case "end":
             return _context7.stop();
         }
@@ -574,7 +668,7 @@ function () {
   }));
 
   return function customer_update(_x13) {
-    return _ref7.apply(this, arguments);
+    return _ref8.apply(this, arguments);
   };
 }();
 
@@ -583,7 +677,7 @@ exports.customer_update = customer_update;
 var formatAddrData =
 /*#__PURE__*/
 function () {
-  var _ref8 = _asyncToGenerator(
+  var _ref9 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee8(addrData) {
     var formattedAddressData, addComps;
@@ -622,7 +716,7 @@ function () {
   }));
 
   return function formatAddrData(_x14) {
-    return _ref8.apply(this, arguments);
+    return _ref9.apply(this, arguments);
   };
 }();
 

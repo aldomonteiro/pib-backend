@@ -88,6 +88,7 @@ var store_create = function store_create(req, res) {
       city: req.body.city,
       state: req.body.state,
       phone: req.body.phone,
+      delivery_fee: req.body.delivery_fee,
       sun_is_open: req.body.sun_is_open,
       sun_open: req.body.sun_open,
       sun_close: req.body.sun_close,
@@ -139,7 +140,8 @@ var store_update = function store_update(req, res) {
         doc.address = req.body.address;
         doc.city = req.body.city;
         doc.state = req.body.state;
-        doc.phone = req.body.phone; // Opening times
+        doc.phone = req.body.phone;
+        doc.delivery_fee = req.body.delivery_fee; // Opening times
 
         doc.sun_is_open = req.body.sun_is_open;
         doc.sun_open = req.body.sun_open;

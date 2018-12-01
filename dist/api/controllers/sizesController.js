@@ -218,7 +218,7 @@ function () {
               pageId: pageID,
               id: sizeID
             });
-            query.select('id size');
+            query.select('id size slices split');
             _context3.next = 4;
             return query.exec();
 

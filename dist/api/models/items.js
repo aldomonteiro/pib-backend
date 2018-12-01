@@ -41,6 +41,9 @@ var schema = new Schema({
   qty: {
     type: Number
   },
+  split: {
+    type: Number
+  },
   resource: {
     type: String
   },

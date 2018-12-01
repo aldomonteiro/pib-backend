@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.shuffle = exports.choices_kinds = exports.choices_sizes = exports.configRangeQuery = exports.configSortQuery = void 0;
+exports.shuffle = exports.choices_kinds = exports.choices_sizes = exports.configFilterQuery = exports.configRangeQueryNew = exports.configRangeQuery = exports.configSortQuery = void 0;
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -18,8 +18,13 @@ var configSortQuery = function configSortQuery(sortString) {
   }
 
   return sortObj;
-}; // react-admin sends a range [0,9] and I am transforming
-// it in offset: 0, limit: 10
+};
+/**
+ * This function is deprecated and is used with the mongoose paginate plugin.
+ * Insted of this function, use configRangeQueryNew
+ * react-admin sends a range [0,9] and I am transforming it in offset: 0, limit: 10
+ * @param {*} rangeString 
+ */
 
 
 exports.configSortQuery = configSortQuery;
@@ -37,8 +42,39 @@ var configRangeQuery = function configRangeQuery(rangeString) {
 
   return rangeObj;
 };
+/**
+ * Using without the paginate plugin.
+ * @param {*} rangeString 
+ */
+
 
 exports.configRangeQuery = configRangeQuery;
+
+var configRangeQueryNew = function configRangeQueryNew(rangeString) {
+  if (typeof rangeString !== "undefined") {
+    var json = JSON.parse(rangeString);
+    return {
+      offset: json[0],
+      limit: json[1] + 1 - json[0]
+    };
+  } else return null;
+};
+
+exports.configRangeQueryNew = configRangeQueryNew;
+
+var configFilterQuery = function configFilterQuery(filterString) {
+  if (typeof filterString !== "undefined") {
+    var json = JSON.parse(filterString);
+    var _field = Object.keys(json)[0];
+    var _values = Object.values(json)[0];
+    return {
+      filterField: _field,
+      filterValues: _values
+    };
+  } else return null;
+};
+
+exports.configFilterQuery = configFilterQuery;
 
 var choices_sizes =
 /*#__PURE__*/

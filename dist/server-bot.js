@@ -32,15 +32,64 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-_dotenv.default.config();
+_dotenv.default.config(); // mongoose.connect(
+//   process.env.MONGODB_URL,
+//   { useNewUrlParser: true }
+// );
 
-_mongoose.default.connect(process.env.MONGODB_URL, {
-  useNewUrlParser: true
-});
+
+var RETRY_TIMEOUT = 3000;
+var options = {
+  useNewUrlParser: true,
+  autoReconnect: true,
+  keepAlive: 30000,
+  reconnectInterval: RETRY_TIMEOUT,
+  reconnectTries: 10000
+};
+var isConnectedBefore = false;
+
+var connect = function connect() {
+  return _mongoose.default.connect(process.env.MONGODB_URL, options).catch(function (err) {
+    return console.error('Mongoose connect(...) failed with err: ', err);
+  });
+};
+
+connect();
 
 _mongoose.default.set('useCreateIndex', true);
 
 _mongoose.default.Promise = Promise;
+
+_mongoose.default.connection.on('error', function () {
+  console.error('Could not connect to MongoDB');
+});
+
+_mongoose.default.connection.on('disconnected', function () {
+  console.error('Lost MongoDB connection...');
+
+  if (!isConnectedBefore) {
+    setTimeout(function () {
+      return connect();
+    }, RETRY_TIMEOUT);
+  }
+});
+
+_mongoose.default.connection.on('connected', function () {
+  isConnectedBefore = true;
+  console.info('Connection established to MongoDB');
+});
+
+_mongoose.default.connection.on('reconnected', function () {
+  console.info('Reconnected to MongoDB');
+}); // Close the Mongoose connection, when receiving SIGINT
+
+
+process.on('SIGINT', function () {
+  _mongoose.default.connection.close(function () {
+    console.warn('Force to close the MongoDB connection after SIGINT');
+    process.exit(0);
+  });
+});
 global.pagesKeyID = new Object();
 var app = (0, _express.default)();
 var bot = new _facebookMessengerBot.Bot(process.env.FB_VERIFY_TOKEN, true); // getAllPages().then(async (pageArray) => {
@@ -77,7 +126,7 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(req, res, next) {
-    var doNext, pageID, _ref2, accessToken, name, _time, messageTime;
+    var doNext, pageID, timerIdentifier, _ref2, accessToken, name;
 
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -106,24 +155,24 @@ function () {
             }
 
             req.token = global.pagesKeyID[pageID];
-            _context.next = 16;
+            _context.next = 19;
             break;
 
           case 9:
-            _context.next = 11;
+            timerIdentifier = "getOnePageToken" + Math.random();
+            console.time(timerIdentifier);
+            _context.next = 13;
             return (0, _pagesController.getOnePageToken)(pageID);
 
-          case 11:
+          case 13:
             _ref2 = _context.sent;
             accessToken = _ref2.accessToken;
             name = _ref2.name;
             req.token = accessToken;
+            console.timeEnd(timerIdentifier);
             global.pagesKeyID[pageID] = accessToken;
 
-          case 16:
-            _time = req.body.entry[0].time;
-            messageTime = new Date(_time).toLocaleTimeString('pt-BR');
-            console.info("".concat(messageTime, " From ").concat(pageID, " memory tokens:").concat(Object.keys(global.pagesKeyID).length));
+          case 19:
             _context.next = 24;
             break;
 
@@ -376,7 +425,9 @@ function () {
           case 41:
             _context4.prev = 41;
             _context4.t0 = _context4["catch"](1);
-            console.error('MAIN_MENU error:', _context4.t0.message);
+            console.error({
+              mainMenuError: _context4.t0
+            });
             _context4.next = 46;
             return (0, _botController.sendErrorMsg)(_context4.t0.message);
 
@@ -402,6 +453,7 @@ function () {
   };
 }());
 /**
+ * Question No.02 (location)
  * clicked "Fazer Pedido"
  * gonna ask for QUANTITY
  */
@@ -516,7 +568,9 @@ function () {
           case 47:
             _context5.prev = 47;
             _context5.t0 = _context5["catch"](1);
-            console.error('on message error:', _context5.t0.message);
+            console.error({
+              onMessageError: _context5.t0
+            });
             _context5.next = 52;
             return (0, _botController.sendErrorMsg)(_context5.t0.message);
 
@@ -614,7 +668,9 @@ function () {
           case 28:
             _context6.prev = 28;
             _context6.t0 = _context6["catch"](2);
-            console.error('quick-reply error:', _context6.t0.message);
+            console.error({
+              quickReplyError: _context6.t0
+            });
             _context6.next = 33;
             return (0, _botController.sendErrorMsg)(_context6.t0.message);
 
@@ -640,6 +696,7 @@ function () {
   };
 }());
 /**
+ * Answer No.01
  * answered CORRECT_SAVED_ADDRESS
  * gonna ask for phone
  */
@@ -662,7 +719,7 @@ function () {
 
           case 4:
             _context7.next = 6;
-            return _facebookMessengerBot.Bot.wait(1000);
+            return _facebookMessengerBot.Bot.wait(800);
 
           case 6:
             _context7.next = 8;
@@ -679,47 +736,51 @@ function () {
 
           case 13:
             _context7.next = 15;
-            return (0, _botController.askForPhone)(recipient.id, sender.id);
+            return bot.startTyping(sender.id);
 
           case 15:
+            _context7.next = 17;
+            return _facebookMessengerBot.Bot.wait(800);
+
+          case 17:
+            _context7.next = 19;
+            return (0, _botController.askForPhone)(recipient.id, sender.id);
+
+          case 19:
             out = _context7.sent;
-            _context7.next = 18;
-            return _facebookMessengerBot.Bot.wait(1000);
-
-          case 18:
-            _context7.next = 20;
-            return bot.stopTyping(sender.id);
-
-          case 20:
             _context7.next = 22;
-            return bot.send(sender.id, out);
+            return bot.stopTyping(sender.id);
 
           case 22:
-            _context7.next = 34;
-            break;
+            _context7.next = 24;
+            return bot.send(sender.id, out);
 
           case 24:
-            _context7.prev = 24;
+            _context7.next = 36;
+            break;
+
+          case 26:
+            _context7.prev = 26;
             _context7.t0 = _context7["catch"](1);
             console.error('CORRECT_SAVED_ADDRESS:', _context7.t0.message);
-            _context7.next = 29;
+            _context7.next = 31;
             return (0, _botController.sendErrorMsg)(_context7.t0.message);
 
-          case 29:
+          case 31:
             outError = _context7.sent;
-            _context7.next = 32;
+            _context7.next = 34;
             return bot.stopTyping(sender.id);
 
-          case 32:
-            _context7.next = 34;
+          case 34:
+            _context7.next = 36;
             return bot.send(sender.id, outError);
 
-          case 34:
+          case 36:
           case "end":
             return _context7.stop();
         }
       }
-    }, _callee7, this, [[1, 24]]);
+    }, _callee7, this, [[1, 26]]);
   }));
 
   return function (_x13, _x14) {
@@ -1175,7 +1236,7 @@ function () {
 
           case 4:
             _context12.next = 6;
-            return _facebookMessengerBot.Bot.wait(1000);
+            return _facebookMessengerBot.Bot.wait(900);
 
           case 6:
             _context12.next = 8;
@@ -1196,11 +1257,11 @@ function () {
 
           case 15:
             _context12.next = 17;
-            return _facebookMessengerBot.Bot.wait(1000);
+            return _facebookMessengerBot.Bot.wait(900);
 
           case 17:
             _context12.next = 19;
-            return (0, _botController.askForFlavorOrConfirm)(message.recipient.id, sender.id, 1);
+            return (0, _botController.askForSplitFlavorOrConfirm)(message.recipient.id, sender.id, 1);
 
           case 19:
             out = _context12.sent;
@@ -1243,6 +1304,73 @@ function () {
     return _ref13.apply(this, arguments);
   };
 }());
+bot.on('ORDER_SPLIT',
+/*#__PURE__*/
+function () {
+  var _ref14 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee13(message, data) {
+    var sender, recipient, answer, split, out;
+    return regeneratorRuntime.wrap(function _callee13$(_context13) {
+      while (1) {
+        switch (_context13.prev = _context13.next) {
+          case 0:
+            sender = message.sender, recipient = message.recipient;
+            _context13.next = 3;
+            return bot.startTyping(sender.id);
+
+          case 3:
+            _context13.next = 5;
+            return _facebookMessengerBot.Bot.wait(900);
+
+          case 5:
+            _context13.next = 7;
+            return (0, _botController.showSplit)(recipient.id, sender.id, data);
+
+          case 7:
+            answer = _context13.sent;
+            _context13.next = 10;
+            return bot.stopTyping(sender.id);
+
+          case 10:
+            _context13.next = 12;
+            return bot.send(sender.id, answer);
+
+          case 12:
+            split = Number(data); // next question
+
+            _context13.next = 15;
+            return bot.startTyping(sender.id);
+
+          case 15:
+            _context13.next = 17;
+            return _facebookMessengerBot.Bot.wait(500);
+
+          case 17:
+            _context13.next = 19;
+            return (0, _botController.askForFlavorOrConfirm)(message.recipient.id, sender.id, 1, split);
+
+          case 19:
+            out = _context13.sent;
+            _context13.next = 22;
+            return bot.stopTyping(sender.id);
+
+          case 22:
+            _context13.next = 24;
+            return bot.send(sender.id, out);
+
+          case 24:
+          case "end":
+            return _context13.stop();
+        }
+      }
+    }, _callee13, this);
+  }));
+
+  return function (_x25, _x26) {
+    return _ref14.apply(this, arguments);
+  };
+}());
 /**
  * answered ORDER_FLAVOR
  * gonna ask for confirmation
@@ -1251,132 +1379,10 @@ function () {
 bot.on('ORDER_FLAVOR',
 /*#__PURE__*/
 function () {
-  var _ref14 = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee13(message, data) {
-    var sender, recipient, out, answer, summary, outError;
-    return regeneratorRuntime.wrap(function _callee13$(_context13) {
-      while (1) {
-        switch (_context13.prev = _context13.next) {
-          case 0:
-            sender = message.sender, recipient = message.recipient;
-            _context13.prev = 1;
-
-            if (!(data && data.option && data.option === 'flavors_more')) {
-              _context13.next = 16;
-              break;
-            }
-
-            _context13.next = 5;
-            return bot.startTyping(sender.id);
-
-          case 5:
-            _context13.next = 7;
-            return _facebookMessengerBot.Bot.wait(1000);
-
-          case 7:
-            _context13.next = 9;
-            return (0, _botController.askForFlavor)(message.recipient.id, sender.id, data.multiple);
-
-          case 9:
-            out = _context13.sent;
-            _context13.next = 12;
-            return bot.stopTyping(sender.id);
-
-          case 12:
-            _context13.next = 14;
-            return bot.send(sender.id, out);
-
-          case 14:
-            _context13.next = 38;
-            break;
-
-          case 16:
-            _context13.next = 18;
-            return bot.startTyping(sender.id);
-
-          case 18:
-            _context13.next = 20;
-            return _facebookMessengerBot.Bot.wait(1000);
-
-          case 20:
-            _context13.next = 22;
-            return (0, _botController.showFlavor)(recipient.id, sender.id, data);
-
-          case 22:
-            answer = _context13.sent;
-            _context13.next = 25;
-            return bot.stopTyping(sender.id);
-
-          case 25:
-            _context13.next = 27;
-            return bot.send(sender.id, answer);
-
-          case 27:
-            _context13.next = 29;
-            return bot.startTyping(sender.id);
-
-          case 29:
-            _context13.next = 31;
-            return _facebookMessengerBot.Bot.wait(1000);
-
-          case 31:
-            _context13.next = 33;
-            return (0, _botController.showOrderOrNextItem)(recipient.id, sender.id);
-
-          case 33:
-            summary = _context13.sent;
-            _context13.next = 36;
-            return bot.stopTyping(sender.id);
-
-          case 36:
-            _context13.next = 38;
-            return bot.send(sender.id, summary);
-
-          case 38:
-            _context13.next = 50;
-            break;
-
-          case 40:
-            _context13.prev = 40;
-            _context13.t0 = _context13["catch"](1);
-            console.error('ORDER_FLAVOR:', _context13.t0.message);
-            _context13.next = 45;
-            return (0, _botController.sendErrorMsg)(_context13.t0.message);
-
-          case 45:
-            outError = _context13.sent;
-            _context13.next = 48;
-            return bot.stopTyping(sender.id);
-
-          case 48:
-            _context13.next = 50;
-            return bot.send(sender.id, outError);
-
-          case 50:
-          case "end":
-            return _context13.stop();
-        }
-      }
-    }, _callee13, this, [[1, 40]]);
-  }));
-
-  return function (_x25, _x26) {
-    return _ref14.apply(this, arguments);
-  };
-}());
-/**
- * answered ORDER_CONFIRMATION
- */
-
-bot.on('ORDER_CONFIRMATION',
-/*#__PURE__*/
-function () {
   var _ref15 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee14(message, data) {
-    var sender, recipient, out, _out4, outError;
-
+    var sender, recipient, out, answer, summary, outError;
     return regeneratorRuntime.wrap(function _callee14$(_context14) {
       while (1) {
         switch (_context14.prev = _context14.next) {
@@ -1384,8 +1390,8 @@ function () {
             sender = message.sender, recipient = message.recipient;
             _context14.prev = 1;
 
-            if (!(data === 'confirmation_yes')) {
-              _context14.next = 17;
+            if (!(data && data.option && data.option === 'flavors_more')) {
+              _context14.next = 16;
               break;
             }
 
@@ -1394,11 +1400,11 @@ function () {
 
           case 5:
             _context14.next = 7;
-            return _facebookMessengerBot.Bot.wait(1000);
+            return _facebookMessengerBot.Bot.wait(500);
 
           case 7:
             _context14.next = 9;
-            return (0, _botController.confirmOrder)(recipient.id, sender.id);
+            return (0, _botController.askForFlavor)(message.recipient.id, sender.id, data.multiple);
 
           case 9:
             out = _context14.sent;
@@ -1410,62 +1416,77 @@ function () {
             return bot.send(sender.id, out);
 
           case 14:
-            delete global.pagesKeyID[recipient.id];
-            _context14.next = 29;
+            _context14.next = 38;
             break;
 
-          case 17:
-            if (!(data === 'confirmation_no')) {
-              _context14.next = 29;
-              break;
-            }
-
-            _context14.next = 20;
+          case 16:
+            _context14.next = 18;
             return bot.startTyping(sender.id);
+
+          case 18:
+            _context14.next = 20;
+            return _facebookMessengerBot.Bot.wait(900);
 
           case 20:
             _context14.next = 22;
-            return _facebookMessengerBot.Bot.wait(1000);
+            return (0, _botController.showFlavor)(recipient.id, sender.id, data);
 
           case 22:
-            _context14.next = 24;
-            return (0, _botController.askForChangeOrder)(recipient.id, sender.id);
-
-          case 24:
-            _out4 = _context14.sent;
-            _context14.next = 27;
+            answer = _context14.sent;
+            _context14.next = 25;
             return bot.stopTyping(sender.id);
+
+          case 25:
+            _context14.next = 27;
+            return bot.send(sender.id, answer);
 
           case 27:
             _context14.next = 29;
-            return bot.send(sender.id, _out4);
+            return bot.startTyping(sender.id);
 
           case 29:
-            _context14.next = 41;
-            break;
+            _context14.next = 31;
+            return _facebookMessengerBot.Bot.wait(1000);
 
           case 31:
-            _context14.prev = 31;
-            _context14.t0 = _context14["catch"](1);
-            console.error('ORDER_CONFIRMATION:', _context14.t0.message);
-            _context14.next = 36;
-            return (0, _botController.sendErrorMsg)(_context14.t0.message);
+            _context14.next = 33;
+            return (0, _botController.showOrderOrNextItem)(recipient.id, sender.id);
 
-          case 36:
-            outError = _context14.sent;
-            _context14.next = 39;
+          case 33:
+            summary = _context14.sent;
+            _context14.next = 36;
             return bot.stopTyping(sender.id);
 
-          case 39:
-            _context14.next = 41;
+          case 36:
+            _context14.next = 38;
+            return bot.send(sender.id, summary);
+
+          case 38:
+            _context14.next = 50;
+            break;
+
+          case 40:
+            _context14.prev = 40;
+            _context14.t0 = _context14["catch"](1);
+            console.error('ORDER_FLAVOR:', _context14.t0.message);
+            _context14.next = 45;
+            return (0, _botController.sendErrorMsg)(_context14.t0.message);
+
+          case 45:
+            outError = _context14.sent;
+            _context14.next = 48;
+            return bot.stopTyping(sender.id);
+
+          case 48:
+            _context14.next = 50;
             return bot.send(sender.id, outError);
 
-          case 41:
+          case 50:
           case "end":
             return _context14.stop();
         }
       }
-    }, _callee14, this, [[1, 31]]);
+    }, _callee14, this, [[1, 40]]);
   }));
 
   return function (_x27, _x28) {
@@ -1473,75 +1494,119 @@ function () {
   };
 }());
 /**
- * answered wants change something in the order
+ * answered ORDER_CONFIRMATION
  */
 
-bot.on('ORDER_WANT_CHANGE',
+bot.on('ORDER_CONFIRMATION',
 /*#__PURE__*/
 function () {
   var _ref16 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee15(message, data) {
-    var sender, recipient, out, outError;
+    var sender, recipient, out, _out4, outError;
+
     return regeneratorRuntime.wrap(function _callee15$(_context15) {
       while (1) {
         switch (_context15.prev = _context15.next) {
           case 0:
             sender = message.sender, recipient = message.recipient;
             _context15.prev = 1;
-            _context15.next = 4;
+
+            if (!(data === 'confirmation_yes')) {
+              _context15.next = 17;
+              break;
+            }
+
+            _context15.next = 5;
             return bot.startTyping(sender.id);
 
-          case 4:
-            _context15.next = 6;
+          case 5:
+            _context15.next = 7;
             return _facebookMessengerBot.Bot.wait(1000);
 
-          case 6:
-            _context15.next = 8;
-            return (0, _botController.askForSpecificItem)(recipient.id, sender.id);
+          case 7:
+            _context15.next = 9;
+            return (0, _botController.confirmOrder)(recipient.id, sender.id);
 
-          case 8:
+          case 9:
             out = _context15.sent;
-            _context15.next = 11;
+            _context15.next = 12;
             return bot.stopTyping(sender.id);
 
-          case 11:
-            _context15.next = 13;
+          case 12:
+            _context15.next = 14;
             return bot.send(sender.id, out);
 
-          case 13:
-            _context15.next = 25;
+          case 14:
+            delete global.pagesKeyID[recipient.id];
+            _context15.next = 29;
             break;
 
-          case 15:
-            _context15.prev = 15;
-            _context15.t0 = _context15["catch"](1);
-            console.error('ORDER_WANT_CHANGE:', _context15.t0.message);
+          case 17:
+            if (!(data === 'confirmation_no')) {
+              _context15.next = 29;
+              break;
+            }
+
             _context15.next = 20;
-            return (0, _botController.sendErrorMsg)(_context15.t0.message);
+            return bot.startTyping(sender.id);
 
           case 20:
-            outError = _context15.sent;
-            _context15.next = 23;
+            _context15.next = 22;
+            return _facebookMessengerBot.Bot.wait(1000);
+
+          case 22:
+            _context15.next = 24;
+            return (0, _botController.askForChangeOrder)(recipient.id, sender.id);
+
+          case 24:
+            _out4 = _context15.sent;
+            _context15.next = 27;
             return bot.stopTyping(sender.id);
 
-          case 23:
-            _context15.next = 25;
+          case 27:
+            _context15.next = 29;
+            return bot.send(sender.id, _out4);
+
+          case 29:
+            _context15.next = 41;
+            break;
+
+          case 31:
+            _context15.prev = 31;
+            _context15.t0 = _context15["catch"](1);
+            console.error({
+              orderConfirmationError: _context15.t0
+            });
+            _context15.next = 36;
+            return (0, _botController.sendErrorMsg)(_context15.t0.message);
+
+          case 36:
+            outError = _context15.sent;
+            _context15.next = 39;
+            return bot.stopTyping(sender.id);
+
+          case 39:
+            _context15.next = 41;
             return bot.send(sender.id, outError);
 
-          case 25:
+          case 41:
           case "end":
             return _context15.stop();
         }
       }
-    }, _callee15, this, [[1, 15]]);
+    }, _callee15, this, [[1, 31]]);
   }));
 
   return function (_x29, _x30) {
     return _ref16.apply(this, arguments);
   };
 }());
-bot.on('ORDER_CHANGE',
+/**
+ * answered wants change something in the order
+ */
+
+bot.on('ORDER_WANT_CHANGE',
 /*#__PURE__*/
 function () {
   var _ref17 = _asyncToGenerator(
@@ -1562,100 +1627,51 @@ function () {
             return _facebookMessengerBot.Bot.wait(1000);
 
           case 6:
-            if (!(data === 'change_quantity')) {
-              _context16.next = 12;
-              break;
-            }
+            _context16.next = 8;
+            return (0, _botController.askForSpecificItem)(recipient.id, sender.id);
 
-            _context16.next = 9;
-            return (0, _botController.askForQuantity)(recipient.id, sender.id);
-
-          case 9:
+          case 8:
             out = _context16.sent;
-            _context16.next = 28;
-            break;
-
-          case 12:
-            if (!(data === 'change_size')) {
-              _context16.next = 18;
-              break;
-            }
-
-            _context16.next = 15;
-            return (0, _botController.askForSize)(recipient.id, sender.id);
-
-          case 15:
-            out = _context16.sent;
-            _context16.next = 28;
-            break;
-
-          case 18:
-            if (!(data === 'change_flavor')) {
-              _context16.next = 24;
-              break;
-            }
-
-            _context16.next = 21;
-            return (0, _botController.askForFlavor)(message.recipient.id, sender.id, 1);
-
-          case 21:
-            out = _context16.sent;
-            _context16.next = 28;
-            break;
-
-          case 24:
-            if (!(data === 'change_address')) {
-              _context16.next = 28;
-              break;
-            }
-
-            _context16.next = 27;
-            return (0, _botController.askForLocation)();
-
-          case 27:
-            out = _context16.sent;
-
-          case 28:
-            _context16.next = 30;
+            _context16.next = 11;
             return bot.stopTyping(sender.id);
 
-          case 30:
-            _context16.next = 32;
+          case 11:
+            _context16.next = 13;
             return bot.send(sender.id, out);
 
-          case 32:
-            _context16.next = 44;
+          case 13:
+            _context16.next = 25;
             break;
 
-          case 34:
-            _context16.prev = 34;
+          case 15:
+            _context16.prev = 15;
             _context16.t0 = _context16["catch"](1);
-            console.error('ORDER_CHANGE:', _context16.t0.message);
-            _context16.next = 39;
+            console.error('ORDER_WANT_CHANGE:', _context16.t0.message);
+            _context16.next = 20;
             return (0, _botController.sendErrorMsg)(_context16.t0.message);
 
-          case 39:
+          case 20:
             outError = _context16.sent;
-            _context16.next = 42;
+            _context16.next = 23;
             return bot.stopTyping(sender.id);
 
-          case 42:
-            _context16.next = 44;
+          case 23:
+            _context16.next = 25;
             return bot.send(sender.id, outError);
 
-          case 44:
+          case 25:
           case "end":
             return _context16.stop();
         }
       }
-    }, _callee16, this, [[1, 34]]);
+    }, _callee16, this, [[1, 15]]);
   }));
 
   return function (_x31, _x32) {
     return _ref17.apply(this, arguments);
   };
 }());
-bot.on('ORDER_CHANGE_SELECT_ITEM',
+bot.on('ORDER_CHANGE',
 /*#__PURE__*/
 function () {
   var _ref18 = _asyncToGenerator(
@@ -1673,51 +1689,165 @@ function () {
 
           case 4:
             _context17.next = 6;
-            return _facebookMessengerBot.Bot.wait(1000);
+            return _facebookMessengerBot.Bot.wait(500);
 
           case 6:
-            _context17.next = 8;
-            return (0, _botController.updateItemAskOptions)(recipient.id, sender.id, data);
+            if (!(data === 'change_quantity')) {
+              _context17.next = 12;
+              break;
+            }
 
-          case 8:
+            _context17.next = 9;
+            return (0, _botController.askForQuantity)(recipient.id, sender.id);
+
+          case 9:
             out = _context17.sent;
-            _context17.next = 11;
-            return bot.stopTyping(sender.id);
-
-          case 11:
-            _context17.next = 13;
-            return bot.send(sender.id, out);
-
-          case 13:
-            _context17.next = 25;
+            _context17.next = 28;
             break;
 
-          case 15:
-            _context17.prev = 15;
-            _context17.t0 = _context17["catch"](1);
-            console.error('ORDER_CHANGE_SELECT_ITEM:', _context17.t0.message);
-            _context17.next = 20;
-            return (0, _botController.sendErrorMsg)(_context17.t0.message);
+          case 12:
+            if (!(data === 'change_size')) {
+              _context17.next = 18;
+              break;
+            }
 
-          case 20:
-            outError = _context17.sent;
-            _context17.next = 23;
+            _context17.next = 15;
+            return (0, _botController.askForSize)(recipient.id, sender.id);
+
+          case 15:
+            out = _context17.sent;
+            _context17.next = 28;
+            break;
+
+          case 18:
+            if (!(data === 'change_flavor')) {
+              _context17.next = 24;
+              break;
+            }
+
+            _context17.next = 21;
+            return (0, _botController.askForFlavor)(message.recipient.id, sender.id, 1);
+
+          case 21:
+            out = _context17.sent;
+            _context17.next = 28;
+            break;
+
+          case 24:
+            if (!(data === 'change_address')) {
+              _context17.next = 28;
+              break;
+            }
+
+            _context17.next = 27;
+            return (0, _botController.askForLocation)();
+
+          case 27:
+            out = _context17.sent;
+
+          case 28:
+            _context17.next = 30;
             return bot.stopTyping(sender.id);
 
-          case 23:
-            _context17.next = 25;
+          case 30:
+            _context17.next = 32;
+            return bot.send(sender.id, out);
+
+          case 32:
+            _context17.next = 44;
+            break;
+
+          case 34:
+            _context17.prev = 34;
+            _context17.t0 = _context17["catch"](1);
+            console.error('ORDER_CHANGE:', _context17.t0.message);
+            _context17.next = 39;
+            return (0, _botController.sendErrorMsg)(_context17.t0.message);
+
+          case 39:
+            outError = _context17.sent;
+            _context17.next = 42;
+            return bot.stopTyping(sender.id);
+
+          case 42:
+            _context17.next = 44;
             return bot.send(sender.id, outError);
 
-          case 25:
+          case 44:
           case "end":
             return _context17.stop();
         }
       }
-    }, _callee17, this, [[1, 15]]);
+    }, _callee17, this, [[1, 34]]);
   }));
 
   return function (_x33, _x34) {
     return _ref18.apply(this, arguments);
+  };
+}());
+bot.on('ORDER_CHANGE_SELECT_ITEM',
+/*#__PURE__*/
+function () {
+  var _ref19 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee18(message, data) {
+    var sender, recipient, out, outError;
+    return regeneratorRuntime.wrap(function _callee18$(_context18) {
+      while (1) {
+        switch (_context18.prev = _context18.next) {
+          case 0:
+            sender = message.sender, recipient = message.recipient;
+            _context18.prev = 1;
+            _context18.next = 4;
+            return bot.startTyping(sender.id);
+
+          case 4:
+            _context18.next = 6;
+            return _facebookMessengerBot.Bot.wait(1000);
+
+          case 6:
+            _context18.next = 8;
+            return (0, _botController.updateItemAskOptions)(recipient.id, sender.id, data);
+
+          case 8:
+            out = _context18.sent;
+            _context18.next = 11;
+            return bot.stopTyping(sender.id);
+
+          case 11:
+            _context18.next = 13;
+            return bot.send(sender.id, out);
+
+          case 13:
+            _context18.next = 25;
+            break;
+
+          case 15:
+            _context18.prev = 15;
+            _context18.t0 = _context18["catch"](1);
+            console.error('ORDER_CHANGE_SELECT_ITEM:', _context18.t0.message);
+            _context18.next = 20;
+            return (0, _botController.sendErrorMsg)(_context18.t0.message);
+
+          case 20:
+            outError = _context18.sent;
+            _context18.next = 23;
+            return bot.stopTyping(sender.id);
+
+          case 23:
+            _context18.next = 25;
+            return bot.send(sender.id, outError);
+
+          case 25:
+          case "end":
+            return _context18.stop();
+        }
+      }
+    }, _callee18, this, [[1, 15]]);
+  }));
+
+  return function (_x35, _x36) {
+    return _ref19.apply(this, arguments);
   };
 }());
 //# sourceMappingURL=server-bot.js.map
