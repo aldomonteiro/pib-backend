@@ -12,6 +12,7 @@ const schema = new Schema(
     city: { type: String },
     state: { type: String },
     phone: { type: String },
+    delivery_fee: { type: Number },
     location_lat: { type: Number },
     location_long: { type: Number },
     // Holydays

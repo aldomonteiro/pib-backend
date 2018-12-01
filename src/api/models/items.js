@@ -13,6 +13,7 @@ const schema = new Schema({
   beverageId: { type: Number },
   extraId: { type: Number },
   qty: { type: Number },
+  split: { type: Number },
   resource: { type: String },
   description: { type: String },
   price: { type: Number },

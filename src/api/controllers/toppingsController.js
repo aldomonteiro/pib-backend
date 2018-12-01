@@ -1,44 +1,42 @@
 import Topping from '../models/toppings';
 import util from "util";
 import stringCapitalizeName from 'string-capitalize-name';
-import { configSortQuery, configRangeQuery } from '../util/util';
+import { configSortQuery, configRangeQueryNew, configFilterQuery } from '../util/util';
 
 
 // List all toppings
-// TODO: use filters in the query req.query
-export const topping_get_all = (req, res) => {
-    // Getting the sort from the requisition
+export const topping_get_all = async (req, res) => {
+    let sortObj = req.query.sort ? configSortQuery(req.query.sort) : { topping: 'ASC' };
+    const rangeObj = configRangeQueryNew(req.query.range);
+    const filterObj = configFilterQuery(req.query.filter);
 
-    var sortObj = req.query.sort ? configSortQuery(req.query.sort) : { topping: 'ASC' };
-
-    if (req.query.range) {
-        var rangeObj = configRangeQuery(req.query.range);
-        const options = {
-            offset: rangeObj['offset'],
-            limit: rangeObj['limit'],
-            sort: sortObj,
-            lean: true,
-            leanWithId: false,
-        };
-        Topping.paginate({}, options, (err, result) => {
-            if (err) {
-                res.status(500).json({ message: err.errmsg });
-            } else {
-                res.setHeader('Content-Range', util.format("toppings %d-%d/%d", rangeObj['offset'] + 1, rangeObj['limit'], result.total));
-                res.status(200).json(result.docs);
-            }
-        });
-    } else {
-        Topping.find((err, result) => {
-            if (err) {
-                res.status(500).json({ message: err.errmsg });
-            } else {
-                res.setHeader('Content-Range', util.format("toppings %d-%d/%d", 1, result.length - 1, result.length));
-                res.status(200).json(result);
-            }
-        });
+    let queryParam = {};
+    if (filterObj) {
+        if (typeof filterObj.filterValues === 'Array') {
+            queryParam[filterObj.filterField] = { $in: filterObj.filterValues };
+        } else {
+            queryParam[filterObj.filterField] = filterObj.filterValues;
+        }
     }
-};
+
+    let query;
+    if (rangeObj) {
+        query = Topping.find(queryParam).sort(sortObj).skip(rangeObj.offset).limit(rangeObj.limit);
+    } else {
+        query = Topping.find(queryParam).sort(sortObj);
+    }
+
+    const count = await Topping.estimatedDocumentCount();
+
+    query.exec((err, result) => {
+        if (err) {
+            res.status(500).json({ message: err.errmsg });
+        } else {
+            res.setHeader('Content-Range', util.format("toppings %d-%d/%d", 1, result.length - 1, count));
+            res.status(200).json(result);
+        }
+    });
+}
 
 // List one record by filtering by ID
 export const topping_get_one = (req, res) => {

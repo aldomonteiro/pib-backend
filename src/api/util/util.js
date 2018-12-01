@@ -7,8 +7,12 @@ export const configSortQuery = sortString => {
     return sortObj;
 }
 
-// react-admin sends a range [0,9] and I am transforming
-// it in offset: 0, limit: 10
+/**
+ * This function is deprecated and is used with the mongoose paginate plugin.
+ * Insted of this function, use configRangeQueryNew
+ * react-admin sends a range [0,9] and I am transforming it in offset: 0, limit: 10
+ * @param {*} rangeString 
+ */
 export const configRangeQuery = rangeString => {
     var rangeObj = {};
     if (typeof (rangeString) != "undefined") {
@@ -19,6 +23,31 @@ export const configRangeQuery = rangeString => {
         }
     }
     return rangeObj;
+}
+
+/**
+ * Using without the paginate plugin.
+ * @param {*} rangeString 
+ */
+export const configRangeQueryNew = rangeString => {
+    if (typeof (rangeString) !== "undefined") {
+        let json = JSON.parse(rangeString);
+        return {
+            offset: json[0],
+            limit: (json[1] + 1) - json[0]
+        };
+    } else
+        return null;
+}
+
+export const configFilterQuery = filterString => {
+    if (typeof filterString !== "undefined") {
+        const json = JSON.parse(filterString);
+        const _field = Object.keys(json)[0];
+        const _values = Object.values(json)[0];
+
+        return { filterField: _field, filterValues: _values };
+    } else return null;
 }
 
 export const choices_sizes = async () => {

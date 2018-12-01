@@ -36,20 +36,70 @@ import {
   sendHorario,
   basicReply,
   askForChangeOrder,
+  askForSplitFlavorOrConfirm,
   askForFlavorOrConfirm,
   askForSpecificItem,
   updateItemAskOptions,
-  showOrderOrAskForPhone
+  showOrderOrAskForPhone,
+  showSplit
 } from './api/bot/botController';
 
 dotenv.config();
 
-mongoose.connect(
-  process.env.MONGODB_URL,
-  { useNewUrlParser: true }
-);
+// mongoose.connect(
+//   process.env.MONGODB_URL,
+//   { useNewUrlParser: true }
+// );
+
+const RETRY_TIMEOUT = 3000
+
+const options = {
+  useNewUrlParser: true,
+  autoReconnect: true,
+  keepAlive: 30000,
+  reconnectInterval: RETRY_TIMEOUT,
+  reconnectTries: 10000
+}
+
+let isConnectedBefore = false
+
+const connect = () => {
+  return mongoose.connect(process.env.MONGODB_URL, options)
+    .catch(err => console.error('Mongoose connect(...) failed with err: ', err))
+}
+
+connect();
+
 mongoose.set('useCreateIndex', true);
 mongoose.Promise = Promise;
+
+mongoose.connection.on('error', () => {
+  console.error('Could not connect to MongoDB')
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.error('Lost MongoDB connection...')
+  if (!isConnectedBefore) {
+    setTimeout(() => connect(), RETRY_TIMEOUT)
+  }
+});
+
+mongoose.connection.on('connected', () => {
+  isConnectedBefore = true
+  console.info('Connection established to MongoDB')
+});
+
+mongoose.connection.on('reconnected', () => {
+  console.info('Reconnected to MongoDB')
+});
+
+// Close the Mongoose connection, when receiving SIGINT
+process.on('SIGINT', () => {
+  mongoose.connection.close(function () {
+    console.warn('Force to close the MongoDB connection after SIGINT')
+    process.exit(0)
+  })
+});
 
 global.pagesKeyID = new Object();
 
@@ -97,14 +147,17 @@ app.use('/buckets/facebook', async (req, res, next) => {
           req.token = global.pagesKeyID[pageID];
         }
         else {
+          let timerIdentifier = "getOnePageToken" + Math.random();
+          console.time(timerIdentifier);
           const { accessToken, name } = await getOnePageToken(pageID);
           req.token = accessToken;
+          console.timeEnd(timerIdentifier);
           global.pagesKeyID[pageID] = accessToken;
         }
 
-        const _time = req.body.entry[0].time;
-        const messageTime = new Date(_time).toLocaleTimeString('pt-BR');
-        console.info(`${messageTime} From ${pageID} memory tokens:${Object.keys(global.pagesKeyID).length}`);
+        // const _time = req.body.entry[0].time;
+        // const messageTime = new Date(_time).toLocaleTimeString('pt-BR');
+        // console.info(`${messageTime} From ${pageID} memory tokens:${Object.keys(global.pagesKeyID).length}`);
 
       } catch (expressAppUseGetTokenError) {
         console.error({ expressAppUseGetTokenError });
@@ -178,9 +231,9 @@ bot.on('MAIN-MENU', async (message, data) => {
       await bot.stopTyping(sender.id);
       await bot.send(sender.id, out);
     }
-  } catch (error) {
-    console.error('MAIN_MENU error:', error.message);
-    const outError = await sendErrorMsg(error.message);
+  } catch (mainMenuError) {
+    console.error({ mainMenuError });
+    const outError = await sendErrorMsg(mainMenuError.message);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, outError);
   }
@@ -188,6 +241,7 @@ bot.on('MAIN-MENU', async (message, data) => {
 
 
 /**
+ * Question No.02 (location)
  * clicked "Fazer Pedido"
  * gonna ask for QUANTITY
  */
@@ -219,9 +273,9 @@ bot.on('message', async (message) => {
       await bot.stopTyping(sender.id);
       await bot.send(sender.id, answer);
     }
-  } catch (error) {
-    console.error('on message error:', error.message);
-    const outError = await sendErrorMsg(error.message);
+  } catch (onMessageError) {
+    console.error({ onMessageError });
+    const outError = await sendErrorMsg(onMessageError.message);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, outError);
   }
@@ -250,15 +304,16 @@ bot.on('quick-reply', async (message, quick_reply) => {
       await bot.stopTyping(sender.id);
       await bot.send(sender.id, out);
     }
-  } catch (error) {
-    console.error('quick-reply error:', error.message);
-    const outError = await sendErrorMsg(error.message);
+  } catch (quickReplyError) {
+    console.error({ quickReplyError });
+    const outError = await sendErrorMsg(quickReplyError.message);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, outError);
   }
 });
 
 /**
+ * Answer No.01
  * answered CORRECT_SAVED_ADDRESS
  * gonna ask for phone
  */
@@ -267,14 +322,15 @@ bot.on('CORRECT_SAVED_ADDRESS', async (message, data) => {
   try {
     // show what the user chose
     await bot.startTyping(sender.id);
-    await Bot.wait(1000);
+    await Bot.wait(800);
     const answer = await showAddress(recipient.id, sender.id, data);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, answer);
 
     // next question
+    await bot.startTyping(sender.id);
+    await Bot.wait(800);
     const out = await askForPhone(recipient.id, sender.id);
-    await Bot.wait(1000);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, out);
   } catch (error) {
@@ -425,23 +481,44 @@ bot.on('ORDER_SIZE', async (message, data) => {
   try {
     // show what the user chose
     await bot.startTyping(sender.id);
-    await Bot.wait(1000);
+    await Bot.wait(900);
     const answer = await showSize(recipient.id, sender.id, data);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, answer);
 
-    // next question
+    // check if the size is splitable.
     await bot.startTyping(sender.id);
-    await Bot.wait(1000);
-    const out = await askForFlavorOrConfirm(message.recipient.id, sender.id, 1);
+    await Bot.wait(900);
+    const out = await askForSplitFlavorOrConfirm(message.recipient.id, sender.id, 1);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, out);
+
   } catch (error) {
     console.error('ORDER_SIZE:', error.message);
     const outError = await sendErrorMsg(error.message);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, outError);
   }
+});
+
+
+bot.on('ORDER_SPLIT', async (message, data) => {
+  const { sender, recipient } = message;
+
+  await bot.startTyping(sender.id);
+  await Bot.wait(900);
+  const answer = await showSplit(recipient.id, sender.id, data);
+  await bot.stopTyping(sender.id);
+  await bot.send(sender.id, answer);
+
+  const split = Number(data);
+
+  // next question
+  await bot.startTyping(sender.id);
+  await Bot.wait(500);
+  const out = await askForFlavorOrConfirm(message.recipient.id, sender.id, 1, split);
+  await bot.stopTyping(sender.id);
+  await bot.send(sender.id, out);
 });
 
 /**
@@ -454,7 +531,7 @@ bot.on('ORDER_FLAVOR', async (message, data) => {
     if (data && data.option && data.option === 'flavors_more') {
       // next question
       await bot.startTyping(sender.id);
-      await Bot.wait(1000);
+      await Bot.wait(500);
       const out = await askForFlavor(message.recipient.id, sender.id, data.multiple);
       await bot.stopTyping(sender.id);
       await bot.send(sender.id, out);
@@ -462,11 +539,10 @@ bot.on('ORDER_FLAVOR', async (message, data) => {
     else {
       // show what the user chose
       await bot.startTyping(sender.id);
-      await Bot.wait(1000);
+      await Bot.wait(900);
       const answer = await showFlavor(recipient.id, sender.id, data);
       await bot.stopTyping(sender.id);
       await bot.send(sender.id, answer);
-
 
       // show summary
       await bot.startTyping(sender.id);
@@ -506,9 +582,9 @@ bot.on('ORDER_CONFIRMATION', async (message, data) => {
       await bot.stopTyping(sender.id);
       await bot.send(sender.id, out);
     }
-  } catch (error) {
-    console.error('ORDER_CONFIRMATION:', error.message);
-    const outError = await sendErrorMsg(error.message);
+  } catch (orderConfirmationError) {
+    console.error({ orderConfirmationError });
+    const outError = await sendErrorMsg(orderConfirmationError.message);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, outError);
   }
@@ -541,7 +617,7 @@ bot.on('ORDER_CHANGE', async (message, data) => {
 
   try {
     await bot.startTyping(sender.id);
-    await Bot.wait(1000);
+    await Bot.wait(500);
     let out;
     if (data === 'change_quantity') {
       out = await askForQuantity(recipient.id, sender.id);

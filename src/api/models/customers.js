@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import paginate from 'mongoose-paginate';
 
 const Schema = mongoose.Schema;
 
@@ -29,7 +28,5 @@ const schema = new Schema(
 
 schema.index({ pageId: 1, id: 1 }, { unique: true });
 schema.index({ userId: 1 });
-
-schema.plugin(paginate);
 
 export default mongoose.model("customers", schema);

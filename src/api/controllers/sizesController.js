@@ -123,7 +123,7 @@ export const size_delete = (req, res) => {
 
 export const getSize = async (pageID, sizeID) => {
     const query = Size.findOne({ pageId: pageID, id: sizeID });
-    query.select('id size');
+    query.select('id size slices split');
     return await query.exec();
 }
 

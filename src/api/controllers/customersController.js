@@ -2,52 +2,94 @@ import Customer from '../models/customers';
 import axios from 'axios';
 import util from "util";
 import { shuffle } from '../util/util';
-import { configSortQuery, configRangeQuery } from '../util/util';
+import { configSortQuery, configRangeQueryNew, configFilterQuery } from '../util/util';
+import { getOrdersCustomerStat } from './ordersController';
 
 // List all customers
-// TODO: use filters in the query req.query
 export const customer_get_all = async (req, res) => {
-    // Getting the sort from the requisition
-    var sortObj = configSortQuery(req.query.sort);
-    // Getting the range from the requisition
-    var rangeObj = configRangeQuery(req.query.range);
+    try {
+        let sortObj = req.query.sort ? configSortQuery(req.query.sort) : { first_name: 'ASC' };
+        const rangeObj = configRangeQueryNew(req.query.range);
+        const { filterField, filterValues } = configFilterQuery(req.query.filter);
 
-    let options = {
-        offset: rangeObj['offset'],
-        limit: rangeObj['limit'],
-        sort: sortObj,
-        lean: true,
-        leanWithId: false,
-    };
-
-    var query = {};
-
-    if (req.currentUser.activePage) {
-        query = Customer.find({ pageId: req.currentUser.activePage });
-    }
-
-    Customer.paginate(query, options, async (err, result) => {
-        if (err) {
-            res.status(500).json({ message: err.errmsg });
-        } else {
-            res.setHeader('Content-Range', util.format("customers %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
-            res.status(200).json(result.docs);
+        let queryParam = {};
+        if (req.currentUser.activePage) {
+            queryParam['pageId'] = req.currentUser.activePage;
         }
-    });
+
+        if (filterField && filterValues) {
+            if (typeof filterValues === 'Array') {
+                queryParam[filterField] = { $in: filterValues };
+            } else {
+                queryParam[filterField] = filterValues;
+            }
+        }
+
+        let query;
+        if (rangeObj) {
+            query = Customer.find(queryParam).sort(sortObj).skip(rangeObj.offset).limit(rangeObj.limit);
+        } else {
+            query = Customer.find(queryParam).sort(sortObj);
+        }
+
+        const count = await Customer.estimatedDocumentCount({ pageId: req.currentUser.activePage });
+
+        query.exec((err, result) => {
+            if (err) {
+                res.status(500).json({ message: err.errmsg });
+            } else {
+                res.setHeader('Content-Range', util.format("customers %d-%d/%d", 1, result.length - 1, count));
+                res.status(200).json(result);
+            }
+        });
+    } catch (customerGetAllErr) {
+        console.error({ customerGetAllErr });
+        res.status(500).json({ message: err.message });
+    }
 };
 
 // List one record by filtering by ID
-export const customer_get_one = (req, res) => {
+export const customer_get_one = async (req, res) => {
     if (req.params && req.params.id) {
-        const pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
-        Customer.findOne({ pageId: pageId, id: req.params.id }, (err, doc) => {
-            if (err) {
-                res.status(500).json({ message: err.errMsg });
+        try {
+            const pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
+            const customerId = req.params.id;
+
+            let queryParams = {};
+            queryParams['id'] = customerId;
+            if (pageId) {
+                queryParams['pageId'] = pageId;
             }
-            else {
-                res.status(200).json(doc);
+
+            const customer = await Customer.findOne(queryParams).exec();
+            if (customer) {
+                const { total_spent, nb_orders, first_order, last_order } = await getOrdersCustomerStat({ pageId, customerId });
+
+                const jsonCustomer = {
+                    id: customer.id,
+                    pageId: customer.pageId,
+                    first_name: customer.first_name,
+                    last_name: customer.last_name,
+                    profile_pic: customer.profile_pic,
+                    phone: customer.phone,
+                    addr_formatted: customer.addr_formatted,
+                    addr_city: customer.addr_city,
+                    addr_postalcode: customer.addr_postalcode,
+                    createdAt: customer.createdAt,
+                    updatedAt: customer.updatedAt,
+                    total_spent: total_spent,
+                    nb_orders: nb_orders,
+                    first_order: first_order,
+                    last_order: last_order,
+                };
+
+                res.status(200).json(jsonCustomer);
+            } else {
+                res.status(500).json({ message: 'pos.customer.messages.no_customer_found' });
             }
-        });
+        } catch (customerGetOneError) {
+            res.status(500).json({ message: customerGetOneError.message });
+        }
     }
 }
 
@@ -172,16 +214,16 @@ export const customer_update = async (custData) => {
             await customer.save();
         }
     } else {
-        const resultLastId = Customer.find({ pageId: custData.pageId })
+        const resultLastId = await Customer.find({ pageId: custData.pageId })
             .select('id')
             .sort('-id')
             .limit(1)
             .exec();
-        let lastId = 0;
-        if (resultLastId && resultLastId.length) lastId = resultLastId[0];
+        let lastId = 1;
+        if (resultLastId && resultLastId.length) lastId = resultLastId[0].id + 1;
 
         const newRecord = new Customer({
-            id: lastId + 1,
+            id: lastId,
             userId: custData.userId,
             pageId: custData.pageId,
             first_name: custData.first_name,

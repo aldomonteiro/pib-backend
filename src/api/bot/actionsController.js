@@ -5,9 +5,15 @@ import { getOnePricing } from '../controllers/pricingsController';
 
 const QTY_1 = [1, "um", "uma"];
 
+/**
+ * Returns array of flavors. If sizeID was passed, only returns flavors with price.
+ * @param {*} pageID 
+ * @param {*} sizeID 
+ */
 export const getFlavorsAndToppings = async (pageID, sizeID) => {
     try {
         const flavorArray = await getFlavors(pageID);
+        const flavorsWithPrice = new Array();
         for (let flavor of flavorArray) {
             if (sizeID) {
                 const pricing = await getOnePricing(pageID, flavor.kind, sizeID);
@@ -15,9 +21,17 @@ export const getFlavorsAndToppings = async (pageID, sizeID) => {
                     flavor.price = pricing.price;
                 }
             }
-            flavor.toppingsNames = await getToppingsNames(flavor.toppings);
+            if (sizeID) {
+                if (flavor.price) {
+                    flavor.toppingsNames = await getToppingsNames(flavor.toppings);
+                    flavorsWithPrice.push(flavor);
+                }
+            } else {
+                flavor.toppingsNames = await getToppingsNames(flavor.toppings);
+                flavorsWithPrice.push(flavor);
+            }
         }
-        return flavorArray;
+        return flavorsWithPrice;
     } catch (flavorsAndToppingsErr) {
         console.error({ flavorsAndToppingsErr });
     }
@@ -95,62 +109,6 @@ export const inputHorarioReplyMsg = (openAndClose) => {
     return replyMsg;
 }
 
-/**
- * validateBotOrder
- * @param {*} pageID 
- * @param {*} entities 
- * @return
- */
-export const validateBotOrder = async (pageID, entities) => {
-    const { quantidade, tamanho, produto, sabor } = entities;
-    const validated = basicValidation(quantidade, tamanho, produto, sabor);
-    var replyText = new String();
-    if (validated === 0) { // passed
-        const order_flavor = await getFlavorByName(pageID, sabor[0]);
+export const addQuickReplyOptions = quickReplyOptions => {
 
-        if (order_flavor) {
-            const order_qty = quantidade[0];
-            const order_size = tamanho[0];
-            const order_prod = produto.length > 0 ? produto[0] : 'pizza';
-            const order_flav = order_flavor.flavor;
-
-            replyText = 'Ok, o seu pedido é : \n';
-            replyText = replyText.concat(order_qty, ' ', order_prod, ' ', order_size, ' de ', order_flav, '\n');
-            replyText = replyText.concat('Para confirmar, digite SIM. Se tem algum problema, diga pra mim o que está errado');
-        } else {
-            replyText = 'Não temos o sabor ' + sabor[0];
-        }
-    } else if (validated === 1) {
-        replyText = 'A quantidade solicitada não bate, vou questionar se está faltando algo...';
-    } else {
-        replyText = 'Algum problema com tamanho ou sabor...';
-    }
-    return replyText;
 }
-
-/**
- * basicValidation
- * @param {*} quantidade 
- * @param {*} tamanho 
- * @param {*} produto 
- * @param {*} sabor 
- * @returns
- *      0 - if the validation passed
- *      1 - if quantidade validation failed
- *      2 - if tamanho validation failed
- *      3 - if produto validation failed
- *      4 - if sabor validation failed
- */
-const basicValidation = (quantidade, tamanho, produto, sabor) => {
-    // 1 pizza, 1 sabor, 1 quantidade
-    if (quantidade.length === 1) { // && QTY_1.includes(quantidade[1])) {
-        if (tamanho.length === 1) {
-            if (sabor.length === 1) {
-                return 0;
-            }
-        }
-    }
-    return 5;
-}
-
-

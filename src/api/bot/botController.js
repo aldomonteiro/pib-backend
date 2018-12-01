@@ -9,9 +9,8 @@ import {
     inputCardapioReplyMsg,
     getOpenAndClose,
     inputHorarioReplyMsg,
-    validateBotOrder,
 } from "./actionsController";
-import { getSizes } from '../controllers/sizesController';
+import { getSizes, getSize } from '../controllers/sizesController';
 import { getTodayOpeningTime } from '../controllers/storesController';
 import { updateOrder, getOrderPending } from '../controllers/ordersController';
 import { getAddressLocation, getCustomerAddress, formatAddrData } from '../controllers/customersController';
@@ -98,6 +97,10 @@ export const sendCardapio = async (pageID) => {
     return out;
 }
 
+/**
+ * Question No.01
+ * If the user doesnt have an address in the database, this will be the first question.
+ */
 export const askForLocation = async () => {
     const out = new Elements();
     out.add({ text: 'Para começar, preciso saber aonde você está. Clique no botão abaixo que receberei a sua localização.' });
@@ -183,52 +186,59 @@ export const askToTypeAddress = async (pageID, userID) => {
 }
 
 export const confirmTypedText = async (pageId, userId, message) => {
-    const pendingOrder = await getOrderPending({ pageId, userId });
+    try {
+        const pendingOrder = await getOrderPending({ pageId, userId });
 
-    console.info({ pendingOrder });
+        console.info({ pendingOrder });
 
-    let out = new Elements();
+        let out = new Elements();
 
-    if (pendingOrder) {
-        if (typeof pendingOrder.order.waitingForAddress === 'boolean' &&
-            pendingOrder.order.waitingForAddress === true) {
+        if (pendingOrder && pendingOrder.order) {
+            if (typeof pendingOrder.order.waitingForAddress === 'boolean' &&
+                pendingOrder.order.waitingForAddress === true) {
 
-            await updateOrder({ pageId, userId, waitingForAddress: false, waitingFor: 'address' });
+                await updateOrder({ pageId, userId, waitingForAddress: false, waitingFor: 'address' });
 
-            let _replyText = 'A entrega será para esse endereço?\n';
-            _replyText = _replyText + message.text;
-            out.add({ text: _replyText });
+                let _replyText = 'A entrega será para esse endereço?\n';
+                _replyText = _replyText + message.text;
+                out.add({ text: _replyText });
 
-            const addrData = {
-                manual_addres: true,
-                formattedAddress: message.text,
+                const addrData = {
+                    manual_addres: true,
+                    formattedAddress: message.text,
+                }
+
+                const replies = new QuickReplies();
+                replies.add({ text: 'Sim', data: addrData, event: 'CORRECT_SAVED_ADDRESS' });
+                replies.add({ text: 'Não', data: addrData, event: 'WRONG_SAVED_ADDRESS' });
+                out.setQuickReplies(replies);
+
+                return out;
             }
-
-            const replies = new QuickReplies();
-            replies.add({ text: 'Sim', data: addrData, event: 'CORRECT_SAVED_ADDRESS' });
-            replies.add({ text: 'Não', data: addrData, event: 'WRONG_SAVED_ADDRESS' });
-            out.setQuickReplies(replies);
-
-            return out;
+            else {
+                if (pendingOrder.order.waitingFor === 'phone')
+                    return await confirmTypedPhone(pageId, userId, message.text);
+                else if (pendingOrder.order.waitingFor === 'size')
+                    return await askForSize(pageId, userId)
+                else if (pendingOrder.order.waitingFor === 'quantity')
+                    return await askForQuantity(pageId, userId);
+                else if (pendingOrder.order.waitingFor === 'flavor')
+                    return await askForFlavor(pageId, userId, 1);
+                else if (pendingOrder.order.waitingFor === 'nothing')
+                    return await showOrderOrNextItem(pageId, userId);
+                else
+                    return await sendMainMenu();
+            }
         }
         else {
-            if (pendingOrder.order && pendingOrder.order.waitingFor === 'phone')
-                return await confirmTypedPhone(pageId, userId, message.text);
-            else if (pendingOrder.order && pendingOrder.order.waitingFor === 'size')
-                return await askForSize(pageId)
-            else if (pendingOrder.order && pendingOrder.order.waitingFor === 'quantity')
-                return await askForQuantity(pageId, userId);
-            else if (pendingOrder.order && pendingOrder.order.waitingFor === 'flavor')
-                return await askForFlavor(pageId, userId, 1);
-            else if (pendingOrder.order && pendingOrder.order.waitingFor === 'nothing')
-                return await showOrderOrNextItem(pageId, userId);
+            out = await sendMainMenu();
         }
-    }
-    else {
-        out = await sendMainMenu();
-    }
 
-    return out;
+        return out;
+    } catch (confirmTypedTextError) {
+        console.error({ confirmTypedTextError });
+        throw confirmTypedTextError;
+    }
 }
 
 export const showAddress = async (pageId, userId, addrData) => {
@@ -251,7 +261,7 @@ export const showOrderOrAskForPhone = async (pageId, userId) => {
     if (po.order && po.order.waitingFor === 'confirmation')
         return await showOrderOrNextItem(pageId, userId);
     else
-        return await askForPhone();
+        return await askForPhone(pageId, userId);
 }
 
 export const askForPhone = async (pageId, userId) => {
@@ -349,7 +359,7 @@ export const showQuantity = async (pageId, userId, data) => {
     // data is 'qty_1', 'qty_2', 'qty_3'...
     const qty = new String(data).substr(data.length - 1, 1);
 
-    await updateOrder({ pageId, userId, qty, waitingFor: 'size' });
+    await updateOrder({ pageId, userId, qty, waitingFor: 'size', currentItem: 1 });
 
     const out = new Elements();
     if (qty == 1) {
@@ -363,25 +373,14 @@ export const showQuantity = async (pageId, userId, data) => {
 export const askForSize = async (pageId, userId) => {
 
     const out = new Elements();
-    const po = await getOrderPending({ pageId, userId, isComplete: true });
+    const po = await getOrderPending({ pageId, userId, isComplete: false });
 
     if (po.order) {
         let _text = '';
-        let _itemNumber = 0;
         if (po.order.qty_total === 1) {
             _text = 'Qual o tamanho da pizza?';
         } else {
-            if (po.items.length > 1) {
-                for (let i = 0; i < po.items.length; i++) {
-                    if (po.items[i].status === 0) {
-                        _itemNumber = i + 1;
-                        break;
-                    }
-                }
-            } else {
-                _itemNumber = po.order.item_complete ? po.order.item_complete + 1 : 1;
-            }
-            _text = 'Agora vou pegar os detalhes da ' + _itemNumber + 'a. pizza.\n';
+            _text = 'Agora vou pegar os detalhes da ' + po.order.currentItem + 'a. pizza.\n';
             _text = _text + 'Qual o tamanho dela?';
         }
         out.add({ text: _text });
@@ -389,7 +388,7 @@ export const askForSize = async (pageId, userId) => {
         const replies = new QuickReplies();
         const sizesWithPricing = await getPricingSizing(pageId); // only sizes with pricing
         const sizes = await getSizes(pageId, sizesWithPricing);
-        for (var i = 0; i < sizes.length; i++) {
+        for (let i = 0; i < sizes.length; i++) {
             const _data = { id: sizes[i].id, size: sizes[i].size };
             replies.add({ text: sizes[i].size, data: _data, event: 'ORDER_SIZE' });
         }
@@ -398,7 +397,7 @@ export const askForSize = async (pageId, userId) => {
         if (po.order.qty_total === 1)
             await updateOrder({ pageId, userId, waitingFor: 'size' });
         else
-            await updateOrder({ pageId, userId, waitingFor: 'size', qty: po.order.qty_total });
+            await updateOrder({ pageId, userId, waitingFor: 'size', qty: po.order.qty_total, eraseSplit: true });
     }
     else {
         out.add({ text: MSG_GENERAL_ERROR });
@@ -415,18 +414,67 @@ export const showSize = async (pageId, userId, data) => {
     return out;
 }
 
-export const askForFlavorOrConfirm = async (pageId, userId, multiple) => {
+export const askForSplitFlavorOrConfirm = async (pageId, userId, multiple) => {
+    const pendingOrder = await getOrderPending({ pageId: pageId, userId: userId, isComplete: true });
+    if (pendingOrder.order) {
+        const currentSize = await getSize(pageId, pendingOrder.order.currentItemSize);
+        // if split is gt than 1, ask user if he wants to split in more than one flavor.
+        if (currentSize.split && currentSize.split > 1) {
+            let _txt = 'A pizza ' + currentSize.size + ' pode ser dividida em ' + currentSize.split + ' sabores.\n';
+            _txt = _txt + 'Escolha quantos sabores você quer:';
+
+            const out = new Elements();
+            out.add({ text: _txt });
+
+            const replies = new QuickReplies();
+            for (let i = 1; i <= currentSize.split; i++) {
+                let _replyText = i === 1 ? i + ' Sabor' : i + ' Sabores';
+                replies.add({ text: _replyText, data: i, event: 'ORDER_SPLIT' });
+            }
+            out.setQuickReplies(replies);
+
+            return out;
+        } else {
+            return await askForFlavorOrConfirm(pageId, userId, multiple);
+        }
+    }
+}
+
+/**
+ * After user answer if he wants to split the pizza, show the chosen option.
+ * @param {*} pageId 
+ * @param {*} userId 
+ * @param {*} data 
+ */
+export const showSplit = async (pageId, userId, data) => {
+    await updateOrder({ pageId, userId, sizeId: data.id, waitingFor: 'flavor', originalSplit: data });
+
+    let _txtFlavor = data === 1 ? 'Sabor' : 'Sabores';
+
+    const out = new Elements();
+    out.add({ text: '✅ ' + data + ' ' + _txtFlavor });
+    return out;
+}
+
+
+export const askForFlavorOrConfirm = async (pageId, userId, multiple, split) => {
     const pendingOrder = await getOrderPending({ pageId: pageId, userId: userId, isComplete: true });
 
     if (pendingOrder.order) {
-        if (pendingOrder.items && pendingOrder.items.length) {
-            for (let i = 0; i < pendingOrder.items.length; i++) {
-                if (pendingOrder.items[i].status === 0 && pendingOrder.items[i].flavorId > 0) {
-                    await updateStatusSpecificItem(pendingOrder.items[i]._id, 1);
-                    return await showOrderOrNextItem(pageId, userId);
+        if (split && split > 1) {
+            return await askForFlavor(pageId, userId, multiple, split, pendingOrder);
+        } else {
+            const currentSize = await getSize(pageId, pendingOrder.order.currentItemSize);
+
+            if (pendingOrder.items && pendingOrder.items.length) {
+                for (let i = 0; i < pendingOrder.items.length; i++) {
+                    if (pendingOrder.items[i].status === 0 && pendingOrder.items[i].flavorId > 0) {
+                        await updateStatusSpecificItem(pendingOrder.items[i]._id, 1);
+                        return await showOrderOrNextItem(pageId, userId);
+                    }
                 }
+                return await askForFlavor(pageId, userId, multiple);
             }
-            return await askForFlavor(pageId, userId, multiple);
         }
     }
 }
@@ -437,11 +485,15 @@ export const askForFlavorOrConfirm = async (pageId, userId, multiple) => {
  * @param {*} userId 
  * @param {*} multiple: if are the first 4 flavors, multiple=1, if are the next, multiple=2 and so on. 
  */
-export const askForFlavor = async (pageId, userId, multiple) => {
+export const askForFlavor = async (pageId, userId, multiple, split, pendingOrder) => {
     const out = new Elements();
     out.setListStyle('compact'); // or 'large'
 
-    const po = await getOrderPending({ pageId: pageId, userId: userId, isComplete: false });
+    let po = null;
+    if (pendingOrder)
+        po = pendingOrder;
+    else po = await getOrderPending({ pageId: pageId, userId: userId, isComplete: false });
+
     const flavorsArray = await getFlavorsAndToppings(pageId, po.order.currentItemSize);
 
     let _rangeIni = (multiple - 1) * 4;
@@ -461,20 +513,20 @@ export const askForFlavor = async (pageId, userId, multiple) => {
             out.add({ text: _fl.flavor, subtext: _subtext, buttons });
         }
     }
-    if (flavorsArray.length >= _rangeEnd) {
+    if (flavorsArray.length > _rangeEnd) {
         multiple++;
         const buttonsOpt = new Buttons();
         buttonsOpt.add({ text: '+ Opções', data: { option: "flavors_more", multiple: multiple }, event: 'ORDER_FLAVOR' });
         out.add({ buttons: buttonsOpt, isOnlyButtons: true });
     }
 
-    await updateOrder({ pageId, userId, waitingFor: 'flavor' });
+    await updateOrder({ pageId, userId, waitingFor: 'flavor', split: split });
 
     return out;
 }
 
 export const showFlavor = async (pageId, userId, data) => {
-    await updateOrder({ pageId, userId, flavorId: data.id, completeItem: true, waitingFor: 'nothing' });
+    await updateOrder({ pageId, userId, flavorId: data.id, completeItem: true, waitingFor: 'nothing', calcTotal: true });
 
     const out = new Elements();
     out.add({ text: '✅ ' + ' Sabor: ' + data.flavor });
@@ -484,17 +536,28 @@ export const showFlavor = async (pageId, userId, data) => {
 export const showOrderOrNextItem = async (pageId, userId) => {
     const po = await getOrderPending({ pageId, userId, isComplete: true });
 
-    if (po.order.qty_total > 1 && po.order.item_complete < po.order.qty_total)
+    if (po.order.currentItemSplit > 1) {
+        const split = po.order.currentItemSplit - 1;
+        return await askForFlavor(pageId, userId, 1, split, po);
+    }
+    else if (po.order.qty_total > 1 && po.order.item_complete < po.order.qty_total) {
+        const nextItem = po.order.currentItem + 1;
+        await updateOrder({ pageId, userId, waitingFor: 'size', currentItem: nextItem });
         return await askForSize(pageId, userId);
+    }
     else {
         const out = new Elements();
-
+        let total_price = 0;
         let _txt = 'Seguem os detalhes do seu pedido:\n';
+        _txt = _txt + '*Pedido:* ' + po.order.id + '\n';
         for (let i = 0; i < po.items.length; i++) {
-            _txt = _txt + `${po.items[i].qty} pizza ${po.items[i].size} de ${po.items[i].flavor}\n`;
+            let _txtQty = po.items[i].split > 1 ? po.items[i].qty + '/' + po.items[i].split : po.items[i].qty;
+            _txt = _txt + `${_txtQty} pizza ${po.items[i].size} de ${po.items[i].flavor}\n`;
+            total_price += po.items[i].price;
         }
         _txt = _txt + '*Endereço de entrega:* ' + po.order.address + '\n';
         _txt = _txt + '*Telefone:* ' + po.order.phone + '\n';
+        _txt = _txt + '*Total:* R$ ' + total_price + '\n';
         _txt = _txt + 'Podemos confirmar o pedido?';
 
         out.add({ text: _txt });
@@ -509,7 +572,7 @@ export const showOrderOrNextItem = async (pageId, userId) => {
 }
 
 export const confirmOrder = async (pageId, userId) => {
-    await updateOrder({ pageId, userId, confirmOrder: true });
+    await updateOrder({ pageId, userId, confirmOrder: true, calcTotal: true });
 
     const out = new Elements();
     out.add({ text: "Pedido Confirmado!" });
