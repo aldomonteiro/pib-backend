@@ -27,7 +27,7 @@ const getCardapio = async (pageID) => {
                 const kindName = kinds.filter(e => e.id === currentKind)[0].name;
                 replyText = replyText + '\n*Tipo:* ' + kindName + '\n';
             }
-            replyText = replyText + pricing.size + ' - R$ ' + pricing.price + ', ';
+            replyText = replyText + pricing.size + ' - R$ ' + pricing.price + '\n';
         }
         // the last kind
         if (currentKind !== '') {

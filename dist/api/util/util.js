@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.shuffle = exports.choices_kinds = exports.choices_sizes = exports.configFilterQuery = exports.configRangeQueryNew = exports.configRangeQuery = exports.configSortQuery = void 0;
+exports.shuffle = exports.choices_kinds = exports.choices_sizes = exports.configFilterQueryMultiple = exports.configFilterQuery = exports.configRangeQueryNew = exports.configRangeQuery = exports.configSortQuery = void 0;
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -75,6 +75,18 @@ var configFilterQuery = function configFilterQuery(filterString) {
 };
 
 exports.configFilterQuery = configFilterQuery;
+
+var configFilterQueryMultiple = function configFilterQueryMultiple(filterString) {
+  if (typeof filterString !== "undefined") {
+    var json = JSON.parse(filterString);
+    return {
+      filterField: Object.keys(json),
+      filterValues: Object.values(json)
+    };
+  } else return null;
+};
+
+exports.configFilterQueryMultiple = configFilterQueryMultiple;
 
 var choices_sizes =
 /*#__PURE__*/

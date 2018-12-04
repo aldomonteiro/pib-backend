@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.addQuickReplyOptions = exports.inputHorarioReplyMsg = exports.getOpenAndClose = exports.inputCardapioReplyMsg = exports.getFlavorsAndToppings = void 0;
+exports.inputHorarioReplyMsg = exports.getOpenAndClose = exports.inputCardapioReplyMsg = exports.getFlavorsAndToppings = exports.sendActions = void 0;
 
 var _flavorsController = require("../controllers/flavorsController");
 
@@ -13,60 +13,283 @@ var _storesController = require("../controllers/storesController");
 
 var _pricingsController = require("../controllers/pricingsController");
 
+var _facebookMessengerBot = require("facebook-messenger-bot");
+
+var _botController = require("./botController");
+
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 var QTY_1 = [1, "um", "uma"];
+
+var sendActions =
+/*#__PURE__*/
+function () {
+  var _ref2 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee(_ref) {
+    var action, bot, sender, pageID, multiple, data, out;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            action = _ref.action, bot = _ref.bot, sender = _ref.sender, pageID = _ref.pageID, multiple = _ref.multiple, data = _ref.data;
+            _context.prev = 1;
+            out = new _facebookMessengerBot.Elements();
+            _context.t0 = action;
+            _context.next = _context.t0 === 'SEND_WELCOME' ? 6 : _context.t0 === 'SEND_CARDAPIO' ? 20 : _context.t0 === 'ASK_FOR_WANT_BEVERAGE' ? 32 : _context.t0 === 'ASK_FOR_BEVERAGE_OPTIONS' ? 44 : _context.t0 === 'SHOW_BEVERAGE' ? 56 : _context.t0 === 'SHOW_FULL_ORDER' ? 68 : _context.t0 === 'CONFIRM_ORDER' ? 80 : 92;
+            break;
+
+          case 6:
+            _context.next = 8;
+            return bot.startTyping(sender.id);
+
+          case 8:
+            _context.next = 10;
+            return _facebookMessengerBot.Bot.wait(500);
+
+          case 10:
+            _context.next = 12;
+            return (0, _botController.sendWelcomeMessage)(pageID, sender);
+
+          case 12:
+            out = _context.sent;
+            _context.next = 15;
+            return _facebookMessengerBot.Bot.wait(500);
+
+          case 15:
+            _context.next = 17;
+            return bot.stopTyping(sender.id);
+
+          case 17:
+            _context.next = 19;
+            return bot.send(sender.id, out);
+
+          case 19:
+            return _context.abrupt("break", 93);
+
+          case 20:
+            _context.next = 22;
+            return bot.startTyping(sender.id);
+
+          case 22:
+            _context.next = 24;
+            return _facebookMessengerBot.Bot.wait(500);
+
+          case 24:
+            _context.next = 26;
+            return (0, _botController.sendCardapio)(pageID);
+
+          case 26:
+            out = _context.sent;
+            _context.next = 29;
+            return bot.stopTyping(sender.id);
+
+          case 29:
+            _context.next = 31;
+            return bot.send(sender.id, out);
+
+          case 31:
+            return _context.abrupt("break", 93);
+
+          case 32:
+            _context.next = 34;
+            return bot.startTyping(sender.id);
+
+          case 34:
+            _context.next = 36;
+            return _facebookMessengerBot.Bot.wait(500);
+
+          case 36:
+            _context.next = 38;
+            return (0, _botController.askForWantBeverage)(pageID, sender.id);
+
+          case 38:
+            out = _context.sent;
+            _context.next = 41;
+            return bot.stopTyping(sender.id);
+
+          case 41:
+            _context.next = 43;
+            return bot.send(sender.id, out);
+
+          case 43:
+            return _context.abrupt("break", 93);
+
+          case 44:
+            _context.next = 46;
+            return bot.startTyping(sender.id);
+
+          case 46:
+            _context.next = 48;
+            return _facebookMessengerBot.Bot.wait(500);
+
+          case 48:
+            _context.next = 50;
+            return (0, _botController.askForBeverages)(pageID, sender.id, multiple);
+
+          case 50:
+            out = _context.sent;
+            _context.next = 53;
+            return bot.stopTyping(sender.id);
+
+          case 53:
+            _context.next = 55;
+            return bot.send(sender.id, out);
+
+          case 55:
+            return _context.abrupt("break", 93);
+
+          case 56:
+            _context.next = 58;
+            return bot.startTyping(sender.id);
+
+          case 58:
+            _context.next = 60;
+            return _facebookMessengerBot.Bot.wait(500);
+
+          case 60:
+            _context.next = 62;
+            return (0, _botController.showBeverage)(pageID, sender.id, data);
+
+          case 62:
+            out = _context.sent;
+            _context.next = 65;
+            return bot.stopTyping(sender.id);
+
+          case 65:
+            _context.next = 67;
+            return bot.send(sender.id, out);
+
+          case 67:
+            return _context.abrupt("break", 93);
+
+          case 68:
+            _context.next = 70;
+            return bot.startTyping(sender.id);
+
+          case 70:
+            _context.next = 72;
+            return _facebookMessengerBot.Bot.wait(500);
+
+          case 72:
+            _context.next = 74;
+            return (0, _botController.showFullOrder)(pageID, sender.id);
+
+          case 74:
+            out = _context.sent;
+            _context.next = 77;
+            return bot.stopTyping(sender.id);
+
+          case 77:
+            _context.next = 79;
+            return bot.send(sender.id, out);
+
+          case 79:
+            return _context.abrupt("break", 93);
+
+          case 80:
+            _context.next = 82;
+            return bot.startTyping(sender.id);
+
+          case 82:
+            _context.next = 84;
+            return _facebookMessengerBot.Bot.wait(500);
+
+          case 84:
+            _context.next = 86;
+            return (0, _botController.confirmOrder)(pageID, sender.id);
+
+          case 86:
+            out = _context.sent;
+            _context.next = 89;
+            return bot.stopTyping(sender.id);
+
+          case 89:
+            _context.next = 91;
+            return bot.send(sender.id, out);
+
+          case 91:
+            return _context.abrupt("break", 93);
+
+          case 92:
+            return _context.abrupt("break", 93);
+
+          case 93:
+            _context.next = 99;
+            break;
+
+          case 95:
+            _context.prev = 95;
+            _context.t1 = _context["catch"](1);
+            console.error(action, _context.t1);
+            throw _context.t1;
+
+          case 99:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, this, [[1, 95]]);
+  }));
+
+  return function sendActions(_x) {
+    return _ref2.apply(this, arguments);
+  };
+}();
 /**
  * Returns array of flavors. If sizeID was passed, only returns flavors with price.
  * @param {*} pageID 
  * @param {*} sizeID 
  */
 
+
+exports.sendActions = sendActions;
+
 var getFlavorsAndToppings =
 /*#__PURE__*/
 function () {
-  var _ref = _asyncToGenerator(
+  var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee(pageID, sizeID) {
+  regeneratorRuntime.mark(function _callee2(pageID, sizeID) {
     var flavorArray, flavorsWithPrice, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, flavor, pricing;
 
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
-        switch (_context.prev = _context.next) {
+        switch (_context2.prev = _context2.next) {
           case 0:
-            _context.prev = 0;
-            _context.next = 3;
+            _context2.prev = 0;
+            _context2.next = 3;
             return (0, _flavorsController.getFlavors)(pageID);
 
           case 3:
-            flavorArray = _context.sent;
+            flavorArray = _context2.sent;
             flavorsWithPrice = new Array();
             _iteratorNormalCompletion = true;
             _didIteratorError = false;
             _iteratorError = undefined;
-            _context.prev = 8;
+            _context2.prev = 8;
             _iterator = flavorArray[Symbol.iterator]();
 
           case 10:
             if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-              _context.next = 32;
+              _context2.next = 32;
               break;
             }
 
             flavor = _step.value;
 
             if (!sizeID) {
-              _context.next = 17;
+              _context2.next = 17;
               break;
             }
 
-            _context.next = 15;
+            _context2.next = 15;
             return (0, _pricingsController.getOnePricing)(pageID, flavor.kind, sizeID);
 
           case 15:
-            pricing = _context.sent;
+            pricing = _context2.sent;
 
             if (pricing) {
               flavor.price = pricing.price;
@@ -74,93 +297,93 @@ function () {
 
           case 17:
             if (!sizeID) {
-              _context.next = 25;
+              _context2.next = 25;
               break;
             }
 
             if (!flavor.price) {
-              _context.next = 23;
+              _context2.next = 23;
               break;
             }
 
-            _context.next = 21;
+            _context2.next = 21;
             return (0, _toppingsController.getToppingsNames)(flavor.toppings);
 
           case 21:
-            flavor.toppingsNames = _context.sent;
+            flavor.toppingsNames = _context2.sent;
             flavorsWithPrice.push(flavor);
 
           case 23:
-            _context.next = 29;
+            _context2.next = 29;
             break;
 
           case 25:
-            _context.next = 27;
+            _context2.next = 27;
             return (0, _toppingsController.getToppingsNames)(flavor.toppings);
 
           case 27:
-            flavor.toppingsNames = _context.sent;
+            flavor.toppingsNames = _context2.sent;
             flavorsWithPrice.push(flavor);
 
           case 29:
             _iteratorNormalCompletion = true;
-            _context.next = 10;
+            _context2.next = 10;
             break;
 
           case 32:
-            _context.next = 38;
+            _context2.next = 38;
             break;
 
           case 34:
-            _context.prev = 34;
-            _context.t0 = _context["catch"](8);
+            _context2.prev = 34;
+            _context2.t0 = _context2["catch"](8);
             _didIteratorError = true;
-            _iteratorError = _context.t0;
+            _iteratorError = _context2.t0;
 
           case 38:
-            _context.prev = 38;
-            _context.prev = 39;
+            _context2.prev = 38;
+            _context2.prev = 39;
 
             if (!_iteratorNormalCompletion && _iterator.return != null) {
               _iterator.return();
             }
 
           case 41:
-            _context.prev = 41;
+            _context2.prev = 41;
 
             if (!_didIteratorError) {
-              _context.next = 44;
+              _context2.next = 44;
               break;
             }
 
             throw _iteratorError;
 
           case 44:
-            return _context.finish(41);
+            return _context2.finish(41);
 
           case 45:
-            return _context.finish(38);
+            return _context2.finish(38);
 
           case 46:
-            return _context.abrupt("return", flavorsWithPrice);
+            return _context2.abrupt("return", flavorsWithPrice);
 
           case 49:
-            _context.prev = 49;
-            _context.t1 = _context["catch"](0);
+            _context2.prev = 49;
+            _context2.t1 = _context2["catch"](0);
             console.error({
-              flavorsAndToppingsErr: _context.t1
+              flavorsAndToppingsErr: _context2.t1
             });
 
           case 52:
           case "end":
-            return _context.stop();
+            return _context2.stop();
         }
       }
-    }, _callee, this, [[0, 49], [8, 34, 38, 46], [39,, 41, 45]]);
+    }, _callee2, this, [[0, 49], [8, 34, 38, 46], [39,, 41, 45]]);
   }));
 
-  return function getFlavorsAndToppings(_x, _x2) {
-    return _ref.apply(this, arguments);
+  return function getFlavorsAndToppings(_x2, _x3) {
+    return _ref3.apply(this, arguments);
   };
 }();
 
@@ -205,24 +428,24 @@ exports.inputCardapioReplyMsg = inputCardapioReplyMsg;
 var getOpenAndClose =
 /*#__PURE__*/
 function () {
-  var _ref2 = _asyncToGenerator(
+  var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee2(pageID) {
+  regeneratorRuntime.mark(function _callee3(pageID) {
     var weekDay, openingTimes, openAndClose;
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
             // TODO: timezone from the store
             weekDay = new Date().getDay();
-            _context2.next = 3;
+            _context3.next = 3;
             return (0, _storesController.getOpeningTimes)(pageID);
 
           case 3:
-            openingTimes = _context2.sent;
+            openingTimes = _context3.sent;
 
             if (!openingTimes) {
-              _context2.next = 8;
+              _context3.next = 8;
               break;
             }
 
@@ -262,21 +485,21 @@ function () {
               openAndClose.closeTime = openingTimes.sun_close;
             }
 
-            return _context2.abrupt("return", openAndClose);
+            return _context3.abrupt("return", openAndClose);
 
           case 8:
-            return _context2.abrupt("return", null);
+            return _context3.abrupt("return", null);
 
           case 9:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee3, this);
   }));
 
-  return function getOpenAndClose(_x3) {
-    return _ref2.apply(this, arguments);
+  return function getOpenAndClose(_x4) {
+    return _ref4.apply(this, arguments);
   };
 }();
 
@@ -301,8 +524,4 @@ var inputHorarioReplyMsg = function inputHorarioReplyMsg(openAndClose) {
 };
 
 exports.inputHorarioReplyMsg = inputHorarioReplyMsg;
-
-var addQuickReplyOptions = function addQuickReplyOptions(quickReplyOptions) {};
-
-exports.addQuickReplyOptions = addQuickReplyOptions;
 //# sourceMappingURL=actionsController.js.map

@@ -5,7 +5,7 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import moment from 'moment-timezone';
 import mongoose from 'mongoose';
-import { Bot, Elements, Buttons, QuickReplies } from 'facebook-messenger-bot';
+import { Bot } from 'facebook-messenger-bot';
 import { getOnePageToken, getAllPages, getOnePageData } from './api/controllers/pagesController';
 import { getPricingSizing } from './api/controllers/pricingsController';
 import getCardapio from './api/bot/show_cardapio';
@@ -43,6 +43,8 @@ import {
   showOrderOrAskForPhone,
   showSplit
 } from './api/bot/botController';
+
+import { sendActions } from './api/bot/actionsController';
 
 dotenv.config();
 
@@ -181,11 +183,13 @@ bot.on('GET_STARTED', async (message) => {
   const { sender } = message;
   try {
     // Send Welcome Message
-    await bot.startTyping(sender.id);
-    const out1 = await sendWelcomeMessage(sender, message.recipient.id)
-    await Bot.wait(1000);
-    await bot.stopTyping(sender.id);
-    await bot.send(sender.id, out1);
+    // await bot.startTyping(sender.id);
+    // const out1 = await sendWelcomeMessage(sender, message.recipient.id)
+    // await Bot.wait(1000);
+    // await bot.stopTyping(sender.id);
+    // await bot.send(sender.id, out1);
+
+    await sendActions({ action: 'SEND_WELCOME', bot, sender, pageID: message.recipient.id });
 
     // Send Main Menu
     await bot.startTyping(sender.id);
@@ -212,11 +216,11 @@ bot.on('postback', async (event, message, data) => {
 bot.on('MAIN-MENU', async (message, data) => {
   const { sender, recipient } = message;
   try {
-    await bot.startTyping(sender.id);
     if (data === 'CARDAPIO_PAYLOAD') {
-      const out = await sendCardapio(message.recipient.id);
-      await bot.stopTyping(sender.id);
-      await bot.send(sender.id, out);
+      // const out = await sendCardapio(message.recipient.id);
+      // await bot.stopTyping(sender.id);
+      // await bot.send(sender.id, out);
+      await sendActions({ action: 'SEND_CARDAPIO', bot, sender, pageID: message.recipient.id });
 
     } else if (data === 'PEDIDO_PAYLOAD') {
       // Show saved address or ask for location
@@ -227,6 +231,7 @@ bot.on('MAIN-MENU', async (message, data) => {
       await bot.stopTyping(sender.id);
       await bot.send(sender.id, answer);
     } else if (data === 'HORARIO_PAYLOAD') {
+      await bot.startTyping(sender.id);
       const out = await sendHorario(message.recipient.id);
       await bot.stopTyping(sender.id);
       await bot.send(sender.id, out);
@@ -559,21 +564,61 @@ bot.on('ORDER_FLAVOR', async (message, data) => {
   }
 });
 
+/**
+ * answered ORDER_SIZE
+ * gonna ask for FLAVOR
+ */
+bot.on('ORDER_CONFIRM_BEVERAGE', async (message, data) => {
+  const { sender, recipient } = message;
+
+  try {
+    if (data === 'beverage_yes')
+      await sendActions({ action: 'ASK_FOR_BEVERAGE_OPTIONS', bot, sender, pageID: recipient.id, multple: 1 })
+    else {
+      await sendActions({ action: 'SHOW_FULL_ORDER', bot, sender, pageID: recipient.id })
+    }
+
+  } catch (orderBeverageErr) {
+    console.error({ orderBeverageErr });
+    const outError = await sendErrorMsg(orderBeverageErr.message);
+    await bot.stopTyping(sender.id);
+    await bot.send(sender.id, outError);
+  }
+});
+
+/**
+ * answered ORDER_BEVERAGE
+ * gonna ask for confirmation
+ */
+bot.on('ORDER_BEVERAGE', async (message, data) => {
+  const { sender, recipient } = message;
+  try {
+    if (data && data.option && data.option === 'beverages_more') {
+      // more beverages
+      await sendActions({ action: 'ASK_FOR_BEVERAGE_OPTIONS', bot, sender, pageID: recipient.id, multiple: data.multiple })
+    }
+    else {
+      await sendActions({ action: 'SHOW_BEVERAGE', bot, sender, pageID: recipient.id, data: data })
+
+      await sendActions({ action: 'SHOW_FULL_ORDER', bot, sender, pageID: recipient.id })
+    }
+  } catch (orderBeverageErr) {
+    console.error({ orderBeverageErr });
+    const outError = await sendErrorMsg(orderBeverageErr.message);
+    await bot.stopTyping(sender.id);
+    await bot.send(sender.id, outError);
+  }
+});
 
 /**
  * answered ORDER_CONFIRMATION
  */
-bot.on('ORDER_CONFIRMATION', async (message, data) => {
+bot.on('ORDER_PIZZA_CONFIRMATION', async (message, data) => {
   const { sender, recipient } = message;
 
   try {
     if (data === 'confirmation_yes') {
-      await bot.startTyping(sender.id);
-      await Bot.wait(1000);
-      const out = await confirmOrder(recipient.id, sender.id);
-      await bot.stopTyping(sender.id);
-      await bot.send(sender.id, out);
-      delete global.pagesKeyID[recipient.id];
+      await sendActions({ action: 'ASK_FOR_WANT_BEVERAGE', bot, sender, pageID: recipient.id });
     }
     else if (data === 'confirmation_no') {
       await bot.startTyping(sender.id);
@@ -585,6 +630,33 @@ bot.on('ORDER_CONFIRMATION', async (message, data) => {
   } catch (orderConfirmationError) {
     console.error({ orderConfirmationError });
     const outError = await sendErrorMsg(orderConfirmationError.message);
+    await bot.stopTyping(sender.id);
+    await bot.send(sender.id, outError);
+  }
+
+});
+
+
+/**
+ * answered ORDER_CONFIRMATION
+ */
+bot.on('ORDER_CONFIRMATION', async (message, data) => {
+  const { sender, recipient } = message;
+
+  try {
+    if (data === 'confirmation_yes') {
+      await sendActions({ action: 'CONFIRM_ORDER', bot, sender, pageID: recipient.id });
+    }
+    else if (data === 'confirmation_no') {
+      await bot.startTyping(sender.id);
+      await Bot.wait(1000);
+      const out = await askForChangeOrder(recipient.id, sender.id);
+      await bot.stopTyping(sender.id);
+      await bot.send(sender.id, out);
+    }
+  } catch (orderConfirmationErr) {
+    console.error({ orderConfirmationErr });
+    const outError = await sendErrorMsg(orderConfirmationErr.message);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, outError);
   }

@@ -2,35 +2,47 @@ import Order from '../models/orders';
 import util from "util";
 import { updateItem, getItems, getItemsTotal } from './itemsController';
 import { customer_update } from './customersController';
-import { configSortQuery, configRangeQueryNew, configFilterQuery } from '../util/util';
-
+import { configSortQuery, configRangeQueryNew, configFilterQueryMultiple } from '../util/util';
+import { DateTime } from 'luxon';
+// import { Bot, Elements } from 'facebook-messenger-bot';
+// import { getOnePageToken } from './pagesController';
+import { sendShippingNotification } from '../bot/botController';
 const ORDERSTATUS_PENDING = 0;
 const ORDERSTATUS_CONFIRMED = 1;
-const ORDERSTATUS_CANCELLED = 2;
-const ORDERSTATUS_DELIVERED = 3;
+const ORDERSTATUS_DELIVERED = 2;
+const ORDERSTATUS_CANCELLED = 9;
 
 // List all orders
 // TODO: use filters in the query req.query
 export const order_get_all = async (req, res) => {
     try {
-        console.info(req.query.filter);
-
         const sortObj = configSortQuery(req.query.sort);
         const rangeObj = configRangeQueryNew(req.query.range);
-        const filterObj = configFilterQuery(req.query.filter);
+        const filterObj = configFilterQueryMultiple(req.query.filter);
 
         let queryParam = {};
         if (req.currentUser.activePage) {
             queryParam['pageId'] = req.currentUser.activePage;
         }
 
-        if (filterObj) {
-            if (typeof filterObj.filterValues === 'Array') {
-                queryParam[filterObj.filterField] = { $in: filterObj.filterValues };
-            } else {
-                queryParam[filterObj.filterField] = filterObj.filterValues;
+        if (filterObj.filterField && filterObj.filterField.length) {
+            for (let i = 0; i < filterObj.filterField.length; i++) {
+                const filter = filterObj.filterField[i];
+                const value = filterObj.filterValues[i];
+                if (typeof value === 'Array') {
+                    queryParam[filter] = { $in: value };
+                } else {
+                    const date = DateTime.fromISO(value);
+                    if (!date.invalid) { // is a date
+                        const nextDay = date.plus({ days: 1 });
+                        queryParam[filter] = { $gte: date.toISODate(), $lt: nextDay.toISODate() };
+                    } else
+                        queryParam[filter] = value;
+                }
             }
         }
+
+        console.info(req.query.filter, filterObj, queryParam);
 
         Order.find(queryParam).sort(sortObj).exec(async (findError, result) => {
             if (findError) {
@@ -77,32 +89,7 @@ export const order_get_one = async (req, res) => {
     if (req.params && req.params.id) {
         try {
             const pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
-            const order = await Order.findOne({ pageId: pageId, id: req.params.id });
-            const items = await getItems({ orderId: order.id, pageId: pageId });
-            let jsonItems = [];
-            items.forEach(item => {
-                let jsonItem = {
-                    id: item.id,
-                    flavorId: item.flavorId,
-                    sizeId: item.sizeId,
-                    price: item.price,
-                    qty: item.qty,
-                    split: item.split,
-                    flavor: item.flavor,
-                    size: item.size,
-                }
-                jsonItems.push(jsonItem);
-            });
-            let jsonOrder = {
-                id: order.id,
-                customerId: order.customerId,
-                createdAt: order.createdAt,
-                qty_total: order.qty_total,
-                status: order.status,
-                status2: order.status2,
-                total: order.total,
-                items: jsonItems,
-            }
+            const jsonOrder = await getOrderJson(pageId, req.params.id);
             res.status(200).json(jsonOrder);
         } catch (orderGetOneError) {
             console.error({ orderGetOneError });
@@ -111,10 +98,95 @@ export const order_get_one = async (req, res) => {
     }
 }
 
+// UPDATE
+export const order_update = async (req, res) => {
+    if (req.body && req.body.id) {
+        try {
+            const pageId = req.currentUser.activePage;
+            const doc = await Order.findOne({ pageId: pageId, id: req.body.id });
+            if (req.body.status2 === 'ordered') {
+                doc.status = ORDERSTATUS_CONFIRMED;
+            } else if (req.body.status2 === 'delivered') {
+                doc.status = ORDERSTATUS_DELIVERED;
+            } else if (req.body.status2 === 'cancelled') {
+                doc.status = ORDERSTATUS_DELIVERED;
+            }
+
+            if (doc.status === ORDERSTATUS_DELIVERED) {
+                if (!doc.sent_shipping_notification) {
+                    console.info("I am going to send to " + doc.userId + ", about the order number:" + doc.id + " a shipping notification");
+                    await sendShippingNotification(doc.pageId, doc.userId, doc.id);
+                    doc.sent_shipping_notification = DateTime.local();
+                }
+            }
+
+            await doc.save();
+            const jsonOrder = await getOrderJson(pageId, doc.id);
+
+
+            res.status(200).json(jsonOrder);
+        }
+        catch (orderUpdateErr) {
+            console.error(orderUpdateErr);
+            res.status(500).json({ message: orderUpdateErr.message });
+        }
+    }
+}
+
+// export const sendShippingNotification = async order => {
+//     const { accessToken } = await getOnePageToken(order.pageId);
+
+//     const _txt = 'O seu pedido número ' + order.id + ' acabou de sair para entrega. Bom apetite!';
+
+//     const out = new Elements();
+//     out.add({ text: _txt });
+//     await Bot.send_message_tag(accessToken, order.userId, out);
+// }
+
+// List one record by filtering by ID
+export const getOrderJson = async (pageId, orderId) => {
+    try {
+        const order = await Order.findOne({ pageId: pageId, id: orderId });
+        const items = await getItems({ pageId: pageId, orderId: orderId });
+        let jsonItems = [];
+        items.forEach(item => {
+            let jsonItem = {
+                id: item.id,
+                flavorId: item.flavorId,
+                sizeId: item.sizeId,
+                price: item.price,
+                qty: item.qty,
+                split: item.split,
+                flavor: item.flavor,
+                size: item.size,
+            }
+            jsonItems.push(jsonItem);
+        });
+        let jsonOrder = {
+            id: order.id,
+            customerId: order.customerId,
+            createdAt: order.createdAt,
+            qty_total: order.qty_total,
+            status: order.status,
+            status2: order.status2,
+            total: order.total,
+            items: jsonItems,
+        }
+        return jsonOrder;
+    } catch (getOrderJsonErr) {
+        console.error({ getOrderJsonErr });
+        throw new Error(getOrderJsonErr.message);
+    }
+}
+
 
 export const updateOrder = async orderData => {
     try {
-        const { pageId, userId, qty, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, waitingFor, currentItem, sizeId, calcTotal, split, originalSplit, eraseSplit } = orderData;
+        const { pageId, userId, qty, location, user,
+            phone, addrData, completeItem, confirmOrder,
+            waitingForAddress, waitingFor, currentItem, sizeId, calcTotal,
+            split, originalSplit, eraseSplit } = orderData;
+
         let customerID = 0;
         let customerData = {}
         customerData.pageId = pageId;

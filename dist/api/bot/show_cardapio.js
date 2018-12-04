@@ -69,7 +69,7 @@ function () {
                       replyText = replyText + '\n*Tipo:* ' + kindName + '\n';
                     }
 
-                    replyText = replyText + pricing.size + ' - R$ ' + pricing.price + ', ';
+                    replyText = replyText + pricing.size + ' - R$ ' + pricing.price + '\n';
                   } // the last kind
 
                 } catch (err) {

@@ -5,15 +5,17 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getItemsTotal = exports.getItems = exports.updateStatusSpecificItem = exports.updateItem = void 0;
 
-var _items = _interopRequireDefault(require("../models/items"));
-
 var _mongoose = _interopRequireDefault(require("mongoose"));
+
+var _items = _interopRequireDefault(require("../models/items"));
 
 var _flavorsController = require("./flavorsController");
 
+var _pricingsController = require("./pricingsController");
+
 var _sizesController = require("./sizesController");
 
-var _pricingsController = require("./pricingsController");
+var _beveragesController = require("./beveragesController");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -30,16 +32,16 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(orderData) {
-    var orderId, userId, pageId, qty, sizeId, flavorId, completeItem, split, _searchStatus, item, pricing, _qty, resultLastId, itemId, record;
+    var orderId, userId, pageId, qty, sizeId, flavorId, beverageId, beveragePrice, completeItem, split, _searchStatus, item, pricing, _qty, resultLastId, itemId, price, record;
 
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            orderId = orderData.orderId, userId = orderData.userId, pageId = orderData.pageId, qty = orderData.qty, sizeId = orderData.sizeId, flavorId = orderData.flavorId, completeItem = orderData.completeItem, split = orderData.split;
+            orderId = orderData.orderId, userId = orderData.userId, pageId = orderData.pageId, qty = orderData.qty, sizeId = orderData.sizeId, flavorId = orderData.flavorId, beverageId = orderData.beverageId, beveragePrice = orderData.beveragePrice, completeItem = orderData.completeItem, split = orderData.split;
 
-            if (!(qty || sizeId || flavorId || typeof completeItem === 'boolean')) {
-              _context.next = 31;
+            if (!(qty || sizeId || flavorId || beverageId || typeof completeItem === 'boolean')) {
+              _context.next = 34;
               break;
             }
 
@@ -59,25 +61,32 @@ function () {
             item = _context.sent;
 
             if (!item) {
-              _context.next = 23;
+              _context.next = 24;
               break;
             }
 
             if (qty) item.qty = qty;
             if (sizeId) item.sizeId = sizeId;
             if (flavorId) item.flavorId = flavorId;
+
+            if (beverageId) {
+              item.qty = 1;
+              item.beverageId = beverageId;
+              item.price = beveragePrice;
+            }
+
             if (split) item.split = split;
             if (typeof completeItem === 'boolean') item.status = completeItem === true ? ITEMSTATUS_COMPLETED : ITEMSTATUS_PENDING;
 
             if (!(item.sizeId && item.flavorId)) {
-              _context.next = 18;
+              _context.next = 19;
               break;
             }
 
-            _context.next = 16;
+            _context.next = 17;
             return (0, _pricingsController.getOnePricingByFlavor)(pageId, item.sizeId, item.flavorId);
 
-          case 16:
+          case 17:
             pricing = _context.sent;
 
             if (pricing) {
@@ -89,30 +98,36 @@ function () {
               }
             }
 
-          case 18:
-            if (!(qty || sizeId || flavorId || split || originalSplit || typeof completeItem === 'boolean')) {
-              _context.next = 21;
+          case 19:
+            if (!(qty || sizeId || flavorId || split || beverageId || originalSplit || typeof completeItem === 'boolean')) {
+              _context.next = 22;
               break;
             }
 
-            _context.next = 21;
+            _context.next = 22;
             return item.save();
 
-          case 21:
-            _context.next = 31;
+          case 22:
+            _context.next = 34;
             break;
 
-          case 23:
-            _context.next = 25;
+          case 24:
+            _context.next = 26;
             return _items.default.find({
               pageId: pageId,
               orderId: orderId
             }).select('id').sort('-id').limit(1).exec();
 
-          case 25:
+          case 26:
             resultLastId = _context.sent;
             itemId = 1;
             if (resultLastId && resultLastId.length) itemId = resultLastId[0].id + 1;
+            price = 0;
+
+            if (beverageId && beveragePrice) {
+              price = beveragePrice;
+            }
+
             record = new _items.default({
               id: itemId,
               orderId: orderId,
@@ -121,12 +136,14 @@ function () {
               qty: qty,
               sizeId: sizeId,
               flavorId: flavorId,
+              beverageId: beverageId,
+              price: price,
               status: ITEMSTATUS_PENDING
             });
-            _context.next = 31;
+            _context.next = 34;
             return record.save();
 
-          case 31:
+          case 34:
           case "end":
             return _context.stop();
         }
@@ -197,7 +214,7 @@ function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee3(orderData) {
-    var orderId, pageId, completeItems, queryAuxTables, items, i, flavor, size;
+    var orderId, pageId, completeItems, queryAuxTables, items, i, flavor, size, beverage;
     return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
@@ -219,7 +236,7 @@ function () {
             items = _context3.sent;
 
             if (!(items && items.length)) {
-              _context3.next = 27;
+              _context3.next = 33;
               break;
             }
 
@@ -227,7 +244,7 @@ function () {
 
           case 8:
             if (!(i < items.length)) {
-              _context3.next = 24;
+              _context3.next = 30;
               break;
             }
 
@@ -267,17 +284,35 @@ function () {
             if (size) items[i].size = size.size;
 
           case 21:
+            if (!(items[i].beverageId && items[i].beverageId > 0)) {
+              _context3.next = 27;
+              break;
+            }
+
+            if (!queryAuxTables) {
+              _context3.next = 27;
+              break;
+            }
+
+            _context3.next = 25;
+            return (0, _beveragesController.getBeverage)(pageId, items[i].beverageId);
+
+          case 25:
+            beverage = _context3.sent;
+            if (beverage) items[i].beverage = beverage.name;
+
+          case 27:
             i++;
             _context3.next = 8;
             break;
 
-          case 24:
+          case 30:
             return _context3.abrupt("return", items);
 
-          case 27:
+          case 33:
             return _context3.abrupt("return", null);
 
-          case 28:
+          case 34:
           case "end":
             return _context3.stop();
         }

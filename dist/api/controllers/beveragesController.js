@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.beverage_delete = exports.beverage_update = exports.beverage_create = exports.beverage_get_one = exports.beverage_get_all = void 0;
+exports.getBeverage = exports.getBeverages = exports.beverage_delete = exports.beverage_update = exports.beverage_create = exports.beverage_get_one = exports.beverage_get_all = void 0;
 
 var _beverages = _interopRequireDefault(require("../models/beverages"));
 
@@ -12,6 +12,10 @@ var _util = _interopRequireDefault(require("util"));
 var _util2 = require("../util/util");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 // List all records
 // TODO: use filters in the query req.query
@@ -145,4 +149,77 @@ var beverage_delete = function beverage_delete(req, res) {
 };
 
 exports.beverage_delete = beverage_delete;
+
+var getBeverages =
+/*#__PURE__*/
+function () {
+  var _ref = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee(pageID) {
+    var query;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            query = _beverages.default.find({
+              pageId: pageID
+            });
+            query.sort('name kind');
+            _context.next = 4;
+            return query.exec();
+
+          case 4:
+            return _context.abrupt("return", _context.sent);
+
+          case 5:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+
+  return function getBeverages(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+exports.getBeverages = getBeverages;
+
+var getBeverage =
+/*#__PURE__*/
+function () {
+  var _ref2 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee2(pageID, beverageID) {
+    var query;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            query = _beverages.default.findOne({
+              pageId: pageID,
+              id: beverageID
+            }); // query.select('id name kind price');
+
+            _context2.next = 3;
+            return query.exec();
+
+          case 3:
+            return _context2.abrupt("return", _context2.sent);
+
+          case 4:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, this);
+  }));
+
+  return function getBeverage(_x2, _x3) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+exports.getBeverage = getBeverage;
 //# sourceMappingURL=beveragesController.js.map

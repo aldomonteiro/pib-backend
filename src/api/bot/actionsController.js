@@ -2,8 +2,86 @@ import { getFlavors, getFlavorByName } from "../controllers/flavorsController";
 import { getToppings, getToppingsNames } from "../controllers/toppingsController";
 import { getOpeningTimes } from '../controllers/storesController';
 import { getOnePricing } from '../controllers/pricingsController';
+import { Bot, Elements } from 'facebook-messenger-bot';
+import {
+    sendWelcomeMessage, sendCardapio,
+    askForWantBeverage, askForBeverages, showBeverage, confirmOrder, showFullOrder
+} from './botController';
 
 const QTY_1 = [1, "um", "uma"];
+
+
+export const sendActions = async ({ action, bot, sender, pageID, multiple, data }) => {
+    try {
+        let out = new Elements();
+        switch (action) {
+            case 'SEND_WELCOME':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await sendWelcomeMessage(pageID, sender)
+                await Bot.wait(500);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+
+                break;
+            case 'SEND_CARDAPIO':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await sendCardapio(pageID);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+
+                break;
+            case 'ASK_FOR_WANT_BEVERAGE':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await askForWantBeverage(pageID, sender.id);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+
+                break;
+            case 'ASK_FOR_BEVERAGE_OPTIONS':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await askForBeverages(pageID, sender.id, multiple);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+
+                break;
+
+            case 'SHOW_BEVERAGE':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await showBeverage(pageID, sender.id, data);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+
+                break;
+            case 'SHOW_FULL_ORDER':
+                // show summary
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await showFullOrder(pageID, sender.id);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+                break;
+            case 'CONFIRM_ORDER':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await confirmOrder(pageID, sender.id);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+
+                break;
+            default:
+                break;
+        }
+    } catch (sendActionsErr) {
+        console.error(action, sendActionsErr);
+        throw sendActionsErr;
+    }
+}
+
 
 /**
  * Returns array of flavors. If sizeID was passed, only returns flavors with price.
@@ -107,8 +185,4 @@ export const inputHorarioReplyMsg = (openAndClose) => {
         }
     }
     return replyMsg;
-}
-
-export const addQuickReplyOptions = quickReplyOptions => {
-
 }

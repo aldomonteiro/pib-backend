@@ -1,17 +1,20 @@
-import Items from '../models/items';
 import mongoose from 'mongoose';
+import Items from '../models/items';
 import { getFlavor } from './flavorsController';
-import { getSize } from './sizesController';
 import { getOnePricingByFlavor } from './pricingsController';
+import { getSize } from './sizesController';
+import { getBeverage } from './beveragesController';
 
 
 const ITEMSTATUS_PENDING = 0;
 const ITEMSTATUS_COMPLETED = 1;
 
 export const updateItem = async orderData => {
-    const { orderId, userId, pageId, qty, sizeId, flavorId, completeItem, split } = orderData;
+    const { orderId, userId, pageId,
+        qty, sizeId, flavorId,
+        beverageId, beveragePrice, completeItem, split } = orderData;
 
-    if (qty || sizeId || flavorId || typeof completeItem === 'boolean') {
+    if (qty || sizeId || flavorId || beverageId || typeof completeItem === 'boolean') {
         let _searchStatus = ITEMSTATUS_PENDING;
         // Received a completeItem = false from botController, so,
         // the search is for a completed item.
@@ -23,6 +26,11 @@ export const updateItem = async orderData => {
             if (qty) item.qty = qty;
             if (sizeId) item.sizeId = sizeId;
             if (flavorId) item.flavorId = flavorId;
+            if (beverageId) {
+                item.qty = 1;
+                item.beverageId = beverageId;
+                item.price = beveragePrice;
+            }
             if (split) item.split = split;
             if (typeof completeItem === 'boolean')
                 item.status = completeItem === true ? ITEMSTATUS_COMPLETED : ITEMSTATUS_PENDING;
@@ -38,7 +46,7 @@ export const updateItem = async orderData => {
                 }
             }
 
-            if (qty || sizeId || flavorId || split || originalSplit || typeof completeItem === 'boolean')
+            if (qty || sizeId || flavorId || split || beverageId || originalSplit || typeof completeItem === 'boolean')
                 await item.save();
         }
         else {
@@ -46,6 +54,11 @@ export const updateItem = async orderData => {
             let itemId = 1;
             if (resultLastId && resultLastId.length)
                 itemId = resultLastId[0].id + 1;
+
+            let price = 0;
+            if (beverageId && beveragePrice) {
+                price = beveragePrice;
+            }
 
             const record = new Items({
                 id: itemId,
@@ -55,6 +68,8 @@ export const updateItem = async orderData => {
                 qty: qty,
                 sizeId: sizeId,
                 flavorId: flavorId,
+                beverageId: beverageId,
+                price: price,
                 status: ITEMSTATUS_PENDING,
             });
             await record.save();
@@ -100,6 +115,14 @@ export const getItems = async orderData => {
                     const size = await getSize(pageId, items[i].sizeId);
                     if (size)
                         items[i].size = size.size;
+                }
+            }
+
+            if (items[i].beverageId && items[i].beverageId > 0) {
+                if (queryAuxTables) {
+                    const beverage = await getBeverage(pageId, items[i].beverageId);
+                    if (beverage)
+                        items[i].beverage = beverage.name;
                 }
             }
         }

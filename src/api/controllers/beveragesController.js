@@ -1,3 +1,4 @@
+
 import Beverage from "../models/beverages";
 import util from "util";
 import { configSortQuery, configRangeQuery } from '../util/util';
@@ -114,3 +115,16 @@ export const beverage_delete = (req, res) => {
             res.status(500).json({ message: err.errmsg });
         });
 };
+
+export const getBeverages = async (pageID) => {
+    let query = Beverage.find({ pageId: pageID });
+    query.sort('name kind');
+    return await query.exec();
+}
+
+export const getBeverage = async (pageID, beverageID) => {
+    const query = Beverage.findOne({ pageId: pageID, id: beverageID });
+    // query.select('id name kind price');
+    return await query.exec();
+}
+

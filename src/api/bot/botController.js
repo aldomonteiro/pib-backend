@@ -1,7 +1,7 @@
 import util from 'util';
 import fs from 'fs';
-import { Elements, Buttons, QuickReplies } from 'facebook-messenger-bot';
-import { getOnePageToken, getAllPages, getOnePageData } from '../controllers/pagesController';
+import { Bot, Elements, Buttons, QuickReplies } from 'facebook-messenger-bot';
+import { getOnePageToken, getOnePageData } from '../controllers/pagesController';
 import { getPricingSizing } from '../controllers/pricingsController';
 import getCardapio from './show_cardapio';
 import {
@@ -11,6 +11,7 @@ import {
     inputHorarioReplyMsg,
 } from "./actionsController";
 import { getSizes, getSize } from '../controllers/sizesController';
+import { getBeverages } from '../controllers/beveragesController';
 import { getTodayOpeningTime } from '../controllers/storesController';
 import { updateOrder, getOrderPending } from '../controllers/ordersController';
 import { getAddressLocation, getCustomerAddress, formatAddrData } from '../controllers/customersController';
@@ -53,7 +54,7 @@ export const basicReply = async () => {
  * @param {*} sender 
  * @param {*} pageID 
  */
-export const sendWelcomeMessage = async (sender, pageID) => {
+export const sendWelcomeMessage = async (pageID, sender) => {
     await sender.fetch('first_name');
     const page = await getOnePageData(pageID);
     const replyMsg = new String(page.firstResponseText).replace('$NAME', sender.first_name);
@@ -87,7 +88,6 @@ export const sendHorario = async (pageID) => {
     out.add({ text: replyMsg });
     return out;
 }
-
 
 export const sendCardapio = async (pageID) => {
     const replyMsg = await getCardapio(pageID);
@@ -189,7 +189,7 @@ export const confirmTypedText = async (pageId, userId, message) => {
     try {
         const pendingOrder = await getOrderPending({ pageId, userId });
 
-        console.info({ pendingOrder });
+        //console.info({ pendingOrder });
 
         let out = new Elements();
 
@@ -224,6 +224,8 @@ export const confirmTypedText = async (pageId, userId, message) => {
                     return await askForQuantity(pageId, userId);
                 else if (pendingOrder.order.waitingFor === 'flavor')
                     return await askForFlavor(pageId, userId, 1);
+                else if (pendingOrder.order.waitingFor === 'beverage')
+                    return await askForBeverages(pageId, userId, 1);
                 else if (pendingOrder.order.waitingFor === 'nothing')
                     return await showOrderOrNextItem(pageId, userId);
                 else
@@ -551,25 +553,63 @@ export const showOrderOrNextItem = async (pageId, userId) => {
         let _txt = 'Seguem os detalhes do seu pedido:\n';
         _txt = _txt + '*Pedido:* ' + po.order.id + '\n';
         for (let i = 0; i < po.items.length; i++) {
-            let _txtQty = po.items[i].split > 1 ? po.items[i].qty + '/' + po.items[i].split : po.items[i].qty;
-            _txt = _txt + `${_txtQty} pizza ${po.items[i].size} de ${po.items[i].flavor}\n`;
-            total_price += po.items[i].price;
+            const _item = po.items[i];
+            if (_item.flavorId && _item.sizeId) {
+                let _txtQty = _item.split > 1 ? _item.qty + '/' + _item.split : _item.qty;
+                _txt = _txt + `${_txtQty} pizza ${_item.size} de ${_item.flavor}\n`;
+            } else if (_item.beverageId && _item.beverage) {
+                _txt = _txt + `1 ${_item.beverage}\n`;
+            }
+            total_price += _item.price;
         }
         _txt = _txt + '*Endereço de entrega:* ' + po.order.address + '\n';
         _txt = _txt + '*Telefone:* ' + po.order.phone + '\n';
         _txt = _txt + '*Total:* R$ ' + total_price + '\n';
-        _txt = _txt + 'Podemos confirmar o pedido?';
+        _txt = _txt + 'O pedido está correto?';
 
         out.add({ text: _txt });
 
         const replies = new QuickReplies();
-        replies.add({ text: "Sim", data: "confirmation_yes", event: 'ORDER_CONFIRMATION' });
-        replies.add({ text: "Não", data: "confirmation_no", event: 'ORDER_CONFIRMATION' });
+        replies.add({ text: "Sim", data: "confirmation_yes", event: 'ORDER_PIZZA_CONFIRMATION' });
+        replies.add({ text: "Não", data: "confirmation_no", event: 'ORDER_PIZZA_CONFIRMATION' });
         out.setQuickReplies(replies);
 
         return out;
     }
 }
+
+export const showFullOrder = async (pageId, userId) => {
+    const po = await getOrderPending({ pageId, userId, isComplete: true });
+
+    const out = new Elements();
+    let total_price = 0;
+    let _txt = 'Seguem os detalhes do seu pedido:\n';
+    _txt = _txt + '*Pedido:* ' + po.order.id + '\n';
+    for (let i = 0; i < po.items.length; i++) {
+        const _item = po.items[i];
+        if (_item.flavorId && _item.sizeId) {
+            let _txtQty = _item.split > 1 ? _item.qty + '/' + _item.split : _item.qty;
+            _txt = _txt + `${_txtQty} pizza ${_item.size} de ${_item.flavor}\n`;
+        } else if (_item.beverageId && _item.beverage) {
+            _txt = _txt + `1 ${_item.beverage}\n`;
+        }
+        total_price += _item.price;
+    }
+    _txt = _txt + '*Endereço de entrega:* ' + po.order.address + '\n';
+    _txt = _txt + '*Telefone:* ' + po.order.phone + '\n';
+    _txt = _txt + '*Total:* R$ ' + total_price + '\n';
+    _txt = _txt + 'O pedido está correto?';
+
+    out.add({ text: _txt });
+
+    const replies = new QuickReplies();
+    replies.add({ text: "Sim", data: "confirmation_yes", event: 'ORDER_CONFIRMATION' });
+    replies.add({ text: "Não", data: "confirmation_no", event: 'ORDER_CONFIRMATION' });
+    out.setQuickReplies(replies);
+
+    return out;
+}
+
 
 export const confirmOrder = async (pageId, userId) => {
     await updateOrder({ pageId, userId, confirmOrder: true, calcTotal: true });
@@ -630,9 +670,88 @@ export const askForSpecificItem = async (pageId, userId) => {
     }
 }
 
+/**
+ * 
+ * @param {*} pageId 
+ * @param {*} userId 
+ */
+export const askForWantBeverage = async (pageId, userId) => {
+    const out = new Elements();
+    let _txt = 'Gostaria de algo para beber?';
+    out.add({ text: _txt });
+
+    const replies = new QuickReplies();
+    // replies.add({ text: "Quantidade", data: "change_quantity", event: 'ORDER_CHANGE' });
+    replies.add({ text: "Sim", data: "beverage_yes", event: 'ORDER_CONFIRM_BEVERAGE' });
+    replies.add({ text: "Não", data: "beverage_no", event: 'ORDER_CONFIRM_BEVERAGE' });
+    out.setQuickReplies(replies);
+
+    return out;
+}
+/**
+ * 
+ * @param {*} pageId 
+ * @param {*} userId 
+ * @param {*} multiple 
+ */
+export const askForBeverages = async (pageId, userId, multiple) => {
+    const out = new Elements();
+    out.setListStyle('compact'); // or 'large'
+
+    // const po = await getOrderPending({ pageId: pageId, userId: userId, isComplete: false });
+
+    const beveragesArr = await getBeverages(pageId);
+    let _rangeIni = (multiple - 1) * 4;
+    let _rangeEnd = multiple * 4;
+    console.info({ beveragesArr }, { _rangeIni }, { _rangeEnd });
+    for (let i = _rangeIni; i < _rangeEnd; i++) {
+        if (beveragesArr[i]) {
+            const _bev = beveragesArr[i];
+            const _data = { id: _bev.id, beverage: _bev.name, price: _bev.price }
+            const buttons = new Buttons();
+            buttons.add({ text: 'Quero', data: _data, event: 'ORDER_BEVERAGE' });
+
+            let _subtext = _bev.kind;
+            if (_bev.price) {
+                _subtext = _subtext.concat('\n R$', _bev.price);
+            }
+            out.add({ text: _bev.name, subtext: _subtext, buttons });
+        }
+    }
+    if (beveragesArr.length > _rangeEnd) {
+        multiple++;
+        const buttonsOpt = new Buttons();
+        buttonsOpt.add({ text: '+ Opções (clique aqui para ver + opções..)', data: { option: "beverages_more", multiple: multiple }, event: 'ORDER_BEVERAGE' });
+        out.add({ buttons: buttonsOpt, isOnlyButtons: true });
+    }
+
+    await updateOrder({ pageId, userId, waitingFor: 'beverage' });
+    console.info({ out });
+    return out;
+}
+
+export const showBeverage = async (pageId, userId, data) => {
+    await updateOrder({ pageId, userId, beverageId: data.id, beveragePrice: data.price, completeItem: true, waitingFor: 'nothing', calcTotal: true });
+
+    const out = new Elements();
+    out.add({ text: '✅ ' + '1 Bebida: ' + data.beverage });
+    return out;
+}
+
 export const updateItemAskOptions = async (pageId, userId, objectId) => {
     await updateStatusSpecificItem(objectId, 0);
     return await askForOptionsToChange(pageId, userId);
 }
+
+export const sendShippingNotification = async (pageId, userId, orderId) => {
+    const { accessToken } = await getOnePageToken(pageId);
+
+    const _txt = 'O seu pedido número ' + orderId + ' acabou de sair para entrega. Bom apetite!';
+
+    const out = new Elements();
+    out.add({ text: _txt });
+    await Bot.send_message_tag(accessToken, userId, out);
+}
+
 
 

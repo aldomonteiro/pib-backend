@@ -73,6 +73,9 @@ var schema = new Schema({
   },
   total: {
     type: Number
+  },
+  sent_shipping_notification: {
+    type: Date
   }
 }, {
   timestamps: true

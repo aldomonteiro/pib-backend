@@ -50,6 +50,14 @@ export const configFilterQuery = filterString => {
     } else return null;
 }
 
+export const configFilterQueryMultiple = filterString => {
+    if (typeof filterString !== "undefined") {
+        const json = JSON.parse(filterString);
+        return { filterField: Object.keys(json), filterValues: Object.values(json) };
+    } else return null;
+}
+
+
 export const choices_sizes = async () => {
     return new Object([
         { id: 'mini', name: 'Mini', order: 1 },
