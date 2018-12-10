@@ -489,6 +489,7 @@ export const askForFlavorOrConfirm = async (pageId, userId, multiple, split) => 
  */
 export const askForFlavor = async (pageId, userId, multiple, split, pendingOrder) => {
     const out = new Elements();
+
     out.setListStyle('compact'); // or 'large'
 
     let po = null;
@@ -515,12 +516,15 @@ export const askForFlavor = async (pageId, userId, multiple, split, pendingOrder
             out.add({ text: _fl.flavor, subtext: _subtext, buttons });
         }
     }
+
+
     if (flavorsArray.length > _rangeEnd) {
         multiple++;
         const buttonsOpt = new Buttons();
         buttonsOpt.add({ text: '+ Opções', data: { option: "flavors_more", multiple: multiple }, event: 'ORDER_FLAVOR' });
         out.add({ buttons: buttonsOpt, isOnlyButtons: true });
     }
+
 
     await updateOrder({ pageId, userId, waitingFor: 'flavor', split: split });
 
@@ -598,7 +602,7 @@ export const showFullOrder = async (pageId, userId) => {
     _txt = _txt + '*Endereço de entrega:* ' + po.order.address + '\n';
     _txt = _txt + '*Telefone:* ' + po.order.phone + '\n';
     _txt = _txt + '*Total:* R$ ' + total_price + '\n';
-    _txt = _txt + 'O pedido está correto?';
+    _txt = _txt + 'Posso confirmar o pedido?';
 
     out.add({ text: _txt });
 
@@ -636,30 +640,40 @@ export const askForChangeOrder = async (pageId, userId) => {
     return out;
 }
 
-export const askForOptionsToChange = async (pageId, userId) => {
-    const out = new Elements();
-    let _txt = 'Ok, qual das informações que você gostaria de alterar?';
-    out.add({ text: _txt });
+export const askForOptionsToChange = async (pageId, userId, item) => {
+    try {
+        if (item && item.beverageId) {
+            return await askForBeverages(pageId, userId, 1);
+        } else {
+            const out = new Elements();
 
-    const replies = new QuickReplies();
-    // replies.add({ text: "Quantidade", data: "change_quantity", event: 'ORDER_CHANGE' });
-    replies.add({ text: "Tamanho", data: "change_size", event: 'ORDER_CHANGE' });
-    replies.add({ text: "Sabor", data: "change_flavor", event: 'ORDER_CHANGE' });
-    out.setQuickReplies(replies);
+            let _txt = 'Ok, qual das informações que você gostaria de alterar?';
+            out.add({ text: _txt });
 
-    return out;
+            const replies = new QuickReplies();
+            // replies.add({ text: "Quantidade", data: "change_quantity", event: 'ORDER_CHANGE' });
+            replies.add({ text: "Tamanho", data: "change_size", event: 'ORDER_CHANGE' });
+            replies.add({ text: "Sabor", data: "change_flavor", event: 'ORDER_CHANGE' });
+            out.setQuickReplies(replies);
+            return out;
+        }
+    } catch (askForOptionsToChangeErr) {
+        console.error({ askForOptionsToChangeErr });
+        throw askForOptionsToChangeErr;
+    }
 }
 
 export const askForSpecificItem = async (pageId, userId) => {
     const pendingOrder = await getOrderPending({ pageId, userId, isComplete: true });
-    if (pendingOrder.order.qty_total > 1) {
+    if (pendingOrder.items && pendingOrder.items.length > 1) {
         const out = new Elements();
-        out.add({ text: 'Primeiro, escolha qual das pizzas deseja mudar:' });
+        out.add({ text: 'Primeiro, escolha qual os itens deseja mudar:' });
 
         const replies = new QuickReplies();
         let i = 1;
         pendingOrder.items.forEach(item => {
-            replies.add({ text: i + "a. " + item.flavor, data: item._id, event: 'ORDER_CHANGE_SELECT_ITEM' });
+            let _txt = item.flavor ? item.flavor : item.beverage;
+            replies.add({ text: i + "a. " + _txt, data: item._id, event: 'ORDER_CHANGE_SELECT_ITEM' });
             i++;
         });
         out.setQuickReplies(replies);
@@ -676,17 +690,25 @@ export const askForSpecificItem = async (pageId, userId) => {
  * @param {*} userId 
  */
 export const askForWantBeverage = async (pageId, userId) => {
-    const out = new Elements();
-    let _txt = 'Gostaria de algo para beber?';
-    out.add({ text: _txt });
+    const pendingOrder = await getOrderPending({ pageId, userId, isComplete: false });
 
-    const replies = new QuickReplies();
-    // replies.add({ text: "Quantidade", data: "change_quantity", event: 'ORDER_CHANGE' });
-    replies.add({ text: "Sim", data: "beverage_yes", event: 'ORDER_CONFIRM_BEVERAGE' });
-    replies.add({ text: "Não", data: "beverage_no", event: 'ORDER_CONFIRM_BEVERAGE' });
-    out.setQuickReplies(replies);
+    const noBeverage = pendingOrder.order.no_beverage;
 
-    return out;
+    if (typeof noBeverage === 'undefined') {
+
+        const out = new Elements();
+        let _txt = 'Gostaria de algo para beber?';
+        out.add({ text: _txt });
+
+        const replies = new QuickReplies();
+        // replies.add({ text: "Quantidade", data: "change_quantity", event: 'ORDER_CHANGE' });
+        replies.add({ text: "Sim", data: "beverage_yes", event: 'ORDER_CONFIRM_BEVERAGE' });
+        replies.add({ text: "Não", data: "beverage_no", event: 'ORDER_CONFIRM_BEVERAGE' });
+        out.setQuickReplies(replies);
+        return out;
+    } else {
+        return showFullOrder(pageId, userId);
+    }
 }
 /**
  * 
@@ -703,7 +725,7 @@ export const askForBeverages = async (pageId, userId, multiple) => {
     const beveragesArr = await getBeverages(pageId);
     let _rangeIni = (multiple - 1) * 4;
     let _rangeEnd = multiple * 4;
-    console.info({ beveragesArr }, { _rangeIni }, { _rangeEnd });
+
     for (let i = _rangeIni; i < _rangeEnd; i++) {
         if (beveragesArr[i]) {
             const _bev = beveragesArr[i];
@@ -723,15 +745,44 @@ export const askForBeverages = async (pageId, userId, multiple) => {
         const buttonsOpt = new Buttons();
         buttonsOpt.add({ text: '+ Opções (clique aqui para ver + opções..)', data: { option: "beverages_more", multiple: multiple }, event: 'ORDER_BEVERAGE' });
         out.add({ buttons: buttonsOpt, isOnlyButtons: true });
+    } else {
+        // const lastButton = new Buttons();
+        // lastButton.add({ text: 'Não tem, cancelar.', data: { option: "beverages_cancel" }, event: 'ORDER_BEVERAGE' });
+        // out.add({ buttons: lastButton, isOnlyButtons: true });
+
+        const _data = { option: 'beverages_cancel' }
+        const buttons = new Buttons();
+        buttons.add({ text: 'Sem bebida', data: _data, event: 'ORDER_BEVERAGE' });
+        let _subtext = 'Se não encontrou, clique em "Sem bebida"';
+        out.add({ text: 'Não encontrei', subtext: _subtext, buttons });
     }
 
-    await updateOrder({ pageId, userId, waitingFor: 'beverage' });
-    console.info({ out });
+    await updateOrder({ pageId, userId, waitingFor: 'beverage', noBeverage: false });
     return out;
 }
 
+/**
+ * Show that user did not want beverage and update order with this info.
+ * @param {*} pageId 
+ * @param {*} userId 
+ * @param {*} data 
+ */
+export const showNoBeverage = async (pageId, userId, data) => {
+    await updateOrder({ pageId, userId, noBeverage: true, waitingFor: 'confirm' });
+
+    const out = new Elements();
+    out.add({ text: '❌ ' + ' Sem bebida para o seu pedido. ' });
+    return out;
+}
+
+/**
+ * Show the chosen beverage.
+ * @param {*} pageId 
+ * @param {*} userId 
+ * @param {*} data 
+ */
 export const showBeverage = async (pageId, userId, data) => {
-    await updateOrder({ pageId, userId, beverageId: data.id, beveragePrice: data.price, completeItem: true, waitingFor: 'nothing', calcTotal: true });
+    await updateOrder({ pageId, userId, beverageId: data.id, beveragePrice: data.price, completeItem: true, noBeverage: false, waitingFor: 'confirmation', calcTotal: true });
 
     const out = new Elements();
     out.add({ text: '✅ ' + '1 Bebida: ' + data.beverage });
@@ -739,8 +790,8 @@ export const showBeverage = async (pageId, userId, data) => {
 }
 
 export const updateItemAskOptions = async (pageId, userId, objectId) => {
-    await updateStatusSpecificItem(objectId, 0);
-    return await askForOptionsToChange(pageId, userId);
+    const item = await updateStatusSpecificItem(objectId, 0);
+    return await askForOptionsToChange(pageId, userId, item);
 }
 
 export const sendShippingNotification = async (pageId, userId, orderId) => {

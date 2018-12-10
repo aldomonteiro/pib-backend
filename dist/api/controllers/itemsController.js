@@ -32,13 +32,13 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(orderData) {
-    var orderId, userId, pageId, qty, sizeId, flavorId, beverageId, beveragePrice, completeItem, split, _searchStatus, item, pricing, _qty, resultLastId, itemId, price, record;
+    var orderId, userId, pageId, qty, sizeId, flavorId, beverageId, beveragePrice, completeItem, split, originalSplit, _searchStatus, item, pricing, _qty, resultLastId, itemId, price, record;
 
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            orderId = orderData.orderId, userId = orderData.userId, pageId = orderData.pageId, qty = orderData.qty, sizeId = orderData.sizeId, flavorId = orderData.flavorId, beverageId = orderData.beverageId, beveragePrice = orderData.beveragePrice, completeItem = orderData.completeItem, split = orderData.split;
+            orderId = orderData.orderId, userId = orderData.userId, pageId = orderData.pageId, qty = orderData.qty, sizeId = orderData.sizeId, flavorId = orderData.flavorId, beverageId = orderData.beverageId, beveragePrice = orderData.beveragePrice, completeItem = orderData.completeItem, split = orderData.split, originalSplit = orderData.originalSplit;
 
             if (!(qty || sizeId || flavorId || beverageId || typeof completeItem === 'boolean')) {
               _context.next = 34;
@@ -187,6 +187,9 @@ function () {
             return item.save();
 
           case 7:
+            return _context2.abrupt("return", item);
+
+          case 8:
           case "end":
             return _context2.stop();
         }

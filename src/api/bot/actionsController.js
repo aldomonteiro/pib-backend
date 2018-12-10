@@ -4,14 +4,46 @@ import { getOpeningTimes } from '../controllers/storesController';
 import { getOnePricing } from '../controllers/pricingsController';
 import { Bot, Elements } from 'facebook-messenger-bot';
 import {
-    sendWelcomeMessage, sendCardapio,
-    askForWantBeverage, askForBeverages, showBeverage, confirmOrder, showFullOrder
+    sendWelcomeMessage,
+    sendErrorMsg,
+    sendMainMenu,
+    sendCardapio,
+    askForPhone,
+    showPhone,
+    askToTypePhone,
+    askForQuantity,
+    askForQuantityMore,
+    showQuantity,
+    askForSize,
+    showSize,
+    askForFlavor,
+    showFlavor,
+    showOrderOrNextItem,
+    askForLocation,
+    confirmAddressOrAskLocation,
+    confirmLocationAddress,
+    showAddress,
+    confirmOrder,
+    askToTypeAddress,
+    confirmTypedText,
+    askForWantBeverage, askForBeverages, showBeverage, showNoBeverage,
+    sendHorario,
+    basicReply,
+    askForChangeOrder,
+    askForSplitFlavorOrConfirm,
+    askForFlavorOrConfirm,
+    askForSpecificItem,
+    updateItemAskOptions,
+    showOrderOrAskForPhone,
+    showSplit,
+    showFullOrder
 } from './botController';
+
 
 const QTY_1 = [1, "um", "uma"];
 
 
-export const sendActions = async ({ action, bot, sender, pageID, multiple, data }) => {
+export const sendActions = async ({ action, bot, sender, pageID, multiple, split, data, payload }) => {
     try {
         let out = new Elements();
         switch (action) {
@@ -30,12 +62,100 @@ export const sendActions = async ({ action, bot, sender, pageID, multiple, data 
                 out = await sendCardapio(pageID);
                 await bot.stopTyping(sender.id);
                 await bot.send(sender.id, out);
-
                 break;
+
+            case 'ASK_FOR_PHONE':
+                await bot.startTyping(sender.id);
+                await Bot.wait(800);
+                out = await askForPhone(pageID, sender.id);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+                break;
+
+            case 'SHOW_PHONE':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await showPhone(pageID, sender.id, payload);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+                break;
+
+            case 'SHOW_ADDRESS':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await showAddress(pageID, sender.id, data);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+                break;
+
+            case 'SHOW_ORDER_OR_ASK_FOR_PHONE':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await showOrderOrAskForPhone(pageID, sender.id);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+                break;
+
+            case 'ASK_TO_TYPE_PHONE':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await askToTypePhone(pageID, sender.id);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+                break;
+
+            case 'ASK_FOR_LOCATION':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await askForLocation();
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+                break;
+
+            case 'ASK_TO_TYPE_ADDRESS':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await askToTypeAddress(pageID, sender.id);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+                break;
+
+            case 'ASK_FOR_QUANTITY':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await askForQuantity(pageID, sender.id);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+                break;
+            case 'ASK_FOR_FLAVOR':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await askForFlavor(pageID, sender.id, multiple, split);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+                break;
+
+            case 'SHOW_FLAVOR':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await showFlavor(pageID, sender.id, data);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+                break;
+
             case 'ASK_FOR_WANT_BEVERAGE':
                 await bot.startTyping(sender.id);
                 await Bot.wait(500);
                 out = await askForWantBeverage(pageID, sender.id);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+
+                break;
+
+            case 'SHOW_NO_BEVERAGE':
+                await bot.startTyping(sender.id);
+                await Bot.wait(200);
+                out = await showNoBeverage(pageID, sender.id, data);
                 await bot.stopTyping(sender.id);
                 await bot.send(sender.id, out);
 

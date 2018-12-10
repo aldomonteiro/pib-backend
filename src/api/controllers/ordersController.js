@@ -154,6 +154,8 @@ export const getOrderJson = async (pageId, orderId) => {
                 id: item.id,
                 flavorId: item.flavorId,
                 sizeId: item.sizeId,
+                beverageId: item.beverageId,
+                beverage: item.beverage,
                 price: item.price,
                 qty: item.qty,
                 split: item.split,
@@ -185,7 +187,7 @@ export const updateOrder = async orderData => {
         const { pageId, userId, qty, location, user,
             phone, addrData, completeItem, confirmOrder,
             waitingForAddress, waitingFor, currentItem, sizeId, calcTotal,
-            split, originalSplit, eraseSplit } = orderData;
+            split, originalSplit, eraseSplit, noBeverage } = orderData;
 
         let customerID = 0;
         let customerData = {}
@@ -311,6 +313,11 @@ export const updateOrder = async orderData => {
                     order.total = total;
                     updateOrder = true;
                 }
+            }
+
+            if (typeof noBeverage === 'boolean') {
+                order.no_beverage = noBeverage;
+                updateOrder = true;
             }
 
             if (updateOrder)

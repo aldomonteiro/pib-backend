@@ -76,6 +76,9 @@ var schema = new Schema({
   },
   sent_shipping_notification: {
     type: Date
+  },
+  no_beverage: {
+    type: Boolean
   }
 }, {
   timestamps: true

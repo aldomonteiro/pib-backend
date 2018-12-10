@@ -296,18 +296,9 @@ bot.on('quick-reply', async (message, quick_reply) => {
   const { payload } = quick_reply;
   try {
     if (payload) {
-      await bot.startTyping(sender.id);
-      await Bot.wait(1000);
-      const answer = await showPhone(recipient.id, sender.id, payload);
-      await bot.stopTyping(sender.id);
-      await bot.send(sender.id, answer);
+      await sendActions({ action: 'SHOW_PHONE', bot, sender, pageID: recipient.id, payload: payload });
 
-      // next question
-      await bot.startTyping(sender.id);
-      await Bot.wait(1000);
-      const out = await askForQuantity(recipient.id, sender.id);
-      await bot.stopTyping(sender.id);
-      await bot.send(sender.id, out);
+      await sendActions({ action: 'ASK_FOR_QUANTITY', bot, sender, pageID: recipient.id });
     }
   } catch (quickReplyError) {
     console.error({ quickReplyError });
@@ -325,19 +316,10 @@ bot.on('quick-reply', async (message, quick_reply) => {
 bot.on('CORRECT_SAVED_ADDRESS', async (message, data) => {
   const { sender, recipient } = message;
   try {
-    // show what the user chose
-    await bot.startTyping(sender.id);
-    await Bot.wait(800);
-    const answer = await showAddress(recipient.id, sender.id, data);
-    await bot.stopTyping(sender.id);
-    await bot.send(sender.id, answer);
+    await sendActions({ action: 'SHOW_ADDRESS', bot, sender, pageID: recipient.id, data: data });
 
-    // next question
-    await bot.startTyping(sender.id);
-    await Bot.wait(800);
-    const out = await askForPhone(recipient.id, sender.id);
-    await bot.stopTyping(sender.id);
-    await bot.send(sender.id, out);
+    await sendActions({ action: 'ASK_FOR_PHONE', bot, sender, pageID: recipient.id });
+
   } catch (error) {
     console.error('CORRECT_SAVED_ADDRESS:', error.message);
     const outError = await sendErrorMsg(error.message);
@@ -356,26 +338,12 @@ bot.on('LOCATION_ADDRESS', async (message, data) => {
 
   try {
     if (data === 'incorrect_address') {
-      await bot.startTyping(sender.id);
-      await Bot.wait(1000);
-      const answer = await askToTypeAddress(recipient.id, sender.id);
-      await bot.stopTyping(sender.id);
-      await bot.send(sender.id, answer);
+      await sendActions({ action: 'ASK_TO_TYPE_ADDRESS', bot, sender, pageID: recipient.id });
     }
     else {
-      // show what the user chose
-      await bot.startTyping(sender.id);
-      await Bot.wait(1000);
-      const answer = await showAddress(recipient.id, sender.id, data);
-      await bot.stopTyping(sender.id);
-      await bot.send(sender.id, answer);
+      await sendActions({ action: 'SHOW_ADDRESS', bot, sender, pageID: recipient.id, data: data });
 
-      // next question
-      await bot.startTyping(sender.id);
-      await Bot.wait(1000);
-      const out = await showOrderOrAskForPhone(recipient.id, sender.id);
-      await bot.stopTyping(sender.id);
-      await bot.send(sender.id, out);
+      await sendActions({ action: 'SHOW_ORDER_OR_ASK_FOR_PHONE', bot, sender, pageID: recipient.id });
     }
   } catch (error) {
     console.error('LOCATION_ADDRESS:', error.message);
@@ -393,10 +361,9 @@ bot.on('LOCATION_ADDRESS', async (message, data) => {
 bot.on('WRONG_SAVED_ADDRESS', async (message, data) => {
   const { sender, recipient } = message;
   try {
-    const out = await askForLocation();
-    await Bot.wait(1000);
-    await bot.stopTyping(sender.id);
-    await bot.send(sender.id, out);
+
+    await sendActions({ action: 'ASK_FOR_LOCATION', bot, sender, pageID: recipient.id });
+
   } catch (error) {
     console.error('WRONG_SAVED_ADDRESS:', error.message);
     const outError = await sendErrorMsg(error.message);
@@ -409,26 +376,12 @@ bot.on('PHONE_CONFIRMED', async (message, data) => {
   const { sender, recipient } = message;
   try {
     if (data === 'change_phone') {
-      // next question
-      const out = await askToTypePhone(recipient.id, sender.id);
-      await Bot.wait(1000);
-      await bot.stopTyping(sender.id);
-      await bot.send(sender.id, out);
+      await sendActions({ action: 'ASK_TO_TYPE_PHONE', bot, sender, pageID: recipient.id });
     }
     else {
-      // show what the user typed
-      await bot.startTyping(sender.id);
-      await Bot.wait(1000);
-      const answer = await showPhone(recipient.id, sender.id, data);
-      await bot.stopTyping(sender.id);
-      await bot.send(sender.id, answer);
+      await sendActions({ action: 'SHOW_PHONE', bot, sender, pageID: recipient.id, data: data });
 
-      // next question
-      await bot.startTyping(sender.id);
-      await Bot.wait(1000);
-      const out = await askForQuantity(recipient.id, sender.id);
-      await bot.stopTyping(sender.id);
-      await bot.send(sender.id, out);
+      await sendActions({ action: 'ASK_FOR_QUANTITY', bot, sender, pageID: recipient.id });
     }
   } catch (error) {
     console.error('PHONE_CONFIRMED:', error.message);
@@ -520,7 +473,7 @@ bot.on('ORDER_SPLIT', async (message, data) => {
 
   // next question
   await bot.startTyping(sender.id);
-  await Bot.wait(500);
+  await Bot.wait(250);
   const out = await askForFlavorOrConfirm(message.recipient.id, sender.id, 1, split);
   await bot.stopTyping(sender.id);
   await bot.send(sender.id, out);
@@ -534,20 +487,10 @@ bot.on('ORDER_FLAVOR', async (message, data) => {
   const { sender, recipient } = message;
   try {
     if (data && data.option && data.option === 'flavors_more') {
-      // next question
-      await bot.startTyping(sender.id);
-      await Bot.wait(500);
-      const out = await askForFlavor(message.recipient.id, sender.id, data.multiple);
-      await bot.stopTyping(sender.id);
-      await bot.send(sender.id, out);
+      await sendActions({ action: 'ASK_FOR_FLAVOR', bot, sender, pageID: recipient.id, multiple: data.multiple })
     }
     else {
-      // show what the user chose
-      await bot.startTyping(sender.id);
-      await Bot.wait(900);
-      const answer = await showFlavor(recipient.id, sender.id, data);
-      await bot.stopTyping(sender.id);
-      await bot.send(sender.id, answer);
+      await sendActions({ action: 'SHOW_FLAVOR', bot, sender, pageID: recipient.id, data })
 
       // show summary
       await bot.startTyping(sender.id);
@@ -573,14 +516,15 @@ bot.on('ORDER_CONFIRM_BEVERAGE', async (message, data) => {
 
   try {
     if (data === 'beverage_yes')
-      await sendActions({ action: 'ASK_FOR_BEVERAGE_OPTIONS', bot, sender, pageID: recipient.id, multple: 1 })
+      await sendActions({ action: 'ASK_FOR_BEVERAGE_OPTIONS', bot, sender, pageID: recipient.id, multiple: 1 })
     else {
+      await sendActions({ action: 'SHOW_NO_BEVERAGE', bot, sender, pageID: recipient.id })
       await sendActions({ action: 'SHOW_FULL_ORDER', bot, sender, pageID: recipient.id })
     }
 
-  } catch (orderBeverageErr) {
-    console.error({ orderBeverageErr });
-    const outError = await sendErrorMsg(orderBeverageErr.message);
+  } catch (orderConfirmBeverageErr) {
+    console.error({ orderConfirmBeverageErr });
+    const outError = await sendErrorMsg(orderConfirmBeverageErr.message);
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, outError);
   }
@@ -596,6 +540,10 @@ bot.on('ORDER_BEVERAGE', async (message, data) => {
     if (data && data.option && data.option === 'beverages_more') {
       // more beverages
       await sendActions({ action: 'ASK_FOR_BEVERAGE_OPTIONS', bot, sender, pageID: recipient.id, multiple: data.multiple })
+    }
+    else if (data && data.option && data.option === 'beverages_cancel') {
+      await sendActions({ action: 'SHOW_NO_BEVERAGE', bot, sender, pageID: recipient.id })
+      await sendActions({ action: 'SHOW_FULL_ORDER', bot, sender, pageID: recipient.id })
     }
     else {
       await sendActions({ action: 'SHOW_BEVERAGE', bot, sender, pageID: recipient.id, data: data })

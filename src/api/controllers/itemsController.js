@@ -12,7 +12,7 @@ const ITEMSTATUS_COMPLETED = 1;
 export const updateItem = async orderData => {
     const { orderId, userId, pageId,
         qty, sizeId, flavorId,
-        beverageId, beveragePrice, completeItem, split } = orderData;
+        beverageId, beveragePrice, completeItem, split, originalSplit } = orderData;
 
     if (qty || sizeId || flavorId || beverageId || typeof completeItem === 'boolean') {
         let _searchStatus = ITEMSTATUS_PENDING;
@@ -83,6 +83,7 @@ export const updateStatusSpecificItem = async (objectId, status) => {
         item.status = status;
         await item.save();
     }
+    return item;
 }
 
 /**

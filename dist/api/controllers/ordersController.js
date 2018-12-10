@@ -378,6 +378,8 @@ function () {
                 id: item.id,
                 flavorId: item.flavorId,
                 sizeId: item.sizeId,
+                beverageId: item.beverageId,
+                beverage: item.beverage,
                 price: item.price,
                 qty: item.qty,
                 split: item.split,
@@ -427,14 +429,14 @@ function () {
   var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee6(orderData) {
-    var pageId, userId, qty, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, waitingFor, currentItem, sizeId, calcTotal, split, originalSplit, eraseSplit, customerID, customerData, first_name, last_name, profile_pic, order, _updateOrder, total, resultLastId, orderId, record;
+    var pageId, userId, qty, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, waitingFor, currentItem, sizeId, calcTotal, split, originalSplit, eraseSplit, noBeverage, customerID, customerData, first_name, last_name, profile_pic, order, _updateOrder, total, resultLastId, orderId, record;
 
     return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
             _context6.prev = 0;
-            pageId = orderData.pageId, userId = orderData.userId, qty = orderData.qty, location = orderData.location, user = orderData.user, phone = orderData.phone, addrData = orderData.addrData, completeItem = orderData.completeItem, confirmOrder = orderData.confirmOrder, waitingForAddress = orderData.waitingForAddress, waitingFor = orderData.waitingFor, currentItem = orderData.currentItem, sizeId = orderData.sizeId, calcTotal = orderData.calcTotal, split = orderData.split, originalSplit = orderData.originalSplit, eraseSplit = orderData.eraseSplit;
+            pageId = orderData.pageId, userId = orderData.userId, qty = orderData.qty, location = orderData.location, user = orderData.user, phone = orderData.phone, addrData = orderData.addrData, completeItem = orderData.completeItem, confirmOrder = orderData.confirmOrder, waitingForAddress = orderData.waitingForAddress, waitingFor = orderData.waitingFor, currentItem = orderData.currentItem, sizeId = orderData.sizeId, calcTotal = orderData.calcTotal, split = orderData.split, originalSplit = orderData.originalSplit, eraseSplit = orderData.eraseSplit, noBeverage = orderData.noBeverage;
             customerID = 0;
             customerData = {};
             customerData.pageId = pageId;
@@ -466,7 +468,7 @@ function () {
             order = _context6.sent;
 
             if (!order) {
-              _context6.next = 45;
+              _context6.next = 46;
               break;
             }
 
@@ -589,29 +591,34 @@ function () {
             }
 
           case 38:
+            if (typeof noBeverage === 'boolean') {
+              order.no_beverage = noBeverage;
+              _updateOrder = true;
+            }
+
             if (!_updateOrder) {
-              _context6.next = 41;
+              _context6.next = 42;
               break;
             }
 
-            _context6.next = 41;
+            _context6.next = 42;
             return order.save();
 
-          case 41:
-            _context6.next = 43;
+          case 42:
+            _context6.next = 44;
             return (0, _itemsController.updateItem)(orderData);
 
-          case 43:
-            _context6.next = 56;
+          case 44:
+            _context6.next = 57;
             break;
 
-          case 45:
-            _context6.next = 47;
+          case 46:
+            _context6.next = 48;
             return _orders.default.find({
               pageId: pageId
             }).select('id').sort('-id').limit(1).exec();
 
-          case 47:
+          case 48:
             resultLastId = _context6.sent;
             orderId = 1;
             if (resultLastId && resultLastId.length) orderId = resultLastId[0].id + 1;
@@ -626,32 +633,32 @@ function () {
               waitingForAddress: typeof waitingForAddress === 'boolean' ? waitingForAddress : false,
               status: ORDERSTATUS_PENDING
             });
-            _context6.next = 53;
+            _context6.next = 54;
             return record.save();
 
-          case 53:
+          case 54:
             orderData.orderId = record.id;
-            _context6.next = 56;
+            _context6.next = 57;
             return (0, _itemsController.updateItem)(orderData);
 
-          case 56:
-            _context6.next = 62;
+          case 57:
+            _context6.next = 63;
             break;
 
-          case 58:
-            _context6.prev = 58;
+          case 59:
+            _context6.prev = 59;
             _context6.t0 = _context6["catch"](0);
             console.error({
               updateOrderError: _context6.t0
             });
             throw _context6.t0;
 
-          case 62:
+          case 63:
           case "end":
             return _context6.stop();
         }
       }
-    }, _callee6, this, [[0, 58]]);
+    }, _callee6, this, [[0, 59]]);
   }));
 
   return function updateOrder(_x11) {

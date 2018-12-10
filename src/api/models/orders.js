@@ -23,7 +23,8 @@ const schema = new Schema({
   waitingForAddress: { type: Boolean },
   waitingFor: { type: String },
   total: { type: Number },
-  sent_shipping_notification: { type: Date }
+  sent_shipping_notification: { type: Date },
+  no_beverage: { type: Boolean }
 }, { timestamps: true });
 
 schema.pre('save', function (next) {
