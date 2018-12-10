@@ -1724,20 +1724,7 @@ extsprintf@^1.2.0:
   resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.4.0.tgz#e2689f8f356fad62cca65a3a91c5df5f9551692f"
 
 "facebook-messenger-bot@file:../Bot":
-  version "0.2.12"
-  dependencies:
-    axios "^0.18.0"
-    babel-runtime "^6.6.1"
-    bluebird "^3.4.6"
-    body-parser "^1.15.0"
-    express "^4.0.0"
-    graceful-fs "^4.1.11"
-    lodash "^4.11.1"
-    minimatch "^3.0.4"
-    superagent "^1.8.3"
-
-"facebook-messenger-bot@file://Users/aldo/PIB/Bot/":
-  version "0.2.12"
+  version "0.2.13"
   dependencies:
     axios "^0.18.0"
     babel-runtime "^6.6.1"
