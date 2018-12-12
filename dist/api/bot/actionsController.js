@@ -127,7 +127,7 @@ function () {
 
           case 48:
             _context.next = 50;
-            return (0, _botController.showPhone)(pageID, sender.id, payload);
+            return (0, _botController.showPhone)(pageID, sender.id, data);
 
           case 50:
             out = _context.sent;
