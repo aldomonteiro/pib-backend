@@ -25,7 +25,7 @@ export const order_get_all = async (req, res) => {
             queryParam['pageId'] = req.currentUser.activePage;
         }
 
-        if (filterObj.filterField && filterObj.filterField.length) {
+        if (filterObj && filterObj.filterField && filterObj.filterField.length) {
             for (let i = 0; i < filterObj.filterField.length; i++) {
                 const filter = filterObj.filterField[i];
                 const value = filterObj.filterValues[i];
@@ -41,8 +41,6 @@ export const order_get_all = async (req, res) => {
                 }
             }
         }
-
-        console.info(req.query.filter, filterObj, queryParam);
 
         Order.find(queryParam).sort(sortObj).exec(async (findError, result) => {
             if (findError) {
@@ -65,6 +63,8 @@ export const order_get_all = async (req, res) => {
                         pageId: order.pageId,
                         customerId: order.customerId,
                         userId: order.userId,
+                        phone: order.phone,
+                        address: order.address,
                         status: order.status,
                         status2: order.status2,
                         qty_total: order.qty_total,
@@ -171,6 +171,8 @@ export const getOrderJson = async (pageId, orderId) => {
             qty_total: order.qty_total,
             status: order.status,
             status2: order.status2,
+            phone: order.phone,
+            address: order.address,
             total: order.total,
             items: jsonItems,
         }

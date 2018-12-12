@@ -75,7 +75,10 @@ export const sendActions = async ({ action, bot, sender, pageID, multiple, split
             case 'SHOW_PHONE':
                 await bot.startTyping(sender.id);
                 await Bot.wait(500);
-                out = await showPhone(pageID, sender.id, data);
+
+                const phone = typeof data === 'undefined' ? payload : data;
+                out = await showPhone(pageID, sender.id, phone);
+
                 await bot.stopTyping(sender.id);
                 await bot.send(sender.id, out);
                 break;

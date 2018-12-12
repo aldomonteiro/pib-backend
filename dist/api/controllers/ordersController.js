@@ -52,7 +52,7 @@ function () {
                 queryParam['pageId'] = req.currentUser.activePage;
               }
 
-              if (filterObj.filterField && filterObj.filterField.length) {
+              if (filterObj && filterObj.filterField && filterObj.filterField.length) {
                 for (i = 0; i < filterObj.filterField.length; i++) {
                   filter = filterObj.filterField[i];
                   value = filterObj.filterValues[i];
@@ -77,8 +77,6 @@ function () {
                   }
                 }
               }
-
-              console.info(req.query.filter, filterObj, queryParam);
 
               _orders.default.find(queryParam).sort(sortObj).exec(
               /*#__PURE__*/
@@ -139,6 +137,8 @@ function () {
                             pageId: order.pageId,
                             customerId: order.customerId,
                             userId: order.userId,
+                            phone: order.phone,
+                            address: order.address,
                             status: order.status,
                             status2: order.status2,
                             qty_total: order.qty_total,
@@ -395,6 +395,8 @@ function () {
               qty_total: order.qty_total,
               status: order.status,
               status2: order.status2,
+              phone: order.phone,
+              address: order.address,
               total: order.total,
               items: jsonItems
             };

@@ -29,7 +29,7 @@ function () {
   var _ref2 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(_ref) {
-    var action, bot, sender, pageID, multiple, split, data, payload, out;
+    var action, bot, sender, pageID, multiple, split, data, payload, out, phone;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -38,7 +38,7 @@ function () {
             _context.prev = 1;
             out = new _facebookMessengerBot.Elements();
             _context.t0 = action;
-            _context.next = _context.t0 === 'SEND_WELCOME' ? 6 : _context.t0 === 'SEND_CARDAPIO' ? 20 : _context.t0 === 'ASK_FOR_PHONE' ? 32 : _context.t0 === 'SHOW_PHONE' ? 44 : _context.t0 === 'SHOW_ADDRESS' ? 56 : _context.t0 === 'SHOW_ORDER_OR_ASK_FOR_PHONE' ? 68 : _context.t0 === 'ASK_TO_TYPE_PHONE' ? 80 : _context.t0 === 'ASK_FOR_LOCATION' ? 92 : _context.t0 === 'ASK_TO_TYPE_ADDRESS' ? 104 : _context.t0 === 'ASK_FOR_QUANTITY' ? 116 : _context.t0 === 'ASK_FOR_FLAVOR' ? 128 : _context.t0 === 'SHOW_FLAVOR' ? 140 : _context.t0 === 'ASK_FOR_WANT_BEVERAGE' ? 152 : _context.t0 === 'SHOW_NO_BEVERAGE' ? 164 : _context.t0 === 'ASK_FOR_BEVERAGE_OPTIONS' ? 176 : _context.t0 === 'SHOW_BEVERAGE' ? 188 : _context.t0 === 'SHOW_FULL_ORDER' ? 200 : _context.t0 === 'CONFIRM_ORDER' ? 212 : 224;
+            _context.next = _context.t0 === 'SEND_WELCOME' ? 6 : _context.t0 === 'SEND_CARDAPIO' ? 20 : _context.t0 === 'ASK_FOR_PHONE' ? 32 : _context.t0 === 'SHOW_PHONE' ? 44 : _context.t0 === 'SHOW_ADDRESS' ? 57 : _context.t0 === 'SHOW_ORDER_OR_ASK_FOR_PHONE' ? 69 : _context.t0 === 'ASK_TO_TYPE_PHONE' ? 81 : _context.t0 === 'ASK_FOR_LOCATION' ? 93 : _context.t0 === 'ASK_TO_TYPE_ADDRESS' ? 105 : _context.t0 === 'ASK_FOR_QUANTITY' ? 117 : _context.t0 === 'ASK_FOR_FLAVOR' ? 129 : _context.t0 === 'SHOW_FLAVOR' ? 141 : _context.t0 === 'ASK_FOR_WANT_BEVERAGE' ? 153 : _context.t0 === 'SHOW_NO_BEVERAGE' ? 165 : _context.t0 === 'ASK_FOR_BEVERAGE_OPTIONS' ? 177 : _context.t0 === 'SHOW_BEVERAGE' ? 189 : _context.t0 === 'SHOW_FULL_ORDER' ? 201 : _context.t0 === 'CONFIRM_ORDER' ? 213 : 225;
             break;
 
           case 6:
@@ -67,7 +67,7 @@ function () {
             return bot.send(sender.id, out);
 
           case 19:
-            return _context.abrupt("break", 225);
+            return _context.abrupt("break", 226);
 
           case 20:
             _context.next = 22;
@@ -91,7 +91,7 @@ function () {
             return bot.send(sender.id, out);
 
           case 31:
-            return _context.abrupt("break", 225);
+            return _context.abrupt("break", 226);
 
           case 32:
             _context.next = 34;
@@ -115,7 +115,7 @@ function () {
             return bot.send(sender.id, out);
 
           case 43:
-            return _context.abrupt("break", 225);
+            return _context.abrupt("break", 226);
 
           case 44:
             _context.next = 46;
@@ -126,376 +126,377 @@ function () {
             return _facebookMessengerBot.Bot.wait(500);
 
           case 48:
-            _context.next = 50;
-            return (0, _botController.showPhone)(pageID, sender.id, data);
+            phone = typeof data === 'undefined' ? payload : data;
+            _context.next = 51;
+            return (0, _botController.showPhone)(pageID, sender.id, phone);
 
-          case 50:
+          case 51:
             out = _context.sent;
-            _context.next = 53;
+            _context.next = 54;
             return bot.stopTyping(sender.id);
 
-          case 53:
-            _context.next = 55;
+          case 54:
+            _context.next = 56;
             return bot.send(sender.id, out);
-
-          case 55:
-            return _context.abrupt("break", 225);
 
           case 56:
-            _context.next = 58;
+            return _context.abrupt("break", 226);
+
+          case 57:
+            _context.next = 59;
             return bot.startTyping(sender.id);
 
-          case 58:
-            _context.next = 60;
+          case 59:
+            _context.next = 61;
             return _facebookMessengerBot.Bot.wait(500);
 
-          case 60:
-            _context.next = 62;
+          case 61:
+            _context.next = 63;
             return (0, _botController.showAddress)(pageID, sender.id, data);
 
-          case 62:
+          case 63:
             out = _context.sent;
-            _context.next = 65;
+            _context.next = 66;
             return bot.stopTyping(sender.id);
 
-          case 65:
-            _context.next = 67;
+          case 66:
+            _context.next = 68;
             return bot.send(sender.id, out);
-
-          case 67:
-            return _context.abrupt("break", 225);
 
           case 68:
-            _context.next = 70;
+            return _context.abrupt("break", 226);
+
+          case 69:
+            _context.next = 71;
             return bot.startTyping(sender.id);
 
-          case 70:
-            _context.next = 72;
+          case 71:
+            _context.next = 73;
             return _facebookMessengerBot.Bot.wait(500);
 
-          case 72:
-            _context.next = 74;
+          case 73:
+            _context.next = 75;
             return (0, _botController.showOrderOrAskForPhone)(pageID, sender.id);
 
-          case 74:
+          case 75:
             out = _context.sent;
-            _context.next = 77;
+            _context.next = 78;
             return bot.stopTyping(sender.id);
 
-          case 77:
-            _context.next = 79;
+          case 78:
+            _context.next = 80;
             return bot.send(sender.id, out);
-
-          case 79:
-            return _context.abrupt("break", 225);
 
           case 80:
-            _context.next = 82;
+            return _context.abrupt("break", 226);
+
+          case 81:
+            _context.next = 83;
             return bot.startTyping(sender.id);
 
-          case 82:
-            _context.next = 84;
+          case 83:
+            _context.next = 85;
             return _facebookMessengerBot.Bot.wait(500);
 
-          case 84:
-            _context.next = 86;
+          case 85:
+            _context.next = 87;
             return (0, _botController.askToTypePhone)(pageID, sender.id);
 
-          case 86:
+          case 87:
             out = _context.sent;
-            _context.next = 89;
+            _context.next = 90;
             return bot.stopTyping(sender.id);
 
-          case 89:
-            _context.next = 91;
+          case 90:
+            _context.next = 92;
             return bot.send(sender.id, out);
-
-          case 91:
-            return _context.abrupt("break", 225);
 
           case 92:
-            _context.next = 94;
+            return _context.abrupt("break", 226);
+
+          case 93:
+            _context.next = 95;
             return bot.startTyping(sender.id);
 
-          case 94:
-            _context.next = 96;
+          case 95:
+            _context.next = 97;
             return _facebookMessengerBot.Bot.wait(500);
 
-          case 96:
-            _context.next = 98;
+          case 97:
+            _context.next = 99;
             return (0, _botController.askForLocation)();
 
-          case 98:
+          case 99:
             out = _context.sent;
-            _context.next = 101;
+            _context.next = 102;
             return bot.stopTyping(sender.id);
 
-          case 101:
-            _context.next = 103;
+          case 102:
+            _context.next = 104;
             return bot.send(sender.id, out);
-
-          case 103:
-            return _context.abrupt("break", 225);
 
           case 104:
-            _context.next = 106;
+            return _context.abrupt("break", 226);
+
+          case 105:
+            _context.next = 107;
             return bot.startTyping(sender.id);
 
-          case 106:
-            _context.next = 108;
+          case 107:
+            _context.next = 109;
             return _facebookMessengerBot.Bot.wait(500);
 
-          case 108:
-            _context.next = 110;
+          case 109:
+            _context.next = 111;
             return (0, _botController.askToTypeAddress)(pageID, sender.id);
 
-          case 110:
+          case 111:
             out = _context.sent;
-            _context.next = 113;
+            _context.next = 114;
             return bot.stopTyping(sender.id);
 
-          case 113:
-            _context.next = 115;
+          case 114:
+            _context.next = 116;
             return bot.send(sender.id, out);
-
-          case 115:
-            return _context.abrupt("break", 225);
 
           case 116:
-            _context.next = 118;
+            return _context.abrupt("break", 226);
+
+          case 117:
+            _context.next = 119;
             return bot.startTyping(sender.id);
 
-          case 118:
-            _context.next = 120;
+          case 119:
+            _context.next = 121;
             return _facebookMessengerBot.Bot.wait(500);
 
-          case 120:
-            _context.next = 122;
+          case 121:
+            _context.next = 123;
             return (0, _botController.askForQuantity)(pageID, sender.id);
 
-          case 122:
+          case 123:
             out = _context.sent;
-            _context.next = 125;
+            _context.next = 126;
             return bot.stopTyping(sender.id);
 
-          case 125:
-            _context.next = 127;
+          case 126:
+            _context.next = 128;
             return bot.send(sender.id, out);
-
-          case 127:
-            return _context.abrupt("break", 225);
 
           case 128:
-            _context.next = 130;
+            return _context.abrupt("break", 226);
+
+          case 129:
+            _context.next = 131;
             return bot.startTyping(sender.id);
 
-          case 130:
-            _context.next = 132;
+          case 131:
+            _context.next = 133;
             return _facebookMessengerBot.Bot.wait(500);
 
-          case 132:
-            _context.next = 134;
+          case 133:
+            _context.next = 135;
             return (0, _botController.askForFlavor)(pageID, sender.id, multiple, split);
 
-          case 134:
+          case 135:
             out = _context.sent;
-            _context.next = 137;
+            _context.next = 138;
             return bot.stopTyping(sender.id);
 
-          case 137:
-            _context.next = 139;
+          case 138:
+            _context.next = 140;
             return bot.send(sender.id, out);
-
-          case 139:
-            return _context.abrupt("break", 225);
 
           case 140:
-            _context.next = 142;
+            return _context.abrupt("break", 226);
+
+          case 141:
+            _context.next = 143;
             return bot.startTyping(sender.id);
 
-          case 142:
-            _context.next = 144;
+          case 143:
+            _context.next = 145;
             return _facebookMessengerBot.Bot.wait(500);
 
-          case 144:
-            _context.next = 146;
+          case 145:
+            _context.next = 147;
             return (0, _botController.showFlavor)(pageID, sender.id, data);
 
-          case 146:
+          case 147:
             out = _context.sent;
-            _context.next = 149;
+            _context.next = 150;
             return bot.stopTyping(sender.id);
 
-          case 149:
-            _context.next = 151;
+          case 150:
+            _context.next = 152;
             return bot.send(sender.id, out);
-
-          case 151:
-            return _context.abrupt("break", 225);
 
           case 152:
-            _context.next = 154;
+            return _context.abrupt("break", 226);
+
+          case 153:
+            _context.next = 155;
             return bot.startTyping(sender.id);
 
-          case 154:
-            _context.next = 156;
+          case 155:
+            _context.next = 157;
             return _facebookMessengerBot.Bot.wait(500);
 
-          case 156:
-            _context.next = 158;
+          case 157:
+            _context.next = 159;
             return (0, _botController.askForWantBeverage)(pageID, sender.id);
 
-          case 158:
+          case 159:
             out = _context.sent;
-            _context.next = 161;
+            _context.next = 162;
             return bot.stopTyping(sender.id);
 
-          case 161:
-            _context.next = 163;
+          case 162:
+            _context.next = 164;
             return bot.send(sender.id, out);
-
-          case 163:
-            return _context.abrupt("break", 225);
 
           case 164:
-            _context.next = 166;
+            return _context.abrupt("break", 226);
+
+          case 165:
+            _context.next = 167;
             return bot.startTyping(sender.id);
 
-          case 166:
-            _context.next = 168;
+          case 167:
+            _context.next = 169;
             return _facebookMessengerBot.Bot.wait(200);
 
-          case 168:
-            _context.next = 170;
+          case 169:
+            _context.next = 171;
             return (0, _botController.showNoBeverage)(pageID, sender.id, data);
 
-          case 170:
+          case 171:
             out = _context.sent;
-            _context.next = 173;
+            _context.next = 174;
             return bot.stopTyping(sender.id);
 
-          case 173:
-            _context.next = 175;
+          case 174:
+            _context.next = 176;
             return bot.send(sender.id, out);
-
-          case 175:
-            return _context.abrupt("break", 225);
 
           case 176:
-            _context.next = 178;
+            return _context.abrupt("break", 226);
+
+          case 177:
+            _context.next = 179;
             return bot.startTyping(sender.id);
 
-          case 178:
-            _context.next = 180;
+          case 179:
+            _context.next = 181;
             return _facebookMessengerBot.Bot.wait(500);
 
-          case 180:
-            _context.next = 182;
+          case 181:
+            _context.next = 183;
             return (0, _botController.askForBeverages)(pageID, sender.id, multiple);
 
-          case 182:
+          case 183:
             out = _context.sent;
-            _context.next = 185;
+            _context.next = 186;
             return bot.stopTyping(sender.id);
 
-          case 185:
-            _context.next = 187;
+          case 186:
+            _context.next = 188;
             return bot.send(sender.id, out);
-
-          case 187:
-            return _context.abrupt("break", 225);
 
           case 188:
-            _context.next = 190;
+            return _context.abrupt("break", 226);
+
+          case 189:
+            _context.next = 191;
             return bot.startTyping(sender.id);
 
-          case 190:
-            _context.next = 192;
+          case 191:
+            _context.next = 193;
             return _facebookMessengerBot.Bot.wait(500);
 
-          case 192:
-            _context.next = 194;
+          case 193:
+            _context.next = 195;
             return (0, _botController.showBeverage)(pageID, sender.id, data);
 
-          case 194:
+          case 195:
             out = _context.sent;
-            _context.next = 197;
+            _context.next = 198;
             return bot.stopTyping(sender.id);
 
-          case 197:
-            _context.next = 199;
+          case 198:
+            _context.next = 200;
             return bot.send(sender.id, out);
-
-          case 199:
-            return _context.abrupt("break", 225);
 
           case 200:
-            _context.next = 202;
+            return _context.abrupt("break", 226);
+
+          case 201:
+            _context.next = 203;
             return bot.startTyping(sender.id);
 
-          case 202:
-            _context.next = 204;
+          case 203:
+            _context.next = 205;
             return _facebookMessengerBot.Bot.wait(500);
 
-          case 204:
-            _context.next = 206;
+          case 205:
+            _context.next = 207;
             return (0, _botController.showFullOrder)(pageID, sender.id);
 
-          case 206:
+          case 207:
             out = _context.sent;
-            _context.next = 209;
+            _context.next = 210;
             return bot.stopTyping(sender.id);
 
-          case 209:
-            _context.next = 211;
+          case 210:
+            _context.next = 212;
             return bot.send(sender.id, out);
-
-          case 211:
-            return _context.abrupt("break", 225);
 
           case 212:
-            _context.next = 214;
+            return _context.abrupt("break", 226);
+
+          case 213:
+            _context.next = 215;
             return bot.startTyping(sender.id);
 
-          case 214:
-            _context.next = 216;
+          case 215:
+            _context.next = 217;
             return _facebookMessengerBot.Bot.wait(500);
 
-          case 216:
-            _context.next = 218;
+          case 217:
+            _context.next = 219;
             return (0, _botController.confirmOrder)(pageID, sender.id);
 
-          case 218:
+          case 219:
             out = _context.sent;
-            _context.next = 221;
+            _context.next = 222;
             return bot.stopTyping(sender.id);
 
-          case 221:
-            _context.next = 223;
+          case 222:
+            _context.next = 224;
             return bot.send(sender.id, out);
 
-          case 223:
-            return _context.abrupt("break", 225);
-
           case 224:
-            return _context.abrupt("break", 225);
+            return _context.abrupt("break", 226);
 
           case 225:
-            _context.next = 231;
+            return _context.abrupt("break", 226);
+
+          case 226:
+            _context.next = 232;
             break;
 
-          case 227:
-            _context.prev = 227;
+          case 228:
+            _context.prev = 228;
             _context.t1 = _context["catch"](1);
             console.error(action, _context.t1);
             throw _context.t1;
 
-          case 231:
+          case 232:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this, [[1, 227]]);
+    }, _callee, this, [[1, 228]]);
   }));
 
   return function sendActions(_x) {
