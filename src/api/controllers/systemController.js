@@ -10,8 +10,10 @@ import { getPricings } from './pricingsController';
 import { getStores } from './storesController';
 import { getOnePageData } from './pagesController';
 
-
-const basePageID = "237290183773790"; // Página do Aldo
+const env = process.env.NODE_ENV || 'production';
+let basePageID = process.env.DEV_PAGE_BASE_ID; // Página do Aldo
+if (env === 'production')
+    basePageID = process.env.PRD_PAGE_BASE_ID; // Pizzaibot
 
 export const initialSetup = async pageID => {
     try {
@@ -73,16 +75,18 @@ const insertFlavors = async pageID => {
         docs.push(newRec);
     }
 
-    await Flavor.insertMany(docs, (err, result) => {
-        if (err) {
-            console.error('Error while inserting flavors', err);
-            throw err;
-        }
-        else {
-            _newRecords = result.length;
-            console.info(`${pageID}: ${_newRecords} flavors inserted`);
-        }
-    });
+    if (docs.length > 0) {
+        await Flavor.insertMany(docs, (err, result) => {
+            if (err) {
+                console.error('Error while inserting flavors', err);
+                throw err;
+            }
+            else {
+                _newRecords = result.length;
+                console.info(`${pageID}: ${_newRecords} flavors inserted`);
+            }
+        });
+    }
     return _newRecords;
 }
 
@@ -103,16 +107,18 @@ const insertSizes = async pageID => {
         docs.push(newRec);
     }
 
-    await Size.insertMany(docs, (err, result) => {
-        if (err) {
-            console.error('Error while inserting sizes', err);
-            throw err;
-        }
-        else {
-            _newRecords = result.length;
-            console.info(`${pageID}: ${_newRecords} sizes inserted`);
-        }
-    });
+    if (docs.length > 0) {
+        await Size.insertMany(docs, (err, result) => {
+            if (err) {
+                console.error('Error while inserting sizes', err);
+                throw err;
+            }
+            else {
+                _newRecords = result.length;
+                console.info(`${pageID}: ${_newRecords} sizes inserted`);
+            }
+        });
+    }
 
     return _newRecords;
 }
@@ -134,16 +140,18 @@ const insertBeverages = async pageID => {
         docs.push(newRec);
     }
 
-    await Beverage.insertMany(docs, (err, result) => {
-        if (err) {
-            console.error('Error while inserting beverages', err);
-            throw err;
-        }
-        else {
-            _newRecords = result.length;
-            console.info(`${pageID}: ${_newRecords} beverages inserted`);
-        }
-    });
+    if (docs.length > 0) {
+        await Beverage.insertMany(docs, (err, result) => {
+            if (err) {
+                console.error('Error while inserting beverages', err);
+                throw err;
+            }
+            else {
+                _newRecords = result.length;
+                console.info(`${pageID}: ${_newRecords} beverages inserted`);
+            }
+        });
+    }
 
     return _newRecords;
 }
@@ -165,16 +173,18 @@ const insertPricings = async pageID => {
         docs.push(newRec);
     }
 
-    await Pricing.insertMany(docs, (err, result) => {
-        if (err) {
-            console.error('Error while inserting pricings', err);
-            throw err;
-        }
-        else {
-            _newRecords = result.length;
-            console.info(`${pageID}: ${_newRecords} pricings inserted`);
-        }
-    });
+    if (docs.length > 0) {
+        await Pricing.insertMany(docs, (err, result) => {
+            if (err) {
+                console.error('Error while inserting pricings', err);
+                throw err;
+            }
+            else {
+                _newRecords = result.length;
+                console.info(`${pageID}: ${_newRecords} pricings inserted`);
+            }
+        });
+    }
     return _newRecords;
 }
 
@@ -217,16 +227,18 @@ const insertStores = async (pageID, pageName) => {
         docs.push(newRec);
     }
 
-    await Store.insertMany(docs, (err, result) => {
-        if (err) {
-            console.error('Error while inserting stores', err);
-            throw err;
-        }
-        else {
-            _newRecords = result.length;
-            console.info(`${_newRecords} stores inserted`);
-        }
-    });
+    if (docs.length > 0) {
+        await Store.insertMany(docs, (err, result) => {
+            if (err) {
+                console.error('Error while inserting stores', err);
+                throw err;
+            }
+            else {
+                _newRecords = result.length;
+                console.info(`${_newRecords} stores inserted`);
+            }
+        });
+    }
 
     return _newRecords;
 }

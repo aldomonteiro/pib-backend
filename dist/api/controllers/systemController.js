@@ -33,7 +33,10 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-var basePageID = "237290183773790"; // Página do Aldo
+var env = process.env.NODE_ENV || 'production';
+var basePageID = process.env.DEV_PAGE_BASE_ID; // Página do Aldo
+
+if (env === 'production') basePageID = process.env.PRD_PAGE_BASE_ID; // Pizzaibot
 
 var initialSetup =
 /*#__PURE__*/
@@ -244,7 +247,12 @@ function () {
             return _context2.finish(16);
 
           case 24:
-            _context2.next = 26;
+            if (!(docs.length > 0)) {
+              _context2.next = 27;
+              break;
+            }
+
+            _context2.next = 27;
             return _flavors2.default.insertMany(docs, function (err, result) {
               if (err) {
                 console.error('Error while inserting flavors', err);
@@ -255,10 +263,10 @@ function () {
               }
             });
 
-          case 26:
+          case 27:
             return _context2.abrupt("return", _newRecords);
 
-          case 27:
+          case 28:
           case "end":
             return _context2.stop();
         }
@@ -341,7 +349,12 @@ function () {
             return _context3.finish(16);
 
           case 24:
-            _context3.next = 26;
+            if (!(docs.length > 0)) {
+              _context3.next = 27;
+              break;
+            }
+
+            _context3.next = 27;
             return _sizes2.default.insertMany(docs, function (err, result) {
               if (err) {
                 console.error('Error while inserting sizes', err);
@@ -352,10 +365,10 @@ function () {
               }
             });
 
-          case 26:
+          case 27:
             return _context3.abrupt("return", _newRecords);
 
-          case 27:
+          case 28:
           case "end":
             return _context3.stop();
         }
@@ -438,7 +451,12 @@ function () {
             return _context4.finish(16);
 
           case 24:
-            _context4.next = 26;
+            if (!(docs.length > 0)) {
+              _context4.next = 27;
+              break;
+            }
+
+            _context4.next = 27;
             return _beverages.default.insertMany(docs, function (err, result) {
               if (err) {
                 console.error('Error while inserting beverages', err);
@@ -449,10 +467,10 @@ function () {
               }
             });
 
-          case 26:
+          case 27:
             return _context4.abrupt("return", _newRecords);
 
-          case 27:
+          case 28:
           case "end":
             return _context4.stop();
         }
@@ -535,7 +553,12 @@ function () {
             return _context5.finish(16);
 
           case 24:
-            _context5.next = 26;
+            if (!(docs.length > 0)) {
+              _context5.next = 27;
+              break;
+            }
+
+            _context5.next = 27;
             return _pricings2.default.insertMany(docs, function (err, result) {
               if (err) {
                 console.error('Error while inserting pricings', err);
@@ -546,10 +569,10 @@ function () {
               }
             });
 
-          case 26:
+          case 27:
             return _context5.abrupt("return", _newRecords);
 
-          case 27:
+          case 28:
           case "end":
             return _context5.stop();
         }
@@ -654,7 +677,12 @@ function () {
             return _context6.finish(16);
 
           case 24:
-            _context6.next = 26;
+            if (!(docs.length > 0)) {
+              _context6.next = 27;
+              break;
+            }
+
+            _context6.next = 27;
             return _stores2.default.insertMany(docs, function (err, result) {
               if (err) {
                 console.error('Error while inserting stores', err);
@@ -665,10 +693,10 @@ function () {
               }
             });
 
-          case 26:
+          case 27:
             return _context6.abrupt("return", _newRecords);
 
-          case 27:
+          case 28:
           case "end":
             return _context6.stop();
         }
