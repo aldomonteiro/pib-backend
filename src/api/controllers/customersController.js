@@ -93,6 +93,15 @@ export const customer_get_one = async (req, res) => {
     }
 }
 
+/**
+ * Delete all records from a pageID
+ * @param {*} pageID 
+ */
+export const deleteManyCustomers = async (pageID) => {
+    return await Customer.deleteMany({ pageId: pageID }).exec();
+}
+
+
 export const checkCustomerAddress = async (pageID, userID, location) => {
     let addressData = await getCustomerAddress(pageID, userID);
     if (addressData) {

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getFlavorByName = exports.getFlavor = exports.getFlavors = exports.flavor_delete = exports.flavor_update = exports.flavor_create = exports.flavor_get_one = exports.flavor_get_all = void 0;
+exports.getFlavorByName = exports.getFlavor = exports.getFlavors = exports.deleteManyFlavors = exports.flavor_delete = exports.flavor_update = exports.flavor_create = exports.flavor_get_one = exports.flavor_get_all = void 0;
 
 var _flavors = _interopRequireDefault(require("../models/flavors"));
 
@@ -226,32 +226,33 @@ var flavor_delete = function flavor_delete(req, res) {
     });
   });
 };
+/**
+ * Delete all records from a pageID
+ * @param {*} pageID 
+ */
+
 
 exports.flavor_delete = flavor_delete;
 
-var getFlavors =
+var deleteManyFlavors =
 /*#__PURE__*/
 function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee3(pageID) {
-    var queryFlavor;
     return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            queryFlavor = _flavors.default.find({
+            _context3.next = 2;
+            return _flavors.default.deleteMany({
               pageId: pageID
-            });
-            queryFlavor.sort('flavor');
-            queryFlavor.select('id flavor kind toppings');
-            _context3.next = 5;
-            return queryFlavor.exec();
+            }).exec();
 
-          case 5:
+          case 2:
             return _context3.abrupt("return", _context3.sent);
 
-          case 6:
+          case 3:
           case "end":
             return _context3.stop();
         }
@@ -259,8 +260,45 @@ function () {
     }, _callee3, this);
   }));
 
-  return function getFlavors(_x5) {
+  return function deleteManyFlavors(_x5) {
     return _ref3.apply(this, arguments);
+  };
+}();
+
+exports.deleteManyFlavors = deleteManyFlavors;
+
+var getFlavors =
+/*#__PURE__*/
+function () {
+  var _ref4 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee4(pageID) {
+    var queryFlavor;
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            queryFlavor = _flavors.default.find({
+              pageId: pageID
+            });
+            queryFlavor.sort('flavor');
+            queryFlavor.select('id flavor kind toppings');
+            _context4.next = 5;
+            return queryFlavor.exec();
+
+          case 5:
+            return _context4.abrupt("return", _context4.sent);
+
+          case 6:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4, this);
+  }));
+
+  return function getFlavors(_x6) {
+    return _ref4.apply(this, arguments);
   };
 }();
 
@@ -269,35 +307,35 @@ exports.getFlavors = getFlavors;
 var getFlavor =
 /*#__PURE__*/
 function () {
-  var _ref4 = _asyncToGenerator(
+  var _ref5 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee4(pageID, flavorID) {
+  regeneratorRuntime.mark(function _callee5(pageID, flavorID) {
     var queryFlavor;
-    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
       while (1) {
-        switch (_context4.prev = _context4.next) {
+        switch (_context5.prev = _context5.next) {
           case 0:
             queryFlavor = _flavors.default.findOne({
               pageId: pageID,
               id: flavorID
             });
             queryFlavor.select('id flavor kind');
-            _context4.next = 4;
+            _context5.next = 4;
             return queryFlavor.exec();
 
           case 4:
-            return _context4.abrupt("return", _context4.sent);
+            return _context5.abrupt("return", _context5.sent);
 
           case 5:
           case "end":
-            return _context4.stop();
+            return _context5.stop();
         }
       }
-    }, _callee4, this);
+    }, _callee5, this);
   }));
 
-  return function getFlavor(_x6, _x7) {
-    return _ref4.apply(this, arguments);
+  return function getFlavor(_x7, _x8) {
+    return _ref5.apply(this, arguments);
   };
 }();
 
@@ -306,19 +344,19 @@ exports.getFlavor = getFlavor;
 var getFlavorByName =
 /*#__PURE__*/
 function () {
-  var _ref5 = _asyncToGenerator(
+  var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee5(pageID, flavorName) {
+  regeneratorRuntime.mark(function _callee6(pageID, flavorName) {
     var flavors, flavorsNames, i, stringResult, key;
-    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+    return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
-            _context5.next = 2;
+            _context6.next = 2;
             return getFlavors(pageID);
 
           case 2:
-            flavors = _context5.sent;
+            flavors = _context6.sent;
             flavorsNames = new Array();
 
             for (i = 0; i < flavors.length; i++) {
@@ -336,27 +374,27 @@ function () {
                 */
 
             if (!(stringResult.bestMatch.rating > 0.6)) {
-              _context5.next = 12;
+              _context6.next = 12;
               break;
             }
 
             key = flavorsNames.indexOf(stringResult.bestMatch.target);
             console.log(stringResult, flavorsNames, key, flavors);
-            return _context5.abrupt("return", flavors[key]);
+            return _context6.abrupt("return", flavors[key]);
 
           case 12:
-            return _context5.abrupt("return", null);
+            return _context6.abrupt("return", null);
 
           case 13:
           case "end":
-            return _context5.stop();
+            return _context6.stop();
         }
       }
-    }, _callee5, this);
+    }, _callee6, this);
   }));
 
-  return function getFlavorByName(_x8, _x9) {
-    return _ref5.apply(this, arguments);
+  return function getFlavorByName(_x9, _x10) {
+    return _ref6.apply(this, arguments);
   };
 }();
 

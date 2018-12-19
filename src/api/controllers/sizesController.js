@@ -1,43 +1,53 @@
 import Size from "../models/sizes";
 import util from "util";
 import stringCapitalizeName from 'string-capitalize-name';
-import { configSortQuery, configRangeQuery } from '../util/util';
+import { configSortQuery, configRangeQuery, configFilterQueryMultiple } from '../util/util';
 
 // List all sizes
 // TODO: use filters in the query req.query
 export const size_get_all = async (req, res) => {
     // Getting the sort from the requisition
-    var sortObj = configSortQuery(req.query.sort);
+    let sortObj = configSortQuery(req.query.sort);
     // Getting the range from the requisition
-    var rangeObj = configRangeQuery(req.query.range);
+    let rangeObj = configRangeQuery(req.query.range);
 
-    let options = {
-        offset: rangeObj['offset'],
-        limit: rangeObj['limit'],
-        sort: sortObj,
-        lean: true,
-        leanWithId: false,
-    };
-
-    var queryObj = {};
+    let queryObj = {};
     if (req.query.filter) {
-        var arr = JSON.parse(req.query.filter);
-        queryObj[arr[0]] = arr[1];
+        const filterObj = configFilterQueryMultiple(req.query.filter);
+
+        if (filterObj && filterObj.filterField && filterObj.filterField.length) {
+            for (let i = 0; i < filterObj.filterField.length; i++) {
+                const filter = filterObj.filterField[i];
+                const value = filterObj.filterValues[i];
+                if (Array.isArray(value)) {
+                    queryObj[filter] = { $in: value };
+                }
+                else
+                    queryObj[filter] = value;
+            }
+        }
     }
     if (req.currentUser.activePage) {
         queryObj["pageId"] = req.currentUser.activePage;
     }
-    var query = {};
-    if (req.query.filter || req.currentUser.activePage) {
-        query = Size.find(queryObj);
-    }
 
-    Size.paginate(query, options, async (err, result) => {
+    Size.find(queryObj).sort(sortObj).exec((err, result) => {
         if (err) {
             res.status(500).json({ message: err.errmsg });
         } else {
-            res.setHeader('Content-Range', util.format("sizes %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
-            res.status(200).json(result.docs);
+            let _rangeIni = 0;
+            let _rangeEnd = result.length;
+            if (rangeObj) {
+                _rangeIni = rangeObj.offset <= result.length ? rangeObj.offset : result.length;
+                _rangeEnd = (rangeObj.offset + rangeObj.limit) <= result.length ? rangeObj.offset + rangeObj.limit : result.length;
+            }
+            let _totalCount = result.length;
+            let sizesArray = new Array();
+            for (let i = _rangeIni; i < _rangeEnd; i++) {
+                sizesArray.push(result[i])
+            }
+            res.setHeader('Content-Range', util.format("sizes %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
+            res.status(200).json(sizesArray);
         }
     });
 };
@@ -120,6 +130,14 @@ export const size_delete = (req, res) => {
             res.status(500).json({ message: err.errmsg });
         });
 };
+
+/**
+ * Delete all records from a pageID
+ * @param {*} pageID 
+ */
+export const deleteManySizes = async (pageID) => {
+    return await Size.deleteMany({ pageId: pageID }).exec();
+}
 
 export const getSize = async (pageID, sizeID) => {
     const query = Size.findOne({ pageId: pageID, id: sizeID });

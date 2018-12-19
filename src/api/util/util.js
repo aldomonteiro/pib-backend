@@ -14,15 +14,13 @@ export const configSortQuery = sortString => {
  * @param {*} rangeString 
  */
 export const configRangeQuery = rangeString => {
-    var rangeObj = {};
-    if (typeof (rangeString) != "undefined") {
+    if (typeof rangeString !== "undefined") {
         var arr = JSON.parse(rangeString);
-        rangeObj = {
+        return {
             offset: arr[0],
             limit: arr[1] + 1
         }
-    }
-    return rangeObj;
+    } else return null;
 }
 
 /**

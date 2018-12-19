@@ -117,6 +117,14 @@ export const pricing_delete = (req, res) => {
         });
 };
 
+/**
+ * Delete all records from a pageID
+ * @param {*} pageID 
+ */
+export const deleteManyPricings = async (pageID) => {
+    return await Pricing.deleteMany({ pageId: pageID }).exec();
+}
+
 export const getPricingSizing = async pageId => {
     const query = Pricing.distinct('sizeId', { pageId: pageId });
     return await query.exec();

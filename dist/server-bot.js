@@ -40,6 +40,9 @@ _dotenv.default.config(); // mongoose.connect(
 // );
 
 
+var env = process.env.NODE_ENV || 'production';
+var mongo_url = process.env.DEV_MONGODB_URL;
+if (env === 'production') mongo_url = process.env.PRD_MONGODB_URL;
 var RETRY_TIMEOUT = 3000;
 var options = {
   useNewUrlParser: true,
@@ -51,7 +54,7 @@ var options = {
 var isConnectedBefore = false;
 
 var connect = function connect() {
-  return _mongoose.default.connect(process.env.MONGODB_URL, options).catch(function (err) {
+  return _mongoose.default.connect(mongo_url, options).catch(function (err) {
     return console.error('Mongoose connect(...) failed with err: ', err);
   });
 };

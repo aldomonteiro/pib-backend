@@ -29,7 +29,7 @@ export const order_get_all = async (req, res) => {
             for (let i = 0; i < filterObj.filterField.length; i++) {
                 const filter = filterObj.filterField[i];
                 const value = filterObj.filterValues[i];
-                if (typeof value === 'Array') {
+                if (Array.isArray(value)) {
                     queryParam[filter] = { $in: value };
                 } else {
                     const date = DateTime.fromISO(value);
@@ -131,6 +131,14 @@ export const order_update = async (req, res) => {
             res.status(500).json({ message: orderUpdateErr.message });
         }
     }
+}
+
+/**
+ * Delete all records from a pageID
+ * @param {*} pageID 
+ */
+export const deleteManyOrders = async (pageID) => {
+    return await Order.deleteMany({ pageId: pageID }).exec();
 }
 
 // export const sendShippingNotification = async order => {

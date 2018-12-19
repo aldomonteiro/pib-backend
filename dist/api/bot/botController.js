@@ -2368,7 +2368,7 @@ function () {
               }
             }
 
-            if (beveragesArr.length > _rangeEnd) {
+            if (beveragesArr.length + 1 > _rangeEnd) {
               multiple++;
               buttonsOpt = new _facebookMessengerBot.Buttons();
               buttonsOpt.add({

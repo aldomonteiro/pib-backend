@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getAllPages = exports.getOnePageData = exports.getOnePageToken = exports.debugToken = exports.subscribedApps = exports.page_update = exports.page_resources_delete = exports.page_resources_get_one = exports.page_resources_get_all = void 0;
+exports.getAllPages = exports.getOnePageData = exports.getOnePageToken = exports.debugToken = exports.unsubscribedApps = exports.subscribedApps = exports.page_update = exports.page_resources_delete = exports.page_resources_get_one = exports.page_resources_get_all = void 0;
 
 var _pages = _interopRequireDefault(require("../models/pages"));
 
@@ -16,6 +16,26 @@ var _util = _interopRequireDefault(require("util"));
 var _util2 = require("../util/util");
 
 var _systemController = require("./systemController");
+
+var _flavorsController = require("./flavorsController");
+
+var _beveragesController = require("./beveragesController");
+
+var _customersController = require("./customersController");
+
+var _extrasController = require("./extrasController");
+
+var _itemsController = require("./itemsController");
+
+var _ordersController = require("./ordersController");
+
+var _pricingsController = require("./pricingsController");
+
+var _sizesController = require("./sizesController");
+
+var _storesController = require("./storesController");
+
+var _usersController = require("./usersController");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -53,41 +73,44 @@ function () {
               query = _pages.default.find({
                 id: req.currentUser.activePage
               });
+
+              _pages.default.paginate(query, options,
+              /*#__PURE__*/
+              function () {
+                var _ref2 = _asyncToGenerator(
+                /*#__PURE__*/
+                regeneratorRuntime.mark(function _callee(err, result) {
+                  return regeneratorRuntime.wrap(function _callee$(_context) {
+                    while (1) {
+                      switch (_context.prev = _context.next) {
+                        case 0:
+                          if (err) {
+                            res.status(500).json({
+                              message: err.errmsg
+                            });
+                          } else {
+                            res.setHeader('Content-Range', _util.default.format("pages %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
+                            res.status(200).json(result.docs);
+                          }
+
+                        case 1:
+                        case "end":
+                          return _context.stop();
+                      }
+                    }
+                  }, _callee, this);
+                }));
+
+                return function (_x3, _x4) {
+                  return _ref2.apply(this, arguments);
+                };
+              }());
+            } else {
+              res.setHeader('Content-Range', _util.default.format("pages %d-%d/%d", 0, 0, 0));
+              res.status(200).json(new Array());
             }
 
-            _pages.default.paginate(query, options,
-            /*#__PURE__*/
-            function () {
-              var _ref2 = _asyncToGenerator(
-              /*#__PURE__*/
-              regeneratorRuntime.mark(function _callee(err, result) {
-                return regeneratorRuntime.wrap(function _callee$(_context) {
-                  while (1) {
-                    switch (_context.prev = _context.next) {
-                      case 0:
-                        if (err) {
-                          res.status(500).json({
-                            message: err.errmsg
-                          });
-                        } else {
-                          res.setHeader('Content-Range', _util.default.format("pages %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
-                          res.status(200).json(result.docs);
-                        }
-
-                      case 1:
-                      case "end":
-                        return _context.stop();
-                    }
-                  }
-                }, _callee, this);
-              }));
-
-              return function (_x3, _x4) {
-                return _ref2.apply(this, arguments);
-              };
-            }());
-
-          case 6:
+          case 5:
           case "end":
             return _context2.stop();
         }
@@ -117,22 +140,125 @@ var page_resources_get_one = function page_resources_get_one(req, res) {
       }
     });
   }
-}; // DELETE
+};
+/**
+ * Deactivate Bot and delete all related records
+ * @param {*} req 
+ * @param {*} res 
+ */
 
 
 exports.page_resources_get_one = page_resources_get_one;
 
-var page_resources_delete = function page_resources_delete(req, res) {
-  _pages.default.findOneAndRemove({
-    id: req.params.id
-  }).then(function (result) {
-    res.status(200).json(result);
-  }).catch(function (err) {
-    res.status(500).json({
-      message: err.errmsg
-    });
-  });
-}; // Update or create a new page
+var page_resources_delete =
+/*#__PURE__*/
+function () {
+  var _ref3 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee3(req, res) {
+    var pageID, _ref4, accessToken, result2, result3, result;
+
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.prev = 0;
+            console.info("page_resources_delete:", req.params);
+            pageID = req.params.id;
+            _context3.next = 5;
+            return getOnePageToken(pageID);
+
+          case 5:
+            _ref4 = _context3.sent;
+            accessToken = _ref4.accessToken;
+            _context3.next = 9;
+            return deleteFacebookFields(pageID, accessToken);
+
+          case 9:
+            _context3.next = 11;
+            return (0, _beveragesController.deleteManyBeverages)(pageID);
+
+          case 11:
+            _context3.next = 13;
+            return (0, _customersController.deleteManyCustomers)(pageID);
+
+          case 13:
+            _context3.next = 15;
+            return (0, _extrasController.deleteManyExtras)(pageID);
+
+          case 15:
+            _context3.next = 17;
+            return (0, _flavorsController.deleteManyFlavors)(pageID);
+
+          case 17:
+            _context3.next = 19;
+            return (0, _itemsController.deleteManyItems)(pageID);
+
+          case 19:
+            _context3.next = 21;
+            return (0, _ordersController.deleteManyOrders)(pageID);
+
+          case 21:
+            _context3.next = 23;
+            return (0, _pricingsController.deleteManyPricings)(pageID);
+
+          case 23:
+            _context3.next = 25;
+            return (0, _sizesController.deleteManySizes)(pageID);
+
+          case 25:
+            _context3.next = 27;
+            return (0, _storesController.deleteManyStores)(pageID);
+
+          case 27:
+            _context3.next = 29;
+            return unsubscribedApps(pageID, accessToken);
+
+          case 29:
+            result2 = _context3.sent;
+            console.info('unsubscribedApps', result2);
+            _context3.next = 33;
+            return (0, _usersController.removeUserActivePage)(req.currentUser.userID);
+
+          case 33:
+            result3 = _context3.sent;
+
+            if (!result3) {
+              console.error("User ".concat(userID, " was not found and removeUserActivePage failed"));
+            }
+
+            _context3.next = 37;
+            return _pages.default.findOneAndDelete({
+              id: pageID
+            }).exec();
+
+          case 37:
+            result = _context3.sent;
+            console.info('Page.findOneAndRemove: ', result);
+            res.status(200).json(result);
+            _context3.next = 46;
+            break;
+
+          case 42:
+            _context3.prev = 42;
+            _context3.t0 = _context3["catch"](0);
+            console.error(_context3.t0);
+            res.status(500).json({
+              message: _context3.t0.message
+            });
+
+          case 46:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3, this, [[0, 42]]);
+  }));
+
+  return function page_resources_delete(_x5, _x6) {
+    return _ref3.apply(this, arguments);
+  };
+}(); // Update or create a new page
 
 
 exports.page_resources_delete = page_resources_delete;
@@ -140,29 +266,77 @@ exports.page_resources_delete = page_resources_delete;
 var page_update =
 /*#__PURE__*/
 function () {
-  var _ref3 = _asyncToGenerator(
+  var _ref5 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee3(req, res) {
-    var pageId, isNew, page, user, response, response2;
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+  regeneratorRuntime.mark(function _callee4(req, res) {
+    var pageID, operation, page, isNew, user;
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context4.prev = _context4.next) {
           case 0:
-            _context3.prev = 0;
-            console.info("page_update");
-            pageId = req.body.id;
-            isNew = false;
-            _context3.next = 6;
+            _context4.prev = 0;
+            console.info("page_update: ", req.body.operation, req.body.id);
+            pageID = req.body.id;
+            operation = req.body.operation;
+            _context4.next = 6;
             return _pages.default.findOne({
-              id: pageId
+              id: pageID
             }).exec();
 
           case 6:
-            page = _context3.sent;
+            page = _context4.sent;
+
+            if (!(page && operation === 'ACTIVATE')) {
+              _context4.next = 18;
+              break;
+            }
+
+            _context4.next = 10;
+            return setFacebookFields(pageID, page.accessToken, page.greetingText);
+
+          case 10:
+            _context4.next = 12;
+            return subscribedApps(pageID, page.accessToken);
+
+          case 12:
+            page.activeBot = true;
+            _context4.next = 15;
+            return page.save();
+
+          case 15:
+            res.status(200).json(page);
+            _context4.next = 50;
+            break;
+
+          case 18:
+            if (!(page && operation === 'DEACTIVATE')) {
+              _context4.next = 29;
+              break;
+            }
+
+            _context4.next = 21;
+            return deleteFacebookFields(pageID, page.accessToken);
+
+          case 21:
+            _context4.next = 23;
+            return unsubscribedApps(pageID, page.accessToken);
+
+          case 23:
+            page.activeBot = false;
+            _context4.next = 26;
+            return page.save();
+
+          case 26:
+            res.status(200).json(page);
+            _context4.next = 50;
+            break;
+
+          case 29:
+            isNew = false;
 
             if (!page) {
               page = new _pages.default({
-                id: pageId,
+                id: pageID,
                 name: req.body.name,
                 userID: req.currentUser.userID
               });
@@ -174,141 +348,97 @@ function () {
             if (req.body.firstResponseText) page.firstResponseText = req.body.firstResponseText; // update ActivePage for the current user
 
             if (!req.currentUser) {
-              _context3.next = 20;
+              _context4.next = 43;
               break;
             }
 
             page.userID = req.currentUser.userID;
-            _context3.next = 15;
+            _context4.next = 38;
             return _users.default.findOne({
               userID: req.currentUser.userID
             }).exec();
 
-          case 15:
-            user = _context3.sent;
+          case 38:
+            user = _context4.sent;
 
             if (!user) {
-              _context3.next = 20;
+              _context4.next = 43;
               break;
             }
 
-            user.activePage = pageId;
-            _context3.next = 20;
+            user.activePage = pageID;
+            _context4.next = 43;
             return user.save();
 
-          case 20:
-            _context3.next = 22;
+          case 43:
+            _context4.next = 45;
             return page.save();
 
-          case 22:
-            _context3.next = 24;
-            return subscribedApps(page.id, page.accessToken);
-
-          case 24:
-            response = _context3.sent;
-
+          case 45:
             if (!isNew) {
-              _context3.next = 30;
+              _context4.next = 49;
               break;
             }
 
-            _context3.next = 28;
-            return (0, _systemController.initialSetup)(pageId);
+            _context4.next = 48;
+            return (0, _systemController.initialSetup)(pageID);
 
-          case 28:
-            page = _context3.sent;
-            req.body.greetingText = page.greetingText;
+          case 48:
+            page = _context4.sent;
 
-          case 30:
-            if (!(page && page.greetingText && page.accessToken)) {
-              _context3.next = 34;
-              break;
-            }
-
-            _context3.next = 33;
-            return setFacebookFields(page.id, page.accessToken, page.greetingText);
-
-          case 33:
-            response2 = _context3.sent;
-
-          case 34:
+          case 49:
             res.status(200).json(page);
-            _context3.next = 41;
+
+          case 50:
+            _context4.next = 56;
             break;
 
-          case 37:
-            _context3.prev = 37;
-            _context3.t0 = _context3["catch"](0);
+          case 52:
+            _context4.prev = 52;
+            _context4.t0 = _context4["catch"](0);
             console.error({
-              pageUpdateError: _context3.t0
+              pageUpdateError: _context4.t0
             });
             res.status(500).json({
-              message: _context3.t0.message
+              message: _context4.t0.message
             });
 
-          case 41:
+          case 56:
           case "end":
-            return _context3.stop();
+            return _context4.stop();
         }
       }
-    }, _callee3, this, [[0, 37]]);
+    }, _callee4, this, [[0, 52]]);
   }));
 
-  return function page_update(_x5, _x6) {
-    return _ref3.apply(this, arguments);
+  return function page_update(_x7, _x8) {
+    return _ref5.apply(this, arguments);
   };
 }();
+/**
+ * Subscribe the app to the page
+ * @param {*} pageId 
+ * @param {*} accessToken 
+ */
+
 
 exports.page_update = page_update;
 
 var subscribedApps =
 /*#__PURE__*/
 function () {
-  var _ref4 = _asyncToGenerator(
+  var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee4(pageId, accessToken) {
-    var facebookUrl;
-    return regeneratorRuntime.wrap(function _callee4$(_context4) {
-      while (1) {
-        switch (_context4.prev = _context4.next) {
-          case 0:
-            // https://graph.facebook.com/v3.1/{page-id}/subscribed_apps?access_token={}
-            facebookUrl = "https://graph.facebook.com/v3.1/".concat(pageId, "/subscribed_apps?access_token=").concat(accessToken);
-            _context4.next = 3;
-            return _axios.default.post(facebookUrl);
-
-          case 3:
-            return _context4.abrupt("return", _context4.sent);
-
-          case 4:
-          case "end":
-            return _context4.stop();
-        }
-      }
-    }, _callee4, this);
-  }));
-
-  return function subscribedApps(_x7, _x8) {
-    return _ref4.apply(this, arguments);
-  };
-}();
-
-exports.subscribedApps = subscribedApps;
-
-var debugToken =
-/*#__PURE__*/
-function () {
-  var _ref5 = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee5(accessToken) {
+  regeneratorRuntime.mark(function _callee5(pageId, accessToken) {
     var facebookUrl;
     return regeneratorRuntime.wrap(function _callee5$(_context5) {
       while (1) {
         switch (_context5.prev = _context5.next) {
           case 0:
-            facebookUrl = "https://graph.facebook.com/v3.1/debug_token?input_token=".concat(accessToken);
+            // https://graph.facebook.com/v3.1/{page-id}/subscribed_apps?access_token={}
+            facebookUrl = "https://graph.facebook.com/v3.1/".concat(pageId, "/subscribed_apps?access_token=").concat(accessToken);
             _context5.next = 3;
-            return _axios.default.get(facebookUrl);
+            return _axios.default.post(facebookUrl);
 
           case 3:
             return _context5.abrupt("return", _context5.sent);
@@ -321,8 +451,81 @@ function () {
     }, _callee5, this);
   }));
 
-  return function debugToken(_x9) {
-    return _ref5.apply(this, arguments);
+  return function subscribedApps(_x9, _x10) {
+    return _ref6.apply(this, arguments);
+  };
+}();
+/**
+ * 
+ * @param {*} pageId 
+ * @param {*} accessToken 
+ */
+
+
+exports.subscribedApps = subscribedApps;
+
+var unsubscribedApps =
+/*#__PURE__*/
+function () {
+  var _ref7 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee6(pageId, accessToken) {
+    var facebookUrl;
+    return regeneratorRuntime.wrap(function _callee6$(_context6) {
+      while (1) {
+        switch (_context6.prev = _context6.next) {
+          case 0:
+            // https://graph.facebook.com/v3.1/{page-id}/subscribed_apps?access_token={}
+            facebookUrl = "https://graph.facebook.com/v3.1/".concat(pageId, "/subscribed_apps?access_token=").concat(accessToken);
+            _context6.next = 3;
+            return _axios.default.delete(facebookUrl);
+
+          case 3:
+            return _context6.abrupt("return", _context6.sent);
+
+          case 4:
+          case "end":
+            return _context6.stop();
+        }
+      }
+    }, _callee6, this);
+  }));
+
+  return function unsubscribedApps(_x11, _x12) {
+    return _ref7.apply(this, arguments);
+  };
+}();
+
+exports.unsubscribedApps = unsubscribedApps;
+
+var debugToken =
+/*#__PURE__*/
+function () {
+  var _ref8 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee7(accessToken) {
+    var facebookUrl;
+    return regeneratorRuntime.wrap(function _callee7$(_context7) {
+      while (1) {
+        switch (_context7.prev = _context7.next) {
+          case 0:
+            facebookUrl = "https://graph.facebook.com/v3.1/debug_token?input_token=".concat(accessToken);
+            _context7.next = 3;
+            return _axios.default.get(facebookUrl);
+
+          case 3:
+            return _context7.abrupt("return", _context7.sent);
+
+          case 4:
+          case "end":
+            return _context7.stop();
+        }
+      }
+    }, _callee7, this);
+  }));
+
+  return function debugToken(_x13) {
+    return _ref8.apply(this, arguments);
   };
 }(); // used in botController.js
 
@@ -332,45 +535,45 @@ exports.debugToken = debugToken;
 var getOnePageToken =
 /*#__PURE__*/
 function () {
-  var _ref6 = _asyncToGenerator(
+  var _ref9 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee6(pageID) {
+  regeneratorRuntime.mark(function _callee8(pageID) {
     var page;
-    return regeneratorRuntime.wrap(function _callee6$(_context6) {
+    return regeneratorRuntime.wrap(function _callee8$(_context8) {
       while (1) {
-        switch (_context6.prev = _context6.next) {
+        switch (_context8.prev = _context8.next) {
           case 0:
-            _context6.next = 2;
+            _context8.next = 2;
             return _pages.default.findOne({
               id: pageID
             }).exec();
 
           case 2:
-            page = _context6.sent;
+            page = _context8.sent;
 
             if (!(page && page.accessToken)) {
-              _context6.next = 7;
+              _context8.next = 7;
               break;
             }
 
-            return _context6.abrupt("return", Promise.resolve({
+            return _context8.abrupt("return", Promise.resolve({
               accessToken: page.accessToken,
               name: page.name
             }));
 
           case 7:
-            return _context6.abrupt("return", Promise.reject());
+            return _context8.abrupt("return", Promise.reject());
 
           case 8:
           case "end":
-            return _context6.stop();
+            return _context8.stop();
         }
       }
-    }, _callee6, this);
+    }, _callee8, this);
   }));
 
-  return function getOnePageToken(_x10) {
-    return _ref6.apply(this, arguments);
+  return function getOnePageToken(_x14) {
+    return _ref9.apply(this, arguments);
   };
 }();
 /**
@@ -385,31 +588,31 @@ exports.getOnePageToken = getOnePageToken;
 var getOnePageData =
 /*#__PURE__*/
 function () {
-  var _ref7 = _asyncToGenerator(
+  var _ref10 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee7(pageID) {
-    return regeneratorRuntime.wrap(function _callee7$(_context7) {
+  regeneratorRuntime.mark(function _callee9(pageID) {
+    return regeneratorRuntime.wrap(function _callee9$(_context9) {
       while (1) {
-        switch (_context7.prev = _context7.next) {
+        switch (_context9.prev = _context9.next) {
           case 0:
-            _context7.next = 2;
+            _context9.next = 2;
             return _pages.default.findOne({
               id: pageID
             }).exec();
 
           case 2:
-            return _context7.abrupt("return", _context7.sent);
+            return _context9.abrupt("return", _context9.sent);
 
           case 3:
           case "end":
-            return _context7.stop();
+            return _context9.stop();
         }
       }
-    }, _callee7, this);
+    }, _callee9, this);
   }));
 
-  return function getOnePageData(_x11) {
-    return _ref7.apply(this, arguments);
+  return function getOnePageData(_x15) {
+    return _ref10.apply(this, arguments);
   };
 }();
 
@@ -418,16 +621,16 @@ exports.getOnePageData = getOnePageData;
 var getAllPages =
 /*#__PURE__*/
 function () {
-  var _ref8 = _asyncToGenerator(
+  var _ref11 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee8() {
+  regeneratorRuntime.mark(function _callee10() {
     var pageArray;
-    return regeneratorRuntime.wrap(function _callee8$(_context8) {
+    return regeneratorRuntime.wrap(function _callee10$(_context10) {
       while (1) {
-        switch (_context8.prev = _context8.next) {
+        switch (_context10.prev = _context10.next) {
           case 0:
             pageArray = [];
-            _context8.next = 3;
+            _context10.next = 3;
             return _pages.default.find({}, function (err, result) {
               pageArray = result.map(function (doc) {
                 return {
@@ -440,18 +643,18 @@ function () {
 
           case 3:
             console.log("into getAllPages: ", Object.keys(pageArray).length);
-            return _context8.abrupt("return", Promise.resolve(pageArray));
+            return _context10.abrupt("return", Promise.resolve(pageArray));
 
           case 5:
           case "end":
-            return _context8.stop();
+            return _context10.stop();
         }
       }
-    }, _callee8, this);
+    }, _callee10, this);
   }));
 
   return function getAllPages() {
-    return _ref8.apply(this, arguments);
+    return _ref11.apply(this, arguments);
   };
 }();
 
@@ -460,16 +663,16 @@ exports.getAllPages = getAllPages;
 var setFacebookFields =
 /*#__PURE__*/
 function () {
-  var _ref9 = _asyncToGenerator(
+  var _ref12 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee9(pageId, accessToken, _greeting) {
+  regeneratorRuntime.mark(function _callee11(pageId, accessToken, _greeting) {
     var facebookUrl;
-    return regeneratorRuntime.wrap(function _callee9$(_context9) {
+    return regeneratorRuntime.wrap(function _callee11$(_context11) {
       while (1) {
-        switch (_context9.prev = _context9.next) {
+        switch (_context11.prev = _context11.next) {
           case 0:
             facebookUrl = "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=".concat(accessToken);
-            _context9.next = 3;
+            _context11.next = 3;
             return _axios.default.post(facebookUrl, {
               headers: {
                 'Content-Type': 'application/json'
@@ -516,18 +719,56 @@ function () {
             });
 
           case 3:
-            return _context9.abrupt("return", _context9.sent);
+            return _context11.abrupt("return", _context11.sent);
 
           case 4:
           case "end":
-            return _context9.stop();
+            return _context11.stop();
         }
       }
-    }, _callee9, this);
+    }, _callee11, this);
   }));
 
-  return function setFacebookFields(_x12, _x13, _x14) {
-    return _ref9.apply(this, arguments);
+  return function setFacebookFields(_x16, _x17, _x18) {
+    return _ref12.apply(this, arguments);
+  };
+}();
+
+var deleteFacebookFields =
+/*#__PURE__*/
+function () {
+  var _ref13 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee12(pageId, accessToken) {
+    var facebookUrl;
+    return regeneratorRuntime.wrap(function _callee12$(_context12) {
+      while (1) {
+        switch (_context12.prev = _context12.next) {
+          case 0:
+            facebookUrl = "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=".concat(accessToken);
+            _context12.next = 3;
+            return _axios.default.delete(facebookUrl, {
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              params: {
+                fields: ["get_started", "persistent_menu", "greeting"]
+              }
+            });
+
+          case 3:
+            return _context12.abrupt("return", _context12.sent);
+
+          case 4:
+          case "end":
+            return _context12.stop();
+        }
+      }
+    }, _callee12, this);
+  }));
+
+  return function deleteFacebookFields(_x19, _x20) {
+    return _ref13.apply(this, arguments);
   };
 }(); // export const page_update = async (req, res) => {
 //     console.info("page_update");

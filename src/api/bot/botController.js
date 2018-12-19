@@ -740,7 +740,7 @@ export const askForBeverages = async (pageId, userId, multiple) => {
             out.add({ text: _bev.name, subtext: _subtext, buttons });
         }
     }
-    if (beveragesArr.length > _rangeEnd) {
+    if ((beveragesArr.length + 1) > _rangeEnd) {
         multiple++;
         const buttonsOpt = new Buttons();
         buttonsOpt.add({ text: '+ Opções (clique aqui para ver + opções..)', data: { option: "beverages_more", multiple: multiple }, event: 'ORDER_BEVERAGE' });

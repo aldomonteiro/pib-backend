@@ -156,6 +156,14 @@ export const store_update = (req, res) => {
     }
 }
 
+/**
+ * Delete all records from a pageID
+ * @param {*} pageID 
+ */
+export const deleteManyStores = async (pageID) => {
+    return await Store.deleteMany({ pageId: pageID }).exec();
+}
+
 // DELETE
 export const store_delete = (req, res) => {
 

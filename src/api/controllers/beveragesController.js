@@ -85,7 +85,7 @@ export const beverage_update = (req, res) => {
         Beverage.findOne({ pageId: pageId, id: req.body.id }, (err, doc) => {
             if (!err) {
                 doc.kind = req.body.kind;
-                doc.size = req.body.name;
+                doc.name = req.body.name;
                 doc.price = req.body.price;
 
                 doc.save((err, result) => {
@@ -115,6 +115,15 @@ export const beverage_delete = (req, res) => {
             res.status(500).json({ message: err.errmsg });
         });
 };
+
+/**
+ * Delete all records from a pageID
+ * @param {*} pageID 
+ */
+export const deleteManyBeverages = async (pageID) => {
+    return await Beverage.deleteMany({ pageId: pageID }).exec();
+}
+
 
 export const getBeverages = async (pageID) => {
     let query = Beverage.find({ pageId: pageID });

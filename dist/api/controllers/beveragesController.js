@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getBeverage = exports.getBeverages = exports.beverage_delete = exports.beverage_update = exports.beverage_create = exports.beverage_get_one = exports.beverage_get_all = void 0;
+exports.getBeverage = exports.getBeverages = exports.deleteManyBeverages = exports.beverage_delete = exports.beverage_update = exports.beverage_create = exports.beverage_get_one = exports.beverage_get_all = void 0;
 
 var _beverages = _interopRequireDefault(require("../models/beverages"));
 
@@ -110,7 +110,7 @@ var beverage_update = function beverage_update(req, res) {
     }, function (err, doc) {
       if (!err) {
         doc.kind = req.body.kind;
-        doc.size = req.body.name;
+        doc.name = req.body.name;
         doc.price = req.body.price;
         doc.save(function (err, result) {
           if (err) {
@@ -147,31 +147,33 @@ var beverage_delete = function beverage_delete(req, res) {
     });
   });
 };
+/**
+ * Delete all records from a pageID
+ * @param {*} pageID 
+ */
+
 
 exports.beverage_delete = beverage_delete;
 
-var getBeverages =
+var deleteManyBeverages =
 /*#__PURE__*/
 function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(pageID) {
-    var query;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            query = _beverages.default.find({
+            _context.next = 2;
+            return _beverages.default.deleteMany({
               pageId: pageID
-            });
-            query.sort('name kind');
-            _context.next = 4;
-            return query.exec();
+            }).exec();
 
-          case 4:
+          case 2:
             return _context.abrupt("return", _context.sent);
 
-          case 5:
+          case 3:
           case "end":
             return _context.stop();
         }
@@ -179,8 +181,44 @@ function () {
     }, _callee, this);
   }));
 
-  return function getBeverages(_x) {
+  return function deleteManyBeverages(_x) {
     return _ref.apply(this, arguments);
+  };
+}();
+
+exports.deleteManyBeverages = deleteManyBeverages;
+
+var getBeverages =
+/*#__PURE__*/
+function () {
+  var _ref2 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee2(pageID) {
+    var query;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            query = _beverages.default.find({
+              pageId: pageID
+            });
+            query.sort('name kind');
+            _context2.next = 4;
+            return query.exec();
+
+          case 4:
+            return _context2.abrupt("return", _context2.sent);
+
+          case 5:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, this);
+  }));
+
+  return function getBeverages(_x2) {
+    return _ref2.apply(this, arguments);
   };
 }();
 
@@ -189,35 +227,35 @@ exports.getBeverages = getBeverages;
 var getBeverage =
 /*#__PURE__*/
 function () {
-  var _ref2 = _asyncToGenerator(
+  var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee2(pageID, beverageID) {
+  regeneratorRuntime.mark(function _callee3(pageID, beverageID) {
     var query;
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
             query = _beverages.default.findOne({
               pageId: pageID,
               id: beverageID
             }); // query.select('id name kind price');
 
-            _context2.next = 3;
+            _context3.next = 3;
             return query.exec();
 
           case 3:
-            return _context2.abrupt("return", _context2.sent);
+            return _context3.abrupt("return", _context3.sent);
 
           case 4:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee3, this);
   }));
 
-  return function getBeverage(_x2, _x3) {
-    return _ref2.apply(this, arguments);
+  return function getBeverage(_x3, _x4) {
+    return _ref3.apply(this, arguments);
   };
 }();
 

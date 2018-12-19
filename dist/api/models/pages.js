@@ -31,6 +31,9 @@ var schema = new _mongoose.default.Schema({
   userID: {
     type: String
   },
+  activeBot: {
+    type: Boolean
+  },
   greetingText: {
     type: String
   },
@@ -47,6 +50,9 @@ var schema = new _mongoose.default.Schema({
     type: Number
   },
   initialSetupStores: {
+    type: Number
+  },
+  initialSetupBeverages: {
     type: Number
   }
 }, {

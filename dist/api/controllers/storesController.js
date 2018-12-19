@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getTodayOpeningTime = exports.getOpeningTimes = exports.getStores = exports.store_delete = exports.store_update = exports.store_create = exports.store_get_one = exports.store_get_all = void 0;
+exports.getTodayOpeningTime = exports.getOpeningTimes = exports.getStores = exports.store_delete = exports.deleteManyStores = exports.store_update = exports.store_create = exports.store_get_one = exports.store_get_all = void 0;
 
 var _stores = _interopRequireDefault(require("../models/stores"));
 
@@ -183,10 +183,48 @@ var store_update = function store_update(req, res) {
       }
     });
   }
-}; // DELETE
+};
+/**
+ * Delete all records from a pageID
+ * @param {*} pageID 
+ */
 
 
 exports.store_update = store_update;
+
+var deleteManyStores =
+/*#__PURE__*/
+function () {
+  var _ref = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee(pageID) {
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.next = 2;
+            return _stores.default.deleteMany({
+              pageId: pageID
+            }).exec();
+
+          case 2:
+            return _context.abrupt("return", _context.sent);
+
+          case 3:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+
+  return function deleteManyStores(_x) {
+    return _ref.apply(this, arguments);
+  };
+}(); // DELETE
+
+
+exports.deleteManyStores = deleteManyStores;
 
 var store_delete = function store_delete(req, res) {
   var pageId = req.currentUser.activePage;
@@ -208,42 +246,6 @@ exports.store_delete = store_delete;
 var getStores =
 /*#__PURE__*/
 function () {
-  var _ref = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee(pageID) {
-    var query;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            // TODO: if is there more than one Store?
-            query = _stores.default.find({
-              pageId: pageID
-            });
-            _context.next = 3;
-            return query.exec();
-
-          case 3:
-            return _context.abrupt("return", _context.sent);
-
-          case 4:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee, this);
-  }));
-
-  return function getStores(_x) {
-    return _ref.apply(this, arguments);
-  };
-}();
-
-exports.getStores = getStores;
-
-var getOpeningTimes =
-/*#__PURE__*/
-function () {
   var _ref2 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(pageID) {
@@ -253,7 +255,7 @@ function () {
         switch (_context2.prev = _context2.next) {
           case 0:
             // TODO: if is there more than one Store?
-            query = _stores.default.findOne({
+            query = _stores.default.find({
               pageId: pageID
             });
             _context2.next = 3;
@@ -270,8 +272,44 @@ function () {
     }, _callee2, this);
   }));
 
-  return function getOpeningTimes(_x2) {
+  return function getStores(_x2) {
     return _ref2.apply(this, arguments);
+  };
+}();
+
+exports.getStores = getStores;
+
+var getOpeningTimes =
+/*#__PURE__*/
+function () {
+  var _ref3 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee3(pageID) {
+    var query;
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            // TODO: if is there more than one Store?
+            query = _stores.default.findOne({
+              pageId: pageID
+            });
+            _context3.next = 3;
+            return query.exec();
+
+          case 3:
+            return _context3.abrupt("return", _context3.sent);
+
+          case 4:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3, this);
+  }));
+
+  return function getOpeningTimes(_x3) {
+    return _ref3.apply(this, arguments);
   };
 }();
 
@@ -280,20 +318,20 @@ exports.getOpeningTimes = getOpeningTimes;
 var getTodayOpeningTime =
 /*#__PURE__*/
 function () {
-  var _ref3 = _asyncToGenerator(
+  var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee3(pageID) {
+  regeneratorRuntime.mark(function _callee4(pageID) {
     var _store, _today, _tomorrow, todayOpenAt, todayCloseAt, tomorrowOpenAt, tomorrowCloseAt, todayIsOpen, tomorrowIsOpen, _openAtHours, _closeAtHours, _openAtHoursTom, _closeAtHoursTom;
 
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context4.prev = _context4.next) {
           case 0:
-            _context3.next = 2;
+            _context4.next = 2;
             return getOpeningTimes(pageID);
 
           case 2:
-            _store = _context3.sent;
+            _store = _context4.sent;
             _today = new Date();
             _tomorrow = new Date();
             _tomorrow.get;
@@ -374,7 +412,7 @@ function () {
               minute: '2-digit',
               hour12: false
             });
-            return _context3.abrupt("return", {
+            return _context4.abrupt("return", {
               todayIsOpen: todayIsOpen,
               todayOpenAt: _openAtHours,
               todayCloseAt: _closeAtHours,
@@ -385,14 +423,14 @@ function () {
 
           case 15:
           case "end":
-            return _context3.stop();
+            return _context4.stop();
         }
       }
-    }, _callee3, this);
+    }, _callee4, this);
   }));
 
-  return function getTodayOpeningTime(_x3) {
-    return _ref3.apply(this, arguments);
+  return function getTodayOpeningTime(_x4) {
+    return _ref4.apply(this, arguments);
   };
 }();
 

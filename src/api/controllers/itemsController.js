@@ -9,6 +9,15 @@ import { getBeverage } from './beveragesController';
 const ITEMSTATUS_PENDING = 0;
 const ITEMSTATUS_COMPLETED = 1;
 
+
+/**
+ * Delete all records from a pageID
+ * @param {*} pageID 
+ */
+export const deleteManyItems = async (pageID) => {
+    return await Items.deleteMany({ pageId: pageID }).exec();
+}
+
 export const updateItem = async orderData => {
     const { orderId, userId, pageId,
         qty, sizeId, flavorId,

@@ -207,3 +207,18 @@ export const changeAccessToken = async (accessToken) => {
     // return await axios.get(facebookAccessTokenUrl, { params }).then(res => res.data);
 }
 
+export const removeUserActivePage = async userID => {
+    try {
+        let user = await User.findOne({ userID: userID }).exec();
+        if (user) {
+            user.activePage = null;
+            await user.save();
+            return true;
+        }
+        return false;
+    } catch (removeUserActivePageErr) {
+        console.error(removeUserActivePageErr);
+        throw removeUserActivePageErr;
+    }
+}
+

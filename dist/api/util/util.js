@@ -30,17 +30,13 @@ var configSortQuery = function configSortQuery(sortString) {
 exports.configSortQuery = configSortQuery;
 
 var configRangeQuery = function configRangeQuery(rangeString) {
-  var rangeObj = {};
-
-  if (typeof rangeString != "undefined") {
+  if (typeof rangeString !== "undefined") {
     var arr = JSON.parse(rangeString);
-    rangeObj = {
+    return {
       offset: arr[0],
       limit: arr[1] + 1
     };
-  }
-
-  return rangeObj;
+  } else return null;
 };
 /**
  * Using without the paginate plugin.

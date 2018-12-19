@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.changeAccessToken = exports.users_delete = exports.users_update = exports.users_get_one = exports.users_get_all = exports.users_create = exports.users_auth = void 0;
+exports.removeUserActivePage = exports.changeAccessToken = exports.users_delete = exports.users_update = exports.users_get_one = exports.users_get_all = exports.users_create = exports.users_auth = void 0;
 
 var _users = _interopRequireDefault(require("../models/users"));
 
@@ -332,4 +332,60 @@ function () {
 }();
 
 exports.changeAccessToken = changeAccessToken;
+
+var removeUserActivePage =
+/*#__PURE__*/
+function () {
+  var _ref3 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee3(userID) {
+    var user;
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.prev = 0;
+            _context3.next = 3;
+            return _users.default.findOne({
+              userID: userID
+            }).exec();
+
+          case 3:
+            user = _context3.sent;
+
+            if (!user) {
+              _context3.next = 9;
+              break;
+            }
+
+            user.activePage = null;
+            _context3.next = 8;
+            return user.save();
+
+          case 8:
+            return _context3.abrupt("return", true);
+
+          case 9:
+            return _context3.abrupt("return", false);
+
+          case 12:
+            _context3.prev = 12;
+            _context3.t0 = _context3["catch"](0);
+            console.error(_context3.t0);
+            throw _context3.t0;
+
+          case 16:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3, this, [[0, 12]]);
+  }));
+
+  return function removeUserActivePage(_x4) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+exports.removeUserActivePage = removeUserActivePage;
 //# sourceMappingURL=usersController.js.map

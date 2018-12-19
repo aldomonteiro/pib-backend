@@ -53,6 +53,13 @@ dotenv.config();
 //   { useNewUrlParser: true }
 // );
 
+const env = process.env.NODE_ENV || 'production';
+
+let mongo_url = process.env.DEV_MONGODB_URL;
+if (env === 'production')
+  mongo_url = process.env.PRD_MONGODB_URL;
+
+
 const RETRY_TIMEOUT = 3000
 
 const options = {
@@ -66,7 +73,7 @@ const options = {
 let isConnectedBefore = false
 
 const connect = () => {
-  return mongoose.connect(process.env.MONGODB_URL, options)
+  return mongoose.connect(mongo_url, options)
     .catch(err => console.error('Mongoose connect(...) failed with err: ', err))
 }
 

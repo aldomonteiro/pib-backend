@@ -125,6 +125,14 @@ export const flavor_delete = (req, res) => {
         });
 };
 
+/**
+ * Delete all records from a pageID
+ * @param {*} pageID 
+ */
+export const deleteManyFlavors = async (pageID) => {
+    return await Flavor.deleteMany({ pageId: pageID }).exec();
+}
+
 export const getFlavors = async (pageID) => {
     var queryFlavor = Flavor.find({ pageId: pageID });
     queryFlavor.sort('flavor');

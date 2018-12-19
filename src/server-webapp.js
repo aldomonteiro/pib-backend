@@ -56,12 +56,71 @@ app.use(function (req, res, next) {
 
 // Connect to mongodb
 dotenv.config();
-mongoose.connect(
-  process.env.MONGODB_URL,
-  { useNewUrlParser: true }
-);
+// mongoose.connect(
+//   process.env.MONGODB_URL,
+//   { useNewUrlParser: true }
+// );
+// mongoose.set('useCreateIndex', true);
+// mongoose.Promise = Promise;
+
+const RETRY_TIMEOUT = 3000
+
+const options = {
+  useNewUrlParser: true,
+  autoReconnect: true,
+  keepAlive: 30000,
+  reconnectInterval: RETRY_TIMEOUT,
+  reconnectTries: 10000
+}
+
+let isConnectedBefore = false
+
+const env = process.env.NODE_ENV || 'production';
+
+let mongo_url = process.env.DEV_MONGODB_URL;
+if (env === 'production')
+  mongo_url = process.env.PRD_MONGODB_URL;
+
+
+const connect = () => {
+  return mongoose.connect(mongo_url, options)
+    .catch(err => console.error('Mongoose connect(...) failed with err: ', err))
+}
+
+connect();
+
 mongoose.set('useCreateIndex', true);
 mongoose.Promise = Promise;
+
+mongoose.connection.on('error', () => {
+  console.error('SERVER-WEBAPP - Could not connect to MongoDB')
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.error('SERVER-WEBAPP - Lost MongoDB connection...')
+  if (!isConnectedBefore) {
+    setTimeout(() => connect(), RETRY_TIMEOUT)
+  }
+});
+
+mongoose.connection.on('connected', () => {
+  isConnectedBefore = true
+  console.info('SERVER-WEBAPP - Connection established to MongoDB')
+});
+
+mongoose.connection.on('reconnected', () => {
+  console.info('SERVER-WEBAPP - Reconnected to MongoDB')
+});
+
+// Close the Mongoose connection, when receiving SIGINT
+process.on('SIGINT', () => {
+  mongoose.connection.close(function () {
+    console.warn('SERVER-WEBAPP - Force to close the MongoDB connection after SIGINT')
+    process.exit(0)
+  })
+});
+
+
 
 // Setup the routes
 app.use("/users", users);
@@ -77,7 +136,7 @@ app.use("/extras", extras);
 app.use("/orders", orders);
 app.use("/customers", customers);
 
-const env = process.env.NODE_ENV || 'production';
+// const env = process.env.NODE_ENV || 'production';
 
 if (env === 'production')
   app.listen(8080, () => console.log(env + "env. Server listening on port 8080"));

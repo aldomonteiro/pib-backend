@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getSizes = exports.getSize = exports.size_delete = exports.size_update = exports.size_create = exports.size_get_one = exports.size_get_all = void 0;
+exports.getSizes = exports.getSize = exports.deleteManySizes = exports.size_delete = exports.size_update = exports.size_create = exports.size_get_one = exports.size_get_all = void 0;
 
 var _sizes = _interopRequireDefault(require("../models/sizes"));
 
@@ -26,78 +26,71 @@ var size_get_all =
 function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee2(req, res) {
-    var sortObj, rangeObj, options, queryObj, arr, query;
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+  regeneratorRuntime.mark(function _callee(req, res) {
+    var sortObj, rangeObj, queryObj, filterObj, i, filter, value;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context.prev = _context.next) {
           case 0:
             // Getting the sort from the requisition
             sortObj = (0, _util2.configSortQuery)(req.query.sort); // Getting the range from the requisition
 
             rangeObj = (0, _util2.configRangeQuery)(req.query.range);
-            options = {
-              offset: rangeObj['offset'],
-              limit: rangeObj['limit'],
-              sort: sortObj,
-              lean: true,
-              leanWithId: false
-            };
             queryObj = {};
 
             if (req.query.filter) {
-              arr = JSON.parse(req.query.filter);
-              queryObj[arr[0]] = arr[1];
+              filterObj = (0, _util2.configFilterQueryMultiple)(req.query.filter);
+
+              if (filterObj && filterObj.filterField && filterObj.filterField.length) {
+                for (i = 0; i < filterObj.filterField.length; i++) {
+                  filter = filterObj.filterField[i];
+                  value = filterObj.filterValues[i];
+
+                  if (Array.isArray(value)) {
+                    queryObj[filter] = {
+                      $in: value
+                    };
+                  } else queryObj[filter] = value;
+                }
+              }
             }
 
             if (req.currentUser.activePage) {
               queryObj["pageId"] = req.currentUser.activePage;
             }
 
-            query = {};
+            _sizes.default.find(queryObj).sort(sortObj).exec(function (err, result) {
+              if (err) {
+                res.status(500).json({
+                  message: err.errmsg
+                });
+              } else {
+                var _rangeIni = 0;
+                var _rangeEnd = result.length;
 
-            if (req.query.filter || req.currentUser.activePage) {
-              query = _sizes.default.find(queryObj);
-            }
+                if (rangeObj) {
+                  _rangeIni = rangeObj.offset <= result.length ? rangeObj.offset : result.length;
+                  _rangeEnd = rangeObj.offset + rangeObj.limit <= result.length ? rangeObj.offset + rangeObj.limit : result.length;
+                }
 
-            _sizes.default.paginate(query, options,
-            /*#__PURE__*/
-            function () {
-              var _ref2 = _asyncToGenerator(
-              /*#__PURE__*/
-              regeneratorRuntime.mark(function _callee(err, result) {
-                return regeneratorRuntime.wrap(function _callee$(_context) {
-                  while (1) {
-                    switch (_context.prev = _context.next) {
-                      case 0:
-                        if (err) {
-                          res.status(500).json({
-                            message: err.errmsg
-                          });
-                        } else {
-                          res.setHeader('Content-Range', _util.default.format("sizes %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
-                          res.status(200).json(result.docs);
-                        }
+                var _totalCount = result.length;
+                var sizesArray = new Array();
 
-                      case 1:
-                      case "end":
-                        return _context.stop();
-                    }
-                  }
-                }, _callee, this);
-              }));
+                for (var _i = _rangeIni; _i < _rangeEnd; _i++) {
+                  sizesArray.push(result[_i]);
+                }
 
-              return function (_x3, _x4) {
-                return _ref2.apply(this, arguments);
-              };
-            }());
+                res.setHeader('Content-Range', _util.default.format("sizes %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
+                res.status(200).json(sizesArray);
+              }
+            });
 
-          case 9:
+          case 6:
           case "end":
-            return _context2.stop();
+            return _context.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee, this);
   }));
 
   return function size_get_all(_x, _x2) {
@@ -200,8 +193,46 @@ var size_delete = function size_delete(req, res) {
     });
   });
 };
+/**
+ * Delete all records from a pageID
+ * @param {*} pageID 
+ */
+
 
 exports.size_delete = size_delete;
+
+var deleteManySizes =
+/*#__PURE__*/
+function () {
+  var _ref2 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee2(pageID) {
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.next = 2;
+            return _sizes.default.deleteMany({
+              pageId: pageID
+            }).exec();
+
+          case 2:
+            return _context2.abrupt("return", _context2.sent);
+
+          case 3:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, this);
+  }));
+
+  return function deleteManySizes(_x3) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+exports.deleteManySizes = deleteManySizes;
 
 var getSize =
 /*#__PURE__*/
@@ -233,7 +264,7 @@ function () {
     }, _callee3, this);
   }));
 
-  return function getSize(_x5, _x6) {
+  return function getSize(_x4, _x5) {
     return _ref3.apply(this, arguments);
   };
 }();

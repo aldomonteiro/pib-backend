@@ -112,3 +112,11 @@ export const extra_delete = (req, res) => {
             res.status(500).json({ message: err.errmsg });
         });
 };
+
+/**
+ * Delete all records from a pageID
+ * @param {*} pageID 
+ */
+export const deleteManyExtras = async (pageID) => {
+    return await Extra.deleteMany({ pageId: pageID }).exec();
+}

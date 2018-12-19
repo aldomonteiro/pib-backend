@@ -9,6 +9,8 @@ var _flavors2 = _interopRequireDefault(require("../models/flavors"));
 
 var _sizes2 = _interopRequireDefault(require("../models/sizes"));
 
+var _beverages = _interopRequireDefault(require("../models/beverages"));
+
 var _stores2 = _interopRequireDefault(require("../models/stores"));
 
 var _pricings2 = _interopRequireDefault(require("../models/pricings"));
@@ -16,6 +18,8 @@ var _pricings2 = _interopRequireDefault(require("../models/pricings"));
 var _flavorsController = require("./flavorsController");
 
 var _sizesController = require("./sizesController");
+
+var _beveragesController = require("./beveragesController");
 
 var _pricingsController = require("./pricingsController");
 
@@ -50,95 +54,117 @@ function () {
             updatedPage = _context.sent;
             haveToUpdate = false;
 
-            if (updatedPage.initialSetupFlavors) {
-              _context.next = 10;
+            if (!updatedPage) {
+              _context.next = 42;
               break;
             }
 
-            _context.next = 8;
+            if (updatedPage.initialSetupFlavors) {
+              _context.next = 11;
+              break;
+            }
+
+            _context.next = 9;
             return insertFlavors(pageID);
 
-          case 8:
+          case 9:
             updatedPage.initialSetupFlavors = _context.sent;
             haveToUpdate = true;
 
-          case 10:
+          case 11:
             if (updatedPage.initialSetupStores) {
-              _context.next = 15;
+              _context.next = 16;
               break;
             }
 
-            _context.next = 13;
+            _context.next = 14;
             return insertStores(pageID, updatedPage.name);
 
-          case 13:
+          case 14:
             updatedPage.initialSetupStores = _context.sent;
             haveToUpdate = true;
 
-          case 15:
+          case 16:
             if (updatedPage.initialSetupSizes) {
-              _context.next = 20;
+              _context.next = 21;
               break;
             }
 
-            _context.next = 18;
+            _context.next = 19;
             return insertSizes(pageID);
 
-          case 18:
+          case 19:
             updatedPage.initialSetupSizes = _context.sent;
             haveToUpdate = true;
 
-          case 20:
+          case 21:
             if (updatedPage.initialSetupPricings) {
-              _context.next = 25;
+              _context.next = 26;
               break;
             }
 
-            _context.next = 23;
+            _context.next = 24;
             return insertPricings(pageID);
 
-          case 23:
+          case 24:
             updatedPage.initialSetupPricings = _context.sent;
             haveToUpdate = true;
 
-          case 25:
-            if (!(!updatedPage.greetingText || !updatedPage.firstResponseText)) {
-              _context.next = 32;
+          case 26:
+            if (updatedPage.initialSetupBeverages) {
+              _context.next = 31;
               break;
             }
 
-            _context.next = 28;
+            _context.next = 29;
+            return insertBeverages(pageID);
+
+          case 29:
+            updatedPage.initialSetupBeverages = _context.sent;
+            haveToUpdate = true;
+
+          case 31:
+            if (!(!updatedPage.greetingText || !updatedPage.firstResponseText)) {
+              _context.next = 38;
+              break;
+            }
+
+            _context.next = 34;
             return (0, _pagesController.getOnePageData)(basePageID);
 
-          case 28:
+          case 34:
             basePage = _context.sent;
             updatedPage.greetingText = basePage.greetingText;
             updatedPage.firstResponseText = basePage.firstResponseText;
             haveToUpdate = true;
 
-          case 32:
+          case 38:
             if (!haveToUpdate) {
-              _context.next = 35;
+              _context.next = 41;
               break;
             }
 
-            _context.next = 35;
+            _context.next = 41;
             return updatedPage.save();
 
-          case 35:
+          case 41:
             return _context.abrupt("return", updatedPage);
 
-          case 38:
-            _context.prev = 38;
+          case 42:
+            _context.next = 47;
+            break;
+
+          case 44:
+            _context.prev = 44;
             _context.t0 = _context["catch"](0);
             console.error("Error on initial setup", _context.t0);
 
-          case 41:
+          case 47:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this, [[0, 38]]);
+    }, _callee, this, [[0, 44]]);
   }));
 
   return function initialSetup(_x) {
@@ -342,13 +368,13 @@ function () {
   };
 }();
 
-var insertPricings =
+var insertBeverages =
 /*#__PURE__*/
 function () {
   var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee4(pageID) {
-    var _newRecords, _pricings, docs, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, element, newRec;
+    var _newRecords, _docs, docs, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, element, newRec;
 
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
@@ -356,22 +382,22 @@ function () {
           case 0:
             _newRecords = 0;
             _context4.next = 3;
-            return (0, _pricingsController.getPricings)(basePageID);
+            return (0, _beveragesController.getBeverages)(basePageID);
 
           case 3:
-            _pricings = _context4.sent;
+            _docs = _context4.sent;
             docs = new Array();
             _iteratorNormalCompletion3 = true;
             _didIteratorError3 = false;
             _iteratorError3 = undefined;
             _context4.prev = 8;
 
-            for (_iterator3 = _pricings[Symbol.iterator](); !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            for (_iterator3 = _docs[Symbol.iterator](); !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
               element = _step3.value;
-              newRec = new _pricings2.default({
+              newRec = new _beverages.default({
                 id: element.id,
                 kind: element.kind,
-                sizeId: element.sizeId,
+                name: element.name,
                 price: element.price,
                 pageId: pageID
               });
@@ -413,13 +439,13 @@ function () {
 
           case 24:
             _context4.next = 26;
-            return _pricings2.default.insertMany(docs, function (err, result) {
+            return _beverages.default.insertMany(docs, function (err, result) {
               if (err) {
-                console.error('Error while inserting pricings', err);
+                console.error('Error while inserting beverages', err);
                 throw err;
               } else {
                 _newRecords = result.length;
-                console.info("".concat(pageID, ": ").concat(_newRecords, " pricings inserted"));
+                console.info("".concat(pageID, ": ").concat(_newRecords, " beverages inserted"));
               }
             });
 
@@ -434,18 +460,18 @@ function () {
     }, _callee4, this, [[8, 12, 16, 24], [17,, 19, 23]]);
   }));
 
-  return function insertPricings(_x4) {
+  return function insertBeverages(_x4) {
     return _ref4.apply(this, arguments);
   };
 }();
 
-var insertStores =
+var insertPricings =
 /*#__PURE__*/
 function () {
   var _ref5 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee5(pageID, pageName) {
-    var _newRecords, _stores, docs, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, element, newRec;
+  regeneratorRuntime.mark(function _callee5(pageID) {
+    var _newRecords, _pricings, docs, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, element, newRec;
 
     return regeneratorRuntime.wrap(function _callee5$(_context5) {
       while (1) {
@@ -453,46 +479,24 @@ function () {
           case 0:
             _newRecords = 0;
             _context5.next = 3;
-            return (0, _storesController.getStores)(basePageID);
+            return (0, _pricingsController.getPricings)(basePageID);
 
           case 3:
-            _stores = _context5.sent;
+            _pricings = _context5.sent;
             docs = new Array();
             _iteratorNormalCompletion4 = true;
             _didIteratorError4 = false;
             _iteratorError4 = undefined;
             _context5.prev = 8;
 
-            for (_iterator4 = _stores[Symbol.iterator](); !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+            for (_iterator4 = _pricings[Symbol.iterator](); !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
               element = _step4.value;
-              newRec = new _stores2.default({
-                pageId: pageID,
-                name: pageName,
+              newRec = new _pricings2.default({
                 id: element.id,
-                hol_is_open: element.hol_is_open,
-                hol_open: element.hol_open,
-                hol_close: element.hol_close,
-                sun_is_open: element.sun_is_open,
-                mon_is_open: element.mon_is_open,
-                tue_is_open: element.tue_is_open,
-                wed_is_open: element.wed_is_open,
-                thu_is_open: element.thu_is_open,
-                fri_is_open: element.fri_is_open,
-                sat_is_open: element.sat_is_open,
-                sun_open: element.sun_open,
-                mon_open: element.mon_open,
-                tue_open: element.tue_open,
-                wed_open: element.wed_open,
-                thu_open: element.thu_open,
-                fri_open: element.fri_open,
-                sat_open: element.sat_open,
-                sun_close: element.sun_close,
-                mon_close: element.mon_close,
-                tue_close: element.tue_close,
-                wed_close: element.wed_close,
-                thu_close: element.thu_close,
-                fri_close: element.fri_close,
-                sat_close: element.sat_close
+                kind: element.kind,
+                sizeId: element.sizeId,
+                price: element.price,
+                pageId: pageID
               });
               docs.push(newRec);
             }
@@ -532,13 +536,13 @@ function () {
 
           case 24:
             _context5.next = 26;
-            return _stores2.default.insertMany(docs, function (err, result) {
+            return _pricings2.default.insertMany(docs, function (err, result) {
               if (err) {
-                console.error('Error while inserting stores', err);
+                console.error('Error while inserting pricings', err);
                 throw err;
               } else {
                 _newRecords = result.length;
-                console.info("".concat(_newRecords, " stores inserted"));
+                console.info("".concat(pageID, ": ").concat(_newRecords, " pricings inserted"));
               }
             });
 
@@ -553,8 +557,127 @@ function () {
     }, _callee5, this, [[8, 12, 16, 24], [17,, 19, 23]]);
   }));
 
-  return function insertStores(_x5, _x6) {
+  return function insertPricings(_x5) {
     return _ref5.apply(this, arguments);
+  };
+}();
+
+var insertStores =
+/*#__PURE__*/
+function () {
+  var _ref6 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee6(pageID, pageName) {
+    var _newRecords, _stores, docs, _iteratorNormalCompletion5, _didIteratorError5, _iteratorError5, _iterator5, _step5, element, newRec;
+
+    return regeneratorRuntime.wrap(function _callee6$(_context6) {
+      while (1) {
+        switch (_context6.prev = _context6.next) {
+          case 0:
+            _newRecords = 0;
+            _context6.next = 3;
+            return (0, _storesController.getStores)(basePageID);
+
+          case 3:
+            _stores = _context6.sent;
+            docs = new Array();
+            _iteratorNormalCompletion5 = true;
+            _didIteratorError5 = false;
+            _iteratorError5 = undefined;
+            _context6.prev = 8;
+
+            for (_iterator5 = _stores[Symbol.iterator](); !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+              element = _step5.value;
+              newRec = new _stores2.default({
+                pageId: pageID,
+                name: pageName,
+                id: element.id,
+                hol_is_open: element.hol_is_open,
+                hol_open: element.hol_open,
+                hol_close: element.hol_close,
+                sun_is_open: element.sun_is_open,
+                mon_is_open: element.mon_is_open,
+                tue_is_open: element.tue_is_open,
+                wed_is_open: element.wed_is_open,
+                thu_is_open: element.thu_is_open,
+                fri_is_open: element.fri_is_open,
+                sat_is_open: element.sat_is_open,
+                sun_open: element.sun_open,
+                mon_open: element.mon_open,
+                tue_open: element.tue_open,
+                wed_open: element.wed_open,
+                thu_open: element.thu_open,
+                fri_open: element.fri_open,
+                sat_open: element.sat_open,
+                sun_close: element.sun_close,
+                mon_close: element.mon_close,
+                tue_close: element.tue_close,
+                wed_close: element.wed_close,
+                thu_close: element.thu_close,
+                fri_close: element.fri_close,
+                sat_close: element.sat_close
+              });
+              docs.push(newRec);
+            }
+
+            _context6.next = 16;
+            break;
+
+          case 12:
+            _context6.prev = 12;
+            _context6.t0 = _context6["catch"](8);
+            _didIteratorError5 = true;
+            _iteratorError5 = _context6.t0;
+
+          case 16:
+            _context6.prev = 16;
+            _context6.prev = 17;
+
+            if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
+              _iterator5.return();
+            }
+
+          case 19:
+            _context6.prev = 19;
+
+            if (!_didIteratorError5) {
+              _context6.next = 22;
+              break;
+            }
+
+            throw _iteratorError5;
+
+          case 22:
+            return _context6.finish(19);
+
+          case 23:
+            return _context6.finish(16);
+
+          case 24:
+            _context6.next = 26;
+            return _stores2.default.insertMany(docs, function (err, result) {
+              if (err) {
+                console.error('Error while inserting stores', err);
+                throw err;
+              } else {
+                _newRecords = result.length;
+                console.info("".concat(_newRecords, " stores inserted"));
+              }
+            });
+
+          case 26:
+            return _context6.abrupt("return", _newRecords);
+
+          case 27:
+          case "end":
+            return _context6.stop();
+        }
+      }
+    }, _callee6, this, [[8, 12, 16, 24], [17,, 19, 23]]);
+  }));
+
+  return function insertStores(_x6, _x7) {
+    return _ref6.apply(this, arguments);
   };
 }();
 //# sourceMappingURL=systemController.js.map

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getPricingsWithSize = exports.getOnePricingByFlavor = exports.getOnePricing = exports.getPricings = exports.getPricingSizing = exports.pricing_delete = exports.pricing_update = exports.pricing_create = exports.pricing_get_one = exports.pricing_get_all = void 0;
+exports.getPricingsWithSize = exports.getOnePricingByFlavor = exports.getOnePricing = exports.getPricings = exports.getPricingSizing = exports.deleteManyPricings = exports.pricing_delete = exports.pricing_update = exports.pricing_create = exports.pricing_get_one = exports.pricing_get_all = void 0;
 
 var _pricings = _interopRequireDefault(require("../models/pricings"));
 
@@ -152,30 +152,33 @@ var pricing_delete = function pricing_delete(req, res) {
     });
   });
 };
+/**
+ * Delete all records from a pageID
+ * @param {*} pageID 
+ */
+
 
 exports.pricing_delete = pricing_delete;
 
-var getPricingSizing =
+var deleteManyPricings =
 /*#__PURE__*/
 function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee(pageId) {
-    var query;
+  regeneratorRuntime.mark(function _callee(pageID) {
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            query = _pricings.default.distinct('sizeId', {
-              pageId: pageId
-            });
-            _context.next = 3;
-            return query.exec();
+            _context.next = 2;
+            return _pricings.default.deleteMany({
+              pageId: pageID
+            }).exec();
 
-          case 3:
+          case 2:
             return _context.abrupt("return", _context.sent);
 
-          case 4:
+          case 3:
           case "end":
             return _context.stop();
         }
@@ -183,26 +186,26 @@ function () {
     }, _callee, this);
   }));
 
-  return function getPricingSizing(_x) {
+  return function deleteManyPricings(_x) {
     return _ref.apply(this, arguments);
   };
 }();
 
-exports.getPricingSizing = getPricingSizing;
+exports.deleteManyPricings = deleteManyPricings;
 
-var getPricings =
+var getPricingSizing =
 /*#__PURE__*/
 function () {
   var _ref2 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee2(pageID) {
+  regeneratorRuntime.mark(function _callee2(pageId) {
     var query;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            query = _pricings.default.find({
-              pageId: pageID
+            query = _pricings.default.distinct('sizeId', {
+              pageId: pageId
             });
             _context2.next = 3;
             return query.exec();
@@ -218,28 +221,26 @@ function () {
     }, _callee2, this);
   }));
 
-  return function getPricings(_x2) {
+  return function getPricingSizing(_x2) {
     return _ref2.apply(this, arguments);
   };
 }();
 
-exports.getPricings = getPricings;
+exports.getPricingSizing = getPricingSizing;
 
-var getOnePricing =
+var getPricings =
 /*#__PURE__*/
 function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee3(pageID, kind, sizeID) {
+  regeneratorRuntime.mark(function _callee3(pageID) {
     var query;
     return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            query = _pricings.default.findOne({
-              pageId: pageID,
-              kind: kind,
-              sizeId: sizeID
+            query = _pricings.default.find({
+              pageId: pageID
             });
             _context3.next = 3;
             return query.exec();
@@ -255,8 +256,45 @@ function () {
     }, _callee3, this);
   }));
 
-  return function getOnePricing(_x3, _x4, _x5) {
+  return function getPricings(_x3) {
     return _ref3.apply(this, arguments);
+  };
+}();
+
+exports.getPricings = getPricings;
+
+var getOnePricing =
+/*#__PURE__*/
+function () {
+  var _ref4 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee4(pageID, kind, sizeID) {
+    var query;
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            query = _pricings.default.findOne({
+              pageId: pageID,
+              kind: kind,
+              sizeId: sizeID
+            });
+            _context4.next = 3;
+            return query.exec();
+
+          case 3:
+            return _context4.abrupt("return", _context4.sent);
+
+          case 4:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4, this);
+  }));
+
+  return function getOnePricing(_x4, _x5, _x6) {
+    return _ref4.apply(this, arguments);
   };
 }();
 
@@ -265,44 +303,44 @@ exports.getOnePricing = getOnePricing;
 var getOnePricingByFlavor =
 /*#__PURE__*/
 function () {
-  var _ref4 = _asyncToGenerator(
+  var _ref5 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee4(pageID, sizeID, flavorID) {
+  regeneratorRuntime.mark(function _callee5(pageID, sizeID, flavorID) {
     var flavor;
-    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
       while (1) {
-        switch (_context4.prev = _context4.next) {
+        switch (_context5.prev = _context5.next) {
           case 0:
-            _context4.next = 2;
+            _context5.next = 2;
             return (0, _flavorsController.getFlavor)(pageID, flavorID);
 
           case 2:
-            flavor = _context4.sent;
+            flavor = _context5.sent;
 
             if (!flavor) {
-              _context4.next = 9;
+              _context5.next = 9;
               break;
             }
 
-            _context4.next = 6;
+            _context5.next = 6;
             return getOnePricing(pageID, flavor.kind, sizeID);
 
           case 6:
-            return _context4.abrupt("return", _context4.sent);
+            return _context5.abrupt("return", _context5.sent);
 
           case 9:
-            return _context4.abrupt("return", null);
+            return _context5.abrupt("return", null);
 
           case 10:
           case "end":
-            return _context4.stop();
+            return _context5.stop();
         }
       }
-    }, _callee4, this);
+    }, _callee5, this);
   }));
 
-  return function getOnePricingByFlavor(_x6, _x7, _x8) {
-    return _ref4.apply(this, arguments);
+  return function getOnePricingByFlavor(_x7, _x8, _x9) {
+    return _ref5.apply(this, arguments);
   };
 }();
 
@@ -311,38 +349,38 @@ exports.getOnePricingByFlavor = getOnePricingByFlavor;
 var getPricingsWithSize =
 /*#__PURE__*/
 function () {
-  var _ref5 = _asyncToGenerator(
+  var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee5(pageID) {
+  regeneratorRuntime.mark(function _callee6(pageID) {
     var query, pricings, sizes, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, pricing, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, size;
 
-    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+    return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
             query = _pricings.default.find({
               pageId: pageID
             });
             query.sort('kind');
-            _context5.next = 4;
+            _context6.next = 4;
             return query.exec();
 
           case 4:
-            pricings = _context5.sent;
-            _context5.next = 7;
+            pricings = _context6.sent;
+            _context6.next = 7;
             return (0, _sizesController.getSizes)(pageID);
 
           case 7:
-            sizes = _context5.sent;
+            sizes = _context6.sent;
             _iteratorNormalCompletion = true;
             _didIteratorError = false;
             _iteratorError = undefined;
-            _context5.prev = 11;
+            _context6.prev = 11;
             _iterator = pricings[Symbol.iterator]();
 
           case 13:
             if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-              _context5.next = 37;
+              _context6.next = 37;
               break;
             }
 
@@ -350,7 +388,7 @@ function () {
             _iteratorNormalCompletion2 = true;
             _didIteratorError2 = false;
             _iteratorError2 = undefined;
-            _context5.prev = 18;
+            _context6.prev = 18;
 
             for (_iterator2 = sizes[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
               size = _step2.value;
@@ -360,91 +398,91 @@ function () {
               }
             }
 
-            _context5.next = 26;
+            _context6.next = 26;
             break;
 
           case 22:
-            _context5.prev = 22;
-            _context5.t0 = _context5["catch"](18);
+            _context6.prev = 22;
+            _context6.t0 = _context6["catch"](18);
             _didIteratorError2 = true;
-            _iteratorError2 = _context5.t0;
+            _iteratorError2 = _context6.t0;
 
           case 26:
-            _context5.prev = 26;
-            _context5.prev = 27;
+            _context6.prev = 26;
+            _context6.prev = 27;
 
             if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
               _iterator2.return();
             }
 
           case 29:
-            _context5.prev = 29;
+            _context6.prev = 29;
 
             if (!_didIteratorError2) {
-              _context5.next = 32;
+              _context6.next = 32;
               break;
             }
 
             throw _iteratorError2;
 
           case 32:
-            return _context5.finish(29);
+            return _context6.finish(29);
 
           case 33:
-            return _context5.finish(26);
+            return _context6.finish(26);
 
           case 34:
             _iteratorNormalCompletion = true;
-            _context5.next = 13;
+            _context6.next = 13;
             break;
 
           case 37:
-            _context5.next = 43;
+            _context6.next = 43;
             break;
 
           case 39:
-            _context5.prev = 39;
-            _context5.t1 = _context5["catch"](11);
+            _context6.prev = 39;
+            _context6.t1 = _context6["catch"](11);
             _didIteratorError = true;
-            _iteratorError = _context5.t1;
+            _iteratorError = _context6.t1;
 
           case 43:
-            _context5.prev = 43;
-            _context5.prev = 44;
+            _context6.prev = 43;
+            _context6.prev = 44;
 
             if (!_iteratorNormalCompletion && _iterator.return != null) {
               _iterator.return();
             }
 
           case 46:
-            _context5.prev = 46;
+            _context6.prev = 46;
 
             if (!_didIteratorError) {
-              _context5.next = 49;
+              _context6.next = 49;
               break;
             }
 
             throw _iteratorError;
 
           case 49:
-            return _context5.finish(46);
+            return _context6.finish(46);
 
           case 50:
-            return _context5.finish(43);
+            return _context6.finish(43);
 
           case 51:
-            return _context5.abrupt("return", pricings);
+            return _context6.abrupt("return", pricings);
 
           case 52:
           case "end":
-            return _context5.stop();
+            return _context6.stop();
         }
       }
-    }, _callee5, this, [[11, 39, 43, 51], [18, 22, 26, 34], [27,, 29, 33], [44,, 46, 50]]);
+    }, _callee6, this, [[11, 39, 43, 51], [18, 22, 26, 34], [27,, 29, 33], [44,, 46, 50]]);
   }));
 
-  return function getPricingsWithSize(_x9) {
-    return _ref5.apply(this, arguments);
+  return function getPricingsWithSize(_x10) {
+    return _ref6.apply(this, arguments);
   };
 }();
 

@@ -1,9 +1,11 @@
 import Flavor from '../models/flavors';
 import Size from '../models/sizes';
+import Beverage from '../models/beverages';
 import Store from '../models/stores';
 import Pricing from '../models/pricings';
 import { getFlavors } from './flavorsController';
 import { getSizes } from './sizesController';
+import { getBeverages } from './beveragesController';
 import { getPricings } from './pricingsController';
 import { getStores } from './storesController';
 import { getOnePageData } from './pagesController';
@@ -16,33 +18,38 @@ export const initialSetup = async pageID => {
         const updatedPage = await getOnePageData(pageID);
 
         let haveToUpdate = false;
+        if (updatedPage) {
+            if (!updatedPage.initialSetupFlavors) {
+                updatedPage.initialSetupFlavors = await insertFlavors(pageID);
+                haveToUpdate = true;
+            }
+            if (!updatedPage.initialSetupStores) {
+                updatedPage.initialSetupStores = await insertStores(pageID, updatedPage.name)
+                haveToUpdate = true;
+            }
+            if (!updatedPage.initialSetupSizes) {
+                updatedPage.initialSetupSizes = await insertSizes(pageID)
+                haveToUpdate = true;
+            }
+            if (!updatedPage.initialSetupPricings) {
+                updatedPage.initialSetupPricings = await insertPricings(pageID)
+                haveToUpdate = true;
+            }
+            if (!updatedPage.initialSetupBeverages) {
+                updatedPage.initialSetupBeverages = await insertBeverages(pageID)
+                haveToUpdate = true;
+            }
+            if (!updatedPage.greetingText || !updatedPage.firstResponseText) {
+                const basePage = await getOnePageData(basePageID);
+                updatedPage.greetingText = basePage.greetingText;
+                updatedPage.firstResponseText = basePage.firstResponseText;
+                haveToUpdate = true;
+            }
+            if (haveToUpdate)
+                await updatedPage.save();
 
-        if (!updatedPage.initialSetupFlavors) {
-            updatedPage.initialSetupFlavors = await insertFlavors(pageID);
-            haveToUpdate = true;
+            return updatedPage;
         }
-        if (!updatedPage.initialSetupStores) {
-            updatedPage.initialSetupStores = await insertStores(pageID, updatedPage.name)
-            haveToUpdate = true;
-        }
-        if (!updatedPage.initialSetupSizes) {
-            updatedPage.initialSetupSizes = await insertSizes(pageID)
-            haveToUpdate = true;
-        }
-        if (!updatedPage.initialSetupPricings) {
-            updatedPage.initialSetupPricings = await insertPricings(pageID)
-            haveToUpdate = true;
-        }
-        if (!updatedPage.greetingText || !updatedPage.firstResponseText) {
-            const basePage = await getOnePageData(basePageID);
-            updatedPage.greetingText = basePage.greetingText;
-            updatedPage.firstResponseText = basePage.firstResponseText;
-            haveToUpdate = true;
-        }
-        if (haveToUpdate)
-            await updatedPage.save();
-
-        return updatedPage;
     } catch (error) {
         console.error("Error on initial setup", error);
     }
@@ -104,6 +111,37 @@ const insertSizes = async pageID => {
         else {
             _newRecords = result.length;
             console.info(`${pageID}: ${_newRecords} sizes inserted`);
+        }
+    });
+
+    return _newRecords;
+}
+
+const insertBeverages = async pageID => {
+    let _newRecords = 0;
+
+    const _docs = await getBeverages(basePageID);
+
+    const docs = new Array();
+    for (const element of _docs) {
+        const newRec = new Beverage({
+            id: element.id,
+            kind: element.kind,
+            name: element.name,
+            price: element.price,
+            pageId: pageID
+        });
+        docs.push(newRec);
+    }
+
+    await Beverage.insertMany(docs, (err, result) => {
+        if (err) {
+            console.error('Error while inserting beverages', err);
+            throw err;
+        }
+        else {
+            _newRecords = result.length;
+            console.info(`${pageID}: ${_newRecords} beverages inserted`);
         }
     });
 

@@ -77,15 +77,69 @@ app.use(function (req, res, next) {
   }
 }); // Connect to mongodb
 
-_dotenv.default.config();
+_dotenv.default.config(); // mongoose.connect(
+//   process.env.MONGODB_URL,
+//   { useNewUrlParser: true }
+// );
+// mongoose.set('useCreateIndex', true);
+// mongoose.Promise = Promise;
 
-_mongoose.default.connect(process.env.MONGODB_URL, {
-  useNewUrlParser: true
-});
+
+var RETRY_TIMEOUT = 3000;
+var options = {
+  useNewUrlParser: true,
+  autoReconnect: true,
+  keepAlive: 30000,
+  reconnectInterval: RETRY_TIMEOUT,
+  reconnectTries: 10000
+};
+var isConnectedBefore = false;
+var env = process.env.NODE_ENV || 'production';
+var mongo_url = process.env.DEV_MONGODB_URL;
+if (env === 'production') mongo_url = process.env.PRD_MONGODB_URL;
+
+var connect = function connect() {
+  return _mongoose.default.connect(mongo_url, options).catch(function (err) {
+    return console.error('Mongoose connect(...) failed with err: ', err);
+  });
+};
+
+connect();
 
 _mongoose.default.set('useCreateIndex', true);
 
-_mongoose.default.Promise = _bluebird.default; // Setup the routes
+_mongoose.default.Promise = _bluebird.default;
+
+_mongoose.default.connection.on('error', function () {
+  console.error('SERVER-WEBAPP - Could not connect to MongoDB');
+});
+
+_mongoose.default.connection.on('disconnected', function () {
+  console.error('SERVER-WEBAPP - Lost MongoDB connection...');
+
+  if (!isConnectedBefore) {
+    setTimeout(function () {
+      return connect();
+    }, RETRY_TIMEOUT);
+  }
+});
+
+_mongoose.default.connection.on('connected', function () {
+  isConnectedBefore = true;
+  console.info('SERVER-WEBAPP - Connection established to MongoDB');
+});
+
+_mongoose.default.connection.on('reconnected', function () {
+  console.info('SERVER-WEBAPP - Reconnected to MongoDB');
+}); // Close the Mongoose connection, when receiving SIGINT
+
+
+process.on('SIGINT', function () {
+  _mongoose.default.connection.close(function () {
+    console.warn('SERVER-WEBAPP - Force to close the MongoDB connection after SIGINT');
+    process.exit(0);
+  });
+}); // Setup the routes
 
 app.use("/users", _users.default);
 app.use("/flavors", _flavors.default);
@@ -98,8 +152,8 @@ app.use("/pages", _pages.default);
 app.use("/sizes", _sizes.default);
 app.use("/extras", _extras.default);
 app.use("/orders", _orders.default);
-app.use("/customers", _customers.default);
-var env = process.env.NODE_ENV || 'production';
+app.use("/customers", _customers.default); // const env = process.env.NODE_ENV || 'production';
+
 if (env === 'production') app.listen(8080, function () {
   return console.log(env + "env. Server listening on port 8080");
 });else {

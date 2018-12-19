@@ -5,6 +5,16 @@ import axios from 'axios';
 import util from 'util';
 import { configSortQuery, configRangeQuery } from '../util/util';
 import { initialSetup } from "./systemController";
+import { deleteManyFlavors } from './flavorsController';
+import { deleteManyBeverages } from './beveragesController';
+import { deleteManyCustomers } from './customersController';
+import { deleteManyExtras } from './extrasController';
+import { deleteManyItems } from './itemsController';
+import { deleteManyOrders } from './ordersController';
+import { deleteManyPricings } from './pricingsController';
+import { deleteManySizes } from './sizesController';
+import { deleteManyStores } from './storesController';
+import { removeUserActivePage } from "./usersController";
 
 // List all flavors
 // TODO: use filters in the query req.query
@@ -26,16 +36,19 @@ export const page_resources_get_all = async (req, res) => {
 
     if (req.currentUser.activePage) {
         query = Page.find({ id: req.currentUser.activePage });
+        Page.paginate(query, options, async (err, result) => {
+            if (err) {
+                res.status(500).json({ message: err.errmsg });
+            } else {
+                res.setHeader('Content-Range', util.format("pages %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
+                res.status(200).json(result.docs);
+            }
+        });
     }
-
-    Page.paginate(query, options, async (err, result) => {
-        if (err) {
-            res.status(500).json({ message: err.errmsg });
-        } else {
-            res.setHeader('Content-Range', util.format("pages %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
-            res.status(200).json(result.docs);
-        }
-    });
+    else {
+        res.setHeader('Content-Range', util.format("pages %d-%d/%d", 0, 0, 0));
+        res.status(200).json(new Array());
+    }
 };
 
 // List one record by filtering by ID
@@ -53,69 +66,112 @@ export const page_resources_get_one = (req, res) => {
     }
 }
 
-// DELETE
-export const page_resources_delete = (req, res) => {
-    Page.findOneAndRemove({ id: req.params.id })
-        .then((result) => {
-            res.status(200).json(result);
-        })
-        .catch((err) => {
-            res.status(500).json({ message: err.errmsg });
-        });
-};
+/**
+ * Deactivate Bot and delete all related records
+ * @param {*} req 
+ * @param {*} res 
+ */
+export const page_resources_delete = async (req, res) => {
+    try {
+        console.info("page_resources_delete:", req.params);
+
+        const pageID = req.params.id;
+        const { accessToken } = await getOnePageToken(pageID);
+
+        await deleteFacebookFields(pageID, accessToken);
+
+        await deleteManyBeverages(pageID);
+        await deleteManyCustomers(pageID);
+        await deleteManyExtras(pageID);
+        await deleteManyFlavors(pageID);
+        await deleteManyItems(pageID);
+        await deleteManyOrders(pageID);
+        await deleteManyPricings(pageID);
+        await deleteManySizes(pageID);
+        await deleteManyStores(pageID);
+
+        const result2 = await unsubscribedApps(pageID, accessToken);
+        console.info('unsubscribedApps', result2);
+        const result3 = await removeUserActivePage(req.currentUser.userID);
+        if (!result3) {
+            console.error(`User ${userID} was not found and removeUserActivePage failed`);
+        }
+        const result = await Page.findOneAndDelete({ id: pageID }).exec();
+        console.info('Page.findOneAndRemove: ', result);
+        res.status(200).json(result);
+    } catch (pageDeleteErr) {
+        console.error(pageDeleteErr);
+        res.status(500).json({ message: pageDeleteErr.message });
+    }
+}
 
 
 // Update or create a new page
 export const page_update = async (req, res) => {
     try {
-        console.info("page_update");
-        const pageId = req.body.id;
-        let isNew = false;
-        let page = await Page.findOne({ id: pageId }).exec();
-        if (!page) {
-            page = new Page({
-                id: pageId,
-                name: req.body.name,
-                userID: req.currentUser.userID,
-            });
-            isNew = true;
-        }
-        if (req.body.access_token)
-            page.accessToken = req.body.access_token;
-        if (req.body.greetingText)
-            page.greetingText = req.body.greetingText;
-        if (req.body.firstResponseText)
-            page.firstResponseText = req.body.firstResponseText;
+        console.info("page_update: ", req.body.operation, req.body.id);
+        const pageID = req.body.id;
+        const operation = req.body.operation;
+        let page = await Page.findOne({ id: pageID }).exec();
 
-        // update ActivePage for the current user
-        if (req.currentUser) {
-            page.userID = req.currentUser.userID;
-            const user = await User.findOne({ userID: req.currentUser.userID }).exec();
-            if (user) {
-                user.activePage = pageId;
-                await user.save();
+        if (page && operation === 'ACTIVATE') { // only deactivating the bot in the page
+            await setFacebookFields(pageID, page.accessToken, page.greetingText);
+            await subscribedApps(pageID, page.accessToken);
+            page.activeBot = true;
+            await page.save();
+            res.status(200).json(page);
+        }
+        else if (page && operation === 'DEACTIVATE') { // only deactivating the bot in the page
+            await deleteFacebookFields(pageID, page.accessToken);
+            await unsubscribedApps(pageID, page.accessToken);
+            page.activeBot = false;
+            await page.save();
+            res.status(200).json(page);
+        } else {
+            let isNew = false;
+            if (!page) {
+                page = new Page({
+                    id: pageID,
+                    name: req.body.name,
+                    userID: req.currentUser.userID,
+                });
+                isNew = true;
             }
+            if (req.body.access_token)
+                page.accessToken = req.body.access_token;
+            if (req.body.greetingText)
+                page.greetingText = req.body.greetingText;
+            if (req.body.firstResponseText)
+                page.firstResponseText = req.body.firstResponseText;
+
+            // update ActivePage for the current user
+            if (req.currentUser) {
+                page.userID = req.currentUser.userID;
+                const user = await User.findOne({ userID: req.currentUser.userID }).exec();
+                if (user) {
+                    user.activePage = pageID;
+                    await user.save();
+                }
+            }
+
+            await page.save();
+
+            if (isNew) {
+                page = await initialSetup(pageID);
+            }
+            res.status(200).json(page);
         }
-
-        await page.save();
-
-        const response = await subscribedApps(page.id, page.accessToken);
-
-        if (isNew) {
-            page = await initialSetup(pageId);
-            req.body.greetingText = page.greetingText
-        }
-
-        if (page && page.greetingText && page.accessToken) {
-            const response2 = await setFacebookFields(page.id, page.accessToken, page.greetingText);
-        }
-        res.status(200).json(page);
     } catch (pageUpdateError) {
         console.error({ pageUpdateError });
         res.status(500).json({ message: pageUpdateError.message });
     }
 }
 
+/**
+ * Subscribe the app to the page
+ * @param {*} pageId 
+ * @param {*} accessToken 
+ */
 export const subscribedApps = async (pageId, accessToken) => {
 
     // https://graph.facebook.com/v3.1/{page-id}/subscribed_apps?access_token={}
@@ -123,6 +179,20 @@ export const subscribedApps = async (pageId, accessToken) => {
 
     return await axios.post(facebookUrl);
 }
+
+/**
+ * 
+ * @param {*} pageId 
+ * @param {*} accessToken 
+ */
+export const unsubscribedApps = async (pageId, accessToken) => {
+
+    // https://graph.facebook.com/v3.1/{page-id}/subscribed_apps?access_token={}
+    const facebookUrl = `https://graph.facebook.com/v3.1/${pageId}/subscribed_apps?access_token=${accessToken}`
+
+    return await axios.delete(facebookUrl);
+}
+
 
 export const debugToken = async accessToken => {
     const facebookUrl = `https://graph.facebook.com/v3.1/debug_token?input_token=${accessToken}`
@@ -190,6 +260,16 @@ const setFacebookFields = async (pageId, accessToken, _greeting) => {
                 ]
             }
         ]
+    });
+}
+
+const deleteFacebookFields = async (pageId, accessToken) => {
+    const facebookUrl = `https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${accessToken}`;
+    return await axios.delete(facebookUrl, {
+        headers: { 'Content-Type': 'application/json' },
+        params: {
+            fields: ["get_started", "persistent_menu", "greeting"]
+        }
     });
 }
 

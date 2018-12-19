@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getOrdersCustomerStat = exports.getOrderPending = exports.updateOrder = exports.getOrderJson = exports.order_update = exports.order_get_one = exports.order_get_all = void 0;
+exports.getOrdersCustomerStat = exports.getOrderPending = exports.updateOrder = exports.getOrderJson = exports.deleteManyOrders = exports.order_update = exports.order_get_one = exports.order_get_all = void 0;
 
 var _orders = _interopRequireDefault(require("../models/orders"));
 
@@ -57,7 +57,7 @@ function () {
                   filter = filterObj.filterField[i];
                   value = filterObj.filterValues[i];
 
-                  if (typeof value === 'Array') {
+                  if (Array.isArray(value)) {
                     queryParam[filter] = {
                       $in: value
                     };
@@ -332,6 +332,44 @@ function () {
   return function order_update(_x7, _x8) {
     return _ref4.apply(this, arguments);
   };
+}();
+/**
+ * Delete all records from a pageID
+ * @param {*} pageID 
+ */
+
+
+exports.order_update = order_update;
+
+var deleteManyOrders =
+/*#__PURE__*/
+function () {
+  var _ref5 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee5(pageID) {
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            _context5.next = 2;
+            return _orders.default.deleteMany({
+              pageId: pageID
+            }).exec();
+
+          case 2:
+            return _context5.abrupt("return", _context5.sent);
+
+          case 3:
+          case "end":
+            return _context5.stop();
+        }
+      }
+    }, _callee5, this);
+  }));
+
+  return function deleteManyOrders(_x9) {
+    return _ref5.apply(this, arguments);
+  };
 }(); // export const sendShippingNotification = async order => {
 //     const { accessToken } = await getOnePageToken(order.pageId);
 //     const _txt = 'O seu pedido número ' + order.id + ' acabou de sair para entrega. Bom apetite!';
@@ -342,36 +380,36 @@ function () {
 // List one record by filtering by ID
 
 
-exports.order_update = order_update;
+exports.deleteManyOrders = deleteManyOrders;
 
 var getOrderJson =
 /*#__PURE__*/
 function () {
-  var _ref5 = _asyncToGenerator(
+  var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee5(pageId, orderId) {
+  regeneratorRuntime.mark(function _callee6(pageId, orderId) {
     var order, items, jsonItems, jsonOrder;
-    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+    return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
-            _context5.prev = 0;
-            _context5.next = 3;
+            _context6.prev = 0;
+            _context6.next = 3;
             return _orders.default.findOne({
               pageId: pageId,
               id: orderId
             });
 
           case 3:
-            order = _context5.sent;
-            _context5.next = 6;
+            order = _context6.sent;
+            _context6.next = 6;
             return (0, _itemsController.getItems)({
               pageId: pageId,
               orderId: orderId
             });
 
           case 6:
-            items = _context5.sent;
+            items = _context6.sent;
             jsonItems = [];
             items.forEach(function (item) {
               var jsonItem = {
@@ -400,26 +438,26 @@ function () {
               total: order.total,
               items: jsonItems
             };
-            return _context5.abrupt("return", jsonOrder);
+            return _context6.abrupt("return", jsonOrder);
 
           case 13:
-            _context5.prev = 13;
-            _context5.t0 = _context5["catch"](0);
+            _context6.prev = 13;
+            _context6.t0 = _context6["catch"](0);
             console.error({
-              getOrderJsonErr: _context5.t0
+              getOrderJsonErr: _context6.t0
             });
-            throw new Error(_context5.t0.message);
+            throw new Error(_context6.t0.message);
 
           case 17:
           case "end":
-            return _context5.stop();
+            return _context6.stop();
         }
       }
-    }, _callee5, this, [[0, 13]]);
+    }, _callee6, this, [[0, 13]]);
   }));
 
-  return function getOrderJson(_x9, _x10) {
-    return _ref5.apply(this, arguments);
+  return function getOrderJson(_x10, _x11) {
+    return _ref6.apply(this, arguments);
   };
 }();
 
@@ -428,16 +466,16 @@ exports.getOrderJson = getOrderJson;
 var updateOrder =
 /*#__PURE__*/
 function () {
-  var _ref6 = _asyncToGenerator(
+  var _ref7 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee6(orderData) {
+  regeneratorRuntime.mark(function _callee7(orderData) {
     var pageId, userId, qty, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, waitingFor, currentItem, sizeId, calcTotal, split, originalSplit, eraseSplit, noBeverage, customerID, customerData, first_name, last_name, profile_pic, order, _updateOrder, total, resultLastId, orderId, record;
 
-    return regeneratorRuntime.wrap(function _callee6$(_context6) {
+    return regeneratorRuntime.wrap(function _callee7$(_context7) {
       while (1) {
-        switch (_context6.prev = _context6.next) {
+        switch (_context7.prev = _context7.next) {
           case 0:
-            _context6.prev = 0;
+            _context7.prev = 0;
             pageId = orderData.pageId, userId = orderData.userId, qty = orderData.qty, location = orderData.location, user = orderData.user, phone = orderData.phone, addrData = orderData.addrData, completeItem = orderData.completeItem, confirmOrder = orderData.confirmOrder, waitingForAddress = orderData.waitingForAddress, waitingFor = orderData.waitingFor, currentItem = orderData.currentItem, sizeId = orderData.sizeId, calcTotal = orderData.calcTotal, split = orderData.split, originalSplit = orderData.originalSplit, eraseSplit = orderData.eraseSplit, noBeverage = orderData.noBeverage;
             customerID = 0;
             customerData = {};
@@ -454,12 +492,12 @@ function () {
             customerData.phone = phone;
             customerData.location = location;
             customerData.addrData = addrData;
-            _context6.next = 12;
+            _context7.next = 12;
             return (0, _customersController.customer_update)(customerData);
 
           case 12:
-            customerID = _context6.sent;
-            _context6.next = 15;
+            customerID = _context7.sent;
+            _context7.next = 15;
             return _orders.default.findOne({
               pageId: pageId,
               userId: userId,
@@ -467,10 +505,10 @@ function () {
             }).exec();
 
           case 15:
-            order = _context6.sent;
+            order = _context7.sent;
 
             if (!order) {
-              _context6.next = 46;
+              _context7.next = 46;
               break;
             }
 
@@ -574,18 +612,18 @@ function () {
             }
 
             if (!(typeof calcTotal === 'boolean')) {
-              _context6.next = 38;
+              _context7.next = 38;
               break;
             }
 
-            _context6.next = 36;
+            _context7.next = 36;
             return (0, _itemsController.getItemsTotal)({
               orderId: order.id,
               pageId: order.pageId
             });
 
           case 36:
-            total = _context6.sent;
+            total = _context7.sent;
 
             if (total > 0 && total !== order.total) {
               order.total = total;
@@ -599,29 +637,29 @@ function () {
             }
 
             if (!_updateOrder) {
-              _context6.next = 42;
+              _context7.next = 42;
               break;
             }
 
-            _context6.next = 42;
+            _context7.next = 42;
             return order.save();
 
           case 42:
-            _context6.next = 44;
+            _context7.next = 44;
             return (0, _itemsController.updateItem)(orderData);
 
           case 44:
-            _context6.next = 57;
+            _context7.next = 57;
             break;
 
           case 46:
-            _context6.next = 48;
+            _context7.next = 48;
             return _orders.default.find({
               pageId: pageId
             }).select('id').sort('-id').limit(1).exec();
 
           case 48:
-            resultLastId = _context6.sent;
+            resultLastId = _context7.sent;
             orderId = 1;
             if (resultLastId && resultLastId.length) orderId = resultLastId[0].id + 1;
             record = new _orders.default({
@@ -635,36 +673,36 @@ function () {
               waitingForAddress: typeof waitingForAddress === 'boolean' ? waitingForAddress : false,
               status: ORDERSTATUS_PENDING
             });
-            _context6.next = 54;
+            _context7.next = 54;
             return record.save();
 
           case 54:
             orderData.orderId = record.id;
-            _context6.next = 57;
+            _context7.next = 57;
             return (0, _itemsController.updateItem)(orderData);
 
           case 57:
-            _context6.next = 63;
+            _context7.next = 63;
             break;
 
           case 59:
-            _context6.prev = 59;
-            _context6.t0 = _context6["catch"](0);
+            _context7.prev = 59;
+            _context7.t0 = _context7["catch"](0);
             console.error({
-              updateOrderError: _context6.t0
+              updateOrderError: _context7.t0
             });
-            throw _context6.t0;
+            throw _context7.t0;
 
           case 63:
           case "end":
-            return _context6.stop();
+            return _context7.stop();
         }
       }
-    }, _callee6, this, [[0, 59]]);
+    }, _callee7, this, [[0, 59]]);
   }));
 
-  return function updateOrder(_x11) {
-    return _ref6.apply(this, arguments);
+  return function updateOrder(_x12) {
+    return _ref7.apply(this, arguments);
   };
 }();
 
@@ -673,17 +711,17 @@ exports.updateOrder = updateOrder;
 var getOrderPending =
 /*#__PURE__*/
 function () {
-  var _ref7 = _asyncToGenerator(
+  var _ref8 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee7(orderData) {
+  regeneratorRuntime.mark(function _callee8(orderData) {
     var userId, pageId, isComplete, _order, _items, completeOrder, headerOrder;
 
-    return regeneratorRuntime.wrap(function _callee7$(_context7) {
+    return regeneratorRuntime.wrap(function _callee8$(_context8) {
       while (1) {
-        switch (_context7.prev = _context7.next) {
+        switch (_context8.prev = _context8.next) {
           case 0:
             userId = orderData.userId, pageId = orderData.pageId, isComplete = orderData.isComplete;
-            _context7.next = 3;
+            _context8.next = 3;
             return _orders.default.findOne({
               userId: userId,
               pageId: pageId,
@@ -691,55 +729,55 @@ function () {
             }).exec();
 
           case 3:
-            _order = _context7.sent;
+            _order = _context8.sent;
 
             if (!_order) {
-              _context7.next = 17;
+              _context8.next = 17;
               break;
             }
 
             if (!(isComplete && isComplete === true)) {
-              _context7.next = 13;
+              _context8.next = 13;
               break;
             }
 
-            _context7.next = 8;
+            _context8.next = 8;
             return (0, _itemsController.getItems)({
               orderId: _order.id,
               pageId: pageId
             });
 
           case 8:
-            _items = _context7.sent;
+            _items = _context8.sent;
             completeOrder = {
               order: _order,
               items: _items
             };
-            return _context7.abrupt("return", completeOrder);
+            return _context8.abrupt("return", completeOrder);
 
           case 13:
             headerOrder = {
               order: _order
             };
-            return _context7.abrupt("return", headerOrder);
+            return _context8.abrupt("return", headerOrder);
 
           case 15:
-            _context7.next = 18;
+            _context8.next = 18;
             break;
 
           case 17:
-            return _context7.abrupt("return", null);
+            return _context8.abrupt("return", null);
 
           case 18:
           case "end":
-            return _context7.stop();
+            return _context8.stop();
         }
       }
-    }, _callee7, this);
+    }, _callee8, this);
   }));
 
-  return function getOrderPending(_x12) {
-    return _ref7.apply(this, arguments);
+  return function getOrderPending(_x13) {
+    return _ref8.apply(this, arguments);
   };
 }();
 
@@ -748,24 +786,24 @@ exports.getOrderPending = getOrderPending;
 var getOrdersCustomerStat =
 /*#__PURE__*/
 function () {
-  var _ref8 = _asyncToGenerator(
+  var _ref9 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee8(orderData) {
+  regeneratorRuntime.mark(function _callee9(orderData) {
     var pageId, customerId, orders, total_spent, nb_orders, first_order, last_order, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, order;
 
-    return regeneratorRuntime.wrap(function _callee8$(_context8) {
+    return regeneratorRuntime.wrap(function _callee9$(_context9) {
       while (1) {
-        switch (_context8.prev = _context8.next) {
+        switch (_context9.prev = _context9.next) {
           case 0:
             pageId = orderData.pageId, customerId = orderData.customerId;
-            _context8.next = 3;
+            _context9.next = 3;
             return _orders.default.find({
               pageId: pageId,
               customerId: customerId
             }).select('createdAt total').sort('createdAt').exec();
 
           case 3:
-            orders = _context8.sent;
+            orders = _context9.sent;
             total_spent = 0;
             nb_orders = 0;
             first_order = Date.now();
@@ -773,7 +811,7 @@ function () {
             _iteratorNormalCompletion = true;
             _didIteratorError = false;
             _iteratorError = undefined;
-            _context8.prev = 11;
+            _context9.prev = 11;
 
             for (_iterator = orders[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
               order = _step.value;
@@ -789,41 +827,41 @@ function () {
               }
             }
 
-            _context8.next = 19;
+            _context9.next = 19;
             break;
 
           case 15:
-            _context8.prev = 15;
-            _context8.t0 = _context8["catch"](11);
+            _context9.prev = 15;
+            _context9.t0 = _context9["catch"](11);
             _didIteratorError = true;
-            _iteratorError = _context8.t0;
+            _iteratorError = _context9.t0;
 
           case 19:
-            _context8.prev = 19;
-            _context8.prev = 20;
+            _context9.prev = 19;
+            _context9.prev = 20;
 
             if (!_iteratorNormalCompletion && _iterator.return != null) {
               _iterator.return();
             }
 
           case 22:
-            _context8.prev = 22;
+            _context9.prev = 22;
 
             if (!_didIteratorError) {
-              _context8.next = 25;
+              _context9.next = 25;
               break;
             }
 
             throw _iteratorError;
 
           case 25:
-            return _context8.finish(22);
+            return _context9.finish(22);
 
           case 26:
-            return _context8.finish(19);
+            return _context9.finish(19);
 
           case 27:
-            return _context8.abrupt("return", {
+            return _context9.abrupt("return", {
               total_spent: total_spent,
               nb_orders: nb_orders,
               first_order: first_order,
@@ -832,14 +870,14 @@ function () {
 
           case 28:
           case "end":
-            return _context8.stop();
+            return _context9.stop();
         }
       }
-    }, _callee8, this, [[11, 15, 19, 27], [20,, 22, 26]]);
+    }, _callee9, this, [[11, 15, 19, 27], [20,, 22, 26]]);
   }));
 
-  return function getOrdersCustomerStat(_x13) {
-    return _ref8.apply(this, arguments);
+  return function getOrdersCustomerStat(_x14) {
+    return _ref9.apply(this, arguments);
   };
 }();
 
