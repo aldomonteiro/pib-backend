@@ -14,6 +14,7 @@ const schema = new Schema(
 );
 
 schema.index({ pageId: 1, kind: 1, name: 1 }, { unique: true });
+schema.index({ pageId: 1, id: 1 }, { unique: true });
 
 schema.plugin(paginate);
 

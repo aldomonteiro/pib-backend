@@ -28,76 +28,88 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(req, res) {
-    var sortObj, rangeObj, _configFilterQuery, filterField, filterValues, queryParam, query, count;
-
+    var sortObj, rangeObj, queryObj, filterObj, i, filter, value;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.prev = 0;
-            sortObj = req.query.sort ? (0, _util2.configSortQuery)(req.query.sort) : {
-              first_name: 'ASC'
-            };
-            rangeObj = (0, _util2.configRangeQueryNew)(req.query.range);
-            _configFilterQuery = (0, _util2.configFilterQuery)(req.query.filter), filterField = _configFilterQuery.filterField, filterValues = _configFilterQuery.filterValues;
-            queryParam = {};
+            try {
+              // Getting the sort from the requisition
+              sortObj = (0, _util2.configSortQuery)(req.query.sort); // Getting the range from the requisition
 
-            if (req.currentUser.activePage) {
-              queryParam['pageId'] = req.currentUser.activePage;
-            }
+              rangeObj = (0, _util2.configRangeQuery)(req.query.range);
+              queryObj = {};
 
-            if (filterField && filterValues) {
-              if (typeof filterValues === 'Array') {
-                queryParam[filterField] = {
-                  $in: filterValues
-                };
-              } else {
-                queryParam[filterField] = filterValues;
-              }
-            }
+              if (req.query.filter) {
+                filterObj = (0, _util2.configFilterQueryMultiple)(req.query.filter);
 
-            if (rangeObj) {
-              query = _customers.default.find(queryParam).sort(sortObj).skip(rangeObj.offset).limit(rangeObj.limit);
-            } else {
-              query = _customers.default.find(queryParam).sort(sortObj);
-            }
+                if (filterObj && filterObj.filterField && filterObj.filterField.length) {
+                  for (i = 0; i < filterObj.filterField.length; i++) {
+                    filter = filterObj.filterField[i];
+                    value = filterObj.filterValues[i];
 
-            _context.next = 10;
-            return _customers.default.estimatedDocumentCount({
-              pageId: req.currentUser.activePage
-            });
+                    if (Array.isArray(value)) {
+                      queryObj[filter] = {
+                        $in: value
+                      };
+                    } else queryObj[filter] = value;
+                  }
+                }
 
-          case 10:
-            count = _context.sent;
-            query.exec(function (err, result) {
-              if (err) {
-                res.status(500).json({
-                  message: err.errmsg
+                console.info({
+                  filter: req.query.filter
+                }, {
+                  filterObj: filterObj
                 });
-              } else {
-                res.setHeader('Content-Range', _util.default.format("customers %d-%d/%d", 1, result.length - 1, count));
-                res.status(200).json(result);
               }
-            });
-            _context.next = 18;
-            break;
 
-          case 14:
-            _context.prev = 14;
-            _context.t0 = _context["catch"](0);
-            console.error({
-              customerGetAllErr: _context.t0
-            });
-            res.status(500).json({
-              message: err.message
-            });
+              if (req.currentUser.activePage) {
+                queryObj["pageId"] = req.currentUser.activePage;
+              }
 
-          case 18:
+              _customers.default.find(queryObj).sort(sortObj).exec(function (err, result) {
+                if (err) {
+                  res.status(500).json({
+                    message: err.errmsg
+                  });
+                } else {
+                  var _rangeIni = 0;
+                  var _rangeEnd = result.length;
+
+                  if (rangeObj) {
+                    _rangeIni = rangeObj.offset <= result.length ? rangeObj.offset : result.length;
+                    _rangeEnd = rangeObj.offset + rangeObj.limit <= result.length ? rangeObj.offset + rangeObj.limit : result.length;
+                  }
+
+                  var _totalCount = result.length;
+                  var resultArray = new Array();
+
+                  for (var _i = _rangeIni; _i < _rangeEnd; _i++) {
+                    resultArray.push(result[_i]);
+                  }
+
+                  console.info({
+                    resultArray: resultArray
+                  });
+                  res.setHeader('Content-Range', _util.default.format("customers %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
+                  res.status(200).json(resultArray);
+                }
+              });
+            } catch (customerGetAllErr) {
+              console.error({
+                customerGetAllErr: customerGetAllErr
+              });
+              res.status(500).json({
+                message: err.message
+              });
+            }
+
+          case 1:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this, [[0, 14]]);
+    }, _callee, this);
   }));
 
   return function customer_get_all(_x, _x2) {

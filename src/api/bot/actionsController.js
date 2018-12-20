@@ -36,7 +36,8 @@ import {
     updateItemAskOptions,
     showOrderOrAskForPhone,
     showSplit,
-    showFullOrder
+    showFullOrder,
+    askForWantOrder
 } from './botController';
 
 
@@ -47,15 +48,31 @@ export const sendActions = async ({ action, bot, sender, pageID, multiple, split
     try {
         let out = new Elements();
         switch (action) {
-            case 'SEND_WELCOME':
+            case 'BASIC_REPLY':
                 await bot.startTyping(sender.id);
                 await Bot.wait(500);
-                out = await sendWelcomeMessage(pageID, sender)
-                await Bot.wait(500);
+                out = await basicReply(data);
                 await bot.stopTyping(sender.id);
                 await bot.send(sender.id, out);
 
                 break;
+            case 'SEND_WELCOME':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await sendWelcomeMessage(pageID, sender)
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+
+                break;
+            case 'SEND_MAIN_MENU':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await sendMainMenu()
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+
+                break;
+
             case 'SEND_CARDAPIO':
                 await bot.startTyping(sender.id);
                 await Bot.wait(500);
@@ -63,7 +80,13 @@ export const sendActions = async ({ action, bot, sender, pageID, multiple, split
                 await bot.stopTyping(sender.id);
                 await bot.send(sender.id, out);
                 break;
-
+            case 'ASK_FOR_ORDER':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                out = await askForWantOrder(pageID, sender.id);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+                break;
             case 'ASK_FOR_PHONE':
                 await bot.startTyping(sender.id);
                 await Bot.wait(800);
@@ -224,11 +247,11 @@ export const getFlavorsAndToppings = async (pageID, sizeID) => {
             }
             if (sizeID) {
                 if (flavor.price) {
-                    flavor.toppingsNames = await getToppingsNames(flavor.toppings);
+                    flavor.toppingsNames = await getToppingsNames(flavor.toppings, pageID);
                     flavorsWithPrice.push(flavor);
                 }
             } else {
-                flavor.toppingsNames = await getToppingsNames(flavor.toppings);
+                flavor.toppingsNames = await getToppingsNames(flavor.toppings, pageID);
                 flavorsWithPrice.push(flavor);
             }
         }

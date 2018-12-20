@@ -7,8 +7,6 @@ exports.default = void 0;
 
 var _mongoose = _interopRequireDefault(require("mongoose"));
 
-var _mongoosePaginate = _interopRequireDefault(require("mongoose-paginate"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Schema = _mongoose.default.Schema;
@@ -20,11 +18,17 @@ var schema = new Schema({
   topping: {
     type: String,
     required: true
-  }
+  },
+  pageId: String
 }, {
   timestamps: true
 });
-schema.plugin(_mongoosePaginate.default);
+schema.index({
+  pageId: 1,
+  id: 1
+}, {
+  unique: true
+});
 
 var _default = _mongoose.default.model("toppings", schema);
 

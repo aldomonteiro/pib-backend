@@ -31,7 +31,7 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(req, res) {
-    var sortObj, rangeObj, options, query;
+    var sortObj, rangeObj, options, query, pageID;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -48,10 +48,11 @@ function () {
               leanWithId: false
             };
             query = {};
+            pageID = req.currentUser.activePage;
 
-            if (req.currentUser.activePage) {
+            if (pageID) {
               query = _flavors.default.find({
-                pageId: req.currentUser.activePage
+                pageId: pageID
               });
             }
 
@@ -88,7 +89,7 @@ function () {
                         }
 
                         _context.next = 9;
-                        return (0, _toppingsController.getToppings)(result.docs[i].toppings);
+                        return (0, _toppingsController.getToppings)(result.docs[i].toppings, pageID);
 
                       case 9:
                         tn = _context.sent;
@@ -118,7 +119,7 @@ function () {
               };
             }());
 
-          case 6:
+          case 7:
           case "end":
             return _context2.stop();
         }
@@ -169,9 +170,17 @@ var flavor_create = function flavor_create(req, res) {
     newRecord.save().then(function (result) {
       res.status(200).json(result);
     }).catch(function (err) {
-      res.status(500).json({
-        message: err.errmsg
-      });
+      console.error(err);
+
+      if (err.code === 11000) {
+        res.status(500).json({
+          message: 'pos.messages.duplicatedKey'
+        });
+      } else {
+        res.status(500).json({
+          message: err.errmsg
+        });
+      }
     });
   }
 }; // UPDATE

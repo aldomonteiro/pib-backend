@@ -43,6 +43,12 @@ schema.index({
 }, {
   unique: true
 });
+schema.index({
+  pageId: 1,
+  id: 1
+}, {
+  unique: true
+});
 schema.plugin(_mongoosePaginate.default);
 
 var _default = _mongoose.default.model("beverages", schema);

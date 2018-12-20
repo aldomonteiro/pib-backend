@@ -23,8 +23,10 @@ export const flavor_get_all = async (req, res) => {
 
     var query = {};
 
-    if (req.currentUser.activePage) {
-        query = Flavor.find({ pageId: req.currentUser.activePage });
+    const pageID = req.currentUser.activePage;
+
+    if (pageID) {
+        query = Flavor.find({ pageId: pageID });
     }
 
     Flavor.paginate(query, options, async (err, result) => {
@@ -34,7 +36,7 @@ export const flavor_get_all = async (req, res) => {
             res.setHeader('Content-Range', util.format("flavors %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
 
             for (var i = 0; i < result.docs.length; i++) {
-                const tn = await getToppings(result.docs[i].toppings);
+                const tn = await getToppings(result.docs[i].toppings, pageID);
                 for (var k = 0; k < tn.length; k++) {
                     result.docs[i].tn = result.docs[i].tn ? result.docs[i].tn + ' ' + tn[k].topping : tn[k].topping;
                 }
@@ -80,7 +82,12 @@ export const flavor_create = (req, res) => {
                 res.status(200).json(result);
             })
             .catch((err) => {
-                res.status(500).json({ message: err.errmsg });
+                console.error(err);
+                if (err.code === 11000) {
+                    res.status(500).json({ message: 'pos.messages.duplicatedKey' });
+                } else {
+                    res.status(500).json({ message: err.errmsg });
+                }
             });
     }
 }

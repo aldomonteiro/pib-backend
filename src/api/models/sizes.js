@@ -14,6 +14,8 @@ const schema = new Schema(
   { timestamps: true }
 );
 
+schema.index({ pageId: 1, id: 1 }, { unique: true });
+
 schema.plugin(paginate);
 
 export default mongoose.model("sizes", schema);

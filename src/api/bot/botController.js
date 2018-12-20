@@ -43,9 +43,12 @@ export const sendErrorMsg = async (_errorMsg) => {
     return out;
 }
 
-export const basicReply = async () => {
+export const basicReply = async (replyText) => {
     const out = new Elements();
-    out.add({ text: 'Hi, how are you doing?' });
+    if (!replyText) {
+        replyText = 'Hi, how are you doing?';
+    }
+    out.add({ text: replyText });
     return out;
 }
 
@@ -96,6 +99,25 @@ export const sendCardapio = async (pageID) => {
 
     return out;
 }
+
+/**
+ * Send Yes or No to the user asking if he wants to place an order right now.
+ * @param {*} pageId 
+ * @param {*} userId 
+ */
+export const askForWantOrder = async (pageId, userId) => {
+    const out = new Elements();
+    let _txt = 'Agora que você viu nosso cardápio, você está pronto para fazer o pedido?';
+    out.add({ text: _txt });
+
+    const replies = new QuickReplies();
+    // replies.add({ text: "Quantidade", data: "change_quantity", event: 'ORDER_CHANGE' });
+    replies.add({ text: "Sim", data: "wantorder_yes", event: 'ORDER_WANT_ORDER' });
+    replies.add({ text: "Não", data: "wantorder_no", event: 'ORDER_WANT_ORDER' });
+    out.setQuickReplies(replies);
+    return out;
+}
+
 
 /**
  * Question No.01

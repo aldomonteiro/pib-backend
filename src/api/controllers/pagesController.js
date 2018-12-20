@@ -13,6 +13,7 @@ import { deleteManyItems } from './itemsController';
 import { deleteManyOrders } from './ordersController';
 import { deleteManyPricings } from './pricingsController';
 import { deleteManySizes } from './sizesController';
+import { deleteManyToppings } from './toppingsController';
 import { deleteManyStores } from './storesController';
 import { removeUserActivePage } from "./usersController";
 
@@ -72,34 +73,35 @@ export const page_resources_get_one = (req, res) => {
  * @param {*} res 
  */
 export const page_resources_delete = async (req, res) => {
+    let lastResult;
     try {
         console.info("page_resources_delete:", req.params);
 
         const pageID = req.params.id;
         const { accessToken } = await getOnePageToken(pageID);
 
-        await deleteFacebookFields(pageID, accessToken);
+        lastResult = await deleteFacebookFields(pageID, accessToken);
 
-        await deleteManyBeverages(pageID);
-        await deleteManyCustomers(pageID);
-        await deleteManyExtras(pageID);
-        await deleteManyFlavors(pageID);
-        await deleteManyItems(pageID);
-        await deleteManyOrders(pageID);
-        await deleteManyPricings(pageID);
-        await deleteManySizes(pageID);
-        await deleteManyStores(pageID);
+        lastResult = await deleteManyBeverages(pageID);
+        lastResult = await deleteManyCustomers(pageID);
+        lastResult = await deleteManyExtras(pageID);
+        lastResult = await deleteManyFlavors(pageID);
+        lastResult = await deleteManyItems(pageID);
+        lastResult = await deleteManyOrders(pageID);
+        lastResult = await deleteManyPricings(pageID);
+        lastResult = await deleteManySizes(pageID);
+        lastResult = await deleteManyStores(pageID);
+        lastResult = await deleteManyToppings(pageID);
 
-        const result2 = await unsubscribedApps(pageID, accessToken);
-        console.info('unsubscribedApps', result2);
-        const result3 = await removeUserActivePage(req.currentUser.userID);
-        if (!result3) {
+        lastResult = await unsubscribedApps(pageID, accessToken);
+        lastResult = await removeUserActivePage(req.currentUser.userID);
+        if (!lastResult) {
             console.error(`User ${userID} was not found and removeUserActivePage failed`);
         }
-        const result = await Page.findOneAndDelete({ id: pageID }).exec();
-        console.info('Page.findOneAndRemove: ', result);
-        res.status(200).json(result);
+        lastResult = await Page.findOneAndDelete({ id: pageID }).exec();
+        res.status(200).json(lastResult);
     } catch (pageDeleteErr) {
+        console.info(lastResult);
         console.error(pageDeleteErr);
         res.status(500).json({ message: pageDeleteErr.message });
     }
@@ -134,6 +136,7 @@ export const page_update = async (req, res) => {
                     id: pageID,
                     name: req.body.name,
                     userID: req.currentUser.userID,
+                    activeBot: false,
                 });
                 isNew = true;
             }
@@ -156,9 +159,9 @@ export const page_update = async (req, res) => {
 
             await page.save();
 
-            if (isNew) {
-                page = await initialSetup(pageID);
-            }
+            // if (isNew) {
+            page = await initialSetup(pageID);
+            // }
             res.status(200).json(page);
         }
     } catch (pageUpdateError) {
@@ -187,10 +190,17 @@ export const subscribedApps = async (pageId, accessToken) => {
  */
 export const unsubscribedApps = async (pageId, accessToken) => {
 
-    // https://graph.facebook.com/v3.1/{page-id}/subscribed_apps?access_token={}
     const facebookUrl = `https://graph.facebook.com/v3.1/${pageId}/subscribed_apps?access_token=${accessToken}`
 
-    return await axios.delete(facebookUrl);
+    const result = await axios.get(facebookUrl);
+    if (result.status === 200 && result.data && result.data.data && result.data.data.length > 0) {
+        console.info('unsubscribedApps found app:', result);
+        const result1 = await axios.delete(facebookUrl);
+        console.info('unsubscribedApps deleted app:', result1);
+        return result1;
+    } else {
+        return null;
+    }
 }
 
 
@@ -265,12 +275,26 @@ const setFacebookFields = async (pageId, accessToken, _greeting) => {
 
 const deleteFacebookFields = async (pageId, accessToken) => {
     const facebookUrl = `https://graph.facebook.com/v2.6/me/messenger_profile?access_token=${accessToken}`;
-    return await axios.delete(facebookUrl, {
+
+    const result = await axios.get(facebookUrl, {
         headers: { 'Content-Type': 'application/json' },
-        params: {
-            fields: ["get_started", "persistent_menu", "greeting"]
-        }
+        fields: ["get_started", "persistent_menu", "greeting"]
     });
+
+    if (result.status === 200 && result.data && result.data.data && result.data.data.length > 0) {
+        console.info('deleteFacebookFields found fields:', result);
+        const result1 = await axios.delete(facebookUrl, {
+            headers: { 'Content-Type': 'application/json' },
+            params: {
+                fields: ["get_started", "persistent_menu", "greeting"]
+            }
+        });
+        console.info('deleteFacebookFields deleted fields:', result1);
+        return result1;
+    } else {
+        console.info('deleteFacebookFields did not found fields:', result);
+        return null;
+    }
 }
 
 // export const page_update = async (req, res) => {

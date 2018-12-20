@@ -17,6 +17,7 @@ const schema = new mongoose.Schema({
     initialSetupPricings: { type: Number },
     initialSetupStores: { type: Number },
     initialSetupBeverages: { type: Number },
+    initialSetupToppings: { type: Number },
 }, { timestamps: true });
 
 //TODO: store access_token expiring date

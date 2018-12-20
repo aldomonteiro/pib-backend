@@ -54,6 +54,9 @@ var schema = new _mongoose.default.Schema({
   },
   initialSetupBeverages: {
     type: Number
+  },
+  initialSetupToppings: {
+    type: Number
   }
 }, {
   timestamps: true

@@ -2,44 +2,59 @@ import Customer from '../models/customers';
 import axios from 'axios';
 import util from "util";
 import { shuffle } from '../util/util';
-import { configSortQuery, configRangeQueryNew, configFilterQuery } from '../util/util';
+import { configSortQuery, configRangeQuery, configFilterQueryMultiple } from '../util/util';
 import { getOrdersCustomerStat } from './ordersController';
 
 // List all customers
 export const customer_get_all = async (req, res) => {
     try {
-        let sortObj = req.query.sort ? configSortQuery(req.query.sort) : { first_name: 'ASC' };
-        const rangeObj = configRangeQueryNew(req.query.range);
-        const { filterField, filterValues } = configFilterQuery(req.query.filter);
+        // Getting the sort from the requisition
+        let sortObj = configSortQuery(req.query.sort);
+        // Getting the range from the requisition
+        let rangeObj = configRangeQuery(req.query.range);
 
-        let queryParam = {};
-        if (req.currentUser.activePage) {
-            queryParam['pageId'] = req.currentUser.activePage;
-        }
+        let queryObj = {};
+        if (req.query.filter) {
+            const filterObj = configFilterQueryMultiple(req.query.filter);
 
-        if (filterField && filterValues) {
-            if (typeof filterValues === 'Array') {
-                queryParam[filterField] = { $in: filterValues };
-            } else {
-                queryParam[filterField] = filterValues;
+            if (filterObj && filterObj.filterField && filterObj.filterField.length) {
+                for (let i = 0; i < filterObj.filterField.length; i++) {
+                    const filter = filterObj.filterField[i];
+                    const value = filterObj.filterValues[i];
+                    if (Array.isArray(value)) {
+                        queryObj[filter] = { $in: value };
+                    }
+                    else
+                        queryObj[filter] = value;
+                }
             }
+
+            console.info({ filter: req.query.filter }, { filterObj: filterObj });
+        }
+        if (req.currentUser.activePage) {
+            queryObj["pageId"] = req.currentUser.activePage;
         }
 
-        let query;
-        if (rangeObj) {
-            query = Customer.find(queryParam).sort(sortObj).skip(rangeObj.offset).limit(rangeObj.limit);
-        } else {
-            query = Customer.find(queryParam).sort(sortObj);
-        }
-
-        const count = await Customer.estimatedDocumentCount({ pageId: req.currentUser.activePage });
-
-        query.exec((err, result) => {
+        Customer.find(queryObj).sort(sortObj).exec((err, result) => {
             if (err) {
                 res.status(500).json({ message: err.errmsg });
             } else {
-                res.setHeader('Content-Range', util.format("customers %d-%d/%d", 1, result.length - 1, count));
-                res.status(200).json(result);
+                let _rangeIni = 0;
+                let _rangeEnd = result.length;
+                if (rangeObj) {
+                    _rangeIni = rangeObj.offset <= result.length ? rangeObj.offset : result.length;
+                    _rangeEnd = (rangeObj.offset + rangeObj.limit) <= result.length ? rangeObj.offset + rangeObj.limit : result.length;
+                }
+                let _totalCount = result.length;
+                let resultArray = new Array();
+                for (let i = _rangeIni; i < _rangeEnd; i++) {
+                    resultArray.push(result[i])
+                }
+
+                console.info({ resultArray });
+
+                res.setHeader('Content-Range', util.format("customers %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
+                res.status(200).json(resultArray);
             }
         });
     } catch (customerGetAllErr) {

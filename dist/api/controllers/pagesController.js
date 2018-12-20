@@ -33,6 +33,8 @@ var _pricingsController = require("./pricingsController");
 
 var _sizesController = require("./sizesController");
 
+var _toppingsController = require("./toppingsController");
+
 var _storesController = require("./storesController");
 
 var _usersController = require("./usersController");
@@ -156,7 +158,7 @@ function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee3(req, res) {
-    var pageID, _ref4, accessToken, result2, result3, result;
+    var lastResult, pageID, _ref4, accessToken;
 
     return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
@@ -175,84 +177,98 @@ function () {
             return deleteFacebookFields(pageID, accessToken);
 
           case 9:
-            _context3.next = 11;
+            lastResult = _context3.sent;
+            _context3.next = 12;
             return (0, _beveragesController.deleteManyBeverages)(pageID);
 
-          case 11:
-            _context3.next = 13;
+          case 12:
+            lastResult = _context3.sent;
+            _context3.next = 15;
             return (0, _customersController.deleteManyCustomers)(pageID);
 
-          case 13:
-            _context3.next = 15;
+          case 15:
+            lastResult = _context3.sent;
+            _context3.next = 18;
             return (0, _extrasController.deleteManyExtras)(pageID);
 
-          case 15:
-            _context3.next = 17;
+          case 18:
+            lastResult = _context3.sent;
+            _context3.next = 21;
             return (0, _flavorsController.deleteManyFlavors)(pageID);
 
-          case 17:
-            _context3.next = 19;
+          case 21:
+            lastResult = _context3.sent;
+            _context3.next = 24;
             return (0, _itemsController.deleteManyItems)(pageID);
 
-          case 19:
-            _context3.next = 21;
+          case 24:
+            lastResult = _context3.sent;
+            _context3.next = 27;
             return (0, _ordersController.deleteManyOrders)(pageID);
 
-          case 21:
-            _context3.next = 23;
+          case 27:
+            lastResult = _context3.sent;
+            _context3.next = 30;
             return (0, _pricingsController.deleteManyPricings)(pageID);
 
-          case 23:
-            _context3.next = 25;
+          case 30:
+            lastResult = _context3.sent;
+            _context3.next = 33;
             return (0, _sizesController.deleteManySizes)(pageID);
 
-          case 25:
-            _context3.next = 27;
+          case 33:
+            lastResult = _context3.sent;
+            _context3.next = 36;
             return (0, _storesController.deleteManyStores)(pageID);
 
-          case 27:
-            _context3.next = 29;
+          case 36:
+            lastResult = _context3.sent;
+            _context3.next = 39;
+            return (0, _toppingsController.deleteManyToppings)(pageID);
+
+          case 39:
+            lastResult = _context3.sent;
+            _context3.next = 42;
             return unsubscribedApps(pageID, accessToken);
 
-          case 29:
-            result2 = _context3.sent;
-            console.info('unsubscribedApps', result2);
-            _context3.next = 33;
+          case 42:
+            lastResult = _context3.sent;
+            _context3.next = 45;
             return (0, _usersController.removeUserActivePage)(req.currentUser.userID);
 
-          case 33:
-            result3 = _context3.sent;
+          case 45:
+            lastResult = _context3.sent;
 
-            if (!result3) {
+            if (!lastResult) {
               console.error("User ".concat(userID, " was not found and removeUserActivePage failed"));
             }
 
-            _context3.next = 37;
+            _context3.next = 49;
             return _pages.default.findOneAndDelete({
               id: pageID
             }).exec();
 
-          case 37:
-            result = _context3.sent;
-            console.info('Page.findOneAndRemove: ', result);
-            res.status(200).json(result);
-            _context3.next = 46;
+          case 49:
+            lastResult = _context3.sent;
+            res.status(200).json(lastResult);
+            _context3.next = 58;
             break;
 
-          case 42:
-            _context3.prev = 42;
+          case 53:
+            _context3.prev = 53;
             _context3.t0 = _context3["catch"](0);
+            console.info(lastResult);
             console.error(_context3.t0);
             res.status(500).json({
               message: _context3.t0.message
             });
 
-          case 46:
+          case 58:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, this, [[0, 42]]);
+    }, _callee3, this, [[0, 53]]);
   }));
 
   return function page_resources_delete(_x5, _x6) {
@@ -305,7 +321,7 @@ function () {
 
           case 15:
             res.status(200).json(page);
-            _context4.next = 50;
+            _context4.next = 49;
             break;
 
           case 18:
@@ -328,7 +344,7 @@ function () {
 
           case 26:
             res.status(200).json(page);
-            _context4.next = 50;
+            _context4.next = 49;
             break;
 
           case 29:
@@ -338,7 +354,8 @@ function () {
               page = new _pages.default({
                 id: pageID,
                 name: req.body.name,
-                userID: req.currentUser.userID
+                userID: req.currentUser.userID,
+                activeBot: false
               });
               isNew = true;
             }
@@ -375,26 +392,20 @@ function () {
             return page.save();
 
           case 45:
-            if (!isNew) {
-              _context4.next = 49;
-              break;
-            }
-
-            _context4.next = 48;
+            _context4.next = 47;
             return (0, _systemController.initialSetup)(pageID);
 
-          case 48:
+          case 47:
             page = _context4.sent;
-
-          case 49:
+            // }
             res.status(200).json(page);
 
-          case 50:
-            _context4.next = 56;
+          case 49:
+            _context4.next = 55;
             break;
 
-          case 52:
-            _context4.prev = 52;
+          case 51:
+            _context4.prev = 51;
             _context4.t0 = _context4["catch"](0);
             console.error({
               pageUpdateError: _context4.t0
@@ -403,12 +414,12 @@ function () {
               message: _context4.t0.message
             });
 
-          case 56:
+          case 55:
           case "end":
             return _context4.stop();
         }
       }
-    }, _callee4, this, [[0, 52]]);
+    }, _callee4, this, [[0, 51]]);
   }));
 
   return function page_update(_x7, _x8) {
@@ -470,20 +481,36 @@ function () {
   var _ref7 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee6(pageId, accessToken) {
-    var facebookUrl;
+    var facebookUrl, result, result1;
     return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
-            // https://graph.facebook.com/v3.1/{page-id}/subscribed_apps?access_token={}
             facebookUrl = "https://graph.facebook.com/v3.1/".concat(pageId, "/subscribed_apps?access_token=").concat(accessToken);
             _context6.next = 3;
-            return _axios.default.delete(facebookUrl);
+            return _axios.default.get(facebookUrl);
 
           case 3:
-            return _context6.abrupt("return", _context6.sent);
+            result = _context6.sent;
 
-          case 4:
+            if (!(result.status === 200 && result.data && result.data.data && result.data.data.length > 0)) {
+              _context6.next = 13;
+              break;
+            }
+
+            console.info('unsubscribedApps found app:', result);
+            _context6.next = 8;
+            return _axios.default.delete(facebookUrl);
+
+          case 8:
+            result1 = _context6.sent;
+            console.info('unsubscribedApps deleted app:', result1);
+            return _context6.abrupt("return", result1);
+
+          case 13:
+            return _context6.abrupt("return", null);
+
+          case 14:
           case "end":
             return _context6.stop();
         }
@@ -740,13 +767,30 @@ function () {
   var _ref13 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee12(pageId, accessToken) {
-    var facebookUrl;
+    var facebookUrl, result, result1;
     return regeneratorRuntime.wrap(function _callee12$(_context12) {
       while (1) {
         switch (_context12.prev = _context12.next) {
           case 0:
             facebookUrl = "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=".concat(accessToken);
             _context12.next = 3;
+            return _axios.default.get(facebookUrl, {
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              fields: ["get_started", "persistent_menu", "greeting"]
+            });
+
+          case 3:
+            result = _context12.sent;
+
+            if (!(result.status === 200 && result.data && result.data.data && result.data.data.length > 0)) {
+              _context12.next = 13;
+              break;
+            }
+
+            console.info('deleteFacebookFields found fields:', result);
+            _context12.next = 8;
             return _axios.default.delete(facebookUrl, {
               headers: {
                 'Content-Type': 'application/json'
@@ -756,10 +800,16 @@ function () {
               }
             });
 
-          case 3:
-            return _context12.abrupt("return", _context12.sent);
+          case 8:
+            result1 = _context12.sent;
+            console.info('deleteFacebookFields deleted fields:', result1);
+            return _context12.abrupt("return", result1);
 
-          case 4:
+          case 13:
+            console.info('deleteFacebookFields did not found fields:', result);
+            return _context12.abrupt("return", null);
+
+          case 15:
           case "end":
             return _context12.stop();
         }

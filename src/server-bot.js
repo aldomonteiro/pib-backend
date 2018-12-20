@@ -189,22 +189,10 @@ app.listen(process.env.FB_WEBHOOK_PORT, () => console.log(`Bot server listening 
 bot.on('GET_STARTED', async (message) => {
   const { sender } = message;
   try {
-    // Send Welcome Message
-    // await bot.startTyping(sender.id);
-    // const out1 = await sendWelcomeMessage(sender, message.recipient.id)
-    // await Bot.wait(1000);
-    // await bot.stopTyping(sender.id);
-    // await bot.send(sender.id, out1);
-
     await sendActions({ action: 'SEND_WELCOME', bot, sender, pageID: message.recipient.id });
 
     // Send Main Menu
-    await bot.startTyping(sender.id);
-    const out2 = await sendMainMenu();
-    await Bot.wait(1000);
-    await bot.stopTyping(sender.id);
-    await bot.send(sender.id, out2);
-
+    await sendActions({ action: 'SEND_MAIN_MENU', bot, sender, pageID: message.recipient.id });
   } catch (error) {
     console.error('GET_STARTED error:', error.message);
     const outError = await sendErrorMsg(error.message);
@@ -228,11 +216,12 @@ bot.on('MAIN-MENU', async (message, data) => {
       // await bot.stopTyping(sender.id);
       // await bot.send(sender.id, out);
       await sendActions({ action: 'SEND_CARDAPIO', bot, sender, pageID: message.recipient.id });
-
+      await Bot.wait(2000);
+      await sendActions({ action: 'ASK_FOR_ORDER', bot, sender, pageID: message.recipient.id });
     } else if (data === 'PEDIDO_PAYLOAD') {
       // Show saved address or ask for location
       await bot.startTyping(sender.id);
-      await Bot.wait(1000);
+      await Bot.wait(500);
       const user = await bot.fetchUser(sender.id);
       const answer = await confirmAddressOrAskLocation(recipient.id, sender.id, user);
       await bot.stopTyping(sender.id);
@@ -242,6 +231,30 @@ bot.on('MAIN-MENU', async (message, data) => {
       const out = await sendHorario(message.recipient.id);
       await bot.stopTyping(sender.id);
       await bot.send(sender.id, out);
+    }
+  } catch (mainMenuError) {
+    console.error({ mainMenuError });
+    const outError = await sendErrorMsg(mainMenuError.message);
+    await bot.stopTyping(sender.id);
+    await bot.send(sender.id, outError);
+  }
+});
+
+bot.on('ORDER_WANT_ORDER', async (message, data) => {
+  const { sender, recipient } = message;
+  try {
+    if (data === 'wantorder_yes') {
+      // Show saved address or ask for location
+      await bot.startTyping(sender.id);
+      await Bot.wait(500);
+      const user = await bot.fetchUser(sender.id);
+      const answer = await confirmAddressOrAskLocation(recipient.id, sender.id, user);
+      await bot.stopTyping(sender.id);
+      await bot.send(sender.id, answer);
+    } else if (data === 'wantorder_no') {
+      await sendActions({ action: 'BASIC_REPLY', bot, sender, pageID: message.recipient.id, data: 'Ok, vou enviar as opções então. Para continuar é só clicar em uma delas' });
+      // Send Main Menu
+      await sendActions({ action: 'SEND_MAIN_MENU', bot, sender, pageID: message.recipient.id });
     }
   } catch (mainMenuError) {
     console.error({ mainMenuError });
