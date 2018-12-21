@@ -136,14 +136,17 @@ var topping_create = function topping_create(req, res) {
       pageId: pageID
     });
     newRecord.save().then(function (result) {
-      res.status(200).json({
-        id: result.id,
-        topping: result.topping
-      });
+      res.status(200).json(result);
     }).catch(function (err) {
-      res.status(500).json({
-        message: err.errmsg
-      });
+      if (err.code === 11000) {
+        res.status(500).json({
+          message: 'pos.messages.duplicatedKey'
+        });
+      } else {
+        res.status(500).json({
+          message: err.errmsg
+        });
+      }
     });
   }
 }; // UPDATE

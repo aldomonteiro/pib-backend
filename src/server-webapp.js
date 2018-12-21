@@ -90,6 +90,11 @@ const connect = () => {
 connect();
 
 mongoose.set('useCreateIndex', true);
+
+if (env !== 'production') { // dev
+  mongoose.set('debug', true);
+}
+
 mongoose.Promise = Promise;
 
 mongoose.connection.on('error', () => {

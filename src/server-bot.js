@@ -275,21 +275,10 @@ bot.on('message', async (message) => {
 
   try {
     if (location) {
-      console.info({ location });
-
-      await bot.startTyping(sender.id);
-      await Bot.wait(1000);
-      const user = await bot.fetchUser(sender.id);
-      const answer = await confirmLocationAddress(recipient.id, sender.id, location, user);
-      await bot.stopTyping(sender.id);
-      await bot.send(sender.id, answer);
+      await sendActions({ action: 'LOCATION_CONFIRM_ADDRESS', bot, sender, pageID: recipient.id, location });
     }
     else if (message.text === 'hello' || message.text === 'hi') {
-      await bot.startTyping(sender.id);
-      await Bot.wait(1000);
-      const answer = await basicReply();
-      await bot.stopTyping(sender.id);
-      await bot.send(sender.id, answer);
+      await sendActions({ action: 'BASIC_REPLY', bot, sender, pageID: message.recipient.id, data: 'Hello, how are you doing? Currently, I am working only in Portuguese, but, soon enough, your favorite restaurant will be with me.' });
     }
     else {
       await bot.startTyping(sender.id);

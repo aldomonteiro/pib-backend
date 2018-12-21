@@ -560,8 +560,7 @@ function () {
   var _ref7 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee6(message) {
-    var sender, recipient, location, user, answer, _answer, _answer2, outError;
-
+    var sender, recipient, location, answer, outError;
     return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
@@ -570,121 +569,91 @@ function () {
             _context6.prev = 1;
 
             if (!location) {
-              _context6.next = 20;
+              _context6.next = 7;
               break;
             }
 
-            console.info({
+            _context6.next = 5;
+            return (0, _actionsController.sendActions)({
+              action: 'LOCATION_CONFIRM_ADDRESS',
+              bot: bot,
+              sender: sender,
+              pageID: recipient.id,
               location: location
             });
-            _context6.next = 6;
-            return bot.startTyping(sender.id);
 
-          case 6:
-            _context6.next = 8;
-            return _facebookMessengerBot.Bot.wait(1000);
+          case 5:
+            _context6.next = 23;
+            break;
 
-          case 8:
+          case 7:
+            if (!(message.text === 'hello' || message.text === 'hi')) {
+              _context6.next = 12;
+              break;
+            }
+
             _context6.next = 10;
-            return bot.fetchUser(sender.id);
+            return (0, _actionsController.sendActions)({
+              action: 'BASIC_REPLY',
+              bot: bot,
+              sender: sender,
+              pageID: message.recipient.id,
+              data: 'Hello, how are you doing? Currently, I am working only in Portuguese, but, soon enough, your favorite restaurant will be with me.'
+            });
 
           case 10:
-            user = _context6.sent;
-            _context6.next = 13;
-            return (0, _botController.confirmLocationAddress)(recipient.id, sender.id, location, user);
+            _context6.next = 23;
+            break;
 
-          case 13:
-            answer = _context6.sent;
+          case 12:
+            _context6.next = 14;
+            return bot.startTyping(sender.id);
+
+          case 14:
             _context6.next = 16;
-            return bot.stopTyping(sender.id);
+            return _facebookMessengerBot.Bot.wait(1000);
 
           case 16:
             _context6.next = 18;
-            return bot.send(sender.id, answer);
-
-          case 18:
-            _context6.next = 45;
-            break;
-
-          case 20:
-            if (!(message.text === 'hello' || message.text === 'hi')) {
-              _context6.next = 34;
-              break;
-            }
-
-            _context6.next = 23;
-            return bot.startTyping(sender.id);
-
-          case 23:
-            _context6.next = 25;
-            return _facebookMessengerBot.Bot.wait(1000);
-
-          case 25:
-            _context6.next = 27;
-            return (0, _botController.basicReply)();
-
-          case 27:
-            _answer = _context6.sent;
-            _context6.next = 30;
-            return bot.stopTyping(sender.id);
-
-          case 30:
-            _context6.next = 32;
-            return bot.send(sender.id, _answer);
-
-          case 32:
-            _context6.next = 45;
-            break;
-
-          case 34:
-            _context6.next = 36;
-            return bot.startTyping(sender.id);
-
-          case 36:
-            _context6.next = 38;
-            return _facebookMessengerBot.Bot.wait(1000);
-
-          case 38:
-            _context6.next = 40;
             return (0, _botController.confirmTypedText)(recipient.id, sender.id, message);
 
-          case 40:
-            _answer2 = _context6.sent;
-            _context6.next = 43;
+          case 18:
+            answer = _context6.sent;
+            _context6.next = 21;
             return bot.stopTyping(sender.id);
 
-          case 43:
-            _context6.next = 45;
-            return bot.send(sender.id, _answer2);
+          case 21:
+            _context6.next = 23;
+            return bot.send(sender.id, answer);
 
-          case 45:
-            _context6.next = 57;
+          case 23:
+            _context6.next = 35;
             break;
 
-          case 47:
-            _context6.prev = 47;
+          case 25:
+            _context6.prev = 25;
             _context6.t0 = _context6["catch"](1);
             console.error({
               onMessageError: _context6.t0
             });
-            _context6.next = 52;
+            _context6.next = 30;
             return (0, _botController.sendErrorMsg)(_context6.t0.message);
 
-          case 52:
+          case 30:
             outError = _context6.sent;
-            _context6.next = 55;
+            _context6.next = 33;
             return bot.stopTyping(sender.id);
 
-          case 55:
-            _context6.next = 57;
+          case 33:
+            _context6.next = 35;
             return bot.send(sender.id, outError);
 
-          case 57:
+          case 35:
           case "end":
             return _context6.stop();
         }
       }
-    }, _callee6, this, [[1, 47]]);
+    }, _callee6, this, [[1, 25]]);
   }));
 
   return function (_x12) {

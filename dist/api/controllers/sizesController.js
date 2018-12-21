@@ -136,9 +136,15 @@ var size_create = function size_create(req, res) {
     newRecord.save().then(function (result) {
       res.status(200).json(result);
     }).catch(function (err) {
-      res.status(500).json({
-        message: err.errmsg
-      });
+      if (err.code === 11000) {
+        res.status(500).json({
+          message: 'pos.messages.duplicatedKey'
+        });
+      } else {
+        res.status(500).json({
+          message: err.errmsg
+        });
+      }
     });
   }
 }; // UPDATE

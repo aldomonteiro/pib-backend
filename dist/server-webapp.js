@@ -108,6 +108,11 @@ connect();
 
 _mongoose.default.set('useCreateIndex', true);
 
+if (env !== 'production') {
+  // dev
+  _mongoose.default.set('debug', true);
+}
+
 _mongoose.default.Promise = _bluebird.default;
 
 _mongoose.default.connection.on('error', function () {

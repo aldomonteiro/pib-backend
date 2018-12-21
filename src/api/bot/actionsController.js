@@ -44,7 +44,7 @@ import {
 const QTY_1 = [1, "um", "uma"];
 
 
-export const sendActions = async ({ action, bot, sender, pageID, multiple, split, data, payload }) => {
+export const sendActions = async ({ action, bot, sender, pageID, multiple, split, data, payload, location }) => {
     try {
         let out = new Elements();
         switch (action) {
@@ -86,6 +86,15 @@ export const sendActions = async ({ action, bot, sender, pageID, multiple, split
                 out = await askForWantOrder(pageID, sender.id);
                 await bot.stopTyping(sender.id);
                 await bot.send(sender.id, out);
+                break;
+            case 'LOCATION_CONFIRM_ADDRESS':
+                await bot.startTyping(sender.id);
+                await Bot.wait(500);
+                const user = await bot.fetchUser(sender.id);
+                out = await confirmLocationAddress(recipient.id, sender.id, location, user);
+                await bot.stopTyping(sender.id);
+                await bot.send(sender.id, out);
+
                 break;
             case 'ASK_FOR_PHONE':
                 await bot.startTyping(sender.id);

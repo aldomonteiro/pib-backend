@@ -87,7 +87,11 @@ export const size_create = (req, res) => {
                 res.status(200).json(result);
             })
             .catch((err) => {
-                res.status(500).json({ message: err.errmsg });
+                if (err.code === 11000) {
+                    res.status(500).json({ message: 'pos.messages.duplicatedKey' });
+                } else {
+                    res.status(500).json({ message: err.errmsg });
+                }
             });
     }
 }
