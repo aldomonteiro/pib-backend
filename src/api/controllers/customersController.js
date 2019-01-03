@@ -144,6 +144,8 @@ export const getCustomerAddress = async (pageID, userID) => {
             addressData.state = customer.addr_state;
             addressData.city = customer.addr_city;
             addressData.postal_code = customer.addr_postalcode;
+            addressData.location_lat = customer.location_lat;
+            addressData.location_long = customer.location_long;
             return addressData;
         } else return null;
     } else return null;

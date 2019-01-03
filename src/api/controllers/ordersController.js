@@ -2,7 +2,8 @@ import Order from '../models/orders';
 import util from "util";
 import { updateItem, getItems, getItemsTotal } from './itemsController';
 import { customer_update } from './customersController';
-import { configSortQuery, configRangeQueryNew, configFilterQueryMultiple } from '../util/util';
+import { getStoreData } from './storesController';
+import { configSortQuery, configRangeQueryNew, configFilterQueryMultiple, distanceBetweenCoordinates } from '../util/util';
 import { DateTime } from 'luxon';
 // import { Bot, Elements } from 'facebook-messenger-bot';
 // import { getOnePageToken } from './pagesController';
@@ -55,24 +56,37 @@ export const order_get_all = async (req, res) => {
                 }
                 let _totalCount = result.length;
                 let ordersArray = new Array();
-                for (let i = _rangeIni; i < _rangeEnd; i++) {
-                    const order = result[i];
-                    const items = await getItems({ orderId: order.id, pageId: order.pageId });
-                    let jsonOrder = {
-                        id: order.id,
-                        pageId: order.pageId,
-                        customerId: order.customerId,
-                        userId: order.userId,
-                        phone: order.phone,
-                        address: order.address,
-                        status: order.status,
-                        status2: order.status2,
-                        qty_total: order.qty_total,
-                        total: order.total,
-                        createdAt: order.createdAt,
-                        items: items,
+                if (result && result.length && result.length > 0) {
+                    const store = await getStoreData(result[0].pageId);
+                    for (let i = _rangeIni; i < _rangeEnd; i++) {
+                        const order = result[i];
+                        const items = await getItems({ orderId: order.id, pageId: order.pageId, completeItems: false });
+                        const distanceFromStore = distanceBetweenCoordinates(store.location_lat, store.location_long, order.location_lat, order.location_long);
+                        let formattedDistance;
+                        if (distanceFromStore < 1) {
+                            formattedDistance = (distanceFromStore * 100).toFixed(2) + ' m';
+                        } else {
+                            formattedDistance = distanceFromStore.toFixed(2) + ' km';
+                        }
+                        let jsonOrder = {
+                            id: order.id,
+                            pageId: order.pageId,
+                            customerId: order.customerId,
+                            userId: order.userId,
+                            phone: order.phone,
+                            address: order.address,
+                            status: order.status,
+                            status2: order.status2,
+                            qty_total: order.qty_total,
+                            total: order.total,
+                            createdAt: order.createdAt,
+                            items: items,
+                            distanceFromStore: formattedDistance,
+                            location_lat: order.location_lat,
+                            location_long: order.location_long
+                        }
+                        ordersArray.push(jsonOrder);
                     }
-                    ordersArray.push(jsonOrder);
                 }
                 res.setHeader('Content-Range', util.format("orders %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
                 res.status(200).json(ordersArray);
@@ -156,6 +170,8 @@ export const getOrderJson = async (pageId, orderId) => {
     try {
         const order = await Order.findOne({ pageId: pageId, id: orderId });
         const items = await getItems({ pageId: pageId, orderId: orderId });
+        const store = await getStoreData(order.pageId);
+        const distanceFromStore = distanceBetweenCoordinates(store.location_lat, store.location_long, order.location_lat, order.location_long);
         let jsonItems = [];
         items.forEach(item => {
             let jsonItem = {
@@ -183,6 +199,7 @@ export const getOrderJson = async (pageId, orderId) => {
             address: order.address,
             total: order.total,
             items: jsonItems,
+            distanceFromStore: distanceFromStore,
         }
         return jsonOrder;
     } catch (getOrderJsonErr) {
@@ -280,6 +297,10 @@ export const updateOrder = async orderData => {
             }
             if (addrData) {
                 order.address = addrData.formattedAddress;
+                if (addrData.location_lat && addrData.location_long) {
+                    order.location_lat = addrData.location_lat;
+                    order.location_long = addrData.location_long;
+                }
                 updateOrder = true;
             }
 
@@ -408,4 +429,35 @@ export const getOrdersCustomerStat = async orderData => {
     }
     return { total_spent, nb_orders, first_order, last_order };
 }
+
+/**
+ * Trying to reduce the number of calls to getFlavors and getSizes.
+ * @param {*} flavors
+ * @param {*} sizes
+ * @param {*} orderData
+ */
+// const getPerformaticItems = async (flavors, sizes, orderData) => {
+//     orderData.completeItems = false;
+//     let items = await getItems(orderData);
+//     for (let i = 0; i < items.length; i++) {
+//         let item = items[i];
+//         if (flavors[item.flavorId]) {
+//             item.flavor = flavors[item.flavorId];
+//         } else {
+//             const flavor = await getFlavor(orderData.pageId, item.flavorId);
+//             if (flavor) {
+//                 item.flavor = flavors[flavor.id] = flavor.flavor;
+//             }
+//         }
+//         if (sizes[item.sizeId]) {
+//             item.size = sizes[item.sizeId];
+//         } else {
+//             const size = await getSize(orderData.pageId, item.sizeId);
+//             if (size) {
+//                 item.size = sizes[size.id] = size.size;
+//             }
+//         }
+//     }
+//     return items;
+// }
 

@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 import paginate from 'mongoose-paginate';
 
-const Schema = mongoose.Schema;
-
 const schema = new mongoose.Schema({
     id: { type: String, required: true },
     name: { type: String, required: true },
@@ -18,6 +16,7 @@ const schema = new mongoose.Schema({
     initialSetupStores: { type: Number },
     initialSetupBeverages: { type: Number },
     initialSetupToppings: { type: Number },
+    marketing: { type: Boolean, default: false }
 }, { timestamps: true });
 
 //TODO: store access_token expiring date

@@ -2,48 +2,104 @@ import Flavor from "../models/flavors";
 import util from "util";
 import stringSimilarity from 'string-similarity';
 import stringCapitalizeName from 'string-capitalize-name';
-import { configSortQuery, configRangeQuery } from '../util/util';
-import { getToppings } from './toppingsController';
+import { configSortQuery, configRangeQuery, configFilterQueryMultiple } from '../util/util';
+import { getToppings, getToppingsNames } from './toppingsController';
 
 // List all flavors
 // TODO: use filters in the query req.query
 export const flavor_get_all = async (req, res) => {
     // Getting the sort from the requisition
-    var sortObj = configSortQuery(req.query.sort);
+    let sortObj = configSortQuery(req.query.sort);
     // Getting the range from the requisition
-    var rangeObj = configRangeQuery(req.query.range);
+    let rangeObj = configRangeQuery(req.query.range);
 
-    let options = {
-        offset: rangeObj['offset'],
-        limit: rangeObj['limit'],
-        sort: sortObj,
-        lean: true,
-        leanWithId: false,
-    };
+    let queryObj = {};
+    if (req.query.filter) {
+        const filterObj = configFilterQueryMultiple(req.query.filter);
 
-    var query = {};
-
-    const pageID = req.currentUser.activePage;
-
-    if (pageID) {
-        query = Flavor.find({ pageId: pageID });
+        if (filterObj && filterObj.filterField && filterObj.filterField.length) {
+            for (let i = 0; i < filterObj.filterField.length; i++) {
+                const filter = filterObj.filterField[i];
+                const value = filterObj.filterValues[i];
+                if (Array.isArray(value)) {
+                    queryObj[filter] = { $in: value };
+                }
+                else
+                    queryObj[filter] = value;
+            }
+        }
+    }
+    if (req.currentUser.activePage) {
+        queryObj["pageId"] = req.currentUser.activePage;
     }
 
-    Flavor.paginate(query, options, async (err, result) => {
+    Flavor.find(queryObj).sort(sortObj).exec(async (err, result) => {
         if (err) {
             res.status(500).json({ message: err.errmsg });
         } else {
-            res.setHeader('Content-Range', util.format("flavors %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
-
-            for (var i = 0; i < result.docs.length; i++) {
-                const tn = await getToppings(result.docs[i].toppings, pageID);
-                for (var k = 0; k < tn.length; k++) {
-                    result.docs[i].tn = result.docs[i].tn ? result.docs[i].tn + ' ' + tn[k].topping : tn[k].topping;
-                }
+            let _rangeIni = 0;
+            let _rangeEnd = result.length;
+            if (rangeObj) {
+                _rangeIni = rangeObj.offset <= result.length ? rangeObj.offset : result.length;
+                _rangeEnd = (rangeObj.offset + rangeObj.limit) <= result.length ? rangeObj.offset + rangeObj.limit : result.length;
             }
-            res.status(200).json(result.docs);
+            let _totalCount = result.length;
+            let flavorsArray = new Array();
+            for (let i = _rangeIni; i < _rangeEnd; i++) {
+                const tn = await getToppingsNames(result[i].toppings, result[i].pageId);
+                let flavor = {
+                    id: result[i].id,
+                    flavor: result[i].flavor,
+                    kind: result[i].kind,
+                    toppings: result[i].toppings,
+                    createdAt: result[i].createdAt,
+                    updatedAt: result[i].updatedAt,
+                    tn: tn.join(),
+                }
+                flavorsArray.push(flavor)
+            }
+            res.setHeader('Content-Range', util.format("flavors %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
+            res.status(200).json(flavorsArray);
         }
     });
+
+
+    // // Getting the sort from the requisition
+    // var sortObj = configSortQuery(req.query.sort);
+    // // Getting the range from the requisition
+    // var rangeObj = configRangeQuery(req.query.range);
+
+    // let options = {
+    //     offset: rangeObj['offset'],
+    //     limit: rangeObj['limit'],
+    //     sort: sortObj,
+    //     lean: true,
+    //     leanWithId: false,
+    // };
+
+    // var query = {};
+
+    // const pageID = req.currentUser.activePage;
+
+    // if (pageID) {
+    //     query = Flavor.find({ pageId: pageID });
+    // }
+
+    // Flavor.paginate(query, options, async (err, result) => {
+    //     if (err) {
+    //         res.status(500).json({ message: err.errmsg });
+    //     } else {
+    //         res.setHeader('Content-Range', util.format("flavors %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
+
+    //         for (var i = 0; i < result.docs.length; i++) {
+    //             const tn = await getToppings(result.docs[i].toppings, pageID);
+    //             for (var k = 0; k < tn.length; k++) {
+    //                 result.docs[i].tn = result.docs[i].tn ? result.docs[i].tn + ' ' + tn[k].topping : tn[k].topping;
+    //             }
+    //         }
+    //         res.status(200).json(result.docs);
+    //     }
+    // });
 };
 
 // List one record by filtering by ID

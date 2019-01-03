@@ -66,6 +66,8 @@ export const store_create = (req, res) => {
             state: req.body.state,
             phone: req.body.phone,
             delivery_fee: req.body.delivery_fee,
+            location_lat: req.location_lat,
+            location_long: req.location_long,
             sun_is_open: req.body.sun_is_open,
             sun_open: req.body.sun_open,
             sun_close: req.body.sun_close,
@@ -106,6 +108,8 @@ export const store_create = (req, res) => {
 export const store_update = (req, res) => {
     if (req.body && req.body.id) {
 
+        console.info('stores_update:', req.body.location_lat, req.body.location_long);
+
         const pageId = req.currentUser.activePage;
 
         Store.findOne({ pageId: pageId, id: req.body.id }, (err, doc) => {
@@ -116,6 +120,8 @@ export const store_update = (req, res) => {
                 doc.state = req.body.state;
                 doc.phone = req.body.phone;
                 doc.delivery_fee = req.body.delivery_fee;
+                doc.location_lat = req.body.location_lat;
+                doc.location_long = req.body.location_long;
                 // Opening times
                 doc.sun_is_open = req.body.sun_is_open;
                 doc.sun_open = req.body.sun_open;
@@ -184,14 +190,14 @@ export const getStores = async (pageID) => {
     return await query.exec();
 }
 
-export const getOpeningTimes = async (pageID) => {
+export const getStoreData = async (pageID) => {
     // TODO: if is there more than one Store?
     var query = Store.findOne({ pageId: pageID });
     return await query.exec();
 }
 
 export const getTodayOpeningTime = async pageID => {
-    const _store = await getOpeningTimes(pageID);
+    const _store = await getStoreData(pageID);
     let _today = new Date();
 
     let _tomorrow = new Date();

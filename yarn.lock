@@ -477,6 +477,13 @@
     core-js "^2.5.7"
     regenerator-runtime "^0.11.1"
 
+"@babel/polyfill@^7.2.5":
+  version "7.2.5"
+  resolved "https://registry.yarnpkg.com/@babel/polyfill/-/polyfill-7.2.5.tgz#6c54b964f71ad27edddc567d065e57e87ed7fa7d"
+  dependencies:
+    core-js "^2.5.7"
+    regenerator-runtime "^0.12.0"
+
 "@babel/preset-env@^7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@babel/preset-env/-/preset-env-7.1.0.tgz#e67ea5b0441cfeab1d6f41e9b5c79798800e8d11"
@@ -1217,6 +1224,12 @@ debug@3.1.0, debug@=3.1.0, debug@^3.1.0:
   dependencies:
     ms "2.0.0"
 
+debug@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.1.1.tgz#3b72260255109c6b589cee050f1d516139664791"
+  dependencies:
+    ms "^2.1.1"
+
 decode-uri-component@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.0.tgz#eb3913333458775cb84cd1a1fae062106bb87545"
@@ -1727,13 +1740,14 @@ extsprintf@^1.2.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.4.0.tgz#e2689f8f356fad62cca65a3a91c5df5f9551692f"
 
-facebook-messenger-bot@../Bot/:
-  version "0.2.13"
+"facebook-messenger-bot@file:../Bot":
+  version "0.2.14"
   dependencies:
     axios "^0.18.0"
     babel-runtime "^6.6.1"
     bluebird "^3.4.6"
     body-parser "^1.15.0"
+    debug "^4.1.1"
     express "^4.0.0"
     graceful-fs "^4.1.11"
     lodash "^4.11.1"
@@ -3450,6 +3464,10 @@ regenerate@^1.4.0:
 regenerator-runtime@^0.11.0, regenerator-runtime@^0.11.1:
   version "0.11.1"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
+
+regenerator-runtime@^0.12.0:
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.12.1.tgz#fa1a71544764c036f8c49b13a08b2594c9f8a0de"
 
 regenerator-transform@^0.13.3:
   version "0.13.3"

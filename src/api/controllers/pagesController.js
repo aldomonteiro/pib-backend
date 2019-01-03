@@ -214,7 +214,7 @@ export const debugToken = async accessToken => {
 export const getOnePageToken = async (pageID) => {
     const page = await Page.findOne({ id: pageID }).exec();
     if (page && page.accessToken)
-        return Promise.resolve({ accessToken: page.accessToken, name: page.name });
+        return Promise.resolve({ accessToken: page.accessToken, name: page.name, marketing: page.marketing });
     else return Promise.reject();
 }
 
@@ -253,20 +253,32 @@ const setFacebookFields = async (pageId, accessToken, _greeting) => {
                 composer_input_disabled: false,
                 call_to_actions: [
                     {
-                        title: 'Cardápio',
-                        type: 'postback',
-                        payload: JSON.stringify({ data: 'CARDAPIO_PAYLOAD', event: 'MAIN-MENU' })
+                        title: '❓ Informações',
+                        type: 'nested',
+                        call_to_actions: [
+                            {
+                                title: '🍕 Cardápio',
+                                type: 'postback',
+                                payload: JSON.stringify({ data: 'CARDAPIO_PAYLOAD', event: 'MAIN-MENU' })
+                            },
+                            {
+                                title: '🕒 Horários',
+                                type: 'postback',
+                                payload: JSON.stringify({ data: 'HORARIO_PAYLOAD', event: 'MAIN-MENU' })
+                            }],
                     },
                     {
-                        title: 'Horários',
-                        type: 'postback',
-                        payload: JSON.stringify({ data: 'HORARIO_PAYLOAD', event: 'MAIN-MENU' })
-                    },
-                    {
-                        title: 'Fazer Pedido',
+                        title: '📨 Fazer Pedido',
                         type: 'postback',
                         payload: JSON.stringify({ data: 'PEDIDO_PAYLOAD', event: 'MAIN-MENU' })
+                    },
+                    {
+                        type: "web_url",
+                        title: "Powered by Pizzaibot",
+                        url: "m.me/pizzaibot",
+                        webview_height_ratio: "full"
                     }
+
                 ]
             }
         ]

@@ -26,22 +26,26 @@ console.log = function (d) { //
     log_stdout.write(util.format(d) + '\n');
 };
 
-const MSG_GENERAL_ERROR = 'Ops, estamos com um probleminha técnico';
+const MSG_GENERAL_ERROR = 'Ops, estamos com um probleminha técnico: ';
 
-// create a custom timestamp format for log statements
-const SimpleNodeLogger = require('simple-node-logger'),
-    opts = {
-        logFilePath: 'logs/bot.log',
-        timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS'
-    },
-    log = SimpleNodeLogger.createSimpleLogger(opts);
+// // create a custom timestamp format for log statements
+// const SimpleNodeLogger = require('simple-node-logger'),
+//     opts = {
+//         logFilePath: 'logs/bot.log',
+//         timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS'
+//     },
+//     log = SimpleNodeLogger.createSimpleLogger(opts);
 
 export const sendErrorMsg = async (_errorMsg) => {
     const out = new Elements();
     let _showErrorMsg = _errorMsg ? _errorMsg : 'ERRO DESCONHECIDO';
-    out.add({ text: 'Ops, tivemos um probleminha técnico: ' + _showErrorMsg });
+    out.add({ text: MSG_GENERAL_ERROR + _showErrorMsg });
     return out;
 }
+
+// export const updateOrderFlow = async (pageID, userID) => {
+
+// }
 
 export const basicReply = async (replyText) => {
     const out = new Elements();
@@ -355,7 +359,7 @@ export const askForQuantity = async (pageId, userId) => {
     replies.add({ text: '1', data: 'qty_1', event: 'ORDER_QTY' });
     replies.add({ text: '2', data: 'qty_2', event: 'ORDER_QTY' });
     replies.add({ text: '3', data: 'qty_3', event: 'ORDER_QTY' });
-    replies.add({ text: '+ de 3', data: 'qty_more', event: 'ORDER_QTY_MORE' });
+    replies.add({ text: '+ de 3', data: 'qty_more', event: 'ORDER_QTY' });
     out.setQuickReplies(replies);
 
     await updateOrder({ pageId, userId, waitingFor: 'quantity' });
@@ -363,15 +367,16 @@ export const askForQuantity = async (pageId, userId) => {
     return out;
 }
 
-export const askForQuantityMore = async () => {
+export const askForQuantityMore = async (pageId, userId) => {
     const out = new Elements();
     out.add({ text: 'Por favor informe a quantidade de pizzas:' });
 
     const replies = new QuickReplies();
+    replies.add({ text: '- de 4', data: 'qty_less', event: 'ORDER_QTY' });
     replies.add({ text: '4', data: 'qty_4', event: 'ORDER_QTY' });
     replies.add({ text: '5', data: 'qty_5', event: 'ORDER_QTY' });
     replies.add({ text: '6', data: 'qty_6', event: 'ORDER_QTY' });
-    replies.add({ text: '+ de 6', data: 'qty_more_more', event: 'ORDER_QTY_MORE' });
+    // replies.add({ text: '+ de 6', data: 'qty_more_more', event: 'ORDER_QTY' });
     out.setQuickReplies(replies);
 
     await updateOrder({ pageId, userId, waitingFor: 'quantity' });
