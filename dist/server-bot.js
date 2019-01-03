@@ -135,12 +135,12 @@ function () {
             doNext = true;
 
             if (!(req.body && req.body.object === 'page')) {
-              _context.next = 31;
+              _context.next = 32;
               break;
             }
 
             if (!(req.body.entry.length > 0)) {
-              _context.next = 29;
+              _context.next = 30;
               break;
             }
 
@@ -156,7 +156,7 @@ function () {
 
             req.token = global.pagesKeyID[pageID];
             req.marketing = global.pagesMarketing[pageID];
-            _context.next = 24;
+            _context.next = 25;
             break;
 
           case 10:
@@ -174,36 +174,37 @@ function () {
             req.token = accessToken;
             req.marketing = marketing;
             debug('server-bot use buckets req.marketing:', req.marketing);
+            console.info("\x1B[45m /buckets/facebook \x1B[0m, pageID:\x1B[32m".concat(pageID, "\x1B[0m, page name:\x1B[32m").concat(name, "\x1B[0m, req.mkt:\x1B[32m").concat(req.marketing, "\x1B[0m"));
             global.pagesKeyID[pageID] = accessToken;
             global.pagesMarketing[pageID] = marketing;
 
-          case 24:
-            _context.next = 29;
+          case 25:
+            _context.next = 30;
             break;
 
-          case 26:
-            _context.prev = 26;
+          case 27:
+            _context.prev = 27;
             _context.t0 = _context["catch"](3);
             console.error({
               expressAppUseGetTokenError: _context.t0
             });
 
-          case 29:
-            _context.next = 32;
+          case 30:
+            _context.next = 33;
             break;
 
-          case 31:
+          case 32:
             console.log('Something came, not a page...');
 
-          case 32:
+          case 33:
             if (doNext) next();
 
-          case 33:
+          case 34:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this, [[3, 26]]);
+    }, _callee, this, [[3, 27]]);
   }));
 
   return function (_x, _x2, _x3) {
@@ -395,7 +396,7 @@ function () {
         switch (_context4.prev = _context4.next) {
           case 0:
             sender = message.sender, recipient = message.recipient, location = message.location;
-            console.info('on message:', message);
+            console.info("\x1B[43m on message \x1B[0m, sender.id:\x1B[32m".concat(sender.id, "\x1B[0m, recipient.id:\x1B[32m").concat(recipient.id, "\x1B[0m, message.text:\x1B[32m").concat(message.text.substr(0, 15), "\x1B[0m, bot.mkt:\x1B[32m").concat(bot.marketing, "\x1B[0m"));
             _context4.prev = 2;
 
             if (!location) {
@@ -614,10 +615,11 @@ function () {
           case 0:
             sender = message.sender, recipient = message.recipient;
             payload = quick_reply.payload;
-            _context5.prev = 2;
+            console.info("\x1B[43m quick-reply \x1B[0m, sender.id:\x1B[32m".concat(sender.id, "\x1B[0m, recipient.id:\x1B[32m").concat(recipient.id, "\x1B[0m, payload:\x1B[32m").concat(payload, "\x1B[0m, bot.mkt:\x1B[32m").concat(bot.marketing, "\x1B[0m"));
+            _context5.prev = 3;
 
             if (!payload) {
-              _context5.next = 21;
+              _context5.next = 22;
               break;
             }
 
@@ -629,33 +631,33 @@ function () {
             _orderFlow = true;
 
             if (!bot.marketing) {
-              _context5.next = 16;
+              _context5.next = 17;
               break;
             }
 
             _orderFlow = false; // if it is an action from the marketing, so, this assures the order flow isn't called.
 
-            _context5.next = 9;
+            _context5.next = 10;
             return (0, _mkt_contact_controller.getMktContact)({
               pageID: recipient.id,
               userID: sender.id
             });
 
-          case 9:
+          case 10:
             mktContact = _context5.sent;
 
             if (!(mktContact.last_answer === 'testtype_customer')) {
-              _context5.next = 14;
+              _context5.next = 15;
               break;
             }
 
             _orderFlow = true; // this assures the order flow will continue and marketing won't be called.
 
-            _context5.next = 16;
+            _context5.next = 17;
             break;
 
-          case 14:
-            _context5.next = 16;
+          case 15:
+            _context5.next = 17;
             return (0, _actionsController.sendActions)({
               action: 'PIZZAIBOT_MARKETING',
               bot: bot,
@@ -665,13 +667,13 @@ function () {
               data: 'contact_phone'
             });
 
-          case 16:
+          case 17:
             if (!_orderFlow) {
-              _context5.next = 21;
+              _context5.next = 22;
               break;
             }
 
-            _context5.next = 19;
+            _context5.next = 20;
             return (0, _actionsController.sendActions)({
               action: 'SHOW_PHONE',
               bot: bot,
@@ -680,8 +682,8 @@ function () {
               payload: payload
             });
 
-          case 19:
-            _context5.next = 21;
+          case 20:
+            _context5.next = 22;
             return (0, _actionsController.sendActions)({
               action: 'ASK_FOR_QUANTITY',
               bot: bot,
@@ -689,359 +691,38 @@ function () {
               pageID: recipient.id
             });
 
-          case 21:
-            _context5.next = 33;
+          case 22:
+            _context5.next = 34;
             break;
 
-          case 23:
-            _context5.prev = 23;
-            _context5.t0 = _context5["catch"](2);
+          case 24:
+            _context5.prev = 24;
+            _context5.t0 = _context5["catch"](3);
             console.error({
               quickReplyError: _context5.t0
             });
-            _context5.next = 28;
+            _context5.next = 29;
             return (0, _botController.sendErrorMsg)(_context5.t0.message);
 
-          case 28:
+          case 29:
             outError = _context5.sent;
-            _context5.next = 31;
+            _context5.next = 32;
             return bot.stopTyping(sender.id);
 
-          case 31:
-            _context5.next = 33;
+          case 32:
+            _context5.next = 34;
             return bot.send(sender.id, outError);
 
-          case 33:
+          case 34:
           case "end":
             return _context5.stop();
         }
       }
-    }, _callee5, this, [[2, 23]]);
+    }, _callee5, this, [[3, 24]]);
   }));
 
   return function (_x9, _x10) {
     return _ref6.apply(this, arguments);
   };
-}()); // TESTAR
-
-/**
- * answered CORRECT_SAVED_ADDRESS
- * gonna ask for phone
- */
-// bot.on('LOCATION_ADDRESS', async (message, data) => {
-//   const { sender, recipient } = message;
-//   try {
-//     if (data === 'incorrect_address') {
-//       await sendActions({ action: 'ASK_TO_TYPE_ADDRESS', bot, sender, pageID: recipient.id });
-//     }
-//     else {
-//       await sendActions({ action: 'SHOW_ADDRESS', bot, sender, pageID: recipient.id, data: data });
-//       await sendActions({ action: 'SHOW_ORDER_OR_ASK_FOR_PHONE', bot, sender, pageID: recipient.id });
-//     }
-//   } catch (error) {
-//     console.error('LOCATION_ADDRESS:', error.message);
-//     const outError = await sendErrorMsg(error.message);
-//     await bot.stopTyping(sender.id);
-//     await bot.send(sender.id, outError);
-//   }
-// });
-// TESTAR
-
-/**
- * answered CORRECT_SAVED_ADDRESS
- * gonna ask for phone
- */
-// bot.on('WRONG_SAVED_ADDRESS', async (message, data) => {
-//   const { sender, recipient } = message;
-//   try {
-//     await sendActions({ action: 'ASK_FOR_LOCATION', bot, sender, pageID: recipient.id });
-//   } catch (error) {
-//     console.error('WRONG_SAVED_ADDRESS:', error.message);
-//     const outError = await sendErrorMsg(error.message);
-//     await bot.stopTyping(sender.id);
-//     await bot.send(sender.id, outError);
-//   }
-// });
-// bot.on('PHONE_CONFIRMED', async (message, data) => {
-//   const { sender, recipient } = message;
-//   try {
-//     if (data === 'change_phone') {
-//       await sendActions({ action: 'ASK_TO_TYPE_PHONE', bot, sender, pageID: recipient.id });
-//     }
-//     else {
-//       await sendActions({ action: 'SHOW_PHONE', bot, sender, pageID: recipient.id, data: data });
-//       await sendActions({ action: 'ASK_FOR_QUANTITY', bot, sender, pageID: recipient.id });
-//     }
-//   } catch (error) {
-//     console.error('PHONE_CONFIRMED:', error.message);
-//     const outError = await sendErrorMsg(error.message);
-//     await bot.stopTyping(sender.id);
-//     await bot.send(sender.id, outError);
-//   }
-// });
-
-/**
- * answered ORDER_QTY
- * gonna ask for SIZE
- */
-// bot.on('ORDER_QTY', async (message, data) => {
-//   const { sender, recipient } = message;
-//   try {
-//     if (data && data === 'qty_more') {
-//       await bot.startTyping(sender.id);
-//       await Bot.wait(1000);
-//       const out = await askForQuantityMore(recipient.id, sender.id);
-//       await bot.stopTyping(sender.id);
-//       await bot.send(sender.id, out);
-//     }
-//     else {
-//       // show what the user chose
-//       await bot.startTyping(sender.id);
-//       await Bot.wait(1000);
-//       const answer = await showQuantity(recipient.id, sender.id, data);
-//       await bot.stopTyping(sender.id);
-//       await bot.send(sender.id, answer);
-//       // next question
-//       await bot.startTyping(sender.id);
-//       await Bot.wait(1000);
-//       const out = await askForSize(recipient.id, sender.id);
-//       await bot.stopTyping(sender.id);
-//       await bot.send(sender.id, out);
-//     }
-//   } catch (error) {
-//     console.error('ORDER_QTY:', error.message);
-//     const outError = await sendErrorMsg(error.message);
-//     await bot.stopTyping(sender.id);
-//     await bot.send(sender.id, outError);
-//   }
-// });
-
-/**
- * answered ORDER_SIZE
- * gonna ask for FLAVOR
- */
-// bot.on('ORDER_SIZE', async (message, data) => {
-//   const { sender, recipient } = message;
-//   try {
-//     // show what the user chose
-//     await bot.startTyping(sender.id);
-//     await Bot.wait(900);
-//     const answer = await showSize(recipient.id, sender.id, data);
-//     await bot.stopTyping(sender.id);
-//     await bot.send(sender.id, answer);
-//     // check if the size is splitable.
-//     await bot.startTyping(sender.id);
-//     await Bot.wait(900);
-//     const out = await askForSplitFlavorOrConfirm(message.recipient.id, sender.id, 1);
-//     await bot.stopTyping(sender.id);
-//     await bot.send(sender.id, out);
-//   } catch (error) {
-//     console.error('ORDER_SIZE:', error.message);
-//     const outError = await sendErrorMsg(error.message);
-//     await bot.stopTyping(sender.id);
-//     await bot.send(sender.id, outError);
-//   }
-// });
-// bot.on('ORDER_SPLIT', async (message, data) => {
-//   const { sender, recipient } = message;
-//   await bot.startTyping(sender.id);
-//   await Bot.wait(900);
-//   const answer = await showSplit(recipient.id, sender.id, data);
-//   await bot.stopTyping(sender.id);
-//   await bot.send(sender.id, answer);
-//   const split = Number(data);
-//   // next question
-//   await bot.startTyping(sender.id);
-//   await Bot.wait(250);
-//   const out = await askForFlavorOrConfirm(message.recipient.id, sender.id, 1, split);
-//   await bot.stopTyping(sender.id);
-//   await bot.send(sender.id, out);
-// });
-
-/**
- * answered ORDER_FLAVOR
- * gonna ask for confirmation
- */
-// bot.on('ORDER_FLAVOR', async (message, data) => {
-//   const { sender, recipient } = message;
-//   try {
-//     if (data && data.option && data.option === 'flavors_more') {
-//       await sendActions({ action: 'ASK_FOR_FLAVOR', bot, sender, pageID: recipient.id, multiple: data.multiple })
-//     }
-//     else {
-//       await sendActions({ action: 'SHOW_FLAVOR', bot, sender, pageID: recipient.id, data })
-//       // show summary
-//       await bot.startTyping(sender.id);
-//       await Bot.wait(1000);
-//       const summary = await showOrderOrNextItem(recipient.id, sender.id);
-//       await bot.stopTyping(sender.id);
-//       await bot.send(sender.id, summary);
-//     }
-//   } catch (error) {
-//     console.error('ORDER_FLAVOR:', error.message);
-//     const outError = await sendErrorMsg(error.message);
-//     await bot.stopTyping(sender.id);
-//     await bot.send(sender.id, outError);
-//   }
-// });
-
-/**
- * answered ORDER_SIZE
- * gonna ask for FLAVOR
- */
-// bot.on('ORDER_CONFIRM_BEVERAGE', async (message, data) => {
-//   const { sender, recipient } = message;
-//   try {
-//     if (data === 'beverage_yes')
-//       await sendActions({ action: 'ASK_FOR_BEVERAGE_OPTIONS', bot, sender, pageID: recipient.id, multiple: 1 })
-//     else {
-//       await sendActions({ action: 'SHOW_NO_BEVERAGE', bot, sender, pageID: recipient.id })
-//       await sendActions({ action: 'SHOW_FULL_ORDER', bot, sender, pageID: recipient.id })
-//     }
-//   } catch (orderConfirmBeverageErr) {
-//     console.error({ orderConfirmBeverageErr });
-//     const outError = await sendErrorMsg(orderConfirmBeverageErr.message);
-//     await bot.stopTyping(sender.id);
-//     await bot.send(sender.id, outError);
-//   }
-// });
-
-/**
- * answered ORDER_BEVERAGE
- * gonna ask for confirmation
- */
-// bot.on('ORDER_BEVERAGE', async (message, data) => {
-//   const { sender, recipient } = message;
-//   try {
-//     if (data && data.option && data.option === 'beverages_more') {
-//       // more beverages
-//       await sendActions({ action: 'ASK_FOR_BEVERAGE_OPTIONS', bot, sender, pageID: recipient.id, multiple: data.multiple })
-//     }
-//     else if (data && data.option && data.option === 'beverages_cancel') {
-//       await sendActions({ action: 'SHOW_NO_BEVERAGE', bot, sender, pageID: recipient.id })
-//       await sendActions({ action: 'SHOW_FULL_ORDER', bot, sender, pageID: recipient.id })
-//     }
-//     else {
-//       await sendActions({ action: 'SHOW_BEVERAGE', bot, sender, pageID: recipient.id, data: data })
-//       await sendActions({ action: 'SHOW_FULL_ORDER', bot, sender, pageID: recipient.id })
-//     }
-//   } catch (orderBeverageErr) {
-//     console.error({ orderBeverageErr });
-//     const outError = await sendErrorMsg(orderBeverageErr.message);
-//     await bot.stopTyping(sender.id);
-//     await bot.send(sender.id, outError);
-//   }
-// });
-
-/**
- * answered ORDER_PIZZA_CONFIRMATION
- */
-// bot.on('ORDER_PIZZA_CONFIRMATION', async (message, data) => {
-//   const { sender, recipient } = message;
-//   try {
-//     if (data === 'confirmation_yes') {
-//       await sendActions({ action: 'ASK_FOR_WANT_BEVERAGE', bot, sender, pageID: recipient.id });
-//     }
-//     else if (data === 'confirmation_no') {
-//       await bot.startTyping(sender.id);
-//       await Bot.wait(1000);
-//       const out = await askForChangeOrder(recipient.id, sender.id);
-//       await bot.stopTyping(sender.id);
-//       await bot.send(sender.id, out);
-//     }
-//   } catch (orderConfirmationError) {
-//     console.error({ orderConfirmationError });
-//     const outError = await sendErrorMsg(orderConfirmationError.message);
-//     await bot.stopTyping(sender.id);
-//     await bot.send(sender.id, outError);
-//   }
-// });
-
-/**
- * answered ORDER_CONFIRMATION
- */
-// bot.on('ORDER_CONFIRMATION', async (message, data) => {
-//   const { sender, recipient } = message;
-//   try {
-//     if (data === 'confirmation_yes') {
-//       await sendActions({ action: 'CONFIRM_ORDER', bot, sender, pageID: recipient.id });
-//       if (bot.marketing) { // marketing. if the order is confirmed, go on in the conversation
-//         await sendActions({ action: 'PIZZAIBOT_MARKETING', bot, sender, pageID: message.recipient.id, data: 'confirmation_yes' });
-//       }
-//     }
-//     else if (data === 'confirmation_no') {
-//       await bot.startTyping(sender.id);
-//       await Bot.wait(1000);
-//       const out = await askForChangeOrder(recipient.id, sender.id);
-//       await bot.stopTyping(sender.id);
-//       await bot.send(sender.id, out);
-//     }
-//   } catch (orderConfirmationErr) {
-//     console.error({ orderConfirmationErr });
-//     const outError = await sendErrorMsg(orderConfirmationErr.message);
-//     await bot.stopTyping(sender.id);
-//     await bot.send(sender.id, outError);
-//   }
-// });
-
-/**
- * answered wants change something in the order
- */
-// bot.on('ORDER_WANT_CHANGE', async (message, data) => {
-//   const { sender, recipient } = message;
-//   try {
-//     await bot.startTyping(sender.id);
-//     await Bot.wait(1000);
-//     const out = await askForSpecificItem(recipient.id, sender.id);
-//     await bot.stopTyping(sender.id);
-//     await bot.send(sender.id, out);
-//   } catch (error) {
-//     console.error('ORDER_WANT_CHANGE:', error.message);
-//     const outError = await sendErrorMsg(error.message);
-//     await bot.stopTyping(sender.id);
-//     await bot.send(sender.id, outError);
-//   }
-// });
-// bot.on('ORDER_CHANGE', async (message, data) => {
-//   const { sender, recipient } = message;
-//   try {
-//     await bot.startTyping(sender.id);
-//     await Bot.wait(500);
-//     let out;
-//     if (data === 'change_quantity') {
-//       out = await askForQuantity(recipient.id, sender.id);
-//     }
-//     else if (data === 'change_size') {
-//       out = await askForSize(recipient.id, sender.id);
-//     }
-//     else if (data === 'change_flavor') {
-//       out = await askForFlavor(message.recipient.id, sender.id, 1);
-//     }
-//     else if (data === 'change_address') {
-//       out = await askForLocation();
-//     }
-//     await bot.stopTyping(sender.id);
-//     await bot.send(sender.id, out);
-//   } catch (error) {
-//     console.error('ORDER_CHANGE:', error.message);
-//     const outError = await sendErrorMsg(error.message);
-//     await bot.stopTyping(sender.id);
-//     await bot.send(sender.id, outError);
-//   }
-// });
-// bot.on('ORDER_CHANGE_SELECT_ITEM', async (message, data) => {
-//   const { sender, recipient } = message;
-//   try {
-//     await bot.startTyping(sender.id);
-//     await Bot.wait(1000);
-//     const out = await updateItemAskOptions(recipient.id, sender.id, data);
-//     await bot.stopTyping(sender.id);
-//     await bot.send(sender.id, out);
-//   } catch (error) {
-//     console.error('ORDER_CHANGE_SELECT_ITEM:', error.message);
-//     const outError = await sendErrorMsg(error.message);
-//     await bot.stopTyping(sender.id);
-//     await bot.send(sender.id, outError);
-//   }
-// });
+}());
 //# sourceMappingURL=server-bot.js.map
