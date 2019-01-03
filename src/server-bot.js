@@ -209,7 +209,7 @@ bot.on('postback', async (event, message, data) => {
 
   if (event === 'PIZZAIBOT_MARKETING') {
     if (data === 'testtypecustomer_begin') {
-      await sendActions({ action: 'SEND_MAIN_MENU', bot, sendr, pageID: recipient.id, last_answer: message.event });
+      await sendActions({ action: 'SEND_MAIN_MENU', bot, sender, pageID: recipient.id, last_answer: message.event });
     } else {
       await sendActions({ action: 'PIZZAIBOT_MARKETING', bot, sender, pageID: recipient.id, data });
     }

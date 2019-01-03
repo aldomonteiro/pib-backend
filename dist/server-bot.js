@@ -332,7 +332,7 @@ function () {
             return (0, _actionsController.sendActions)({
               action: 'SEND_MAIN_MENU',
               bot: bot,
-              sendr: sendr,
+              sender: sender,
               pageID: recipient.id,
               last_answer: message.event
             });
