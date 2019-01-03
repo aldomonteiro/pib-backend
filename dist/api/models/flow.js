@@ -11,24 +11,27 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var Schema = _mongoose.default.Schema;
 var schema = new Schema({
-  id: Number,
-  flavor: String,
-  kind: String,
-  toppings: [{
+  orderId: {
+    type: Number,
+    required: true
+  },
+  id: {
     type: Number
-  }],
-  pageId: String
+  },
+  userId: {
+    type: String
+  },
+  pageId: {
+    type: String
+  },
+  step: {
+    type: String
+  }
 }, {
   timestamps: true
 });
-schema.index({
-  pageId: 1,
-  id: 1
-}, {
-  unique: true
-});
 
-var _default = _mongoose.default.model("flavors", schema);
+var _default = _mongoose.default.model("flow", schema);
 
 exports.default = _default;
-//# sourceMappingURL=flavors.js.map
+//# sourceMappingURL=flow.js.map

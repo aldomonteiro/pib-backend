@@ -11,7 +11,6 @@ var _mongoosePaginate = _interopRequireDefault(require("mongoose-paginate"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Schema = _mongoose.default.Schema;
 var schema = new _mongoose.default.Schema({
   id: {
     type: String,
@@ -57,6 +56,10 @@ var schema = new _mongoose.default.Schema({
   },
   initialSetupToppings: {
     type: Number
+  },
+  marketing: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

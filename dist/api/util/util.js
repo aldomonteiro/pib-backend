@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.shuffle = exports.choices_kinds = exports.choices_sizes = exports.configFilterQueryMultiple = exports.configFilterQuery = exports.configRangeQueryNew = exports.configRangeQuery = exports.configSortQuery = void 0;
+exports.distanceBetweenCoordinates = exports.shuffle = exports.choices_kinds = exports.choices_sizes = exports.configFilterQueryMultiple = exports.configFilterQuery = exports.configRangeQueryNew = exports.configRangeQuery = exports.configSortQuery = void 0;
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -170,4 +170,23 @@ var shuffle = function shuffle(array) {
 };
 
 exports.shuffle = shuffle;
+
+var degreesToRadians = function degreesToRadians(degrees) {
+  return degrees * Math.PI / 180;
+};
+
+var distanceBetweenCoordinates = function distanceBetweenCoordinates(lat1, lon1, lat2, lon2) {
+  if (lat1 && lon1 && lat2 && lon2) {
+    var earthRadiusKm = 6371;
+    var dLat = degreesToRadians(lat2 - lat1);
+    var dLon = degreesToRadians(lon2 - lon1);
+    lat1 = degreesToRadians(lat1);
+    lat2 = degreesToRadians(lat2);
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return earthRadiusKm * c;
+  } else return null;
+};
+
+exports.distanceBetweenCoordinates = distanceBetweenCoordinates;
 //# sourceMappingURL=util.js.map

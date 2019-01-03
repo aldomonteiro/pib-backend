@@ -31,7 +31,7 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(req, res) {
-    var sortObj, rangeObj, options, query, pageID;
+    var sortObj, rangeObj, queryObj, filterObj, i, filter, value;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -40,29 +40,37 @@ function () {
             sortObj = (0, _util2.configSortQuery)(req.query.sort); // Getting the range from the requisition
 
             rangeObj = (0, _util2.configRangeQuery)(req.query.range);
-            options = {
-              offset: rangeObj['offset'],
-              limit: rangeObj['limit'],
-              sort: sortObj,
-              lean: true,
-              leanWithId: false
-            };
-            query = {};
-            pageID = req.currentUser.activePage;
+            queryObj = {};
 
-            if (pageID) {
-              query = _flavors.default.find({
-                pageId: pageID
-              });
+            if (req.query.filter) {
+              filterObj = (0, _util2.configFilterQueryMultiple)(req.query.filter);
+
+              if (filterObj && filterObj.filterField && filterObj.filterField.length) {
+                for (i = 0; i < filterObj.filterField.length; i++) {
+                  filter = filterObj.filterField[i];
+                  value = filterObj.filterValues[i];
+
+                  if (Array.isArray(value)) {
+                    queryObj[filter] = {
+                      $in: value
+                    };
+                  } else queryObj[filter] = value;
+                }
+              }
             }
 
-            _flavors.default.paginate(query, options,
+            if (req.currentUser.activePage) {
+              queryObj["pageId"] = req.currentUser.activePage;
+            }
+
+            _flavors.default.find(queryObj).sort(sortObj).exec(
             /*#__PURE__*/
             function () {
               var _ref2 = _asyncToGenerator(
               /*#__PURE__*/
               regeneratorRuntime.mark(function _callee(err, result) {
-                var i, tn, k;
+                var _rangeIni, _rangeEnd, _totalCount, flavorsArray, _i, tn, flavor;
+
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
@@ -75,38 +83,54 @@ function () {
                         res.status(500).json({
                           message: err.errmsg
                         });
-                        _context.next = 15;
+                        _context.next = 21;
                         break;
 
                       case 4:
-                        res.setHeader('Content-Range', _util.default.format("flavors %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
-                        i = 0;
+                        _rangeIni = 0;
+                        _rangeEnd = result.length;
 
-                      case 6:
-                        if (!(i < result.docs.length)) {
-                          _context.next = 14;
+                        if (rangeObj) {
+                          _rangeIni = rangeObj.offset <= result.length ? rangeObj.offset : result.length;
+                          _rangeEnd = rangeObj.offset + rangeObj.limit <= result.length ? rangeObj.offset + rangeObj.limit : result.length;
+                        }
+
+                        _totalCount = result.length;
+                        flavorsArray = new Array();
+                        _i = _rangeIni;
+
+                      case 10:
+                        if (!(_i < _rangeEnd)) {
+                          _context.next = 19;
                           break;
                         }
 
-                        _context.next = 9;
-                        return (0, _toppingsController.getToppings)(result.docs[i].toppings, pageID);
+                        _context.next = 13;
+                        return (0, _toppingsController.getToppingsNames)(result[_i].toppings, result[_i].pageId);
 
-                      case 9:
+                      case 13:
                         tn = _context.sent;
+                        flavor = {
+                          id: result[_i].id,
+                          flavor: result[_i].flavor,
+                          kind: result[_i].kind,
+                          toppings: result[_i].toppings,
+                          createdAt: result[_i].createdAt,
+                          updatedAt: result[_i].updatedAt,
+                          tn: tn.join()
+                        };
+                        flavorsArray.push(flavor);
 
-                        for (k = 0; k < tn.length; k++) {
-                          result.docs[i].tn = result.docs[i].tn ? result.docs[i].tn + ' ' + tn[k].topping : tn[k].topping;
-                        }
-
-                      case 11:
-                        i++;
-                        _context.next = 6;
+                      case 16:
+                        _i++;
+                        _context.next = 10;
                         break;
 
-                      case 14:
-                        res.status(200).json(result.docs);
+                      case 19:
+                        res.setHeader('Content-Range', _util.default.format("flavors %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
+                        res.status(200).json(flavorsArray);
 
-                      case 15:
+                      case 21:
                       case "end":
                         return _context.stop();
                     }
@@ -117,9 +141,39 @@ function () {
               return function (_x3, _x4) {
                 return _ref2.apply(this, arguments);
               };
-            }());
+            }()); // // Getting the sort from the requisition
+            // var sortObj = configSortQuery(req.query.sort);
+            // // Getting the range from the requisition
+            // var rangeObj = configRangeQuery(req.query.range);
+            // let options = {
+            //     offset: rangeObj['offset'],
+            //     limit: rangeObj['limit'],
+            //     sort: sortObj,
+            //     lean: true,
+            //     leanWithId: false,
+            // };
+            // var query = {};
+            // const pageID = req.currentUser.activePage;
+            // if (pageID) {
+            //     query = Flavor.find({ pageId: pageID });
+            // }
+            // Flavor.paginate(query, options, async (err, result) => {
+            //     if (err) {
+            //         res.status(500).json({ message: err.errmsg });
+            //     } else {
+            //         res.setHeader('Content-Range', util.format("flavors %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
+            //         for (var i = 0; i < result.docs.length; i++) {
+            //             const tn = await getToppings(result.docs[i].toppings, pageID);
+            //             for (var k = 0; k < tn.length; k++) {
+            //                 result.docs[i].tn = result.docs[i].tn ? result.docs[i].tn + ' ' + tn[k].topping : tn[k].topping;
+            //             }
+            //         }
+            //         res.status(200).json(result.docs);
+            //     }
+            // });
 
-          case 7:
+
+          case 6:
           case "end":
             return _context2.stop();
         }

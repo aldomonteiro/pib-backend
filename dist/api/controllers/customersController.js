@@ -337,12 +337,12 @@ function () {
             customer = _context5.sent;
 
             if (!customer) {
-              _context5.next = 19;
+              _context5.next = 21;
               break;
             }
 
             if (!(customer.addr_formatted || customer.addr_street)) {
-              _context5.next = 16;
+              _context5.next = 18;
               break;
             }
 
@@ -354,19 +354,21 @@ function () {
             addressData.state = customer.addr_state;
             addressData.city = customer.addr_city;
             addressData.postal_code = customer.addr_postalcode;
+            addressData.location_lat = customer.location_lat;
+            addressData.location_long = customer.location_long;
             return _context5.abrupt("return", addressData);
 
-          case 16:
+          case 18:
             return _context5.abrupt("return", null);
-
-          case 17:
-            _context5.next = 20;
-            break;
 
           case 19:
+            _context5.next = 22;
+            break;
+
+          case 21:
             return _context5.abrupt("return", null);
 
-          case 20:
+          case 22:
           case "end":
             return _context5.stop();
         }

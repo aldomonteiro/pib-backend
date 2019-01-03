@@ -50,14 +50,13 @@ console.log = function (d) {
   log_stdout.write(_util.default.format(d) + '\n');
 };
 
-var MSG_GENERAL_ERROR = 'Ops, estamos com um probleminha técnico'; // create a custom timestamp format for log statements
-
-var SimpleNodeLogger = require('simple-node-logger'),
-    opts = {
-  logFilePath: 'logs/bot.log',
-  timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS'
-},
-    log = SimpleNodeLogger.createSimpleLogger(opts);
+var MSG_GENERAL_ERROR = 'Ops, estamos com um probleminha técnico: '; // // create a custom timestamp format for log statements
+// const SimpleNodeLogger = require('simple-node-logger'),
+//     opts = {
+//         logFilePath: 'logs/bot.log',
+//         timestampFormat: 'YYYY-MM-DD HH:mm:ss.SSS'
+//     },
+//     log = SimpleNodeLogger.createSimpleLogger(opts);
 
 var sendErrorMsg =
 /*#__PURE__*/
@@ -74,7 +73,7 @@ function () {
             out = new _facebookMessengerBot.Elements();
             _showErrorMsg = _errorMsg ? _errorMsg : 'ERRO DESCONHECIDO';
             out.add({
-              text: 'Ops, tivemos um probleminha técnico: ' + _showErrorMsg
+              text: MSG_GENERAL_ERROR + _showErrorMsg
             });
             return _context.abrupt("return", out);
 
@@ -89,7 +88,9 @@ function () {
   return function sendErrorMsg(_x) {
     return _ref.apply(this, arguments);
   };
-}();
+}(); // export const updateOrderFlow = async (pageID, userID) => {
+// }
+
 
 exports.sendErrorMsg = sendErrorMsg;
 
@@ -1163,7 +1164,7 @@ function () {
             replies.add({
               text: '+ de 3',
               data: 'qty_more',
-              event: 'ORDER_QTY_MORE'
+              event: 'ORDER_QTY'
             });
             out.setQuickReplies(replies);
             _context19.next = 10;
@@ -1196,7 +1197,7 @@ var askForQuantityMore =
 function () {
   var _ref21 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee20() {
+  regeneratorRuntime.mark(function _callee20(pageId, userId) {
     var out, replies;
     return regeneratorRuntime.wrap(function _callee20$(_context20) {
       while (1) {
@@ -1207,6 +1208,11 @@ function () {
               text: 'Por favor informe a quantidade de pizzas:'
             });
             replies = new _facebookMessengerBot.QuickReplies();
+            replies.add({
+              text: '- de 4',
+              data: 'qty_less',
+              event: 'ORDER_QTY'
+            });
             replies.add({
               text: '4',
               data: 'qty_4',
@@ -1221,12 +1227,8 @@ function () {
               text: '6',
               data: 'qty_6',
               event: 'ORDER_QTY'
-            });
-            replies.add({
-              text: '+ de 6',
-              data: 'qty_more_more',
-              event: 'ORDER_QTY_MORE'
-            });
+            }); // replies.add({ text: '+ de 6', data: 'qty_more_more', event: 'ORDER_QTY' });
+
             out.setQuickReplies(replies);
             _context20.next = 10;
             return (0, _ordersController.updateOrder)({
@@ -1246,7 +1248,7 @@ function () {
     }, _callee20, this);
   }));
 
-  return function askForQuantityMore() {
+  return function askForQuantityMore(_x37, _x38) {
     return _ref21.apply(this, arguments);
   };
 }();
@@ -1298,7 +1300,7 @@ function () {
     }, _callee21, this);
   }));
 
-  return function showQuantity(_x37, _x38, _x39) {
+  return function showQuantity(_x39, _x40, _x41) {
     return _ref22.apply(this, arguments);
   };
 }();
@@ -1417,7 +1419,7 @@ function () {
     }, _callee22, this);
   }));
 
-  return function askForSize(_x40, _x41) {
+  return function askForSize(_x42, _x43) {
     return _ref23.apply(this, arguments);
   };
 }();
@@ -1458,7 +1460,7 @@ function () {
     }, _callee23, this);
   }));
 
-  return function showSize(_x42, _x43, _x44) {
+  return function showSize(_x44, _x45, _x46) {
     return _ref24.apply(this, arguments);
   };
 }();
@@ -1538,7 +1540,7 @@ function () {
     }, _callee24, this);
   }));
 
-  return function askForSplitFlavorOrConfirm(_x45, _x46, _x47) {
+  return function askForSplitFlavorOrConfirm(_x47, _x48, _x49) {
     return _ref25.apply(this, arguments);
   };
 }();
@@ -1589,7 +1591,7 @@ function () {
     }, _callee25, this);
   }));
 
-  return function showSplit(_x48, _x49, _x50) {
+  return function showSplit(_x50, _x51, _x52) {
     return _ref26.apply(this, arguments);
   };
 }();
@@ -1688,7 +1690,7 @@ function () {
     }, _callee26, this);
   }));
 
-  return function askForFlavorOrConfirm(_x51, _x52, _x53, _x54) {
+  return function askForFlavorOrConfirm(_x53, _x54, _x55, _x56) {
     return _ref27.apply(this, arguments);
   };
 }();
@@ -1811,7 +1813,7 @@ function () {
     }, _callee27, this);
   }));
 
-  return function askForFlavor(_x55, _x56, _x57, _x58, _x59) {
+  return function askForFlavor(_x57, _x58, _x59, _x60, _x61) {
     return _ref28.apply(this, arguments);
   };
 }();
@@ -1854,7 +1856,7 @@ function () {
     }, _callee28, this);
   }));
 
-  return function showFlavor(_x60, _x61, _x62) {
+  return function showFlavor(_x62, _x63, _x64) {
     return _ref29.apply(this, arguments);
   };
 }();
@@ -1965,7 +1967,7 @@ function () {
     }, _callee29, this);
   }));
 
-  return function showOrderOrNextItem(_x63, _x64) {
+  return function showOrderOrNextItem(_x65, _x66) {
     return _ref30.apply(this, arguments);
   };
 }();
@@ -2040,7 +2042,7 @@ function () {
     }, _callee30, this);
   }));
 
-  return function showFullOrder(_x65, _x66) {
+  return function showFullOrder(_x67, _x68) {
     return _ref31.apply(this, arguments);
   };
 }();
@@ -2081,7 +2083,7 @@ function () {
     }, _callee31, this);
   }));
 
-  return function confirmOrder(_x67, _x68) {
+  return function confirmOrder(_x69, _x70) {
     return _ref32.apply(this, arguments);
   };
 }();
@@ -2140,7 +2142,7 @@ function () {
     }, _callee32, this);
   }));
 
-  return function askForChangeOrder(_x69, _x70) {
+  return function askForChangeOrder(_x71, _x72) {
     return _ref33.apply(this, arguments);
   };
 }();
@@ -2213,7 +2215,7 @@ function () {
     }, _callee33, this, [[0, 17]]);
   }));
 
-  return function askForOptionsToChange(_x71, _x72, _x73) {
+  return function askForOptionsToChange(_x73, _x74, _x75) {
     return _ref34.apply(this, arguments);
   };
 }();
@@ -2288,7 +2290,7 @@ function () {
     }, _callee34, this);
   }));
 
-  return function askForSpecificItem(_x74, _x75) {
+  return function askForSpecificItem(_x76, _x77) {
     return _ref35.apply(this, arguments);
   };
 }();
@@ -2360,7 +2362,7 @@ function () {
     }, _callee35, this);
   }));
 
-  return function askForWantBeverage(_x76, _x77) {
+  return function askForWantBeverage(_x78, _x79) {
     return _ref36.apply(this, arguments);
   };
 }();
@@ -2483,7 +2485,7 @@ function () {
     }, _callee36, this);
   }));
 
-  return function askForBeverages(_x78, _x79, _x80) {
+  return function askForBeverages(_x80, _x81, _x82) {
     return _ref37.apply(this, arguments);
   };
 }();
@@ -2531,7 +2533,7 @@ function () {
     }, _callee37, this);
   }));
 
-  return function showNoBeverage(_x81, _x82, _x83) {
+  return function showNoBeverage(_x83, _x84, _x85) {
     return _ref38.apply(this, arguments);
   };
 }();
@@ -2583,7 +2585,7 @@ function () {
     }, _callee38, this);
   }));
 
-  return function showBeverage(_x84, _x85, _x86) {
+  return function showBeverage(_x86, _x87, _x88) {
     return _ref39.apply(this, arguments);
   };
 }();
@@ -2620,7 +2622,7 @@ function () {
     }, _callee39, this);
   }));
 
-  return function updateItemAskOptions(_x87, _x88, _x89) {
+  return function updateItemAskOptions(_x89, _x90, _x91) {
     return _ref40.apply(this, arguments);
   };
 }();
@@ -2661,7 +2663,7 @@ function () {
     }, _callee40, this);
   }));
 
-  return function sendShippingNotification(_x90, _x91, _x92) {
+  return function sendShippingNotification(_x92, _x93, _x94) {
     return _ref41.apply(this, arguments);
   };
 }();

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getTodayOpeningTime = exports.getOpeningTimes = exports.getStores = exports.store_delete = exports.deleteManyStores = exports.store_update = exports.store_create = exports.store_get_one = exports.store_get_all = void 0;
+exports.getTodayOpeningTime = exports.getStoreData = exports.getStores = exports.store_delete = exports.deleteManyStores = exports.store_update = exports.store_create = exports.store_get_one = exports.store_get_all = void 0;
 
 var _stores = _interopRequireDefault(require("../models/stores"));
 
@@ -89,6 +89,8 @@ var store_create = function store_create(req, res) {
       state: req.body.state,
       phone: req.body.phone,
       delivery_fee: req.body.delivery_fee,
+      location_lat: req.location_lat,
+      location_long: req.location_long,
       sun_is_open: req.body.sun_is_open,
       sun_open: req.body.sun_open,
       sun_close: req.body.sun_close,
@@ -129,6 +131,7 @@ exports.store_create = store_create;
 
 var store_update = function store_update(req, res) {
   if (req.body && req.body.id) {
+    console.info('stores_update:', req.body.location_lat, req.body.location_long);
     var pageId = req.currentUser.activePage;
 
     _stores.default.findOne({
@@ -141,7 +144,9 @@ var store_update = function store_update(req, res) {
         doc.city = req.body.city;
         doc.state = req.body.state;
         doc.phone = req.body.phone;
-        doc.delivery_fee = req.body.delivery_fee; // Opening times
+        doc.delivery_fee = req.body.delivery_fee;
+        doc.location_lat = req.body.location_lat;
+        doc.location_long = req.body.location_long; // Opening times
 
         doc.sun_is_open = req.body.sun_is_open;
         doc.sun_open = req.body.sun_open;
@@ -279,7 +284,7 @@ function () {
 
 exports.getStores = getStores;
 
-var getOpeningTimes =
+var getStoreData =
 /*#__PURE__*/
 function () {
   var _ref3 = _asyncToGenerator(
@@ -308,12 +313,12 @@ function () {
     }, _callee3, this);
   }));
 
-  return function getOpeningTimes(_x3) {
+  return function getStoreData(_x3) {
     return _ref3.apply(this, arguments);
   };
 }();
 
-exports.getOpeningTimes = getOpeningTimes;
+exports.getStoreData = getStoreData;
 
 var getTodayOpeningTime =
 /*#__PURE__*/
@@ -328,7 +333,7 @@ function () {
         switch (_context4.prev = _context4.next) {
           case 0:
             _context4.next = 2;
-            return getOpeningTimes(pageID);
+            return getStoreData(pageID);
 
           case 2:
             _store = _context4.sent;

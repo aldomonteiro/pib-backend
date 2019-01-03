@@ -13,6 +13,8 @@ var _itemsController = require("./itemsController");
 
 var _customersController = require("./customersController");
 
+var _storesController = require("./storesController");
+
 var _util2 = require("../util/util");
 
 var _luxon = require("luxon");
@@ -84,7 +86,7 @@ function () {
                 var _ref2 = _asyncToGenerator(
                 /*#__PURE__*/
                 regeneratorRuntime.mark(function _callee(findError, result) {
-                  var _rangeIni, _rangeEnd, _totalCount, ordersArray, _i, order, items, jsonOrder;
+                  var _rangeIni, _rangeEnd, _totalCount, ordersArray, store, _i, order, items, distanceFromStore, formattedDistance, jsonOrder;
 
                   return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
@@ -101,7 +103,7 @@ function () {
                           res.status(500).json({
                             message: findError.message
                           });
-                          _context.next = 23;
+                          _context.next = 30;
                           break;
 
                         case 5:
@@ -115,23 +117,44 @@ function () {
 
                           _totalCount = result.length;
                           ordersArray = new Array();
+
+                          if (!(result && result.length && result.length > 0)) {
+                            _context.next = 28;
+                            break;
+                          }
+
+                          _context.next = 13;
+                          return (0, _storesController.getStoreData)(result[0].pageId);
+
+                        case 13:
+                          store = _context.sent;
                           _i = _rangeIni;
 
-                        case 11:
+                        case 15:
                           if (!(_i < _rangeEnd)) {
-                            _context.next = 21;
+                            _context.next = 28;
                             break;
                           }
 
                           order = result[_i];
-                          _context.next = 15;
+                          _context.next = 19;
                           return (0, _itemsController.getItems)({
                             orderId: order.id,
-                            pageId: order.pageId
+                            pageId: order.pageId,
+                            completeItems: false
                           });
 
-                        case 15:
+                        case 19:
                           items = _context.sent;
+                          distanceFromStore = (0, _util2.distanceBetweenCoordinates)(store.location_lat, store.location_long, order.location_lat, order.location_long);
+                          formattedDistance = void 0;
+
+                          if (distanceFromStore < 1) {
+                            formattedDistance = (distanceFromStore * 100).toFixed(2) + ' m';
+                          } else {
+                            formattedDistance = distanceFromStore.toFixed(2) + ' km';
+                          }
+
                           jsonOrder = {
                             id: order.id,
                             pageId: order.pageId,
@@ -144,20 +167,23 @@ function () {
                             qty_total: order.qty_total,
                             total: order.total,
                             createdAt: order.createdAt,
-                            items: items
+                            items: items,
+                            distanceFromStore: formattedDistance,
+                            location_lat: order.location_lat,
+                            location_long: order.location_long
                           };
                           ordersArray.push(jsonOrder);
 
-                        case 18:
+                        case 25:
                           _i++;
-                          _context.next = 11;
+                          _context.next = 15;
                           break;
 
-                        case 21:
+                        case 28:
                           res.setHeader('Content-Range', _util.default.format("orders %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
                           res.status(200).json(ordersArray);
 
-                        case 23:
+                        case 30:
                         case "end":
                           return _context.stop();
                       }
@@ -388,7 +414,7 @@ function () {
   var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee6(pageId, orderId) {
-    var order, items, jsonItems, jsonOrder;
+    var order, items, store, distanceFromStore, jsonItems, jsonOrder;
     return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
@@ -410,6 +436,12 @@ function () {
 
           case 6:
             items = _context6.sent;
+            _context6.next = 9;
+            return (0, _storesController.getStoreData)(order.pageId);
+
+          case 9:
+            store = _context6.sent;
+            distanceFromStore = (0, _util2.distanceBetweenCoordinates)(store.location_lat, store.location_long, order.location_lat, order.location_long);
             jsonItems = [];
             items.forEach(function (item) {
               var jsonItem = {
@@ -436,24 +468,25 @@ function () {
               phone: order.phone,
               address: order.address,
               total: order.total,
-              items: jsonItems
+              items: jsonItems,
+              distanceFromStore: distanceFromStore
             };
             return _context6.abrupt("return", jsonOrder);
 
-          case 13:
-            _context6.prev = 13;
+          case 17:
+            _context6.prev = 17;
             _context6.t0 = _context6["catch"](0);
             console.error({
               getOrderJsonErr: _context6.t0
             });
             throw new Error(_context6.t0.message);
 
-          case 17:
+          case 21:
           case "end":
             return _context6.stop();
         }
       }
-    }, _callee6, this, [[0, 13]]);
+    }, _callee6, this, [[0, 17]]);
   }));
 
   return function getOrderJson(_x10, _x11) {
@@ -575,6 +608,12 @@ function () {
 
             if (addrData) {
               order.address = addrData.formattedAddress;
+
+              if (addrData.location_lat && addrData.location_long) {
+                order.location_lat = addrData.location_lat;
+                order.location_long = addrData.location_long;
+              }
+
               _updateOrder = true;
             }
 
@@ -880,6 +919,37 @@ function () {
     return _ref9.apply(this, arguments);
   };
 }();
+/**
+ * Trying to reduce the number of calls to getFlavors and getSizes.
+ * @param {*} flavors
+ * @param {*} sizes
+ * @param {*} orderData
+ */
+// const getPerformaticItems = async (flavors, sizes, orderData) => {
+//     orderData.completeItems = false;
+//     let items = await getItems(orderData);
+//     for (let i = 0; i < items.length; i++) {
+//         let item = items[i];
+//         if (flavors[item.flavorId]) {
+//             item.flavor = flavors[item.flavorId];
+//         } else {
+//             const flavor = await getFlavor(orderData.pageId, item.flavorId);
+//             if (flavor) {
+//                 item.flavor = flavors[flavor.id] = flavor.flavor;
+//             }
+//         }
+//         if (sizes[item.sizeId]) {
+//             item.size = sizes[item.sizeId];
+//         } else {
+//             const size = await getSize(orderData.pageId, item.sizeId);
+//             if (size) {
+//                 item.size = sizes[size.id] = size.size;
+//             }
+//         }
+//     }
+//     return items;
+// }
+
 
 exports.getOrdersCustomerStat = getOrdersCustomerStat;
 //# sourceMappingURL=ordersController.js.map
