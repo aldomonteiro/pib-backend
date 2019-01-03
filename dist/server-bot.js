@@ -173,7 +173,7 @@ function () {
             console.timeEnd(timerIdentifier);
             req.token = accessToken;
             req.marketing = marketing;
-            debug('req.marketing:', req.marketing);
+            debug('server-bot use buckets req.marketing:', req.marketing);
             global.pagesKeyID[pageID] = accessToken;
             global.pagesMarketing[pageID] = marketing;
 
@@ -224,77 +224,78 @@ function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(message) {
-    var sender, outError;
+    var sender, recipient, outError;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            sender = message.sender;
-            _context2.prev = 1;
-            _context2.next = 4;
+            sender = message.sender, recipient = message.recipient;
+            console.info("\x1B[43mGET_STARTED\x1B[0m, event:\x1B[32m".concat(message.event, "\x1B[0m, sender.id:\x1B[32m").concat(sender.id, "\x1B[0m, recipient.id:\x1B[32m").concat(recipient.id, "\x1B[0m, bot.mkt:\x1B[32m").concat(bot.marketing, "\x1B[0m"));
+            _context2.prev = 2;
+            _context2.next = 5;
             return (0, _actionsController.sendActions)({
               action: 'SEND_WELCOME',
               bot: bot,
               sender: sender,
-              pageID: message.recipient.id,
+              pageID: recipient.id,
               last_answer: message.event
             });
 
-          case 4:
+          case 5:
             if (!bot.marketing) {
-              _context2.next = 9;
+              _context2.next = 10;
               break;
             }
 
-            _context2.next = 7;
+            _context2.next = 8;
             return (0, _actionsController.sendActions)({
               action: 'PIZZAIBOT_MARKETING',
               bot: bot,
               sender: sender,
-              pageID: message.recipient.id,
+              pageID: recipient.id,
               data: 'GET_STARTED'
             });
 
-          case 7:
-            _context2.next = 11;
+          case 8:
+            _context2.next = 12;
             break;
 
-          case 9:
-            _context2.next = 11;
+          case 10:
+            _context2.next = 12;
             return (0, _actionsController.sendActions)({
               action: 'SEND_MAIN_MENU',
               bot: bot,
               sender: sender,
-              pageID: message.recipient.id,
+              pageID: recipient.id,
               last_answer: message.event
             });
 
-          case 11:
-            _context2.next = 23;
+          case 12:
+            _context2.next = 24;
             break;
 
-          case 13:
-            _context2.prev = 13;
-            _context2.t0 = _context2["catch"](1);
+          case 14:
+            _context2.prev = 14;
+            _context2.t0 = _context2["catch"](2);
             console.error('GET_STARTED error:', _context2.t0.message);
-            _context2.next = 18;
+            _context2.next = 19;
             return (0, _botController.sendErrorMsg)(_context2.t0.message);
 
-          case 18:
+          case 19:
             outError = _context2.sent;
-            _context2.next = 21;
+            _context2.next = 22;
             return bot.stopTyping(sender.id);
 
-          case 21:
-            _context2.next = 23;
+          case 22:
+            _context2.next = 24;
             return bot.send(sender.id, outError);
 
-          case 23:
+          case 24:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[1, 13]]);
+    }, _callee2, this, [[2, 14]]);
   }));
 
   return function (_x4) {
@@ -314,34 +315,33 @@ function () {
         switch (_context3.prev = _context3.next) {
           case 0:
             sender = message.sender, recipient = message.recipient;
-            console.info("postback, event:".concat(event, ", data:").concat(data, "."));
-            console.info(message);
+            console.info("\x1B[43mPostback\x1B[0m, event:\x1B[32m".concat(event, "\x1B[0m, data:\x1B[32m").concat(data, "\x1B[0m, sender.id:\x1B[32m").concat(sender.id, "\x1B[0m, recipient.id:\x1B[32m").concat(recipient.id, "\x1B[0m, bot.mkt:\x1B[32m").concat(bot.marketing, "\x1B[0m"));
 
             if (!(event === 'PIZZAIBOT_MARKETING')) {
-              _context3.next = 13;
+              _context3.next = 12;
               break;
             }
 
             if (!(data === 'testtypecustomer_begin')) {
-              _context3.next = 9;
+              _context3.next = 8;
               break;
             }
 
-            _context3.next = 7;
+            _context3.next = 6;
             return (0, _actionsController.sendActions)({
               action: 'SEND_MAIN_MENU',
               bot: bot,
-              sender: sender,
+              sendr: sendr,
               pageID: recipient.id,
               last_answer: message.event
             });
 
-          case 7:
-            _context3.next = 11;
+          case 6:
+            _context3.next = 10;
             break;
 
-          case 9:
-            _context3.next = 11;
+          case 8:
+            _context3.next = 10;
             return (0, _actionsController.sendActions)({
               action: 'PIZZAIBOT_MARKETING',
               bot: bot,
@@ -350,12 +350,12 @@ function () {
               data: data
             });
 
-          case 11:
-            _context3.next = 15;
+          case 10:
+            _context3.next = 14;
             break;
 
-          case 13:
-            _context3.next = 15;
+          case 12:
+            _context3.next = 14;
             return (0, _actionsController.mapEventsActions)({
               event: event,
               data: data,
@@ -364,7 +364,7 @@ function () {
               pageID: recipient.id
             });
 
-          case 15:
+          case 14:
           case "end":
             return _context3.stop();
         }

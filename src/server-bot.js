@@ -153,7 +153,7 @@ app.use('/buckets/facebook', async (req, res, next) => {
 
           req.token = accessToken;
           req.marketing = marketing;
-          debug('req.marketing:', req.marketing);
+          debug('server-bot use buckets req.marketing:', req.marketing);
 
           global.pagesKeyID[pageID] = accessToken;
           global.pagesMarketing[pageID] = marketing;
@@ -182,14 +182,16 @@ app.listen(process.env.FB_WEBHOOK_PORT, () => console.log(`Bot server listening 
  * Event triggered when the button "GET_STARTED" is pressed.
  */
 bot.on('GET_STARTED', async (message) => {
-  const { sender } = message;
+  const { sender, recipient } = message;
+  console.info(`\x1b[43mGET_STARTED\x1b[0m, event:\x1b[32m${message.event}\x1b[0m, sender.id:\x1b[32m${sender.id}\x1b[0m, recipient.id:\x1b[32m${recipient.id}\x1b[0m, bot.mkt:\x1b[32m${bot.marketing}\x1b[0m`);
+
   try {
-    await sendActions({ action: 'SEND_WELCOME', bot, sender, pageID: message.recipient.id, last_answer: message.event });
+    await sendActions({ action: 'SEND_WELCOME', bot, sender, pageID: recipient.id, last_answer: message.event });
     if (bot.marketing) {
-      await sendActions({ action: 'PIZZAIBOT_MARKETING', bot, sender, pageID: message.recipient.id, data: 'GET_STARTED' });
+      await sendActions({ action: 'PIZZAIBOT_MARKETING', bot, sender, pageID: recipient.id, data: 'GET_STARTED' });
     } else {
       // Send Main Menu
-      await sendActions({ action: 'SEND_MAIN_MENU', bot, sender, pageID: message.recipient.id, last_answer: message.event });
+      await sendActions({ action: 'SEND_MAIN_MENU', bot, sender, pageID: recipient.id, last_answer: message.event });
     }
   } catch (error) {
     console.error('GET_STARTED error:', error.message);
@@ -202,12 +204,11 @@ bot.on('GET_STARTED', async (message) => {
 // all postbacks are emitted via 'postback'
 bot.on('postback', async (event, message, data) => {
   const { sender, recipient } = message;
-  console.info(`postback, event:${event}, data:${data}.`);
-  console.info(message);
+  console.info(`\x1b[43mPostback\x1b[0m, event:\x1b[32m${event}\x1b[0m, data:\x1b[32m${data}\x1b[0m, sender.id:\x1b[32m${sender.id}\x1b[0m, recipient.id:\x1b[32m${recipient.id}\x1b[0m, bot.mkt:\x1b[32m${bot.marketing}\x1b[0m`);
 
   if (event === 'PIZZAIBOT_MARKETING') {
     if (data === 'testtypecustomer_begin') {
-      await sendActions({ action: 'SEND_MAIN_MENU', bot, sender, pageID: recipient.id, last_answer: message.event });
+      await sendActions({ action: 'SEND_MAIN_MENU', bot, sendr, pageID: recipient.id, last_answer: message.event });
     } else {
       await sendActions({ action: 'PIZZAIBOT_MARKETING', bot, sender, pageID: recipient.id, data });
     }
