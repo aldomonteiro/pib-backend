@@ -915,7 +915,8 @@ function () {
             return (0, _mkt_contact_controller.updateMktContact)({
               pageID: pageID,
               userID: userID,
-              last_answer: data
+              last_answer: data,
+              final: true
             });
 
           case 2:

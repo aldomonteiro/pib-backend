@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getAllPages = exports.getOnePageData = exports.getOnePageToken = exports.debugToken = exports.unsubscribedApps = exports.subscribedApps = exports.page_update = exports.page_resources_delete = exports.page_resources_get_one = exports.page_resources_get_all = void 0;
+exports.sendPassThreadControl = exports.getAllPages = exports.getOnePageData = exports.getOnePageToken = exports.debugToken = exports.unsubscribedApps = exports.subscribedApps = exports.page_update = exports.page_resources_delete = exports.page_resources_get_one = exports.page_resources_get_all = void 0;
 
 var _pages = _interopRequireDefault(require("../models/pages"));
 
@@ -830,6 +830,61 @@ function () {
   return function deleteFacebookFields(_x19, _x20) {
     return _ref13.apply(this, arguments);
   };
+}();
+
+var sendPassThreadControl =
+/*#__PURE__*/
+function () {
+  var _ref14 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee13(pageID, recipientId) {
+    var page, facebookUrl, result;
+    return regeneratorRuntime.wrap(function _callee13$(_context13) {
+      while (1) {
+        switch (_context13.prev = _context13.next) {
+          case 0:
+            _context13.next = 2;
+            return getOnePageData(pageID);
+
+          case 2:
+            page = _context13.sent;
+            facebookUrl = "https://graph.facebook.com/v2.6/me/pass_thread_control?access_token=".concat(page.accessToken);
+            _context13.prev = 4;
+            _context13.next = 7;
+            return _axios.default.post(facebookUrl, {
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              recipient: {
+                id: recipientId
+              },
+              target_app_id: "263902037430900",
+              metadata: "pass thread control to inbox"
+            });
+
+          case 7:
+            result = _context13.sent;
+            return _context13.abrupt("return", result.status);
+
+          case 11:
+            _context13.prev = 11;
+            _context13.t0 = _context13["catch"](4);
+            console.error({
+              passThreadError: _context13.t0
+            });
+            return _context13.abrupt("return", null);
+
+          case 15:
+          case "end":
+            return _context13.stop();
+        }
+      }
+    }, _callee13, this, [[4, 11]]);
+  }));
+
+  return function sendPassThreadControl(_x21, _x22) {
+    return _ref14.apply(this, arguments);
+  };
 }(); // export const page_update = async (req, res) => {
 //     console.info("page_update");
 //     const pageId = req.body.id;
@@ -924,4 +979,7 @@ function () {
 //     console.info('debugToken', responseDebug);
 // });
 // }
+
+
+exports.sendPassThreadControl = sendPassThreadControl;
 //# sourceMappingURL=pagesController.js.map

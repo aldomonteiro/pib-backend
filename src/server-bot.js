@@ -7,45 +7,12 @@ import moment from 'moment-timezone';
 import mongoose from 'mongoose';
 import Debug from 'debug';
 import { Bot } from 'facebook-messenger-bot';
-import { getOnePageToken, getAllPages, getOnePageData } from './api/controllers/pagesController';
-import { getPricingSizing } from './api/controllers/pricingsController';
-import getCardapio from './api/bot/show_cardapio';
-import { choices_sizes } from './api/util/util';
+import { getOnePageToken } from './api/controllers/pagesController';
 import {
-  sendWelcomeMessage,
   sendErrorMsg,
-  sendMainMenu,
-  sendCardapio,
-  askForPhone,
-  showPhone,
-  askToTypePhone,
-  askForQuantity,
-  askForQuantityMore,
-  showQuantity,
-  askForSize,
-  showSize,
-  askForFlavor,
-  showFlavor,
-  showOrderOrNextItem,
-  askForLocation,
-  confirmAddressOrAskLocation,
-  confirmLocationAddress,
-  showAddress,
-  confirmOrder,
-  askToTypeAddress,
-  confirmTypedText,
-  sendHorario,
-  basicReply,
-  askForChangeOrder,
-  askForSplitFlavorOrConfirm,
-  askForFlavorOrConfirm,
-  askForSpecificItem,
-  updateItemAskOptions,
-  showOrderOrAskForPhone,
-  showSplit
 } from './api/bot/botController';
 
-import { sendActions, mapEventsActions } from './api/bot/actionsController';
+import { sendActions, mapEventsActions, checkTypedText } from './api/bot/actionsController';
 import { getMktContact } from "./api/controllers/mkt_contact_controller";
 import { m_checkLastQuestion } from "./api/bot/botMarkController";
 
@@ -224,14 +191,14 @@ bot.on('postback', async (event, message, data) => {
  * gonna ask for QUANTITY
  */
 bot.on('message', async (message) => {
-  const { sender, recipient, location } = message;
-  console.info(`\x1b[43m on message \x1b[0m, sender.id:\x1b[32m${sender.id}\x1b[0m, recipient.id:\x1b[32m${recipient.id}\x1b[0m, message.text:\x1b[32m${message.text.substr(0, 15)}\x1b[0m, bot.mkt:\x1b[32m${bot.marketing}\x1b[0m`);
+  const { sender, recipient, location, text } = message;
+  console.info(`\x1b[43m on message \x1b[0m, sender.id:\x1b[32m${sender.id}\x1b[0m, recipient.id:\x1b[32m${recipient.id}\x1b[0m, message.text:\x1b[32m${text && text.substr(0, 15)}\x1b[0m, bot.mkt:\x1b[32m${bot.marketing}\x1b[0m`);
 
   try {
     if (location) {
       await sendActions({ action: 'LOCATION_CONFIRM_ADDRESS', bot, sender, pageID: recipient.id, location });
     }
-    else if (message.text === 'hello' || message.text === 'hi') {
+    else if (text === 'hello' || text === 'hi') {
       await sendActions({ action: 'BASIC_REPLY', bot, sender, pageID: recipient.id, data: 'Hello, how are you doing? Currently, I am working only in Portuguese, but, soon enough, your favorite restaurant will be with me.' });
     }
     else {
@@ -244,9 +211,18 @@ bot.on('message', async (message) => {
           _orderFlow = true; // this assures the order flow will continue and marketing won't be called.
         } else {
           let _data = 'open_question';
+          let eAgradecimento = false;
 
           if (mktContact.final === true) {
-            _data = 'returned_customer';
+            const agradecimentosFinais = ['obrigad', 'brigadu', 'thanks', 'tks', 'valeu', 'muito obrigado', 'show', 'muito bom', 'legal', 'ok'];
+            for (let i = 0; i < agradecimentosFinais.length; i++) {
+              if (text.includes(agradecimentosFinais[i])) {
+                eAgradecimento = true;
+                break;
+              }
+            }
+            if (!eAgradecimento)
+              _data = 'returned_customer';
           }
           else if (mktContact.last_answer === 'finalquestion_mail')
             _data = 'contact_mail';
@@ -257,16 +233,14 @@ bot.on('message', async (message) => {
           else if (mktContact.last_answer === 'orderConfirmation_question')
             _data = 'open_question';
           else _data = await m_checkLastQuestion(recipient.id, sender.id);
-          await sendActions({ action: 'PIZZAIBOT_MARKETING', bot, sender, pageID: message.recipient.id, data: _data, text: message.text });
+
+          if (!eAgradecimento)
+            await sendActions({ action: 'PIZZAIBOT_MARKETING', bot, sender, pageID: message.recipient.id, data: _data, text });
         }
       }
       // only when it is from the order flow, not from the marketing.
       if (_orderFlow) {
-        await bot.startTyping(sender.id);
-        await Bot.wait(1000);
-        const answer = await confirmTypedText(recipient.id, sender.id, message);
-        await bot.stopTyping(sender.id);
-        await bot.send(sender.id, answer);
+        await checkTypedText({ bot, sender, pageID: recipient.id, text });
       }
     }
   } catch (onMessageError) {
@@ -322,4 +296,14 @@ bot.on('quick-reply', async (message, quick_reply) => {
     await bot.stopTyping(sender.id);
     await bot.send(sender.id, outError);
   }
+});
+
+bot.on('read', async (message) => {
+  // const { sender, recipient } = message;
+  // console.info(`\x1b[43m read \x1b[0m, sender.id:\x1b[32m${sender.id}\x1b[0m, recipient.id:\x1b[32m${recipient.id}\x1b[0m bot.mkt:\x1b[32m${bot.marketing}\x1b[0m`);
+});
+
+bot.on('delivery', async (message) => {
+  // const { sender, recipient } = message;
+  // console.info(`\x1b[43m delivery \x1b[0m, sender.id:\x1b[32m${sender.id}\x1b[0m, recipient.id:\x1b[32m${recipient.id}\x1b[0m bot.mkt:\x1b[32m${bot.marketing}\x1b[0m`);
 });

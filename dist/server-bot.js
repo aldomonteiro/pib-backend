@@ -20,12 +20,6 @@ var _facebookMessengerBot = require("facebook-messenger-bot");
 
 var _pagesController = require("./api/controllers/pagesController");
 
-var _pricingsController = require("./api/controllers/pricingsController");
-
-var _show_cardapio = _interopRequireDefault(require("./api/bot/show_cardapio"));
-
-var _util = require("./api/util/util");
-
 var _botController = require("./api/bot/botController");
 
 var _actionsController = require("./api/bot/actionsController");
@@ -389,14 +383,14 @@ function () {
   var _ref5 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee4(message) {
-    var sender, recipient, location, _orderFlow, mktContact, _data, answer, outError;
+    var sender, recipient, location, text, _orderFlow, mktContact, _data, eAgradecimento, agradecimentosFinais, i, outError;
 
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            sender = message.sender, recipient = message.recipient, location = message.location;
-            console.info("\x1B[43m on message \x1B[0m, sender.id:\x1B[32m".concat(sender.id, "\x1B[0m, recipient.id:\x1B[32m").concat(recipient.id, "\x1B[0m, message.text:\x1B[32m").concat(message.text.substr(0, 15), "\x1B[0m, bot.mkt:\x1B[32m").concat(bot.marketing, "\x1B[0m"));
+            sender = message.sender, recipient = message.recipient, location = message.location, text = message.text;
+            console.info("\x1B[43m on message \x1B[0m, sender.id:\x1B[32m".concat(sender.id, "\x1B[0m, recipient.id:\x1B[32m").concat(recipient.id, "\x1B[0m, message.text:\x1B[32m").concat(text && text.substr(0, 15), "\x1B[0m, bot.mkt:\x1B[32m").concat(bot.marketing, "\x1B[0m"));
             _context4.prev = 2;
 
             if (!location) {
@@ -414,11 +408,11 @@ function () {
             });
 
           case 6:
-            _context4.next = 61;
+            _context4.next = 63;
             break;
 
           case 8:
-            if (!(message.text === 'hello' || message.text === 'hi')) {
+            if (!(text === 'hello' || text === 'hi')) {
               _context4.next = 13;
               break;
             }
@@ -433,14 +427,14 @@ function () {
             });
 
           case 11:
-            _context4.next = 61;
+            _context4.next = 63;
             break;
 
           case 13:
             _orderFlow = true;
 
             if (!bot.marketing) {
-              _context4.next = 49;
+              _context4.next = 60;
               break;
             }
 
@@ -462,133 +456,150 @@ function () {
 
             _orderFlow = true; // this assures the order flow will continue and marketing won't be called.
 
-            _context4.next = 49;
+            _context4.next = 60;
             break;
 
           case 23:
             _data = 'open_question';
+            eAgradecimento = false;
 
             if (!(mktContact.final === true)) {
-              _context4.next = 28;
+              _context4.next = 38;
               break;
             }
 
-            _data = 'returned_customer';
-            _context4.next = 47;
-            break;
+            agradecimentosFinais = ['obrigad', 'brigadu', 'thanks', 'tks', 'valeu', 'muito obrigado', 'show', 'muito bom', 'legal', 'ok'];
+            i = 0;
 
           case 28:
-            if (!(mktContact.last_answer === 'finalquestion_mail')) {
+            if (!(i < agradecimentosFinais.length)) {
+              _context4.next = 35;
+              break;
+            }
+
+            if (!text.includes(agradecimentosFinais[i])) {
               _context4.next = 32;
               break;
             }
 
-            _data = 'contact_mail';
-            _context4.next = 47;
-            break;
+            eAgradecimento = true;
+            return _context4.abrupt("break", 35);
 
           case 32:
+            i++;
+            _context4.next = 28;
+            break;
+
+          case 35:
+            if (!eAgradecimento) _data = 'returned_customer';
+            _context4.next = 57;
+            break;
+
+          case 38:
+            if (!(mktContact.last_answer === 'finalquestion_mail')) {
+              _context4.next = 42;
+              break;
+            }
+
+            _data = 'contact_mail';
+            _context4.next = 57;
+            break;
+
+          case 42:
             if (!(mktContact.last_answer === 'finalquestion_phone')) {
-              _context4.next = 36;
+              _context4.next = 46;
               break;
             }
 
             _data = 'contact_phone';
-            _context4.next = 47;
+            _context4.next = 57;
             break;
 
-          case 36:
+          case 46:
             if (!(mktContact.last_answer === 'type_phone' || mktContact.last_answer === 'retype_phone')) {
-              _context4.next = 40;
+              _context4.next = 50;
               break;
             }
 
             _data = 'contact_phone';
-            _context4.next = 47;
+            _context4.next = 57;
             break;
 
-          case 40:
+          case 50:
             if (!(mktContact.last_answer === 'orderConfirmation_question')) {
-              _context4.next = 44;
+              _context4.next = 54;
               break;
             }
 
             _data = 'open_question';
-            _context4.next = 47;
+            _context4.next = 57;
             break;
 
-          case 44:
-            _context4.next = 46;
+          case 54:
+            _context4.next = 56;
             return (0, _botMarkController.m_checkLastQuestion)(recipient.id, sender.id);
 
-          case 46:
+          case 56:
             _data = _context4.sent;
 
-          case 47:
-            _context4.next = 49;
+          case 57:
+            if (eAgradecimento) {
+              _context4.next = 60;
+              break;
+            }
+
+            _context4.next = 60;
             return (0, _actionsController.sendActions)({
               action: 'PIZZAIBOT_MARKETING',
               bot: bot,
               sender: sender,
               pageID: message.recipient.id,
               data: _data,
-              text: message.text
+              text: text
             });
 
-          case 49:
+          case 60:
             if (!_orderFlow) {
-              _context4.next = 61;
+              _context4.next = 63;
               break;
             }
 
-            _context4.next = 52;
-            return bot.startTyping(sender.id);
-
-          case 52:
-            _context4.next = 54;
-            return _facebookMessengerBot.Bot.wait(1000);
-
-          case 54:
-            _context4.next = 56;
-            return (0, _botController.confirmTypedText)(recipient.id, sender.id, message);
-
-          case 56:
-            answer = _context4.sent;
-            _context4.next = 59;
-            return bot.stopTyping(sender.id);
-
-          case 59:
-            _context4.next = 61;
-            return bot.send(sender.id, answer);
-
-          case 61:
-            _context4.next = 73;
-            break;
+            _context4.next = 63;
+            return (0, _actionsController.checkTypedText)({
+              bot: bot,
+              sender: sender,
+              pageID: recipient.id,
+              text: text
+            });
 
           case 63:
-            _context4.prev = 63;
+            _context4.next = 75;
+            break;
+
+          case 65:
+            _context4.prev = 65;
             _context4.t0 = _context4["catch"](2);
             console.error({
               onMessageError: _context4.t0
             });
-            _context4.next = 68;
+            _context4.next = 70;
             return (0, _botController.sendErrorMsg)(_context4.t0.message);
 
-          case 68:
+          case 70:
             outError = _context4.sent;
-            _context4.next = 71;
+            _context4.next = 73;
             return bot.stopTyping(sender.id);
 
-          case 71:
-            _context4.next = 73;
+          case 73:
+            _context4.next = 75;
             return bot.send(sender.id, outError);
 
-          case 73:
+          case 75:
           case "end":
             return _context4.stop();
         }
       }
-    }, _callee4, this, [[2, 63]]);
+    }, _callee4, this, [[2, 65]]);
   }));
 
   return function (_x8) {
@@ -723,6 +734,48 @@ function () {
 
   return function (_x9, _x10) {
     return _ref6.apply(this, arguments);
+  };
+}());
+bot.on('read',
+/*#__PURE__*/
+function () {
+  var _ref7 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee6(message) {
+    return regeneratorRuntime.wrap(function _callee6$(_context6) {
+      while (1) {
+        switch (_context6.prev = _context6.next) {
+          case 0:
+          case "end":
+            return _context6.stop();
+        }
+      }
+    }, _callee6, this);
+  }));
+
+  return function (_x11) {
+    return _ref7.apply(this, arguments);
+  };
+}());
+bot.on('delivery',
+/*#__PURE__*/
+function () {
+  var _ref8 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee7(message) {
+    return regeneratorRuntime.wrap(function _callee7$(_context7) {
+      while (1) {
+        switch (_context7.prev = _context7.next) {
+          case 0:
+          case "end":
+            return _context7.stop();
+        }
+      }
+    }, _callee7, this);
+  }));
+
+  return function (_x12) {
+    return _ref8.apply(this, arguments);
   };
 }());
 //# sourceMappingURL=server-bot.js.map

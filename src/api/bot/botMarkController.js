@@ -255,7 +255,7 @@ export const m_afterOrderConfirmation = async (data, pageID, userID) => {
 }
 
 export const m_startTrial = async (data, pageID, userID) => {
-    await updateMktContact({ pageID, userID, last_answer: data });
+    await updateMktContact({ pageID, userID, last_answer: data, final: true });
 
     const out = new Elements();
 
@@ -385,7 +385,7 @@ export const m_contactMail = async (data, pageID, userID, text) => {
 }
 
 export const m_returnedCustomer = async (data, pageID, userID) => {
-    await updateMktContact({ pageID, userID, last_answer: data, final:false });
+    await updateMktContact({ pageID, userID, last_answer: data, final: false });
 
     const out = new Elements();
 

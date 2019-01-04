@@ -309,6 +309,27 @@ const deleteFacebookFields = async (pageId, accessToken) => {
     }
 }
 
+export const sendPassThreadControl = async (pageID, recipientId) => {
+    const page = await getOnePageData(pageID);
+
+    const facebookUrl = `https://graph.facebook.com/v2.6/me/pass_thread_control?access_token=${page.accessToken}`;
+
+    try {
+        const result = await axios.post(facebookUrl, {
+            headers: { 'Content-Type': 'application/json' },
+            recipient: { id: recipientId },
+            target_app_id: "263902037430900",
+            metadata: "pass thread control to inbox"
+        });
+        return result.status;
+    } catch (passThreadError) {
+        console.error({ passThreadError });
+        return null;
+    }
+}
+
+
+
 // export const page_update = async (req, res) => {
 
 //     console.info("page_update");

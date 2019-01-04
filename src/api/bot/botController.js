@@ -1,14 +1,11 @@
 import util from 'util';
 import fs from 'fs';
 import { Bot, Elements, Buttons, QuickReplies } from 'facebook-messenger-bot';
-import { getOnePageToken, getOnePageData } from '../controllers/pagesController';
+import { getOnePageToken, getOnePageData, sendPassThreadControl } from '../controllers/pagesController';
 import { getPricingSizing } from '../controllers/pricingsController';
 import getCardapio from './show_cardapio';
 import {
     getFlavorsAndToppings,
-    inputCardapioReplyMsg,
-    getOpenAndClose,
-    inputHorarioReplyMsg,
 } from "./actionsController";
 import { getSizes, getSize } from '../controllers/sizesController';
 import { getBeverages } from '../controllers/beveragesController';
@@ -55,6 +52,95 @@ export const basicReply = async (replyText) => {
     out.add({ text: replyText });
     return out;
 }
+
+/**
+ * Send Yes or No to the user asking if he wants to place an order right now.
+ * @param {*} pageId 
+ * @param {*} userId 
+ */
+export const askForContinue = async (pageId, userId) => {
+    const out = new Elements();
+    let _txt = 'Não entendi o que você quis dizer. 😞. Vamos continuar com o pedido?';
+    out.add({ text: _txt });
+
+    const replies = new QuickReplies();
+    // replies.add({ text: "Quantidade", data: "change_quantity", event: 'ORDER_CHANGE' });
+    replies.add({ text: "Sim", data: "continueorder_yes", event: 'ORDER_CONTINUE_ORDER' });
+    replies.add({ text: "Não", data: "continueorder_no", event: 'ORDER_CONTINUE_ORDER' });
+    out.setQuickReplies(replies);
+    return out;
+}
+
+export const checkLastAction = async (pageId, userId) => {
+
+    const pendingOrder = await getOrderPending({ pageId, userId });
+
+    if (pendingOrder.order) {
+        if (pendingOrder.order.waitingFor === 'confirm_address') {
+            const addrData = await getCustomerAddress(pageId, userId);
+            return await confirmAddress(pageId, userId, addrData);
+        }
+        else if (pendingOrder.order.waitingFor === 'location')
+            return await askForLocation(pageId, userId);
+        else if (pendingOrder.order.waitingFor === 'location_address') {
+            const location = {
+                lat: pendingOrder.order.location_lat,
+                long: pendingOrder.order.location_long,
+                url: pendingOrder.order.location_url,
+            }
+            return await confirmLocationAddress(pageId, userId, location);
+        }
+        else if (pendingOrder.order.waitingFor === 'size')
+            return await askForSize(pageId, userId)
+        else if (pendingOrder.order.waitingFor === 'quantity')
+            return await askForQuantity(pageId, userId);
+        else if (pendingOrder.order.waitingFor === 'split')
+            return askForSplitFlavorOrConfirm(pageId, userId, 1);
+        else if (pendingOrder.order.waitingFor === 'flavor')
+            return await askForFlavor(pageId, userId, 1);
+        else if (pendingOrder.order.waitingFor === 'want_beverage')
+            return await askForWantBeverage(pageId, userId);
+        else if (pendingOrder.order.waitingFor === 'beverage')
+            return await askForBeverages(pageId, userId, 1);
+        else if (pendingOrder.order.waitingFor === 'confirmation')
+            return await showFullOrder(pageId, userId);
+        else if (pendingOrder.order.waitingFor === 'nothing')
+            return await showOrderOrNextItem(pageId, userId);
+        else
+            return await sendMainMenu();
+    } else
+        return await sendMainMenu();
+}
+
+export const optionsStopOrder = async (pageId, userId) => {
+    const out = new Elements();
+    let _txt = 'Muito bem, aqui estão as opções:';
+    out.add({ text: _txt });
+
+    const replies = new QuickReplies();
+    // replies.add({ text: "Quantidade", data: "change_quantity", event: 'ORDER_CHANGE' });
+    replies.add({ text: "Voltar p/ Início", data: "stoporder_init", event: 'STOP_ORDER_OPTIONS' });
+    replies.add({ text: "Falar c/ Humano", data: "stoporder_human", event: 'STOP_ORDER_OPTIONS' });
+    out.setQuickReplies(replies);
+    return out;
+}
+
+export const passThreadControl = async (pageId, userId) => {
+    const out = new Elements();
+
+    const result = await sendPassThreadControl(pageId, userId);
+    if (result === 200) {
+        let _txt = 'Ok, a partir de agora você está nas mãos do nosso humano. \
+    O que você escrever a partir de agora será respondido por uma pessoa, \
+    o mais rápido possível!';
+        out.add({ text: _txt });
+    } else {
+        let _txt = 'Ops, tivemos um probleminha. Tente novamente';
+        out.add({ text: _txt });
+    }
+    return out;
+}
+
 
 /**
  * 
@@ -127,7 +213,9 @@ export const askForWantOrder = async (pageId, userId) => {
  * Question No.01
  * If the user doesnt have an address in the database, this will be the first question.
  */
-export const askForLocation = async () => {
+export const askForLocation = async (pageId, userId) => {
+    await updateOrder({ pageId, userId, waitingFor: 'location' });
+
     const out = new Elements();
     out.add({ text: 'Para começar, preciso saber aonde você está. Clique no botão abaixo que receberei a sua localização.' });
 
@@ -140,7 +228,7 @@ export const askForLocation = async () => {
 
 export const confirmLocationAddress = async (pageId, userId, location) => {
 
-    await updateOrder({ pageId, userId, location });
+    await updateOrder({ pageId, userId, location, waitingFor: 'location_address' });
 
     const addresses = await getAddressLocation(location);
 
@@ -178,28 +266,29 @@ export const confirmLocationAddress = async (pageId, userId, location) => {
 
 export const confirmAddressOrAskLocation = async (pageId, userId, user) => {
 
-    await updateOrder({ pageId, userId, user });
-
     // TODO: check if the location is in the neighborhood.
     // TODO: check if the location is the same as stored in db.
     const addrData = await getCustomerAddress(pageId, userId);
 
     if (addrData) {
-        const out = new Elements();
+        // const out = new Elements();
 
-        let _replyText = 'A entrega será para esse endereço?\n';
-        _replyText = _replyText + addrData.formattedAddress;
+        // let _replyText = 'A entrega será para esse endereço?\n';
+        // _replyText = _replyText + addrData.formattedAddress;
 
-        out.add({ text: _replyText });
+        // out.add({ text: _replyText });
 
-        const replies = new QuickReplies();
-        replies.add({ text: 'Sim', data: addrData, event: 'CORRECT_SAVED_ADDRESS' });
-        replies.add({ text: 'Não', data: addrData, event: 'WRONG_SAVED_ADDRESS' });
-        out.setQuickReplies(replies);
+        // const replies = new QuickReplies();
+        // replies.add({ text: 'Sim', data: addrData, event: 'CORRECT_SAVED_ADDRESS' });
+        // replies.add({ text: 'Não', data: addrData, event: 'WRONG_SAVED_ADDRESS' });
+        // out.setQuickReplies(replies);
 
-        return out;
+        // await updateOrder({ pageId, userId, user, waitingFor: 'confirm_address' });
+
+        // return out;
+        return confirmAddress(pageId, userId, addrData, user);
     } else {
-        return await askForLocation();
+        return await askForLocation(pageId, userId);
     }
 }
 
@@ -211,62 +300,61 @@ export const askToTypeAddress = async (pageID, userID) => {
     return out;
 }
 
-export const confirmTypedText = async (pageId, userId, message) => {
-    try {
-        const pendingOrder = await getOrderPending({ pageId, userId });
+// export const checkTypedText = async (pageId, userId, text) => {
+//     try {
+//         const pendingOrder = await getOrderPending({ pageId, userId });
 
-        //console.info({ pendingOrder });
+//         if (pendingOrder && pendingOrder.order) {
+//             if (typeof pendingOrder.order.waitingForAddress === 'boolean' &&
+//                 pendingOrder.order.waitingForAddress === true) {
 
-        let out = new Elements();
+//                 const addrData = {
+//                     manual_addres: true,
+//                     formattedAddress: text,
+//                 }
 
-        if (pendingOrder && pendingOrder.order) {
-            if (typeof pendingOrder.order.waitingForAddress === 'boolean' &&
-                pendingOrder.order.waitingForAddress === true) {
 
-                await updateOrder({ pageId, userId, waitingForAddress: false, waitingFor: 'address' });
+//                 return await confirmAddress(pageId, userId, addrData);
+//             }
+//             else {
+//                 if (pendingOrder.order.waitingFor === 'phone')
+//                     return await confirmTypedPhone(pageId, userId, text);
+//                 if (pendingOrder.order.waitingFor === 'quantity' && !isNaN(text) && +text <= 6) {
+//                     const data = 'qty_' + text;
+//                     return await showQuantity(pageId, userId, data)
+//                 }
+//                 else // Bot didn't understand what was typed 
+//                     return await askForContinue(pageId, userId);
+//             }
+//         }
+//         else {
+//             return await sendMainMenu();
+//         }
 
-                let _replyText = 'A entrega será para esse endereço?\n';
-                _replyText = _replyText + message.text;
-                out.add({ text: _replyText });
+//     } catch (confirmTypedTextError) {
+//         console.error({ confirmTypedTextError });
+//         throw confirmTypedTextError;
+//     }
+// }
 
-                const addrData = {
-                    manual_addres: true,
-                    formattedAddress: message.text,
-                }
+export const confirmAddress = async (pageId, userId, addrData, user) => {
 
-                const replies = new QuickReplies();
-                replies.add({ text: 'Sim', data: addrData, event: 'CORRECT_SAVED_ADDRESS' });
-                replies.add({ text: 'Não', data: addrData, event: 'WRONG_SAVED_ADDRESS' });
-                out.setQuickReplies(replies);
+    if (user)
+        await updateOrder({ pageId, userId, user, waitingForAddress: false, waitingFor: 'confirm_address' });
+    else
+        await updateOrder({ pageId, userId, waitingForAddress: false, waitingFor: 'confirm_address' });
 
-                return out;
-            }
-            else {
-                if (pendingOrder.order.waitingFor === 'phone')
-                    return await confirmTypedPhone(pageId, userId, message.text);
-                else if (pendingOrder.order.waitingFor === 'size')
-                    return await askForSize(pageId, userId)
-                else if (pendingOrder.order.waitingFor === 'quantity')
-                    return await askForQuantity(pageId, userId);
-                else if (pendingOrder.order.waitingFor === 'flavor')
-                    return await askForFlavor(pageId, userId, 1);
-                else if (pendingOrder.order.waitingFor === 'beverage')
-                    return await askForBeverages(pageId, userId, 1);
-                else if (pendingOrder.order.waitingFor === 'nothing')
-                    return await showOrderOrNextItem(pageId, userId);
-                else
-                    return await sendMainMenu();
-            }
-        }
-        else {
-            out = await sendMainMenu();
-        }
+    const out = new Elements();
 
-        return out;
-    } catch (confirmTypedTextError) {
-        console.error({ confirmTypedTextError });
-        throw confirmTypedTextError;
-    }
+    let _replyText = 'A entrega será para esse endereço?\n';
+    _replyText = _replyText + addrData.formattedAddress;
+    out.add({ text: _replyText });
+
+    const replies = new QuickReplies();
+    replies.add({ text: 'Sim', data: addrData, event: 'CORRECT_SAVED_ADDRESS' });
+    replies.add({ text: 'Não', data: addrData, event: 'WRONG_SAVED_ADDRESS' });
+    out.setQuickReplies(replies);
+    return out;
 }
 
 export const showAddress = async (pageId, userId, addrData) => {
@@ -311,7 +399,7 @@ export const askToTypePhone = async (pageId, userId) => {
     await updateOrder({ pageId, userId, waitingFor: 'phone' });
 
     const out = new Elements();
-    out.add({ text: 'Por favor, digite o número do telefone válido para que possamos confirmar o pedido. Pode digitar:' });
+    out.add({ text: 'Por favor, digite o número do telefone válido para que possamos confirmar o pedido. Pode digitar o 📞:' });
     return out;
 }
 
@@ -418,7 +506,7 @@ export const askForSize = async (pageId, userId) => {
         const sizesWithPricing = await getPricingSizing(pageId); // only sizes with pricing
         const sizes = await getSizes(pageId, sizesWithPricing);
         for (let i = 0; i < sizes.length; i++) {
-            const _data = { id: sizes[i].id, size: sizes[i].size };
+            const _data = { id: sizes[i].id, size: sizes[i].size, split: sizes[i].split };
             replies.add({ text: sizes[i].size, data: _data, event: 'ORDER_SIZE' });
         }
         out.setQuickReplies(replies);
@@ -436,7 +524,10 @@ export const askForSize = async (pageId, userId) => {
 }
 
 export const showSize = async (pageId, userId, data) => {
-    await updateOrder({ pageId, userId, sizeId: data.id, waitingFor: 'flavor' });
+    if (data && data.split && data.split > 1)
+        await updateOrder({ pageId, userId, sizeId: data.id, waitingFor: 'split' });
+    else
+        await updateOrder({ pageId, userId, sizeId: data.id, waitingFor: 'flavor' });
 
     const out = new Elements();
     out.add({ text: '✅ ' + ' Tamanho: ' + data.size });
@@ -579,6 +670,8 @@ export const showOrderOrNextItem = async (pageId, userId) => {
         return await askForSize(pageId, userId);
     }
     else {
+        await updateOrder({ pageId, userId, waitingFor: 'want_beverage' });
+
         const out = new Elements();
         let total_price = 0;
         let _txt = 'Seguem os detalhes do seu pedido:\n';

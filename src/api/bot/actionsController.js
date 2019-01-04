@@ -25,7 +25,6 @@ import {
     showAddress,
     confirmOrder,
     askToTypeAddress,
-    confirmTypedText,
     askForWantBeverage, askForBeverages, showBeverage, showNoBeverage,
     sendHorario,
     basicReply,
@@ -37,7 +36,13 @@ import {
     showOrderOrAskForPhone,
     showSplit,
     showFullOrder,
-    askForWantOrder
+    askForWantOrder,
+    askForContinue,
+    checkLastAction,
+    optionsStopOrder,
+    passThreadControl,
+    confirmAddress,
+    confirmTypedPhone
 } from './botController';
 
 import {
@@ -55,9 +60,41 @@ import {
     m_showPrices,
     m_returnedCustomer
 } from "./botMarkController";
+import { getOrderPending } from "../controllers/ordersController";
 
 
 const QTY_1 = [1, "um", "uma"];
+
+export const checkTypedText = async ({ bot, sender, pageID, text }) => {
+    try {
+        const pendingOrder = await getOrderPending({ pageId: pageID, userId: sender.id });
+
+        if (pendingOrder && pendingOrder.order) {
+            if (pendingOrder.order.waitingFor === 'typed_address') {
+                const addrData = {
+                    manual_addres: true,
+                    formattedAddress: text,
+                }
+                await sendActions({ action: 'CONFIRM_ADDRESS', bot, sender, pageID, addrData })
+            }
+            else if (pendingOrder.order.waitingFor === 'phone')
+                await sendActions({ action: 'CONFIRM_TYPED_PHONE', bot, sender, pageID, text });
+            else if (pendingOrder.order.waitingFor === 'quantity' && !isNaN(text) && +text <= 6) {
+                const data = 'qty_' + text;
+                await mapEventsActions({ event: 'ORDER_QTY', data, bot, sender, pageID })
+            }
+            else // Bot didn't understand what was typed 
+                await sendActions({ action: 'ASK_FOR_CONTINUE', bot, sender, pageID });
+        } else {
+            return await sendMainMenu();
+        }
+
+    } catch (confirmTypedTextError) {
+        console.error({ confirmTypedTextError });
+        throw confirmTypedTextError;
+    }
+}
+
 
 /**
  * Receive events, dispatch actions
@@ -66,6 +103,26 @@ const QTY_1 = [1, "um", "uma"];
 export const mapEventsActions = async ({ event, data, bot, sender, pageID }) => {
     try {
         switch (event) {
+            case 'ORDER_CONTINUE_ORDER':
+                switch (data) {
+                    case 'continueorder_yes':
+                        await sendActions({ action: 'CHECK_LAST_ACTION', bot, sender, pageID });
+                        break;
+                    case 'continueorder_no':
+                        await sendActions({ action: 'CONTINUE_ORDER_NO', bot, sender, pageID });
+                        break;
+                }
+                break;
+            case 'STOP_ORDER_OPTIONS':
+                switch (data) {
+                    case 'stoporder_init':
+                        await sendActions({ action: 'SEND_MAIN_MENU', bot, sender, pageID });
+                        break;
+                    case 'stoporder_human':
+                        await sendActions({ action: 'PASS_THREAD_CONTROL', bot, sender, pageID });
+                        break;
+                }
+                break;
             case 'MAIN-MENU':
                 switch (data) {
                     case 'CARDAPIO_PAYLOAD':
@@ -96,8 +153,8 @@ export const mapEventsActions = async ({ event, data, bot, sender, pageID }) => 
                 await sendActions({ action: 'SHOW_ADDRESS', bot, sender, pageID, data });
                 await sendActions({ action: 'ASK_FOR_PHONE', bot, sender, pageID });
                 break;
-            case 'WRONG-SAVED-ADDRESS':
-                await sendActions({ action: 'ASK_FOR_LOCATION', bot, sender, pageID });
+            case 'WRONG_SAVED_ADDRESS':
+                await sendActions({ action: 'ASK_FOR_LOCATION', bot, sender, pageID, event });
                 break;
             case 'LOCATION_ADDRESS':
                 switch (data) {
@@ -234,7 +291,7 @@ export const mapEventsActions = async ({ event, data, bot, sender, pageID }) => 
     }
 }
 
-export const sendActions = async ({ action, bot, sender, pageID, multiple, split, data, payload, location, text, last_answer }) => {
+export const sendActions = async ({ action, bot, sender, pageID, multiple, split, data, payload, location, text, addrData }) => {
     try {
         let out = new Elements();
         await bot.startTyping(sender.id);
@@ -242,6 +299,21 @@ export const sendActions = async ({ action, bot, sender, pageID, multiple, split
         switch (action) {
             case 'BASIC_REPLY':
                 out = await basicReply(data);
+                break;
+            case 'CHECK_TYPED_TEXT':
+                out = await checkTypedText(pageID, sender.id, text);
+                break;
+            case 'ASK_FOR_CONTINUE':
+                out = await askForContinue(pageID, sender.id);
+                break;
+            case 'CHECK_LAST_ACTION':
+                out = await checkLastAction(pageID, sender.id);
+                break;
+            case 'CONTINUE_ORDER_NO':
+                out = await optionsStopOrder(pageID, sender.id);
+                break;
+            case 'PASS_THREAD_CONTROL':
+                out = await passThreadControl(pageID, sender.id);
                 break;
             case 'SEND_WELCOME':
                 out = await sendWelcomeMessage(pageID, sender)
@@ -257,6 +329,9 @@ export const sendActions = async ({ action, bot, sender, pageID, multiple, split
                 break;
             case 'CHECK_ADDRESS':
                 out = await confirmAddressOrAskLocation(pageID, sender.id, user);
+                break;
+            case 'CONFIRM_ADDRESS':
+                out = await confirmAddress(pageID, sender.id, addrData);
                 break;
             case 'ASK_FOR_ORDER':
                 out = await askForWantOrder(pageID, sender.id);
@@ -280,8 +355,11 @@ export const sendActions = async ({ action, bot, sender, pageID, multiple, split
             case 'ASK_TO_TYPE_PHONE':
                 out = await askToTypePhone(pageID, sender.id);
                 break;
+            case 'CONFIRM_TYPED_PHONE':
+                out = await confirmTypedPhone(pageID, sender.id, text);
+                break;
             case 'ASK_FOR_LOCATION':
-                out = await askForLocation();
+                out = await askForLocation(pageID, sender.id);
                 break;
             case 'ASK_TO_TYPE_ADDRESS':
                 out = await askToTypeAddress(pageID, sender.id);
