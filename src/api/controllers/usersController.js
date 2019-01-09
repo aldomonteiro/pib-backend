@@ -57,7 +57,7 @@ export const users_code = async (req, res) => {
         }
     } catch (err) {
         console.error(err.data);
-        res.status(500).json({ message: err.data.error.message })
+        res.status(500).json({ message: err.data.message })
     }
 }
 
