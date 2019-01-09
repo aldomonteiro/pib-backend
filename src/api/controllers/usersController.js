@@ -56,9 +56,8 @@ export const users_code = async (req, res) => {
             res.status(result.status).json({ message: errorMsg });
         }
     } catch (err) {
-        console.error(err.response);
-        console.error(err.response.data.error);
-        res.status(500).json({ message: err.response.data.error.message })
+        console.error(err.data);
+        res.status(500).json({ message: err.data.error.message })
     }
 }
 

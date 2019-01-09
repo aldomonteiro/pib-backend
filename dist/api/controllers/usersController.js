@@ -168,19 +168,18 @@ function () {
             });
 
           case 33:
-            _context2.next = 40;
+            _context2.next = 39;
             break;
 
           case 35:
             _context2.prev = 35;
             _context2.t0 = _context2["catch"](0);
-            console.error(_context2.t0.response);
-            console.error(_context2.t0.response.data.error);
+            console.error(_context2.t0.data);
             res.status(500).json({
-              message: _context2.t0.response.data.error.message
+              message: _context2.t0.data.error.message
             });
 
-          case 40:
+          case 39:
           case "end":
             return _context2.stop();
         }
