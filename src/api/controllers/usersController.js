@@ -17,6 +17,7 @@ export const users_auth = async (req, res) => {
 }
 
 export const users_code = async (req, res) => {
+    let lastInterface = '';
     try {
         const _code = req.body.code;
         const _redirect_uri = req.body.redirect_uri;
@@ -33,10 +34,12 @@ export const users_code = async (req, res) => {
             code: _code,
         }
 
+        lastInterface = process.env.facebookAccessTokenUrl;
         const result = await axios.get(facebookAccessTokenUrl, { params });
         if (result.status === 200) {
             const { access_token } = result.data;
-            const userData = await axios.get('https://graph.facebook.com/v3.2/me?fields=id,name,email,picture,location&access_token=' + access_token);
+            lastInterface = 'https://graph.facebook.com/v3.2/me?fields=id,name,email,picture,location&access_token=';
+            const userData = await axios.get(lastInterface + access_token);
             if (userData && userData.status === 200) {
                 const { id, name, email, picture, location } = userData;
                 const locationName = location ? location.name : null;
@@ -45,19 +48,20 @@ export const users_code = async (req, res) => {
                 const user = await create_or_auth({ userID: id, name, email, picture, locationName, pictureUrl, accessToken: access_token });
                 res.status(200).json({ user: user.toAuthJSON() });
             } else {
-                console.error(userData.response && userData.data);
-                const errorMsg = userData.response ? userData.response.data.error.message : userData.data ? userData.data.error.message : 'Unknown error';
+                console.error(userData.data);
+                const errorMsg = userData.data.error.message;
                 res.status(userData.status).json({ message: errorMsg });
             }
         }
         else {
-            console.error(result.response && response.data);
-            const errorMsg = result.response ? result.response.data.error.message : result.data ? result.data.error.message : 'Unknown error';
+            console.error(result.data);
+            const errorMsg = result.data.error.message;
             res.status(result.status).json({ message: errorMsg });
         }
     } catch (err) {
-        console.error(err.data);
-        res.status(500).json({ message: err.data.message })
+        console.error({ lastInterface });
+        console.error({ err });
+        res.status(500).json({ message: err })
     }
 }
 
