@@ -80,13 +80,14 @@ function () {
   var _ref2 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(req, res) {
-    var _code, _redirect_uri, facebookAccessTokenUrl, params, result, access_token, userData, id, name, email, picture, location, locationName, pictureUrl, user, errorMsg, _errorMsg;
+    var lastInterface, _code, _redirect_uri, facebookAccessTokenUrl, params, result, access_token, userData, id, name, email, picture, location, locationName, pictureUrl, user, errorMsg, _errorMsg;
 
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.prev = 0;
+            lastInterface = '';
+            _context2.prev = 1;
             _code = req.body.code;
             _redirect_uri = req.body.redirect_uri;
             console.info({
@@ -102,35 +103,37 @@ function () {
               client_secret: process.env.FACEBOOK_SECRET_KEY,
               code: _code
             };
-            _context2.next = 9;
+            lastInterface = process.env.facebookAccessTokenUrl;
+            _context2.next = 11;
             return _axios.default.get(facebookAccessTokenUrl, {
               params: params
             });
 
-          case 9:
+          case 11:
             result = _context2.sent;
 
             if (!(result.status === 200)) {
-              _context2.next = 30;
+              _context2.next = 33;
               break;
             }
 
             access_token = result.data.access_token;
-            _context2.next = 14;
-            return _axios.default.get('https://graph.facebook.com/v3.2/me?fields=id,name,email,picture,location&access_token=' + access_token);
+            lastInterface = 'https://graph.facebook.com/v3.2/me?fields=id,name,email,picture,location&access_token=';
+            _context2.next = 17;
+            return _axios.default.get(lastInterface + access_token);
 
-          case 14:
+          case 17:
             userData = _context2.sent;
 
             if (!(userData && userData.status === 200)) {
-              _context2.next = 25;
+              _context2.next = 28;
               break;
             }
 
             id = userData.id, name = userData.name, email = userData.email, picture = userData.picture, location = userData.location;
             locationName = location ? location.name : null;
             pictureUrl = picture ? picture.data.url : null;
-            _context2.next = 21;
+            _context2.next = 24;
             return create_or_auth({
               userID: id,
               name: name,
@@ -141,50 +144,55 @@ function () {
               accessToken: access_token
             });
 
-          case 21:
+          case 24:
             user = _context2.sent;
             res.status(200).json({
               user: user.toAuthJSON()
             });
-            _context2.next = 28;
+            _context2.next = 31;
             break;
 
-          case 25:
-            console.error(userData.response && userData.data);
-            errorMsg = userData.response ? userData.response.data.error.message : userData.data ? userData.data.error.message : 'Unknown error';
+          case 28:
+            console.error(userData.data);
+            errorMsg = userData.data.error.message;
             res.status(userData.status).json({
               message: errorMsg
             });
 
-          case 28:
-            _context2.next = 33;
+          case 31:
+            _context2.next = 36;
             break;
 
-          case 30:
-            console.error(result.response && response.data);
-            _errorMsg = result.response ? result.response.data.error.message : result.data ? result.data.error.message : 'Unknown error';
+          case 33:
+            console.error(result.data);
+            _errorMsg = result.data.error.message;
             res.status(result.status).json({
               message: _errorMsg
             });
 
-          case 33:
-            _context2.next = 39;
+          case 36:
+            _context2.next = 43;
             break;
 
-          case 35:
-            _context2.prev = 35;
-            _context2.t0 = _context2["catch"](0);
-            console.error(_context2.t0.data);
+          case 38:
+            _context2.prev = 38;
+            _context2.t0 = _context2["catch"](1);
+            console.error({
+              lastInterface: lastInterface
+            });
+            console.error({
+              err: _context2.t0
+            });
             res.status(500).json({
-              message: _context2.t0.data.error.message
+              message: _context2.t0
             });
 
-          case 39:
+          case 43:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[0, 35]]);
+    }, _callee2, this, [[1, 38]]);
   }));
 
   return function users_code(_x3, _x4) {
