@@ -65,13 +65,14 @@ export const users_code = async (req, res) => {
         }
 
         const result = await axios.get(facebookAccessTokenUrl, { params });
-        if (result && result.access_token) {
-            console.info({ result });
-            res.status(200).send(result);
+        if (result && result.data && result.data.access_token) {
+            console.info(result.data);
+            res.status(200).send(result.data);
         }
         else {
-            console.error(result);
-            res.status(500).send(result);
+            console.error(result.response && response.data);
+            const errorMsg = result.response ? result.response.data.error.message : result.data ? result.data.error.message : 'Unknown error';
+            res.status(500).json({ message: errorMsg });
         }
     } catch (err) {
         console.error(err.request);
