@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.removeUserActivePage = exports.changeAccessToken = exports.users_delete = exports.users_update = exports.users_get_one = exports.users_get_all = exports.users_create = exports.users_auth = void 0;
+exports.removeUserActivePage = exports.changeAccessToken = exports.users_delete = exports.users_update = exports.users_get_one = exports.users_get_all = exports.users_create = exports.users_code = exports.users_auth = void 0;
 
 var _users = _interopRequireDefault(require("../models/users"));
 
@@ -117,6 +117,80 @@ function () {
 }();
 
 exports.users_auth = users_auth;
+
+var users_code =
+/*#__PURE__*/
+function () {
+  var _ref2 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee2(req, res) {
+    var _code, _redirect_uri, facebookAccessTokenUrl, params, result;
+
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.prev = 0;
+            _code = req.body.code;
+            _redirect_uri = req.body.redirect_uri;
+            console.info({
+              _redirect_uri: _redirect_uri
+            });
+
+            _dotenv.default.config();
+
+            facebookAccessTokenUrl = process.env.FACEBOOK_URL_OAUTH_ACCESS_TOKEN;
+            params = {
+              client_id: process.env.FACEBOOK_APP_ID,
+              redirect_uri: _redirect_uri,
+              client_secret: process.env.FACEBOOK_SECRET_KEY,
+              code: _code
+            };
+            _context2.next = 9;
+            return _axios.default.get(facebookAccessTokenUrl, {
+              params: params
+            });
+
+          case 9:
+            result = _context2.sent;
+
+            if (result && result.access_token) {
+              console.info({
+                result: result
+              });
+              res.status(200).send(result);
+            } else {
+              console.error(result);
+              res.status(500).send(result);
+            }
+
+            _context2.next = 19;
+            break;
+
+          case 13:
+            _context2.prev = 13;
+            _context2.t0 = _context2["catch"](0);
+            console.error(_context2.t0.request);
+            console.error(_context2.t0.response);
+            console.error(_context2.t0.response.data.error);
+            res.status(500).json({
+              message: _context2.t0.response.data.error.message
+            });
+
+          case 19:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, this, [[0, 13]]);
+  }));
+
+  return function users_code(_x3, _x4) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+exports.users_code = users_code;
 
 var users_create = function users_create(req, res) {
   var queryUser = _users.default.findOne({
@@ -272,15 +346,15 @@ exports.users_delete = users_delete;
 var changeAccessToken =
 /*#__PURE__*/
 function () {
-  var _ref2 = _asyncToGenerator(
+  var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee2(accessToken) {
+  regeneratorRuntime.mark(function _callee3(accessToken) {
     var env, facebook_app_id, facebook_secret_key, facebookAccessTokenUrl, params;
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
-            _context2.prev = 0;
+            _context3.prev = 0;
 
             _dotenv.default.config();
 
@@ -302,77 +376,21 @@ function () {
               client_secret: facebook_secret_key,
               fb_exchange_token: accessToken
             };
-            _context2.next = 9;
+            _context3.next = 9;
             return _axios.default.get(facebookAccessTokenUrl, {
               params: params
             });
 
           case 9:
-            return _context2.abrupt("return", _context2.sent);
-
-          case 12:
-            _context2.prev = 12;
-            _context2.t0 = _context2["catch"](0);
-            console.error({
-              changeAccessToken: changeAccessToken
-            });
-            return _context2.abrupt("return", null);
-
-          case 16:
-          case "end":
-            return _context2.stop();
-        }
-      }
-    }, _callee2, this, [[0, 12]]);
-  }));
-
-  return function changeAccessToken(_x3) {
-    return _ref2.apply(this, arguments);
-  };
-}();
-
-exports.changeAccessToken = changeAccessToken;
-
-var removeUserActivePage =
-/*#__PURE__*/
-function () {
-  var _ref3 = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee3(userID) {
-    var user;
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
-      while (1) {
-        switch (_context3.prev = _context3.next) {
-          case 0:
-            _context3.prev = 0;
-            _context3.next = 3;
-            return _users.default.findOne({
-              userID: userID
-            }).exec();
-
-          case 3:
-            user = _context3.sent;
-
-            if (!user) {
-              _context3.next = 9;
-              break;
-            }
-
-            user.activePage = null;
-            _context3.next = 8;
-            return user.save();
-
-          case 8:
-            return _context3.abrupt("return", true);
-
-          case 9:
-            return _context3.abrupt("return", false);
+            return _context3.abrupt("return", _context3.sent);
 
           case 12:
             _context3.prev = 12;
             _context3.t0 = _context3["catch"](0);
-            console.error(_context3.t0);
-            throw _context3.t0;
+            console.error({
+              changeAccessToken: changeAccessToken
+            });
+            return _context3.abrupt("return", null);
 
           case 16:
           case "end":
@@ -382,8 +400,64 @@ function () {
     }, _callee3, this, [[0, 12]]);
   }));
 
-  return function removeUserActivePage(_x4) {
+  return function changeAccessToken(_x5) {
     return _ref3.apply(this, arguments);
+  };
+}();
+
+exports.changeAccessToken = changeAccessToken;
+
+var removeUserActivePage =
+/*#__PURE__*/
+function () {
+  var _ref4 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee4(userID) {
+    var user;
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            _context4.prev = 0;
+            _context4.next = 3;
+            return _users.default.findOne({
+              userID: userID
+            }).exec();
+
+          case 3:
+            user = _context4.sent;
+
+            if (!user) {
+              _context4.next = 9;
+              break;
+            }
+
+            user.activePage = null;
+            _context4.next = 8;
+            return user.save();
+
+          case 8:
+            return _context4.abrupt("return", true);
+
+          case 9:
+            return _context4.abrupt("return", false);
+
+          case 12:
+            _context4.prev = 12;
+            _context4.t0 = _context4["catch"](0);
+            console.error(_context4.t0);
+            throw _context4.t0;
+
+          case 16:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4, this, [[0, 12]]);
+  }));
+
+  return function removeUserActivePage(_x6) {
+    return _ref4.apply(this, arguments);
   };
 }();
 

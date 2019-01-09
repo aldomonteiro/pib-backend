@@ -79,6 +79,12 @@ var schema = new Schema({
   },
   no_beverage: {
     type: Boolean
+  },
+  payment_type: {
+    type: String
+  },
+  payment_change: {
+    type: String
   }
 }, {
   timestamps: true

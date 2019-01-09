@@ -47,6 +47,40 @@ export const users_auth = async (req, res) => {
     }
 }
 
+export const users_code = async (req, res) => {
+    try {
+        const _code = req.body.code;
+        const _redirect_uri = req.body.redirect_uri;
+
+        console.info({ _redirect_uri });
+
+        dotenv.config();
+
+        const facebookAccessTokenUrl = process.env.FACEBOOK_URL_OAUTH_ACCESS_TOKEN;
+        const params = {
+            client_id: process.env.FACEBOOK_APP_ID,
+            redirect_uri: _redirect_uri,
+            client_secret: process.env.FACEBOOK_SECRET_KEY,
+            code: _code,
+        }
+
+        const result = await axios.get(facebookAccessTokenUrl, { params });
+        if (result && result.access_token) {
+            console.info({ result });
+            res.status(200).send(result);
+        }
+        else {
+            console.error(result);
+            res.status(500).send(result);
+        }
+    } catch (err) {
+        console.error(err.request);
+        console.error(err.response);
+        console.error(err.response.data.error);
+        res.status(500).json({ message: err.response.data.error.message })
+    }
+}
+
 export const users_create = (req, res) => {
     var queryUser = User.findOne({ userID: req.body.userID });
     const foundUser = queryUser.exec();

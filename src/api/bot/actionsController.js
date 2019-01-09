@@ -42,7 +42,11 @@ import {
     optionsStopOrder,
     passThreadControl,
     confirmAddress,
-    confirmTypedPhone
+    confirmTypedPhone,
+    askForPaymentType,
+    showPaymentType,
+    showPaymentChange,
+    askForPaymentChange
 } from './botController';
 
 import {
@@ -86,7 +90,7 @@ export const checkTypedText = async ({ bot, sender, pageID, text }) => {
             else // Bot didn't understand what was typed 
                 await sendActions({ action: 'ASK_FOR_CONTINUE', bot, sender, pageID });
         } else {
-            return await sendMainMenu();
+            await sendActions({ action: 'SEND_MAIN_MENU', bot, sender, pageID });
         }
 
     } catch (confirmTypedTextError) {
@@ -249,7 +253,7 @@ export const mapEventsActions = async ({ event, data, bot, sender, pageID }) => 
                         break;
                     default:
                         await sendActions({ action: 'SHOW_NO_BEVERAGE', bot, sender, pageID })
-                        await sendActions({ action: 'SHOW_FULL_ORDER', bot, sender, pageID })
+                        await sendActions({ action: 'ASK_FOR_PAYMENT_TYPE', bot, sender, pageID })
                         break;
                 }
                 break;
@@ -260,13 +264,29 @@ export const mapEventsActions = async ({ event, data, bot, sender, pageID }) => 
                         break;
                     case 'beverages_cancel':
                         await sendActions({ action: 'SHOW_NO_BEVERAGE', bot, sender, pageID })
-                        await sendActions({ action: 'SHOW_FULL_ORDER', bot, sender, pageID })
+                        await sendActions({ action: 'ASK_FOR_PAYMENT_TYPE', bot, sender, pageID })
                         break;
                     default:
                         await sendActions({ action: 'SHOW_BEVERAGE', bot, sender, pageID, data })
+                        await sendActions({ action: 'ASK_FOR_PAYMENT_TYPE', bot, sender, pageID })
+                        break;
+                }
+                break;
+            case 'ORDER_PAYMENT_TYPE':
+                await sendActions({ action: 'SHOW_PAYMENT_TYPE', bot, sender, pageID, data })
+
+                switch (data) {
+                    case 'payment_money':
+                        await sendActions({ action: 'ASK_FOR_PAYMENT_CHANGE', bot, sender, pageID })
+                        break;
+                    case 'payment_card':
                         await sendActions({ action: 'SHOW_FULL_ORDER', bot, sender, pageID })
                         break;
                 }
+                break;
+            case 'ORDER_PAYMENT_CHANGE':
+                await sendActions({ action: 'SHOW_PAYMENT_CHANGE', bot, sender, pageID, data })
+                await sendActions({ action: 'SHOW_FULL_ORDER', bot, sender, pageID })
                 break;
             case 'ORDER_CONFIRMATION':
                 switch (data) {
@@ -328,7 +348,8 @@ export const sendActions = async ({ action, bot, sender, pageID, multiple, split
                 out = await sendHorario(pageID);
                 break;
             case 'CHECK_ADDRESS':
-                out = await confirmAddressOrAskLocation(pageID, sender.id, user);
+                const user1 = await bot.fetchUser(sender.id);
+                out = await confirmAddressOrAskLocation(pageID, sender.id, user1);
                 break;
             case 'CONFIRM_ADDRESS':
                 out = await confirmAddress(pageID, sender.id, addrData);
@@ -337,8 +358,8 @@ export const sendActions = async ({ action, bot, sender, pageID, multiple, split
                 out = await askForWantOrder(pageID, sender.id);
                 break;
             case 'LOCATION_CONFIRM_ADDRESS':
-                const user = await bot.fetchUser(sender.id);
-                out = await confirmLocationAddress(pageID, sender.id, location, user);
+                const user2 = await bot.fetchUser(sender.id);
+                out = await confirmLocationAddress(pageID, sender.id, location, user2);
                 break;
             case 'ASK_FOR_PHONE':
                 out = await askForPhone(pageID, sender.id);
@@ -359,7 +380,8 @@ export const sendActions = async ({ action, bot, sender, pageID, multiple, split
                 out = await confirmTypedPhone(pageID, sender.id, text);
                 break;
             case 'ASK_FOR_LOCATION':
-                out = await askForLocation(pageID, sender.id);
+                const user = await bot.fetchUser(sender.id);
+                out = await askForLocation(pageID, sender.id, user);
                 break;
             case 'ASK_TO_TYPE_ADDRESS':
                 out = await askToTypeAddress(pageID, sender.id);
@@ -408,6 +430,18 @@ export const sendActions = async ({ action, bot, sender, pageID, multiple, split
                 break;
             case 'SHOW_BEVERAGE':
                 out = await showBeverage(pageID, sender.id, data);
+                break;
+            case 'ASK_FOR_PAYMENT_TYPE':
+                out = await askForPaymentType(pageID, sender.id);
+                break;
+            case 'SHOW_PAYMENT_TYPE':
+                out = await showPaymentType(pageID, sender.id, data);
+                break;
+            case 'ASK_FOR_PAYMENT_CHANGE':
+                out = await askForPaymentChange(pageID, sender.id);
+                break;
+            case 'SHOW_PAYMENT_CHANGE':
+                out = await showPaymentChange(pageID, sender.id, data);
                 break;
             case 'SHOW_FULL_ORDER':
                 out = await showFullOrder(pageID, sender.id);

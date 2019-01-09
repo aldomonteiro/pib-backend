@@ -125,34 +125,36 @@ function () {
             });
 
           case 25:
-            _context.next = 30;
+            _context.next = 29;
             break;
 
           case 27:
             _context.next = 29;
-            return (0, _botController.sendMainMenu)();
+            return sendActions({
+              action: 'SEND_MAIN_MENU',
+              bot: bot,
+              sender: sender,
+              pageID: pageID
+            });
 
           case 29:
-            return _context.abrupt("return", _context.sent);
-
-          case 30:
-            _context.next = 36;
+            _context.next = 35;
             break;
 
-          case 32:
-            _context.prev = 32;
+          case 31:
+            _context.prev = 31;
             _context.t0 = _context["catch"](1);
             console.error({
               confirmTypedTextError: _context.t0
             });
             throw _context.t0;
 
-          case 36:
+          case 35:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this, [[1, 32]]);
+    }, _callee, this, [[1, 31]]);
   }));
 
   return function checkTypedText(_x) {
@@ -181,7 +183,7 @@ function () {
             event = _ref3.event, data = _ref3.data, bot = _ref3.bot, sender = _ref3.sender, pageID = _ref3.pageID;
             _context2.prev = 1;
             _context2.t0 = event;
-            _context2.next = _context2.t0 === 'ORDER_CONTINUE_ORDER' ? 5 : _context2.t0 === 'STOP_ORDER_OPTIONS' ? 15 : _context2.t0 === 'MAIN-MENU' ? 25 : _context2.t0 === 'ORDER_WANT_ORDER' ? 42 : _context2.t0 === 'CORRECT_SAVED_ADDRESS' ? 54 : _context2.t0 === 'WRONG_SAVED_ADDRESS' ? 59 : _context2.t0 === 'LOCATION_ADDRESS' ? 62 : _context2.t0 === 'PHONE_CONFIRMED' ? 74 : _context2.t0 === 'ORDER_QTY' ? 86 : _context2.t0 === 'ORDER_SIZE' ? 101 : _context2.t0 === 'ORDER_SPLIT' ? 106 : _context2.t0 === 'ORDER_FLAVOR' ? 111 : _context2.t0 === 'ORDER_PIZZA_CONFIRMATION' ? 123 : _context2.t0 === 'ORDER_WANT_CHANGE' ? 133 : _context2.t0 === 'ORDER_CHANGE' ? 136 : _context2.t0 === 'ORDER_CONFIRM_BEVERAGE' ? 153 : _context2.t0 === 'ORDER_BEVERAGE' ? 165 : _context2.t0 === 'ORDER_CONFIRMATION' ? 182 : _context2.t0 === 'ORDER_CHANGE_SELECT_ITEM' ? 195 : 198;
+            _context2.next = _context2.t0 === 'ORDER_CONTINUE_ORDER' ? 5 : _context2.t0 === 'STOP_ORDER_OPTIONS' ? 15 : _context2.t0 === 'MAIN-MENU' ? 25 : _context2.t0 === 'ORDER_WANT_ORDER' ? 42 : _context2.t0 === 'CORRECT_SAVED_ADDRESS' ? 54 : _context2.t0 === 'WRONG_SAVED_ADDRESS' ? 59 : _context2.t0 === 'LOCATION_ADDRESS' ? 62 : _context2.t0 === 'PHONE_CONFIRMED' ? 74 : _context2.t0 === 'ORDER_QTY' ? 86 : _context2.t0 === 'ORDER_SIZE' ? 101 : _context2.t0 === 'ORDER_SPLIT' ? 106 : _context2.t0 === 'ORDER_FLAVOR' ? 111 : _context2.t0 === 'ORDER_PIZZA_CONFIRMATION' ? 123 : _context2.t0 === 'ORDER_WANT_CHANGE' ? 133 : _context2.t0 === 'ORDER_CHANGE' ? 136 : _context2.t0 === 'ORDER_CONFIRM_BEVERAGE' ? 153 : _context2.t0 === 'ORDER_BEVERAGE' ? 165 : _context2.t0 === 'ORDER_PAYMENT_TYPE' ? 182 : _context2.t0 === 'ORDER_PAYMENT_CHANGE' ? 194 : _context2.t0 === 'ORDER_CONFIRMATION' ? 199 : _context2.t0 === 'ORDER_CHANGE_SELECT_ITEM' ? 212 : 215;
             break;
 
           case 5:
@@ -214,7 +216,7 @@ function () {
             return _context2.abrupt("break", 14);
 
           case 14:
-            return _context2.abrupt("break", 198);
+            return _context2.abrupt("break", 215);
 
           case 15:
             _context2.t2 = data;
@@ -246,7 +248,7 @@ function () {
             return _context2.abrupt("break", 24);
 
           case 24:
-            return _context2.abrupt("break", 198);
+            return _context2.abrupt("break", 215);
 
           case 25:
             _context2.t3 = data;
@@ -303,7 +305,7 @@ function () {
             return _context2.abrupt("break", 41);
 
           case 41:
-            return _context2.abrupt("break", 198);
+            return _context2.abrupt("break", 215);
 
           case 42:
             _context2.t4 = data;
@@ -345,7 +347,7 @@ function () {
             return _context2.abrupt("break", 53);
 
           case 53:
-            return _context2.abrupt("break", 198);
+            return _context2.abrupt("break", 215);
 
           case 54:
             _context2.next = 56;
@@ -367,7 +369,7 @@ function () {
             });
 
           case 58:
-            return _context2.abrupt("break", 198);
+            return _context2.abrupt("break", 215);
 
           case 59:
             _context2.next = 61;
@@ -380,7 +382,7 @@ function () {
             });
 
           case 61:
-            return _context2.abrupt("break", 198);
+            return _context2.abrupt("break", 215);
 
           case 62:
             _context2.t5 = data;
@@ -422,7 +424,7 @@ function () {
             return _context2.abrupt("break", 73);
 
           case 73:
-            return _context2.abrupt("break", 198);
+            return _context2.abrupt("break", 215);
 
           case 74:
             _context2.t6 = data;
@@ -464,7 +466,7 @@ function () {
             return _context2.abrupt("break", 85);
 
           case 85:
-            return _context2.abrupt("break", 198);
+            return _context2.abrupt("break", 215);
 
           case 86:
             _context2.t7 = data;
@@ -518,7 +520,7 @@ function () {
             return _context2.abrupt("break", 100);
 
           case 100:
-            return _context2.abrupt("break", 198);
+            return _context2.abrupt("break", 215);
 
           case 101:
             _context2.next = 103;
@@ -541,7 +543,7 @@ function () {
             });
 
           case 105:
-            return _context2.abrupt("break", 198);
+            return _context2.abrupt("break", 215);
 
           case 106:
             _context2.next = 108;
@@ -564,7 +566,7 @@ function () {
             });
 
           case 110:
-            return _context2.abrupt("break", 198);
+            return _context2.abrupt("break", 215);
 
           case 111:
             _context2.t8 = data.option;
@@ -607,7 +609,7 @@ function () {
             return _context2.abrupt("break", 122);
 
           case 122:
-            return _context2.abrupt("break", 198);
+            return _context2.abrupt("break", 215);
 
           case 123:
             _context2.t9 = data;
@@ -639,7 +641,7 @@ function () {
             return _context2.abrupt("break", 132);
 
           case 132:
-            return _context2.abrupt("break", 198);
+            return _context2.abrupt("break", 215);
 
           case 133:
             _context2.next = 135;
@@ -651,7 +653,7 @@ function () {
             });
 
           case 135:
-            return _context2.abrupt("break", 198);
+            return _context2.abrupt("break", 215);
 
           case 136:
             _context2.t10 = data;
@@ -711,7 +713,7 @@ function () {
             return _context2.abrupt("break", 152);
 
           case 152:
-            return _context2.abrupt("break", 198);
+            return _context2.abrupt("break", 215);
 
           case 153:
             _context2.t11 = data;
@@ -743,7 +745,7 @@ function () {
           case 161:
             _context2.next = 163;
             return sendActions({
-              action: 'SHOW_FULL_ORDER',
+              action: 'ASK_FOR_PAYMENT_TYPE',
               bot: bot,
               sender: sender,
               pageID: pageID
@@ -753,7 +755,7 @@ function () {
             return _context2.abrupt("break", 164);
 
           case 164:
-            return _context2.abrupt("break", 198);
+            return _context2.abrupt("break", 215);
 
           case 165:
             _context2.t12 = data.option;
@@ -785,7 +787,7 @@ function () {
           case 173:
             _context2.next = 175;
             return sendActions({
-              action: 'SHOW_FULL_ORDER',
+              action: 'ASK_FOR_PAYMENT_TYPE',
               bot: bot,
               sender: sender,
               pageID: pageID
@@ -807,7 +809,7 @@ function () {
           case 178:
             _context2.next = 180;
             return sendActions({
-              action: 'SHOW_FULL_ORDER',
+              action: 'ASK_FOR_PAYMENT_TYPE',
               bot: bot,
               sender: sender,
               pageID: pageID
@@ -817,15 +819,79 @@ function () {
             return _context2.abrupt("break", 181);
 
           case 181:
-            return _context2.abrupt("break", 198);
+            return _context2.abrupt("break", 215);
 
           case 182:
+            _context2.next = 184;
+            return sendActions({
+              action: 'SHOW_PAYMENT_TYPE',
+              bot: bot,
+              sender: sender,
+              pageID: pageID,
+              data: data
+            });
+
+          case 184:
             _context2.t13 = data;
-            _context2.next = _context2.t13 === 'confirmation_yes' ? 185 : 191;
+            _context2.next = _context2.t13 === 'payment_money' ? 187 : _context2.t13 === 'payment_card' ? 190 : 193;
             break;
 
-          case 185:
-            _context2.next = 187;
+          case 187:
+            _context2.next = 189;
+            return sendActions({
+              action: 'ASK_FOR_PAYMENT_CHANGE',
+              bot: bot,
+              sender: sender,
+              pageID: pageID
+            });
+
+          case 189:
+            return _context2.abrupt("break", 193);
+
+          case 190:
+            _context2.next = 192;
+            return sendActions({
+              action: 'SHOW_FULL_ORDER',
+              bot: bot,
+              sender: sender,
+              pageID: pageID
+            });
+
+          case 192:
+            return _context2.abrupt("break", 193);
+
+          case 193:
+            return _context2.abrupt("break", 215);
+
+          case 194:
+            _context2.next = 196;
+            return sendActions({
+              action: 'SHOW_PAYMENT_CHANGE',
+              bot: bot,
+              sender: sender,
+              pageID: pageID,
+              data: data
+            });
+
+          case 196:
+            _context2.next = 198;
+            return sendActions({
+              action: 'SHOW_FULL_ORDER',
+              bot: bot,
+              sender: sender,
+              pageID: pageID
+            });
+
+          case 198:
+            return _context2.abrupt("break", 215);
+
+          case 199:
+            _context2.t14 = data;
+            _context2.next = _context2.t14 === 'confirmation_yes' ? 202 : 208;
+            break;
+
+          case 202:
+            _context2.next = 204;
             return sendActions({
               action: 'CONFIRM_ORDER',
               bot: bot,
@@ -833,13 +899,13 @@ function () {
               pageID: pageID
             });
 
-          case 187:
+          case 204:
             if (!bot.marketing) {
-              _context2.next = 190;
+              _context2.next = 207;
               break;
             }
 
-            _context2.next = 190;
+            _context2.next = 207;
             return sendActions({
               action: 'PIZZAIBOT_MARKETING',
               bot: bot,
@@ -848,11 +914,11 @@ function () {
               data: 'confirmation_yes'
             });
 
-          case 190:
-            return _context2.abrupt("break", 194);
+          case 207:
+            return _context2.abrupt("break", 211);
 
-          case 191:
-            _context2.next = 193;
+          case 208:
+            _context2.next = 210;
             return sendActions({
               action: 'ASK_FOR_CHANGE_ORDER',
               bot: bot,
@@ -860,14 +926,14 @@ function () {
               pageID: pageID
             });
 
-          case 193:
-            return _context2.abrupt("break", 194);
+          case 210:
+            return _context2.abrupt("break", 211);
 
-          case 194:
-            return _context2.abrupt("break", 198);
+          case 211:
+            return _context2.abrupt("break", 215);
 
-          case 195:
-            _context2.next = 197;
+          case 212:
+            _context2.next = 214;
             return sendActions({
               action: 'UPDATE_ITEM',
               bot: bot,
@@ -876,30 +942,30 @@ function () {
               data: data
             });
 
-          case 197:
-            return _context2.abrupt("break", 198);
+          case 214:
+            return _context2.abrupt("break", 215);
 
-          case 198:
-            _context2.next = 203;
+          case 215:
+            _context2.next = 220;
             break;
 
-          case 200:
-            _context2.prev = 200;
-            _context2.t14 = _context2["catch"](1);
+          case 217:
+            _context2.prev = 217;
+            _context2.t15 = _context2["catch"](1);
             console.error({
               event: event
             }, {
-              mapEventsActionsErr: _context2.t14
+              mapEventsActionsErr: _context2.t15
             }, {
               data: data
             });
 
-          case 203:
+          case 220:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[1, 200]]);
+    }, _callee2, this, [[1, 217]]);
   }));
 
   return function mapEventsActions(_x2) {
@@ -915,7 +981,7 @@ function () {
   var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee3(_ref5) {
-    var action, bot, sender, pageID, multiple, split, data, payload, location, text, addrData, out, user;
+    var action, bot, sender, pageID, multiple, split, data, payload, location, text, addrData, out, user1, user2, user;
     return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
@@ -932,7 +998,7 @@ function () {
 
           case 7:
             _context3.t0 = action;
-            _context3.next = _context3.t0 === 'BASIC_REPLY' ? 10 : _context3.t0 === 'CHECK_TYPED_TEXT' ? 14 : _context3.t0 === 'ASK_FOR_CONTINUE' ? 18 : _context3.t0 === 'CHECK_LAST_ACTION' ? 22 : _context3.t0 === 'CONTINUE_ORDER_NO' ? 26 : _context3.t0 === 'PASS_THREAD_CONTROL' ? 30 : _context3.t0 === 'SEND_WELCOME' ? 34 : _context3.t0 === 'SEND_MAIN_MENU' ? 38 : _context3.t0 === 'SEND_CARDAPIO' ? 42 : _context3.t0 === 'SEND_HORARIO' ? 46 : _context3.t0 === 'CHECK_ADDRESS' ? 50 : _context3.t0 === 'CONFIRM_ADDRESS' ? 54 : _context3.t0 === 'ASK_FOR_ORDER' ? 58 : _context3.t0 === 'LOCATION_CONFIRM_ADDRESS' ? 62 : _context3.t0 === 'ASK_FOR_PHONE' ? 69 : _context3.t0 === 'SHOW_PHONE' ? 73 : _context3.t0 === 'SHOW_ADDRESS' ? 77 : _context3.t0 === 'SHOW_ORDER_OR_ASK_FOR_PHONE' ? 81 : _context3.t0 === 'ASK_TO_TYPE_PHONE' ? 85 : _context3.t0 === 'CONFIRM_TYPED_PHONE' ? 89 : _context3.t0 === 'ASK_FOR_LOCATION' ? 93 : _context3.t0 === 'ASK_TO_TYPE_ADDRESS' ? 97 : _context3.t0 === 'ASK_FOR_QUANTITY' ? 101 : _context3.t0 === 'ASK_FOR_QUANTITY_MORE' ? 105 : _context3.t0 === 'SHOW_QUANTITY' ? 109 : _context3.t0 === 'ASK_FOR_SIZE' ? 113 : _context3.t0 === 'SHOW_SIZE' ? 117 : _context3.t0 === 'SHOW_SPLIT' ? 121 : _context3.t0 === 'CHECK_SPLIT' ? 125 : _context3.t0 === 'CHECK_FLAVOR' ? 129 : _context3.t0 === 'ASK_FOR_FLAVOR' ? 133 : _context3.t0 === 'SHOW_FLAVOR' ? 137 : _context3.t0 === 'CHECK_ITEM' ? 141 : _context3.t0 === 'ASK_FOR_WANT_BEVERAGE' ? 145 : _context3.t0 === 'SHOW_NO_BEVERAGE' ? 149 : _context3.t0 === 'ASK_FOR_BEVERAGE_OPTIONS' ? 153 : _context3.t0 === 'SHOW_BEVERAGE' ? 157 : _context3.t0 === 'SHOW_FULL_ORDER' ? 161 : _context3.t0 === 'ASK_FOR_CHANGE_ORDER' ? 165 : _context3.t0 === 'ASK_FOR_SPECIFIC_ITEM' ? 169 : _context3.t0 === 'UPDATE_ITEM' ? 173 : _context3.t0 === 'CONFIRM_ORDER' ? 177 : _context3.t0 === 'PIZZAIBOT_MARKETING' ? 181 : 185;
+            _context3.next = _context3.t0 === 'BASIC_REPLY' ? 10 : _context3.t0 === 'CHECK_TYPED_TEXT' ? 14 : _context3.t0 === 'ASK_FOR_CONTINUE' ? 18 : _context3.t0 === 'CHECK_LAST_ACTION' ? 22 : _context3.t0 === 'CONTINUE_ORDER_NO' ? 26 : _context3.t0 === 'PASS_THREAD_CONTROL' ? 30 : _context3.t0 === 'SEND_WELCOME' ? 34 : _context3.t0 === 'SEND_MAIN_MENU' ? 38 : _context3.t0 === 'SEND_CARDAPIO' ? 42 : _context3.t0 === 'SEND_HORARIO' ? 46 : _context3.t0 === 'CHECK_ADDRESS' ? 50 : _context3.t0 === 'CONFIRM_ADDRESS' ? 57 : _context3.t0 === 'ASK_FOR_ORDER' ? 61 : _context3.t0 === 'LOCATION_CONFIRM_ADDRESS' ? 65 : _context3.t0 === 'ASK_FOR_PHONE' ? 72 : _context3.t0 === 'SHOW_PHONE' ? 76 : _context3.t0 === 'SHOW_ADDRESS' ? 80 : _context3.t0 === 'SHOW_ORDER_OR_ASK_FOR_PHONE' ? 84 : _context3.t0 === 'ASK_TO_TYPE_PHONE' ? 88 : _context3.t0 === 'CONFIRM_TYPED_PHONE' ? 92 : _context3.t0 === 'ASK_FOR_LOCATION' ? 96 : _context3.t0 === 'ASK_TO_TYPE_ADDRESS' ? 103 : _context3.t0 === 'ASK_FOR_QUANTITY' ? 107 : _context3.t0 === 'ASK_FOR_QUANTITY_MORE' ? 111 : _context3.t0 === 'SHOW_QUANTITY' ? 115 : _context3.t0 === 'ASK_FOR_SIZE' ? 119 : _context3.t0 === 'SHOW_SIZE' ? 123 : _context3.t0 === 'SHOW_SPLIT' ? 127 : _context3.t0 === 'CHECK_SPLIT' ? 131 : _context3.t0 === 'CHECK_FLAVOR' ? 135 : _context3.t0 === 'ASK_FOR_FLAVOR' ? 139 : _context3.t0 === 'SHOW_FLAVOR' ? 143 : _context3.t0 === 'CHECK_ITEM' ? 147 : _context3.t0 === 'ASK_FOR_WANT_BEVERAGE' ? 151 : _context3.t0 === 'SHOW_NO_BEVERAGE' ? 155 : _context3.t0 === 'ASK_FOR_BEVERAGE_OPTIONS' ? 159 : _context3.t0 === 'SHOW_BEVERAGE' ? 163 : _context3.t0 === 'ASK_FOR_PAYMENT_TYPE' ? 167 : _context3.t0 === 'SHOW_PAYMENT_TYPE' ? 171 : _context3.t0 === 'ASK_FOR_PAYMENT_CHANGE' ? 175 : _context3.t0 === 'SHOW_PAYMENT_CHANGE' ? 179 : _context3.t0 === 'SHOW_FULL_ORDER' ? 183 : _context3.t0 === 'ASK_FOR_CHANGE_ORDER' ? 187 : _context3.t0 === 'ASK_FOR_SPECIFIC_ITEM' ? 191 : _context3.t0 === 'UPDATE_ITEM' ? 195 : _context3.t0 === 'CONFIRM_ORDER' ? 199 : _context3.t0 === 'PIZZAIBOT_MARKETING' ? 203 : 207;
             break;
 
           case 10:
@@ -941,7 +1007,7 @@ function () {
 
           case 12:
             out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            return _context3.abrupt("break", 208);
 
           case 14:
             _context3.next = 16;
@@ -949,7 +1015,7 @@ function () {
 
           case 16:
             out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            return _context3.abrupt("break", 208);
 
           case 18:
             _context3.next = 20;
@@ -957,7 +1023,7 @@ function () {
 
           case 20:
             out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            return _context3.abrupt("break", 208);
 
           case 22:
             _context3.next = 24;
@@ -965,7 +1031,7 @@ function () {
 
           case 24:
             out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            return _context3.abrupt("break", 208);
 
           case 26:
             _context3.next = 28;
@@ -973,7 +1039,7 @@ function () {
 
           case 28:
             out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            return _context3.abrupt("break", 208);
 
           case 30:
             _context3.next = 32;
@@ -981,7 +1047,7 @@ function () {
 
           case 32:
             out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            return _context3.abrupt("break", 208);
 
           case 34:
             _context3.next = 36;
@@ -989,7 +1055,7 @@ function () {
 
           case 36:
             out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            return _context3.abrupt("break", 208);
 
           case 38:
             _context3.next = 40;
@@ -997,7 +1063,7 @@ function () {
 
           case 40:
             out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            return _context3.abrupt("break", 208);
 
           case 42:
             _context3.next = 44;
@@ -1005,7 +1071,7 @@ function () {
 
           case 44:
             out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            return _context3.abrupt("break", 208);
 
           case 46:
             _context3.next = 48;
@@ -1013,304 +1079,346 @@ function () {
 
           case 48:
             out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            return _context3.abrupt("break", 208);
 
           case 50:
             _context3.next = 52;
-            return (0, _botController.confirmAddressOrAskLocation)(pageID, sender.id, user);
-
-          case 52:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
-
-          case 54:
-            _context3.next = 56;
-            return (0, _botController.confirmAddress)(pageID, sender.id, addrData);
-
-          case 56:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
-
-          case 58:
-            _context3.next = 60;
-            return (0, _botController.askForWantOrder)(pageID, sender.id);
-
-          case 60:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
-
-          case 62:
-            _context3.next = 64;
             return bot.fetchUser(sender.id);
 
-          case 64:
-            user = _context3.sent;
+          case 52:
+            user1 = _context3.sent;
+            _context3.next = 55;
+            return (0, _botController.confirmAddressOrAskLocation)(pageID, sender.id, user1);
+
+          case 55:
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
+
+          case 57:
+            _context3.next = 59;
+            return (0, _botController.confirmAddress)(pageID, sender.id, addrData);
+
+          case 59:
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
+
+          case 61:
+            _context3.next = 63;
+            return (0, _botController.askForWantOrder)(pageID, sender.id);
+
+          case 63:
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
+
+          case 65:
             _context3.next = 67;
-            return (0, _botController.confirmLocationAddress)(pageID, sender.id, location, user);
+            return bot.fetchUser(sender.id);
 
           case 67:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            user2 = _context3.sent;
+            _context3.next = 70;
+            return (0, _botController.confirmLocationAddress)(pageID, sender.id, location, user2);
 
-          case 69:
-            _context3.next = 71;
+          case 70:
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
+
+          case 72:
+            _context3.next = 74;
             return (0, _botController.askForPhone)(pageID, sender.id);
 
-          case 71:
+          case 74:
             out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            return _context3.abrupt("break", 208);
 
-          case 73:
-            _context3.next = 75;
+          case 76:
+            _context3.next = 78;
             return (0, _botController.showPhone)(pageID, sender.id, payload || data);
 
-          case 75:
+          case 78:
             out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            return _context3.abrupt("break", 208);
 
-          case 77:
-            _context3.next = 79;
+          case 80:
+            _context3.next = 82;
             return (0, _botController.showAddress)(pageID, sender.id, data);
 
-          case 79:
+          case 82:
             out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            return _context3.abrupt("break", 208);
 
-          case 81:
-            _context3.next = 83;
+          case 84:
+            _context3.next = 86;
             return (0, _botController.showOrderOrAskForPhone)(pageID, sender.id);
 
-          case 83:
+          case 86:
             out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            return _context3.abrupt("break", 208);
 
-          case 85:
-            _context3.next = 87;
+          case 88:
+            _context3.next = 90;
             return (0, _botController.askToTypePhone)(pageID, sender.id);
 
-          case 87:
+          case 90:
             out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            return _context3.abrupt("break", 208);
 
-          case 89:
-            _context3.next = 91;
+          case 92:
+            _context3.next = 94;
             return (0, _botController.confirmTypedPhone)(pageID, sender.id, text);
 
-          case 91:
+          case 94:
             out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            return _context3.abrupt("break", 208);
 
-          case 93:
-            _context3.next = 95;
-            return (0, _botController.askForLocation)(pageID, sender.id);
+          case 96:
+            _context3.next = 98;
+            return bot.fetchUser(sender.id);
 
-          case 95:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
-
-          case 97:
-            _context3.next = 99;
-            return (0, _botController.askToTypeAddress)(pageID, sender.id);
-
-          case 99:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+          case 98:
+            user = _context3.sent;
+            _context3.next = 101;
+            return (0, _botController.askForLocation)(pageID, sender.id, user);
 
           case 101:
-            _context3.next = 103;
-            return (0, _botController.askForQuantity)(pageID, sender.id);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 103:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 105;
+            return (0, _botController.askToTypeAddress)(pageID, sender.id);
 
           case 105:
-            _context3.next = 107;
-            return (0, _botController.askForQuantityMore)(pageID, sender.id);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 107:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 109;
+            return (0, _botController.askForQuantity)(pageID, sender.id);
 
           case 109:
-            _context3.next = 111;
-            return (0, _botController.showQuantity)(pageID, sender.id, data);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 111:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 113;
+            return (0, _botController.askForQuantityMore)(pageID, sender.id);
 
           case 113:
-            _context3.next = 115;
-            return (0, _botController.askForSize)(pageID, sender.id);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 115:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 117;
+            return (0, _botController.showQuantity)(pageID, sender.id, data);
 
           case 117:
-            _context3.next = 119;
-            return (0, _botController.showSize)(pageID, sender.id, data);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 119:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 121;
+            return (0, _botController.askForSize)(pageID, sender.id);
 
           case 121:
-            _context3.next = 123;
-            return (0, _botController.showSplit)(pageID, sender.id, data);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 123:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 125;
+            return (0, _botController.showSize)(pageID, sender.id, data);
 
           case 125:
-            _context3.next = 127;
-            return (0, _botController.askForSplitFlavorOrConfirm)(pageID, sender.id, 1);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 127:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 129;
+            return (0, _botController.showSplit)(pageID, sender.id, data);
 
           case 129:
-            _context3.next = 131;
-            return (0, _botController.askForFlavorOrConfirm)(pageID, sender.id, 1, data);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 131:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 133;
+            return (0, _botController.askForSplitFlavorOrConfirm)(pageID, sender.id, 1);
 
           case 133:
-            _context3.next = 135;
-            return (0, _botController.askForFlavor)(pageID, sender.id, multiple, split);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 135:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 137;
+            return (0, _botController.askForFlavorOrConfirm)(pageID, sender.id, 1, data);
 
           case 137:
-            _context3.next = 139;
-            return (0, _botController.showFlavor)(pageID, sender.id, data);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 139:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 141;
+            return (0, _botController.askForFlavor)(pageID, sender.id, multiple, split);
 
           case 141:
-            _context3.next = 143;
-            return (0, _botController.showOrderOrNextItem)(pageID, sender.id);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 143:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 145;
+            return (0, _botController.showFlavor)(pageID, sender.id, data);
 
           case 145:
-            _context3.next = 147;
-            return (0, _botController.askForWantBeverage)(pageID, sender.id);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 147:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 149;
+            return (0, _botController.showOrderOrNextItem)(pageID, sender.id);
 
           case 149:
-            _context3.next = 151;
-            return (0, _botController.showNoBeverage)(pageID, sender.id, data);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 151:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 153;
+            return (0, _botController.askForWantBeverage)(pageID, sender.id);
 
           case 153:
-            _context3.next = 155;
-            return (0, _botController.askForBeverages)(pageID, sender.id, multiple);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 155:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 157;
+            return (0, _botController.showNoBeverage)(pageID, sender.id, data);
 
           case 157:
-            _context3.next = 159;
-            return (0, _botController.showBeverage)(pageID, sender.id, data);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 159:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 161;
+            return (0, _botController.askForBeverages)(pageID, sender.id, multiple);
 
           case 161:
-            _context3.next = 163;
-            return (0, _botController.showFullOrder)(pageID, sender.id);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 163:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 165;
+            return (0, _botController.showBeverage)(pageID, sender.id, data);
 
           case 165:
-            _context3.next = 167;
-            return (0, _botController.askForChangeOrder)(pageID, sender.id);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 167:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 169;
+            return (0, _botController.askForPaymentType)(pageID, sender.id);
 
           case 169:
-            _context3.next = 171;
-            return (0, _botController.askForSpecificItem)(pageID, sender.id);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 171:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 173;
+            return (0, _botController.showPaymentType)(pageID, sender.id, data);
 
           case 173:
-            _context3.next = 175;
-            return (0, _botController.updateItemAskOptions)(pageID, sender.id, data);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 175:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 177;
+            return (0, _botController.askForPaymentChange)(pageID, sender.id);
 
           case 177:
-            _context3.next = 179;
-            return (0, _botController.confirmOrder)(pageID, sender.id);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 179:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 181;
+            return (0, _botController.showPaymentChange)(pageID, sender.id, data);
 
           case 181:
-            _context3.next = 183;
-            return marketing_flow(pageID, sender.id, data, text, payload);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
           case 183:
-            out = _context3.sent;
-            return _context3.abrupt("break", 186);
+            _context3.next = 185;
+            return (0, _botController.showFullOrder)(pageID, sender.id);
 
           case 185:
-            return _context3.abrupt("break", 186);
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
 
-          case 186:
-            _context3.next = 188;
+          case 187:
+            _context3.next = 189;
+            return (0, _botController.askForChangeOrder)(pageID, sender.id);
+
+          case 189:
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
+
+          case 191:
+            _context3.next = 193;
+            return (0, _botController.askForSpecificItem)(pageID, sender.id);
+
+          case 193:
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
+
+          case 195:
+            _context3.next = 197;
+            return (0, _botController.updateItemAskOptions)(pageID, sender.id, data);
+
+          case 197:
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
+
+          case 199:
+            _context3.next = 201;
+            return (0, _botController.confirmOrder)(pageID, sender.id);
+
+          case 201:
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
+
+          case 203:
+            _context3.next = 205;
+            return marketing_flow(pageID, sender.id, data, text, payload);
+
+          case 205:
+            out = _context3.sent;
+            return _context3.abrupt("break", 208);
+
+          case 207:
+            return _context3.abrupt("break", 208);
+
+          case 208:
+            _context3.next = 210;
             return bot.stopTyping(sender.id);
 
-          case 188:
-            _context3.next = 190;
+          case 210:
+            _context3.next = 212;
             return bot.send(sender.id, out);
 
-          case 190:
-            _context3.next = 196;
+          case 212:
+            _context3.next = 218;
             break;
 
-          case 192:
-            _context3.prev = 192;
+          case 214:
+            _context3.prev = 214;
             _context3.t1 = _context3["catch"](1);
             console.error('action:', action, 'data:', data, 'err:', _context3.t1);
             throw _context3.t1;
 
-          case 196:
+          case 218:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, this, [[1, 192]]);
+    }, _callee3, this, [[1, 214]]);
   }));
 
   return function sendActions(_x3) {

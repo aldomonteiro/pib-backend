@@ -198,6 +198,8 @@ export const getOrderJson = async (pageId, orderId) => {
             phone: order.phone,
             address: order.address,
             total: order.total,
+            payment_type: order.payment_type,
+            payment_change: order.payment_change,
             items: jsonItems,
             distanceFromStore: distanceFromStore,
         }
@@ -214,7 +216,8 @@ export const updateOrder = async orderData => {
         const { pageId, userId, qty, location, user,
             phone, addrData, completeItem, confirmOrder,
             waitingForAddress, waitingFor, currentItem, sizeId, calcTotal,
-            split, originalSplit, eraseSplit, noBeverage } = orderData;
+            split, originalSplit, eraseSplit, noBeverage,
+            paymentType, paymentChange } = orderData;
 
         let customerID = 0;
         let customerData = {}
@@ -348,6 +351,16 @@ export const updateOrder = async orderData => {
 
             if (typeof noBeverage === 'boolean') {
                 order.no_beverage = noBeverage;
+                updateOrder = true;
+            }
+
+            if (paymentType) {
+                order.payment_type = paymentType;
+                updateOrder = true;
+            }
+
+            if (paymentChange) {
+                order.payment_change = paymentChange;
                 updateOrder = true;
             }
 

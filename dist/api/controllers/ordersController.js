@@ -468,6 +468,8 @@ function () {
               phone: order.phone,
               address: order.address,
               total: order.total,
+              payment_type: order.payment_type,
+              payment_change: order.payment_change,
               items: jsonItems,
               distanceFromStore: distanceFromStore
             };
@@ -502,14 +504,14 @@ function () {
   var _ref7 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee7(orderData) {
-    var pageId, userId, qty, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, waitingFor, currentItem, sizeId, calcTotal, split, originalSplit, eraseSplit, noBeverage, customerID, customerData, first_name, last_name, profile_pic, order, _updateOrder, total, resultLastId, orderId, record;
+    var pageId, userId, qty, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, waitingFor, currentItem, sizeId, calcTotal, split, originalSplit, eraseSplit, noBeverage, paymentType, paymentChange, customerID, customerData, first_name, last_name, profile_pic, order, _updateOrder, total, resultLastId, orderId, record;
 
     return regeneratorRuntime.wrap(function _callee7$(_context7) {
       while (1) {
         switch (_context7.prev = _context7.next) {
           case 0:
             _context7.prev = 0;
-            pageId = orderData.pageId, userId = orderData.userId, qty = orderData.qty, location = orderData.location, user = orderData.user, phone = orderData.phone, addrData = orderData.addrData, completeItem = orderData.completeItem, confirmOrder = orderData.confirmOrder, waitingForAddress = orderData.waitingForAddress, waitingFor = orderData.waitingFor, currentItem = orderData.currentItem, sizeId = orderData.sizeId, calcTotal = orderData.calcTotal, split = orderData.split, originalSplit = orderData.originalSplit, eraseSplit = orderData.eraseSplit, noBeverage = orderData.noBeverage;
+            pageId = orderData.pageId, userId = orderData.userId, qty = orderData.qty, location = orderData.location, user = orderData.user, phone = orderData.phone, addrData = orderData.addrData, completeItem = orderData.completeItem, confirmOrder = orderData.confirmOrder, waitingForAddress = orderData.waitingForAddress, waitingFor = orderData.waitingFor, currentItem = orderData.currentItem, sizeId = orderData.sizeId, calcTotal = orderData.calcTotal, split = orderData.split, originalSplit = orderData.originalSplit, eraseSplit = orderData.eraseSplit, noBeverage = orderData.noBeverage, paymentType = orderData.paymentType, paymentChange = orderData.paymentChange;
             customerID = 0;
             customerData = {};
             customerData.pageId = pageId;
@@ -541,7 +543,7 @@ function () {
             order = _context7.sent;
 
             if (!order) {
-              _context7.next = 46;
+              _context7.next = 48;
               break;
             }
 
@@ -675,29 +677,39 @@ function () {
               _updateOrder = true;
             }
 
+            if (paymentType) {
+              order.payment_type = paymentType;
+              _updateOrder = true;
+            }
+
+            if (paymentChange) {
+              order.payment_change = paymentChange;
+              _updateOrder = true;
+            }
+
             if (!_updateOrder) {
-              _context7.next = 42;
+              _context7.next = 44;
               break;
             }
 
-            _context7.next = 42;
+            _context7.next = 44;
             return order.save();
 
-          case 42:
-            _context7.next = 44;
+          case 44:
+            _context7.next = 46;
             return (0, _itemsController.updateItem)(orderData);
 
-          case 44:
-            _context7.next = 57;
+          case 46:
+            _context7.next = 59;
             break;
 
-          case 46:
-            _context7.next = 48;
+          case 48:
+            _context7.next = 50;
             return _orders.default.find({
               pageId: pageId
             }).select('id').sort('-id').limit(1).exec();
 
-          case 48:
+          case 50:
             resultLastId = _context7.sent;
             orderId = 1;
             if (resultLastId && resultLastId.length) orderId = resultLastId[0].id + 1;
@@ -712,32 +724,32 @@ function () {
               waitingForAddress: typeof waitingForAddress === 'boolean' ? waitingForAddress : false,
               status: ORDERSTATUS_PENDING
             });
-            _context7.next = 54;
+            _context7.next = 56;
             return record.save();
 
-          case 54:
+          case 56:
             orderData.orderId = record.id;
-            _context7.next = 57;
+            _context7.next = 59;
             return (0, _itemsController.updateItem)(orderData);
 
-          case 57:
-            _context7.next = 63;
+          case 59:
+            _context7.next = 65;
             break;
 
-          case 59:
-            _context7.prev = 59;
+          case 61:
+            _context7.prev = 61;
             _context7.t0 = _context7["catch"](0);
             console.error({
               updateOrderError: _context7.t0
             });
             throw _context7.t0;
 
-          case 63:
+          case 65:
           case "end":
             return _context7.stop();
         }
       }
-    }, _callee7, this, [[0, 59]]);
+    }, _callee7, this, [[0, 61]]);
   }));
 
   return function updateOrder(_x12) {

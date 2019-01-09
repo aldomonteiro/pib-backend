@@ -213,8 +213,8 @@ export const askForWantOrder = async (pageId, userId) => {
  * Question No.01
  * If the user doesnt have an address in the database, this will be the first question.
  */
-export const askForLocation = async (pageId, userId) => {
-    await updateOrder({ pageId, userId, waitingFor: 'location' });
+export const askForLocation = async (pageId, userId, user) => {
+    await updateOrder({ pageId, userId, user, waitingFor: 'location' });
 
     const out = new Elements();
     out.add({ text: 'Para começar, preciso saber aonde você está. Clique no botão abaixo que receberei a sua localização.' });
@@ -226,9 +226,9 @@ export const askForLocation = async (pageId, userId) => {
     return out;
 }
 
-export const confirmLocationAddress = async (pageId, userId, location) => {
+export const confirmLocationAddress = async (pageId, userId, location, user) => {
 
-    await updateOrder({ pageId, userId, location, waitingFor: 'location_address' });
+    await updateOrder({ pageId, userId, location, user, waitingFor: 'location_address' });
 
     const addresses = await getAddressLocation(location);
 
@@ -288,7 +288,7 @@ export const confirmAddressOrAskLocation = async (pageId, userId, user) => {
         // return out;
         return confirmAddress(pageId, userId, addrData, user);
     } else {
-        return await askForLocation(pageId, userId);
+        return await askForLocation(pageId, userId, user);
     }
 }
 
@@ -702,6 +702,55 @@ export const showOrderOrNextItem = async (pageId, userId) => {
     }
 }
 
+export const askForPaymentType = async (pageId, userId) => {
+    const out = new Elements();
+    out.add({ text: 'Qual a forma de pagamento?' });
+
+    const replies = new QuickReplies();
+    replies.add({ text: 'Dinheiro', data: 'payment_money', event: 'ORDER_PAYMENT_TYPE' });
+    replies.add({ text: 'Cartão', data: 'payment_card', event: 'ORDER_PAYMENT_TYPE' });
+    out.setQuickReplies(replies);
+
+    await updateOrder({ pageId, userId, waitingFor: 'payment_type' });
+
+    return out;
+}
+
+export const showPaymentType = async (pageId, userId, data) => {
+    await updateOrder({ pageId, userId, paymentType: data });
+
+    let _txtPaymentType = data === 'payment_money' ? 'Dinheiro' : 'Cartão';
+
+    const out = new Elements();
+    out.add({ text: '✅ ' + ' Forma de pagamento: ' + _txtPaymentType });
+    return out;
+}
+
+export const askForPaymentChange = async (pageId, userId) => {
+    const out = new Elements();
+    out.add({ text: 'Precisa de troco?' });
+
+    const replies = new QuickReplies();
+    replies.add({ text: 'Sim', data: 'payment_change_yes', event: 'ORDER_PAYMENT_CHANGE' });
+    replies.add({ text: 'Não', data: 'payment_change_no', event: 'ORDER_PAYMENT_CHANGE' });
+    out.setQuickReplies(replies);
+
+    await updateOrder({ pageId, userId, waitingFor: 'payment_change' });
+
+    return out;
+}
+
+export const showPaymentChange = async (pageId, userId, data) => {
+    await updateOrder({ pageId, userId, paymentChange: data });
+
+    let _txtPaymentChange = data === 'payment_change_yes' ? 'Levaremos trocado' : 'Não precisa de troco';
+
+    const out = new Elements();
+    out.add({ text: '✅ ' + _txtPaymentChange });
+    return out;
+}
+
+
 export const showFullOrder = async (pageId, userId) => {
     const po = await getOrderPending({ pageId, userId, isComplete: true });
 
@@ -722,6 +771,14 @@ export const showFullOrder = async (pageId, userId) => {
     _txt = _txt + '*Endereço de entrega:* ' + po.order.address + '\n';
     _txt = _txt + '*Telefone:* ' + po.order.phone + '\n';
     _txt = _txt + '*Total:* R$ ' + total_price + '\n';
+
+    let _txtPaymentType = po.payment_type === 'payment_card' ? 'Cartão' : 'Dinheiro';
+    _txt = _txt + '*Forma de Pagamento:* ' + _txtPaymentType + '\n';
+
+    if (po.payment_change === 'payment_change_yes') {
+        _txt = _txt + '*Levar troco? :* Sim \n';
+    }
+
     _txt = _txt + 'Posso confirmar o pedido?';
 
     out.add({ text: _txt });

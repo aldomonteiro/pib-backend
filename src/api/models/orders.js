@@ -24,7 +24,9 @@ const schema = new Schema({
   waitingFor: { type: String },
   total: { type: Number },
   sent_shipping_notification: { type: Date },
-  no_beverage: { type: Boolean }
+  no_beverage: { type: Boolean },
+  payment_type: { type: String },
+  payment_change: { type: String }
 }, { timestamps: true });
 
 schema.pre('save', function (next) {

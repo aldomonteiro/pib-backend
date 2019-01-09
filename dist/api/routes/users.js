@@ -16,6 +16,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var router = _express.default.Router();
 
 router.post('/auth', _usersController.users_auth);
+router.post('/code', _usersController.users_code);
 router.use(_authenticate.default); // CHECK TOKEN
 
 router.post('/create', _usersController.users_create);
