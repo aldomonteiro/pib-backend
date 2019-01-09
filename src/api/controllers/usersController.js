@@ -66,8 +66,11 @@ export const users_code = async (req, res) => {
 
         const result = await axios.get(facebookAccessTokenUrl, { params });
         if (result && result.data && result.data.access_token) {
+            const data = {
+                access_token: result.data.access_token
+            };
             console.info(result.data);
-            res.status(200).send(result.data);
+            res.status(200).json({ result: data });
         }
         else {
             console.error(result.response && response.data);

@@ -124,7 +124,7 @@ function () {
   var _ref2 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(req, res) {
-    var _code, _redirect_uri, facebookAccessTokenUrl, params, result, errorMsg;
+    var _code, _redirect_uri, facebookAccessTokenUrl, params, result, data, errorMsg;
 
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
@@ -155,8 +155,13 @@ function () {
             result = _context2.sent;
 
             if (result && result.data && result.data.access_token) {
+              data = {
+                access_token: result.data.access_token
+              };
               console.info(result.data);
-              res.status(200).send(result.data);
+              res.status(200).json({
+                result: data
+              });
             } else {
               console.error(result.response && response.data);
               errorMsg = result.response ? result.response.data.error.message : result.data ? result.data.error.message : 'Unknown error';
