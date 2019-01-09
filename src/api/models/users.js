@@ -22,7 +22,7 @@ const schema = new Schema({
 }, { timestamps: true });
 
 schema.post('save', doc => {
-  console.log(`user has benn saved: userID:${doc.userID}, name:${doc.name}, hasLong:${doc.hasLongLivedToken}`);
+  console.log(`user has been saved: userID:${doc.userID}, name:${doc.name}, hasLong:${doc.hasLongLivedToken}`);
 });
 
 schema.methods.generateJWT = function generateJWT() {

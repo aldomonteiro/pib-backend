@@ -64,7 +64,7 @@ var schema = new Schema({
   timestamps: true
 });
 schema.post('save', function (doc) {
-  console.log("user has benn saved: userID:".concat(doc.userID, ", name:").concat(doc.name, ", hasLong:").concat(doc.hasLongLivedToken));
+  console.log("user has been saved: userID:".concat(doc.userID, ", name:").concat(doc.name, ", hasLong:").concat(doc.hasLongLivedToken));
 });
 
 schema.methods.generateJWT = function generateJWT() {
