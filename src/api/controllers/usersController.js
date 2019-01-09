@@ -7,38 +7,7 @@ import { configSortQuery, configRangeQuery } from '../util/util';
 export const users_auth = async (req, res) => {
     if (req.body) {
         try {
-            let user = await User.findOne({ userID: req.body.userID }).exec();
-            if (!user) {
-                user = new User({
-                    userID: req.body.userID,
-                    name: req.body.name,
-                    email: req.body.email,
-                    pictureUrl: req.body.pictureUrl,
-                    accessToken: req.body.accessToken,
-                    timeZone: req.body.timeZone,
-                    locationName: req.body.locationName,
-                });
-            } else {
-                user.accessToken = req.body.accessToken;
-            }
-
-            user.lastLogin = Date.now();
-            user.locationName = req.body.locationName;
-            user.shortLivedToken = user.accessToken; // only for debug analysis
-
-            const respChangeToken = await changeAccessToken(user.accessToken);
-            if (respChangeToken) {
-                if (respChangeToken.hasOwnProperty('data')) {
-                    if (respChangeToken.data.hasOwnProperty('access_token')) {
-                        respChangeToken.access_token = respChangeToken.data.access_token;
-                    }
-                }
-                user.hasLongLivedToken = true;
-                user.longLivedToken = respChangeToken.access_token; // only for debug analysis
-                user.accessToken = respChangeToken.access_token; // the token used in the system
-            }
-
-            await user.save();
+            const user = await create_or_auth(req.body);
             res.status(200).json({ user: user.toAuthJSON() });
         } catch (users_auth_error) {
             console.error({ users_auth_error });
@@ -65,24 +34,69 @@ export const users_code = async (req, res) => {
         }
 
         const result = await axios.get(facebookAccessTokenUrl, { params });
-        if (result && result.data && result.data.access_token) {
-            const data = {
-                access_token: result.data.access_token
-            };
-            console.info(result.data);
-            res.status(200).json({ result: data });
+        if (result.status === 200) {
+            const { access_token } = result.data;
+            const userData = await axios.get('https://graph.facebook.com/v3.2/me?fields=id,name,email,picture,location&access_token=' + access_token);
+            if (userData && userData.status === 200) {
+                const { id, name, email, picture, location } = userData;
+                const locationName = location ? location.name : null;
+                const pictureUrl = picture ? picture.data.url : null;
+
+                const user = await create_or_auth({ userID: id, name, email, picture, locationName, pictureUrl, accessToken: access_token });
+                res.status(200).json({ user: user.toAuthJSON() });
+            } else {
+                console.error(userData.response && userData.data);
+                const errorMsg = userData.response ? userData.response.data.error.message : userData.data ? userData.data.error.message : 'Unknown error';
+                res.status(userData.status).json({ message: errorMsg });
+            }
         }
         else {
             console.error(result.response && response.data);
             const errorMsg = result.response ? result.response.data.error.message : result.data ? result.data.error.message : 'Unknown error';
-            res.status(500).json({ message: errorMsg });
+            res.status(result.status).json({ message: errorMsg });
         }
     } catch (err) {
-        console.error(err.request);
         console.error(err.response);
         console.error(err.response.data.error);
         res.status(500).json({ message: err.response.data.error.message })
     }
+}
+
+const create_or_auth = async userData => {
+    const { userID, name, email, pictureUrl, accessToken, timeZone, locationName } = userData;
+
+    let user = await User.findOne({ userID: userID }).exec();
+    if (!user) {
+        user = new User({
+            userID: userID,
+            name: name,
+            email: email,
+            pictureUrl: pictureUrl,
+            accessToken: accessToken,
+            timeZone: timeZone,
+            locationName: locationName,
+        });
+    } else {
+        user.accessToken = accessToken;
+    }
+
+    user.lastLogin = Date.now();
+    user.locationName = locationName;
+    user.shortLivedToken = user.accessToken; // only for debug analysis
+
+    const respChangeToken = await changeAccessToken(user.accessToken);
+    if (respChangeToken) {
+        if (respChangeToken.hasOwnProperty('data')) {
+            if (respChangeToken.data.hasOwnProperty('access_token')) {
+                respChangeToken.access_token = respChangeToken.data.access_token;
+            }
+        }
+        user.hasLongLivedToken = true;
+        user.longLivedToken = respChangeToken.access_token; // only for debug analysis
+        user.accessToken = respChangeToken.access_token; // the token used in the system
+    }
+    await user.save();
+    return user;
 }
 
 export const users_create = (req, res) => {

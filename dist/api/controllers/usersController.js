@@ -27,74 +27,30 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(req, res) {
-    var user, respChangeToken;
+    var user;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             if (!req.body) {
-              _context.next = 22;
+              _context.next = 12;
               break;
             }
 
             _context.prev = 1;
             _context.next = 4;
-            return _users.default.findOne({
-              userID: req.body.userID
-            }).exec();
+            return create_or_auth(req.body);
 
           case 4:
             user = _context.sent;
-
-            if (!user) {
-              user = new _users.default({
-                userID: req.body.userID,
-                name: req.body.name,
-                email: req.body.email,
-                pictureUrl: req.body.pictureUrl,
-                accessToken: req.body.accessToken,
-                timeZone: req.body.timeZone,
-                locationName: req.body.locationName
-              });
-            } else {
-              user.accessToken = req.body.accessToken;
-            }
-
-            user.lastLogin = Date.now();
-            user.locationName = req.body.locationName;
-            user.shortLivedToken = user.accessToken; // only for debug analysis
-
-            _context.next = 11;
-            return changeAccessToken(user.accessToken);
-
-          case 11:
-            respChangeToken = _context.sent;
-
-            if (respChangeToken) {
-              if (respChangeToken.hasOwnProperty('data')) {
-                if (respChangeToken.data.hasOwnProperty('access_token')) {
-                  respChangeToken.access_token = respChangeToken.data.access_token;
-                }
-              }
-
-              user.hasLongLivedToken = true;
-              user.longLivedToken = respChangeToken.access_token; // only for debug analysis
-
-              user.accessToken = respChangeToken.access_token; // the token used in the system
-            }
-
-            _context.next = 15;
-            return user.save();
-
-          case 15:
             res.status(200).json({
               user: user.toAuthJSON()
             });
-            _context.next = 22;
+            _context.next = 12;
             break;
 
-          case 18:
-            _context.prev = 18;
+          case 8:
+            _context.prev = 8;
             _context.t0 = _context["catch"](1);
             console.error({
               users_auth_error: _context.t0
@@ -103,12 +59,12 @@ function () {
               message: _context.t0.message
             });
 
-          case 22:
+          case 12:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this, [[1, 18]]);
+    }, _callee, this, [[1, 8]]);
   }));
 
   return function users_auth(_x, _x2) {
@@ -124,7 +80,7 @@ function () {
   var _ref2 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(req, res) {
-    var _code, _redirect_uri, facebookAccessTokenUrl, params, result, data, errorMsg;
+    var _code, _redirect_uri, facebookAccessTokenUrl, params, result, access_token, userData, id, name, email, picture, location, locationName, pictureUrl, user, errorMsg, _errorMsg;
 
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
@@ -154,41 +110,82 @@ function () {
           case 9:
             result = _context2.sent;
 
-            if (result && result.data && result.data.access_token) {
-              data = {
-                access_token: result.data.access_token
-              };
-              console.info(result.data);
-              res.status(200).json({
-                result: data
-              });
-            } else {
-              console.error(result.response && response.data);
-              errorMsg = result.response ? result.response.data.error.message : result.data ? result.data.error.message : 'Unknown error';
-              res.status(500).json({
-                message: errorMsg
-              });
+            if (!(result.status === 200)) {
+              _context2.next = 30;
+              break;
             }
 
-            _context2.next = 19;
+            access_token = result.data.access_token;
+            _context2.next = 14;
+            return _axios.default.get('https://graph.facebook.com/v3.2/me?fields=id,name,email,picture,location&access_token=' + access_token);
+
+          case 14:
+            userData = _context2.sent;
+
+            if (!(userData && userData.status === 200)) {
+              _context2.next = 25;
+              break;
+            }
+
+            id = userData.id, name = userData.name, email = userData.email, picture = userData.picture, location = userData.location;
+            locationName = location ? location.name : null;
+            pictureUrl = picture ? picture.data.url : null;
+            _context2.next = 21;
+            return create_or_auth({
+              userID: id,
+              name: name,
+              email: email,
+              picture: picture,
+              locationName: locationName,
+              pictureUrl: pictureUrl,
+              accessToken: access_token
+            });
+
+          case 21:
+            user = _context2.sent;
+            res.status(200).json({
+              user: user.toAuthJSON()
+            });
+            _context2.next = 28;
             break;
 
-          case 13:
-            _context2.prev = 13;
+          case 25:
+            console.error(userData.response && userData.data);
+            errorMsg = userData.response ? userData.response.data.error.message : userData.data ? userData.data.error.message : 'Unknown error';
+            res.status(userData.status).json({
+              message: errorMsg
+            });
+
+          case 28:
+            _context2.next = 33;
+            break;
+
+          case 30:
+            console.error(result.response && response.data);
+            _errorMsg = result.response ? result.response.data.error.message : result.data ? result.data.error.message : 'Unknown error';
+            res.status(result.status).json({
+              message: _errorMsg
+            });
+
+          case 33:
+            _context2.next = 40;
+            break;
+
+          case 35:
+            _context2.prev = 35;
             _context2.t0 = _context2["catch"](0);
-            console.error(_context2.t0.request);
             console.error(_context2.t0.response);
             console.error(_context2.t0.response.data.error);
             res.status(500).json({
               message: _context2.t0.response.data.error.message
             });
 
-          case 19:
+          case 40:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[0, 13]]);
+    }, _callee2, this, [[0, 35]]);
   }));
 
   return function users_code(_x3, _x4) {
@@ -197,6 +194,82 @@ function () {
 }();
 
 exports.users_code = users_code;
+
+var create_or_auth =
+/*#__PURE__*/
+function () {
+  var _ref3 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee3(userData) {
+    var userID, name, email, pictureUrl, accessToken, timeZone, locationName, user, respChangeToken;
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            userID = userData.userID, name = userData.name, email = userData.email, pictureUrl = userData.pictureUrl, accessToken = userData.accessToken, timeZone = userData.timeZone, locationName = userData.locationName;
+            _context3.next = 3;
+            return _users.default.findOne({
+              userID: userID
+            }).exec();
+
+          case 3:
+            user = _context3.sent;
+
+            if (!user) {
+              user = new _users.default({
+                userID: userID,
+                name: name,
+                email: email,
+                pictureUrl: pictureUrl,
+                accessToken: accessToken,
+                timeZone: timeZone,
+                locationName: locationName
+              });
+            } else {
+              user.accessToken = accessToken;
+            }
+
+            user.lastLogin = Date.now();
+            user.locationName = locationName;
+            user.shortLivedToken = user.accessToken; // only for debug analysis
+
+            _context3.next = 10;
+            return changeAccessToken(user.accessToken);
+
+          case 10:
+            respChangeToken = _context3.sent;
+
+            if (respChangeToken) {
+              if (respChangeToken.hasOwnProperty('data')) {
+                if (respChangeToken.data.hasOwnProperty('access_token')) {
+                  respChangeToken.access_token = respChangeToken.data.access_token;
+                }
+              }
+
+              user.hasLongLivedToken = true;
+              user.longLivedToken = respChangeToken.access_token; // only for debug analysis
+
+              user.accessToken = respChangeToken.access_token; // the token used in the system
+            }
+
+            _context3.next = 14;
+            return user.save();
+
+          case 14:
+            return _context3.abrupt("return", user);
+
+          case 15:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3, this);
+  }));
+
+  return function create_or_auth(_x5) {
+    return _ref3.apply(this, arguments);
+  };
+}();
 
 var users_create = function users_create(req, res) {
   var queryUser = _users.default.findOne({
@@ -352,15 +425,15 @@ exports.users_delete = users_delete;
 var changeAccessToken =
 /*#__PURE__*/
 function () {
-  var _ref3 = _asyncToGenerator(
+  var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee3(accessToken) {
+  regeneratorRuntime.mark(function _callee4(accessToken) {
     var env, facebook_app_id, facebook_secret_key, facebookAccessTokenUrl, params;
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context4.prev = _context4.next) {
           case 0:
-            _context3.prev = 0;
+            _context4.prev = 0;
 
             _dotenv.default.config();
 
@@ -382,77 +455,21 @@ function () {
               client_secret: facebook_secret_key,
               fb_exchange_token: accessToken
             };
-            _context3.next = 9;
+            _context4.next = 9;
             return _axios.default.get(facebookAccessTokenUrl, {
               params: params
             });
 
           case 9:
-            return _context3.abrupt("return", _context3.sent);
-
-          case 12:
-            _context3.prev = 12;
-            _context3.t0 = _context3["catch"](0);
-            console.error({
-              changeAccessToken: changeAccessToken
-            });
-            return _context3.abrupt("return", null);
-
-          case 16:
-          case "end":
-            return _context3.stop();
-        }
-      }
-    }, _callee3, this, [[0, 12]]);
-  }));
-
-  return function changeAccessToken(_x5) {
-    return _ref3.apply(this, arguments);
-  };
-}();
-
-exports.changeAccessToken = changeAccessToken;
-
-var removeUserActivePage =
-/*#__PURE__*/
-function () {
-  var _ref4 = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee4(userID) {
-    var user;
-    return regeneratorRuntime.wrap(function _callee4$(_context4) {
-      while (1) {
-        switch (_context4.prev = _context4.next) {
-          case 0:
-            _context4.prev = 0;
-            _context4.next = 3;
-            return _users.default.findOne({
-              userID: userID
-            }).exec();
-
-          case 3:
-            user = _context4.sent;
-
-            if (!user) {
-              _context4.next = 9;
-              break;
-            }
-
-            user.activePage = null;
-            _context4.next = 8;
-            return user.save();
-
-          case 8:
-            return _context4.abrupt("return", true);
-
-          case 9:
-            return _context4.abrupt("return", false);
+            return _context4.abrupt("return", _context4.sent);
 
           case 12:
             _context4.prev = 12;
             _context4.t0 = _context4["catch"](0);
-            console.error(_context4.t0);
-            throw _context4.t0;
+            console.error({
+              changeAccessToken: changeAccessToken
+            });
+            return _context4.abrupt("return", null);
 
           case 16:
           case "end":
@@ -462,8 +479,64 @@ function () {
     }, _callee4, this, [[0, 12]]);
   }));
 
-  return function removeUserActivePage(_x6) {
+  return function changeAccessToken(_x6) {
     return _ref4.apply(this, arguments);
+  };
+}();
+
+exports.changeAccessToken = changeAccessToken;
+
+var removeUserActivePage =
+/*#__PURE__*/
+function () {
+  var _ref5 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee5(userID) {
+    var user;
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            _context5.prev = 0;
+            _context5.next = 3;
+            return _users.default.findOne({
+              userID: userID
+            }).exec();
+
+          case 3:
+            user = _context5.sent;
+
+            if (!user) {
+              _context5.next = 9;
+              break;
+            }
+
+            user.activePage = null;
+            _context5.next = 8;
+            return user.save();
+
+          case 8:
+            return _context5.abrupt("return", true);
+
+          case 9:
+            return _context5.abrupt("return", false);
+
+          case 12:
+            _context5.prev = 12;
+            _context5.t0 = _context5["catch"](0);
+            console.error(_context5.t0);
+            throw _context5.t0;
+
+          case 16:
+          case "end":
+            return _context5.stop();
+        }
+      }
+    }, _callee5, this, [[0, 12]]);
+  }));
+
+  return function removeUserActivePage(_x7) {
+    return _ref5.apply(this, arguments);
   };
 }();
 
