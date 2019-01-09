@@ -41,7 +41,7 @@ export const users_code = async (req, res) => {
             lastInterface = 'https://graph.facebook.com/v3.2/me?fields=id,name,email,picture,location&access_token=';
             const userData = await axios.get(lastInterface + access_token);
             if (userData && userData.status === 200) {
-                const { id, name, email, picture, location } = userData;
+                const { id, name, email, picture, location } = userData.data;
                 const locationName = location ? location.name : null;
                 const pictureUrl = picture ? picture.data.url : null;
                 lastInterface = 'create_or_auth';

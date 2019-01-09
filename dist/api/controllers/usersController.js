@@ -80,7 +80,7 @@ function () {
   var _ref2 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(req, res) {
-    var lastInterface, _code, _redirect_uri, facebookAccessTokenUrl, params, result, access_token, userData, id, name, email, picture, location, locationName, pictureUrl, user, errorMsg, _errorMsg;
+    var lastInterface, _code, _redirect_uri, facebookAccessTokenUrl, params, result, access_token, userData, _userData$data, id, name, email, picture, location, locationName, pictureUrl, user, errorMsg, _errorMsg;
 
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
@@ -130,7 +130,7 @@ function () {
               break;
             }
 
-            id = userData.id, name = userData.name, email = userData.email, picture = userData.picture, location = userData.location;
+            _userData$data = userData.data, id = _userData$data.id, name = _userData$data.name, email = _userData$data.email, picture = _userData$data.picture, location = _userData$data.location;
             locationName = location ? location.name : null;
             pictureUrl = picture ? picture.data.url : null;
             lastInterface = 'create_or_auth';
