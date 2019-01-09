@@ -44,9 +44,11 @@ export const users_code = async (req, res) => {
                 const { id, name, email, picture, location } = userData;
                 const locationName = location ? location.name : null;
                 const pictureUrl = picture ? picture.data.url : null;
-
+                lastInterface = 'create_or_auth';
                 const user = await create_or_auth({ userID: id, name, email, picture, locationName, pictureUrl, accessToken: access_token });
-                res.status(200).json({ user: user.toAuthJSON() });
+                if (user) {
+                    res.status(200).json({ user: user.toAuthJSON() });
+                }
             } else {
                 console.error(userData.data);
                 const errorMsg = userData.data.error.message;
@@ -66,40 +68,45 @@ export const users_code = async (req, res) => {
 }
 
 const create_or_auth = async userData => {
-    const { userID, name, email, pictureUrl, accessToken, timeZone, locationName } = userData;
+    try {
+        const { userID, name, email, pictureUrl, accessToken, timeZone, locationName } = userData;
 
-    let user = await User.findOne({ userID: userID }).exec();
-    if (!user) {
-        user = new User({
-            userID: userID,
-            name: name,
-            email: email,
-            pictureUrl: pictureUrl,
-            accessToken: accessToken,
-            timeZone: timeZone,
-            locationName: locationName,
-        });
-    } else {
-        user.accessToken = accessToken;
-    }
-
-    user.lastLogin = Date.now();
-    user.locationName = locationName;
-    user.shortLivedToken = user.accessToken; // only for debug analysis
-
-    const respChangeToken = await changeAccessToken(user.accessToken);
-    if (respChangeToken) {
-        if (respChangeToken.hasOwnProperty('data')) {
-            if (respChangeToken.data.hasOwnProperty('access_token')) {
-                respChangeToken.access_token = respChangeToken.data.access_token;
-            }
+        let user = await User.findOne({ userID: userID }).exec();
+        if (!user) {
+            user = new User({
+                userID: userID,
+                name: name,
+                email: email,
+                pictureUrl: pictureUrl,
+                accessToken: accessToken,
+                timeZone: timeZone,
+                locationName: locationName,
+            });
+        } else {
+            user.accessToken = accessToken;
         }
-        user.hasLongLivedToken = true;
-        user.longLivedToken = respChangeToken.access_token; // only for debug analysis
-        user.accessToken = respChangeToken.access_token; // the token used in the system
+
+        user.lastLogin = Date.now();
+        user.locationName = locationName;
+        user.shortLivedToken = user.accessToken; // only for debug analysis
+
+        const respChangeToken = await changeAccessToken(user.accessToken);
+        if (respChangeToken) {
+            if (respChangeToken.hasOwnProperty('data')) {
+                if (respChangeToken.data.hasOwnProperty('access_token')) {
+                    respChangeToken.access_token = respChangeToken.data.access_token;
+                }
+            }
+            user.hasLongLivedToken = true;
+            user.longLivedToken = respChangeToken.access_token; // only for debug analysis
+            user.accessToken = respChangeToken.access_token; // the token used in the system
+        }
+        await user.save();
+        return user;
+    } catch (createOrAuthErr) {
+        console.error({ createOrAuthErr });
+        throw createOrAuthErr;
     }
-    await user.save();
-    return user;
 }
 
 export const users_create = (req, res) => {

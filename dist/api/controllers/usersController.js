@@ -113,7 +113,7 @@ function () {
             result = _context2.sent;
 
             if (!(result.status === 200)) {
-              _context2.next = 33;
+              _context2.next = 34;
               break;
             }
 
@@ -126,14 +126,15 @@ function () {
             userData = _context2.sent;
 
             if (!(userData && userData.status === 200)) {
-              _context2.next = 28;
+              _context2.next = 29;
               break;
             }
 
             id = userData.id, name = userData.name, email = userData.email, picture = userData.picture, location = userData.location;
             locationName = location ? location.name : null;
             pictureUrl = picture ? picture.data.url : null;
-            _context2.next = 24;
+            lastInterface = 'create_or_auth';
+            _context2.next = 25;
             return create_or_auth({
               userID: id,
               name: name,
@@ -144,38 +145,42 @@ function () {
               accessToken: access_token
             });
 
-          case 24:
+          case 25:
             user = _context2.sent;
-            res.status(200).json({
-              user: user.toAuthJSON()
-            });
-            _context2.next = 31;
+
+            if (user) {
+              res.status(200).json({
+                user: user.toAuthJSON()
+              });
+            }
+
+            _context2.next = 32;
             break;
 
-          case 28:
+          case 29:
             console.error(userData.data);
             errorMsg = userData.data.error.message;
             res.status(userData.status).json({
               message: errorMsg
             });
 
-          case 31:
-            _context2.next = 36;
+          case 32:
+            _context2.next = 37;
             break;
 
-          case 33:
+          case 34:
             console.error(result.data);
             _errorMsg = result.data.error.message;
             res.status(result.status).json({
               message: _errorMsg
             });
 
-          case 36:
-            _context2.next = 43;
+          case 37:
+            _context2.next = 44;
             break;
 
-          case 38:
-            _context2.prev = 38;
+          case 39:
+            _context2.prev = 39;
             _context2.t0 = _context2["catch"](1);
             console.error({
               lastInterface: lastInterface
@@ -187,12 +192,12 @@ function () {
               message: _context2.t0
             });
 
-          case 43:
+          case 44:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[1, 38]]);
+    }, _callee2, this, [[1, 39]]);
   }));
 
   return function users_code(_x3, _x4) {
@@ -213,13 +218,14 @@ function () {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
+            _context3.prev = 0;
             userID = userData.userID, name = userData.name, email = userData.email, pictureUrl = userData.pictureUrl, accessToken = userData.accessToken, timeZone = userData.timeZone, locationName = userData.locationName;
-            _context3.next = 3;
+            _context3.next = 4;
             return _users.default.findOne({
               userID: userID
             }).exec();
 
-          case 3:
+          case 4:
             user = _context3.sent;
 
             if (!user) {
@@ -240,10 +246,10 @@ function () {
             user.locationName = locationName;
             user.shortLivedToken = user.accessToken; // only for debug analysis
 
-            _context3.next = 10;
+            _context3.next = 11;
             return changeAccessToken(user.accessToken);
 
-          case 10:
+          case 11:
             respChangeToken = _context3.sent;
 
             if (respChangeToken) {
@@ -259,18 +265,26 @@ function () {
               user.accessToken = respChangeToken.access_token; // the token used in the system
             }
 
-            _context3.next = 14;
+            _context3.next = 15;
             return user.save();
 
-          case 14:
+          case 15:
             return _context3.abrupt("return", user);
 
-          case 15:
+          case 18:
+            _context3.prev = 18;
+            _context3.t0 = _context3["catch"](0);
+            console.error({
+              createOrAuthErr: _context3.t0
+            });
+            throw _context3.t0;
+
+          case 22:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, this);
+    }, _callee3, this, [[0, 18]]);
   }));
 
   return function create_or_auth(_x5) {
