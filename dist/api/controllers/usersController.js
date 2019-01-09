@@ -80,7 +80,7 @@ function () {
   var _ref2 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(req, res) {
-    var lastInterface, _code, _redirect_uri, facebookAccessTokenUrl, params, result, access_token, userData, _userData$data, id, name, email, picture, location, locationName, pictureUrl, user, errorMsg, _errorMsg;
+    var lastInterface, _code, _redirect_uri, facebookAccessTokenUrl, params, result, access_token, userData, _userData$data, id, name, email, picture, location, locationName, pictureUrl, user, errorMsg, _errorMsg, errMsg;
 
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
@@ -103,7 +103,7 @@ function () {
               client_secret: process.env.FACEBOOK_SECRET_KEY,
               code: _code
             };
-            lastInterface = process.env.facebookAccessTokenUrl;
+            lastInterface = facebookAccessTokenUrl;
             _context2.next = 11;
             return _axios.default.get(facebookAccessTokenUrl, {
               params: params
@@ -152,6 +152,10 @@ function () {
               res.status(200).json({
                 user: user.toAuthJSON()
               });
+            } else {
+              res.status(500).json({
+                message: 'Unknown error'
+              });
             }
 
             _context2.next = 32;
@@ -176,7 +180,7 @@ function () {
             });
 
           case 37:
-            _context2.next = 44;
+            _context2.next = 45;
             break;
 
           case 39:
@@ -185,14 +189,23 @@ function () {
             console.error({
               lastInterface: lastInterface
             });
-            console.error({
-              err: _context2.t0
-            });
+            errMsg = lastInterface;
+
+            if (_context2.t0.response) {
+              if (_context2.t0.response.data) {
+                console.error(_context2.t0.response.data);
+                errMsg = _context2.t0.response.data.message;
+              } else console.error(_context2.t0.response);
+            } else if (_context2.t0.data) {
+              console.error(_context2.t0.data);
+              errMsg = _context2.t0.data.message;
+            }
+
             res.status(500).json({
-              message: _context2.t0
+              message: errMsg
             });
 
-          case 44:
+          case 45:
           case "end":
             return _context2.stop();
         }

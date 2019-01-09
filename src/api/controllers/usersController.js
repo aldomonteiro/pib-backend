@@ -34,7 +34,7 @@ export const users_code = async (req, res) => {
             code: _code,
         }
 
-        lastInterface = process.env.facebookAccessTokenUrl;
+        lastInterface = facebookAccessTokenUrl;
         const result = await axios.get(facebookAccessTokenUrl, { params });
         if (result.status === 200) {
             const { access_token } = result.data;
@@ -48,6 +48,8 @@ export const users_code = async (req, res) => {
                 const user = await create_or_auth({ userID: id, name, email, picture, locationName, pictureUrl, accessToken: access_token });
                 if (user) {
                     res.status(200).json({ user: user.toAuthJSON() });
+                } else {
+                    res.status(500).json({ message: 'Unknown error' });
                 }
             } else {
                 console.error(userData.data);
@@ -62,8 +64,19 @@ export const users_code = async (req, res) => {
         }
     } catch (err) {
         console.error({ lastInterface });
-        console.error({ err });
-        res.status(500).json({ message: err })
+        let errMsg = lastInterface;
+        if (err.response) {
+            if (err.response.data) {
+                console.error(err.response.data);
+                errMsg = err.response.data.message;
+            }
+            else console.error(err.response);
+        }
+        else if (err.data) {
+            console.error(err.data);
+            errMsg = err.data.message;
+        }
+        res.status(500).json({ message: errMsg })
     }
 }
 
