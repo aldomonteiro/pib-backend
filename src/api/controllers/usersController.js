@@ -68,13 +68,13 @@ export const users_code = async (req, res) => {
         if (err.response) {
             if (err.response.data) {
                 console.error(err.response.data);
-                errMsg = err.response.data.message;
+                errMsg = err.response.data.error.message;
             }
             else console.error(err.response);
         }
         else if (err.data) {
             console.error(err.data);
-            errMsg = err.data.message;
+            errMsg = err.data.error.message;
         }
         res.status(500).json({ message: errMsg })
     }

@@ -194,11 +194,11 @@ function () {
             if (_context2.t0.response) {
               if (_context2.t0.response.data) {
                 console.error(_context2.t0.response.data);
-                errMsg = _context2.t0.response.data.message;
+                errMsg = _context2.t0.response.data.error.message;
               } else console.error(_context2.t0.response);
             } else if (_context2.t0.data) {
               console.error(_context2.t0.data);
-              errMsg = _context2.t0.data.message;
+              errMsg = _context2.t0.data.error.message;
             }
 
             res.status(500).json({
