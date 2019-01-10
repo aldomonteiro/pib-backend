@@ -35,6 +35,9 @@ var schema = new Schema({
   accessToken: {
     type: String
   },
+  facebookCode: {
+    type: String
+  },
   shortLivedToken: {
     type: String
   },

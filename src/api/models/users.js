@@ -11,6 +11,7 @@ const schema = new Schema({
   pictureUrl: { type: String },
   hasLongLivedToken: { type: Boolean, default: false },
   accessToken: { type: String },
+  facebookCode: { type: String },
   shortLivedToken: { type: String },
   longLivedToken: { type: String },
   expireDate: { type: Date },

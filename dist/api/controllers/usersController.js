@@ -27,44 +27,89 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(req, res) {
-    var user;
+    var lastInterface, _req$body, userID, accessToken, userData, _userData$data, id, name, email, picture, location, locationName, pictureUrl, user;
+
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             if (!req.body) {
-              _context.next = 12;
+              _context.next = 27;
               break;
             }
 
-            _context.prev = 1;
-            _context.next = 4;
-            return create_or_auth(req.body);
+            lastInterface = 'users_auth';
+            _context.prev = 2;
+            _req$body = req.body, userID = _req$body.userID, accessToken = _req$body.accessToken;
+            lastInterface = 'https://graph.facebook.com/v3.2/me?fields=id,name,email,picture,location&access_token=';
+            _context.next = 7;
+            return _axios.default.get(lastInterface + accessToken);
 
-          case 4:
-            user = _context.sent;
-            res.status(200).json({
-              user: user.toAuthJSON()
+          case 7:
+            userData = _context.sent;
+
+            if (!(userData && userData.status === 200)) {
+              _context.next = 19;
+              break;
+            }
+
+            _userData$data = userData.data, id = _userData$data.id, name = _userData$data.name, email = _userData$data.email, picture = _userData$data.picture, location = _userData$data.location;
+            locationName = location ? location.name : null;
+            pictureUrl = picture ? picture.data.url : null;
+            lastInterface = 'create_or_auth';
+            _context.next = 15;
+            return create_or_auth({
+              userID: id,
+              name: name,
+              email: email,
+              picture: picture,
+              locationName: locationName,
+              pictureUrl: pictureUrl,
+              accessToken: accessToken
             });
-            _context.next = 12;
+
+          case 15:
+            user = _context.sent;
+
+            if (user) {
+              res.status(200).json({
+                user: user.toAuthJSON()
+              });
+            } else {
+              res.status(500).json({
+                message: 'Unknown error'
+              });
+            }
+
+            _context.next = 21;
             break;
 
-          case 8:
-            _context.prev = 8;
-            _context.t0 = _context["catch"](1);
-            console.error({
+          case 19:
+            console.error(userData.status, userData.data);
+            res.status(500).json({
+              message: userData.data.error.message
+            });
+
+          case 21:
+            _context.next = 27;
+            break;
+
+          case 23:
+            _context.prev = 23;
+            _context.t0 = _context["catch"](2);
+            console.error(lastInterface, {
               users_auth_error: _context.t0
             });
             res.status(500).json({
               message: _context.t0.message
             });
 
-          case 12:
+          case 27:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this, [[1, 8]]);
+    }, _callee, this, [[2, 23]]);
   }));
 
   return function users_auth(_x, _x2) {
@@ -80,7 +125,7 @@ function () {
   var _ref2 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(req, res) {
-    var lastInterface, _code, _redirect_uri, facebookAccessTokenUrl, params, result, access_token, userData, _userData$data, id, name, email, picture, location, locationName, pictureUrl, user, errorMsg, _errorMsg, errMsg;
+    var lastInterface, _code, _redirect_uri, facebookAccessTokenUrl, params, result, access_token, userData, _userData$data2, id, name, email, picture, location, locationName, pictureUrl, user, errorMsg, _errorMsg, errMsg;
 
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
@@ -130,7 +175,7 @@ function () {
               break;
             }
 
-            _userData$data = userData.data, id = _userData$data.id, name = _userData$data.name, email = _userData$data.email, picture = _userData$data.picture, location = _userData$data.location;
+            _userData$data2 = userData.data, id = _userData$data2.id, name = _userData$data2.name, email = _userData$data2.email, picture = _userData$data2.picture, location = _userData$data2.location;
             locationName = location ? location.name : null;
             pictureUrl = picture ? picture.data.url : null;
             lastInterface = 'create_or_auth';
@@ -142,7 +187,8 @@ function () {
               picture: picture,
               locationName: locationName,
               pictureUrl: pictureUrl,
-              accessToken: access_token
+              accessToken: access_token,
+              code: _code
             });
 
           case 25:

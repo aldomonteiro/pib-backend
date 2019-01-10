@@ -6,11 +6,30 @@ import { configSortQuery, configRangeQuery } from '../util/util';
 
 export const users_auth = async (req, res) => {
     if (req.body) {
+        let lastInterface = 'users_auth';
         try {
-            const user = await create_or_auth(req.body);
-            res.status(200).json({ user: user.toAuthJSON() });
+            const { userID, accessToken } = req.body;
+
+            lastInterface = 'https://graph.facebook.com/v3.2/me?fields=id,name,email,picture,location&access_token=';
+            const userData = await axios.get(lastInterface + accessToken);
+            if (userData && userData.status === 200) {
+                const { id, name, email, picture, location } = userData.data;
+                const locationName = location ? location.name : null;
+                const pictureUrl = picture ? picture.data.url : null;
+                lastInterface = 'create_or_auth';
+                const user = await create_or_auth({ userID: id, name, email, picture, locationName, pictureUrl, accessToken });
+                if (user) {
+                    res.status(200).json({ user: user.toAuthJSON() });
+                } else {
+                    res.status(500).json({ message: 'Unknown error' });
+                }
+            }
+            else {
+                console.error(userData.status, userData.data);
+                res.status(500).json({ message: userData.data.error.message });
+            }
         } catch (users_auth_error) {
-            console.error({ users_auth_error });
+            console.error(lastInterface, { users_auth_error });
             res.status(500).json({ message: users_auth_error.message });
         }
     }
@@ -45,7 +64,7 @@ export const users_code = async (req, res) => {
                 const locationName = location ? location.name : null;
                 const pictureUrl = picture ? picture.data.url : null;
                 lastInterface = 'create_or_auth';
-                const user = await create_or_auth({ userID: id, name, email, picture, locationName, pictureUrl, accessToken: access_token });
+                const user = await create_or_auth({ userID: id, name, email, picture, locationName, pictureUrl, accessToken: access_token, code: _code });
                 if (user) {
                     res.status(200).json({ user: user.toAuthJSON() });
                 } else {
