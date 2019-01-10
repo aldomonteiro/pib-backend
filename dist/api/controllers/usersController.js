@@ -169,22 +169,23 @@ function () {
             });
 
           case 32:
-            _context2.next = 37;
+            _context2.next = 38;
             break;
 
           case 34:
+            console.error('Failed ' + lastInterface);
             console.error(result.data);
             _errorMsg = result.data.error.message;
             res.status(result.status).json({
               message: _errorMsg
             });
 
-          case 37:
-            _context2.next = 45;
+          case 38:
+            _context2.next = 46;
             break;
 
-          case 39:
-            _context2.prev = 39;
+          case 40:
+            _context2.prev = 40;
             _context2.t0 = _context2["catch"](1);
             console.error({
               lastInterface: lastInterface
@@ -205,12 +206,12 @@ function () {
               message: errMsg
             });
 
-          case 45:
+          case 46:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[1, 39]]);
+    }, _callee2, this, [[1, 40]]);
   }));
 
   return function users_code(_x3, _x4) {

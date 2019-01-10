@@ -58,6 +58,7 @@ export const users_code = async (req, res) => {
             }
         }
         else {
+            console.error('Failed ' + lastInterface);
             console.error(result.data);
             const errorMsg = result.data.error.message;
             res.status(result.status).json({ message: errorMsg });
