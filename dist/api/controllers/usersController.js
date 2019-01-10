@@ -27,45 +27,31 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(req, res) {
-    var lastInterface, _req$body, userID, accessToken, userData, id, name, email, picture, locationName, pictureUrl, user;
+    var _req$body, userID, accessToken, name, email, picture, pictureUrl, locationName, user;
 
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             if (!req.body) {
-              _context.next = 23;
+              _context.next = 13;
               break;
             }
 
-            lastInterface = 'users_auth';
-            _context.prev = 2;
-            _req$body = req.body, userID = _req$body.userID, accessToken = _req$body.accessToken;
-            _context.next = 6;
-            return user_data(accessToken);
-
-          case 6:
-            userData = _context.sent;
-
-            if (!(userData && userData.status === 200)) {
-              _context.next = 15;
-              break;
-            }
-
-            id = userData.id, name = userData.name, email = userData.email, picture = userData.picture, locationName = userData.locationName, pictureUrl = userData.pictureUrl;
-            _context.next = 11;
+            _context.prev = 1;
+            _req$body = req.body, userID = _req$body.userID, accessToken = _req$body.accessToken, name = _req$body.name, email = _req$body.email, picture = _req$body.picture, pictureUrl = _req$body.pictureUrl, locationName = _req$body.locationName;
+            _context.next = 5;
             return create_or_auth({
-              userID: id,
+              userID: userID,
               name: name,
               email: email,
               picture: picture,
               locationName: locationName,
               pictureUrl: pictureUrl,
-              accessToken: access_token,
-              code: _code
+              accessToken: accessToken
             });
 
-          case 11:
+          case 5:
             user = _context.sent;
 
             if (user) {
@@ -78,35 +64,25 @@ function () {
               });
             }
 
-            _context.next = 17;
+            _context.next = 13;
             break;
 
-          case 15:
-            console.error(userData.errorMsg);
-            res.status(userData.status).json({
-              message: userData.errorMsg
-            });
-
-          case 17:
-            _context.next = 23;
-            break;
-
-          case 19:
-            _context.prev = 19;
-            _context.t0 = _context["catch"](2);
-            console.error(lastInterface, {
+          case 9:
+            _context.prev = 9;
+            _context.t0 = _context["catch"](1);
+            console.error({
               users_auth_error: _context.t0
             });
             res.status(500).json({
               message: _context.t0.message
             });
 
-          case 23:
+          case 13:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this, [[2, 19]]);
+    }, _callee, this, [[1, 9]]);
   }));
 
   return function users_auth(_x, _x2) {
@@ -122,7 +98,7 @@ function () {
   var _ref2 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(req, res) {
-    var lastInterface, _code2, _redirect_uri, userByCode, facebookAccessTokenUrl, params, result, _access_token, userData, id, name, email, picture, locationName, pictureUrl, user, errorMsg, errMsg;
+    var lastInterface, _code, _redirect_uri, userByCode, facebookAccessTokenUrl, params, result, access_token, userData, id, name, email, picture, locationName, pictureUrl, user, errorMsg, errMsg;
 
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
@@ -133,13 +109,13 @@ function () {
             _dotenv.default.config();
 
             _context2.prev = 2;
-            _code2 = req.body.code;
+            _code = req.body.code;
             _redirect_uri = req.body.redirect_uri;
             console.info({
               _redirect_uri: _redirect_uri
             });
             userByCode = _users.default.findOne({
-              facebookCode: _code2
+              facebookCode: _code
             }).exec();
 
             if (!(userByCode && userByCode.accessToken)) {
@@ -159,7 +135,7 @@ function () {
               client_id: process.env.FACEBOOK_APP_ID,
               redirect_uri: _redirect_uri,
               client_secret: process.env.FACEBOOK_SECRET_KEY,
-              code: _code2
+              code: _code
             };
             lastInterface = facebookAccessTokenUrl;
             _context2.next = 16;
@@ -175,9 +151,9 @@ function () {
               break;
             }
 
-            _access_token = result.data.access_token;
+            access_token = result.data.access_token;
             _context2.next = 21;
-            return user_data(_access_token);
+            return user_data(access_token);
 
           case 21:
             userData = _context2.sent;
@@ -196,8 +172,8 @@ function () {
               picture: picture,
               locationName: locationName,
               pictureUrl: pictureUrl,
-              accessToken: _access_token,
-              code: _code2
+              accessToken: access_token,
+              code: _code
             });
 
           case 26:

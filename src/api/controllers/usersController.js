@@ -6,26 +6,16 @@ import { configSortQuery, configRangeQuery } from '../util/util';
 
 export const users_auth = async (req, res) => {
     if (req.body) {
-        let lastInterface = 'users_auth';
         try {
-            const { userID, accessToken } = req.body;
-
-            const userData = await user_data(accessToken);
-            if (userData && userData.status === 200) {
-                const { id, name, email, picture, locationName, pictureUrl } = userData;
-                const user = await create_or_auth({ userID: id, name, email, picture, locationName, pictureUrl, accessToken: access_token, code: _code });
-                if (user) {
-                    res.status(200).json({ user: user.toAuthJSON() });
-                } else {
-                    res.status(500).json({ message: 'Unknown error' });
-                }
+            const { userID, accessToken, name, email, picture, pictureUrl, locationName } = req.body;
+            const user = await create_or_auth({ userID, name, email, picture, locationName, pictureUrl, accessToken });
+            if (user) {
+                res.status(200).json({ user: user.toAuthJSON() });
             } else {
-                console.error(userData.errorMsg);
-                res.status(userData.status).json({ message: userData.errorMsg });
+                res.status(500).json({ message: 'Unknown error' });
             }
-
         } catch (users_auth_error) {
-            console.error(lastInterface, { users_auth_error });
+            console.error({ users_auth_error });
             res.status(500).json({ message: users_auth_error.message });
         }
     }
@@ -98,7 +88,7 @@ export const users_code = async (req, res) => {
     }
 }
 
-const user_data = async accessToken => {
+const user_data = async (accessToken) => {
     try {
         const url = `https://graph.facebook.com/v3.2/me?fields=id,name,email,picture,location&access_token=${accessToken}`;
         const userData = await axios.get(url);
