@@ -537,17 +537,17 @@ function () {
           case 0:
             buttons = new _facebookMessengerBot.Buttons();
             buttons.add({
-              text: 'Cardápio',
+              text: '🍕 Cardápio',
               data: 'CARDAPIO_PAYLOAD',
               event: 'MAIN-MENU'
             });
             buttons.add({
-              text: 'Horários',
+              text: '🕒 Horários',
               data: 'HORARIO_PAYLOAD',
               event: 'MAIN-MENU'
             });
             buttons.add({
-              text: 'Fazer Pedido',
+              text: '📨 Fazer Pedido',
               data: 'PEDIDO_PAYLOAD',
               event: 'MAIN-MENU'
             });
@@ -2203,7 +2203,7 @@ function () {
             out = new _facebookMessengerBot.Elements();
             total_price = 0;
             _txt = 'Seguem os detalhes do seu pedido:\n';
-            _txt = _txt + '*Pedido:* ' + po.order.id + '\n';
+            _txt = _txt + '𝗣𝗲𝗱𝗶𝗱𝗼:' + po.order.id + '\n';
 
             for (i = 0; i < po.items.length; i++) {
               _item = po.items[i];
@@ -2218,9 +2218,9 @@ function () {
               total_price += _item.price;
             }
 
-            _txt = _txt + '*Endereço de entrega:* ' + po.order.address + '\n';
-            _txt = _txt + '*Telefone:* ' + po.order.phone + '\n';
-            _txt = _txt + '*Total:* R$ ' + total_price + '\n';
+            _txt = _txt + '𝗘𝗻𝗱𝗲𝗿𝗲𝗰̧𝗼 𝗱𝗲 𝗘𝗻𝘁𝗿𝗲𝗴𝗮: ' + po.order.address + '\n';
+            _txt = _txt + '𝗧𝗲𝗹𝗲𝗳𝗼𝗻𝗲: ' + po.order.phone + '\n';
+            _txt = _txt + '𝗧𝗼𝘁𝗮𝗹: R$ ' + total_price + '\n';
             _txt = _txt + 'O pedido está correto?';
             out.add({
               text: _txt
@@ -2466,7 +2466,7 @@ function () {
             out = new _facebookMessengerBot.Elements();
             total_price = 0;
             _txt = 'Seguem os detalhes do seu pedido:\n';
-            _txt = _txt + '*Pedido:* ' + po.order.id + '\n';
+            _txt = _txt + '𝗣𝗲𝗱𝗶𝗱𝗼: ' + po.order.id + '\n';
 
             for (i = 0; i < po.items.length; i++) {
               _item = po.items[i];
@@ -2481,14 +2481,14 @@ function () {
               total_price += _item.price;
             }
 
-            _txt = _txt + '*Endereço de entrega:* ' + po.order.address + '\n';
-            _txt = _txt + '*Telefone:* ' + po.order.phone + '\n';
-            _txt = _txt + '*Total:* R$ ' + total_price + '\n';
+            _txt = _txt + '𝗘𝗻𝗱𝗲𝗿𝗲𝗰̧𝗼 𝗱𝗲 𝗘𝗻𝘁𝗿𝗲𝗴𝗮: ' + po.order.address + '\n';
+            _txt = _txt + '𝗧𝗲𝗹𝗲𝗳𝗼𝗻𝗲: ' + po.order.phone + '\n';
+            _txt = _txt + '𝗧𝗼𝘁𝗮𝗹: R$ ' + total_price + '\n';
             _txtPaymentType = po.payment_type === 'payment_card' ? 'Cartão' : 'Dinheiro';
-            _txt = _txt + '*Forma de Pagamento:* ' + _txtPaymentType + '\n';
+            _txt = _txt + '𝗙𝗼𝗿𝗺𝗮 𝗱𝗲 𝗣𝗮𝗴𝗮𝗺𝗲𝗻𝘁𝗼: ' + _txtPaymentType + '\n';
 
             if (po.payment_change === 'payment_change_yes') {
-              _txt = _txt + '*Levar troco? :* Sim \n';
+              _txt = _txt + '𝗟𝗲𝘃𝗮𝗿 𝗧𝗿𝗼𝗰𝗼? Sim \n';
             }
 
             _txt = _txt + 'Posso confirmar o pedido?';

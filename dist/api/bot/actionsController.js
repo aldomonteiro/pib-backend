@@ -1839,30 +1839,11 @@ var inputCardapioReplyMsg = function inputCardapioReplyMsg(flavorArray) {
   var replyMsg = '';
 
   if (flavorArray) {
-    var _iteratorNormalCompletion2 = true;
-    var _didIteratorError2 = false;
-    var _iteratorError2 = undefined;
-
-    try {
-      for (var _iterator2 = flavorArray[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-        var flavor = _step2.value;
-        replyMsg = replyMsg + '*' + flavor.flavor + '*' + '\n';
-        replyMsg = replyMsg + flavor.toppingsNames.join();
-        replyMsg = replyMsg + '\n';
-      }
-    } catch (err) {
-      _didIteratorError2 = true;
-      _iteratorError2 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-          _iterator2.return();
-        }
-      } finally {
-        if (_didIteratorError2) {
-          throw _iteratorError2;
-        }
-      }
+    for (var i = 0; i < flavorArray.length; i++) {
+      var flavor = flavorArray[i];
+      replyMsg = replyMsg + '𝐒𝐚𝐛𝐨𝐫: ' + flavor.flavor + '\n';
+      replyMsg = replyMsg + '𝐈𝐧𝐠𝐫𝐞𝐝𝐢𝐞𝐧𝐭𝐞𝐬: ' + flavor.toppingsNames.join(", ");
+      replyMsg = replyMsg + '\n\n';
     }
   }
 

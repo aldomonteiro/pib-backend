@@ -66,7 +66,7 @@ function () {
                       var kindName = kinds.filter(function (e) {
                         return e.id === currentKind;
                       })[0].name;
-                      replyText = replyText + '\n*Tipo:* ' + kindName + '\n';
+                      replyText = replyText + '\n𝐓𝐢𝐩𝐨: ' + kindName + '\n';
                     }
 
                     replyText = replyText + pricing.size + ' - R$ ' + pricing.price + '\n';
