@@ -10,24 +10,20 @@ export const users_auth = async (req, res) => {
         try {
             const { userID, accessToken } = req.body;
 
-            lastInterface = 'https://graph.facebook.com/v3.2/me?fields=id,name,email,picture,location&access_token=';
-            const userData = await axios.get(lastInterface + accessToken);
+            const userData = await user_data(accessToken);
             if (userData && userData.status === 200) {
-                const { id, name, email, picture, location } = userData.data;
-                const locationName = location ? location.name : null;
-                const pictureUrl = picture ? picture.data.url : null;
-                lastInterface = 'create_or_auth';
-                const user = await create_or_auth({ userID: id, name, email, picture, locationName, pictureUrl, accessToken });
+                const { id, name, email, picture, locationName, pictureUrl } = userData;
+                const user = await create_or_auth({ userID: id, name, email, picture, locationName, pictureUrl, accessToken: access_token, code: _code });
                 if (user) {
                     res.status(200).json({ user: user.toAuthJSON() });
                 } else {
                     res.status(500).json({ message: 'Unknown error' });
                 }
+            } else {
+                console.error(userData.errorMsg);
+                res.status(userData.status).json({ message: userData.errorMsg });
             }
-            else {
-                console.error(userData.status, userData.data);
-                res.status(500).json({ message: userData.data.error.message });
-            }
+
         } catch (users_auth_error) {
             console.error(lastInterface, { users_auth_error });
             res.status(500).json({ message: users_auth_error.message });
@@ -37,50 +33,52 @@ export const users_auth = async (req, res) => {
 
 export const users_code = async (req, res) => {
     let lastInterface = '';
+
+    dotenv.config();
+
     try {
         const _code = req.body.code;
         const _redirect_uri = req.body.redirect_uri;
 
         console.info({ _redirect_uri });
 
-        dotenv.config();
+        const userByCode = User.findOne({ facebookCode: _code }).exec();
 
-        const facebookAccessTokenUrl = process.env.FACEBOOK_URL_OAUTH_ACCESS_TOKEN;
-        const params = {
-            client_id: process.env.FACEBOOK_APP_ID,
-            redirect_uri: _redirect_uri,
-            client_secret: process.env.FACEBOOK_SECRET_KEY,
-            code: _code,
-        }
-
-        lastInterface = facebookAccessTokenUrl;
-        const result = await axios.get(facebookAccessTokenUrl, { params });
-        if (result.status === 200) {
-            const { access_token } = result.data;
-            lastInterface = 'https://graph.facebook.com/v3.2/me?fields=id,name,email,picture,location&access_token=';
-            const userData = await axios.get(lastInterface + access_token);
-            if (userData && userData.status === 200) {
-                const { id, name, email, picture, location } = userData.data;
-                const locationName = location ? location.name : null;
-                const pictureUrl = picture ? picture.data.url : null;
-                lastInterface = 'create_or_auth';
-                const user = await create_or_auth({ userID: id, name, email, picture, locationName, pictureUrl, accessToken: access_token, code: _code });
-                if (user) {
-                    res.status(200).json({ user: user.toAuthJSON() });
-                } else {
-                    res.status(500).json({ message: 'Unknown error' });
-                }
-            } else {
-                console.error(userData.data);
-                const errorMsg = userData.data.error.message;
-                res.status(userData.status).json({ message: errorMsg });
+        if (userByCode && userByCode.accessToken) {
+            res.status(200).json({ user: userByCode.toAuthJSON() });
+        } else {
+            const facebookAccessTokenUrl = process.env.FACEBOOK_URL_OAUTH_ACCESS_TOKEN;
+            const params = {
+                client_id: process.env.FACEBOOK_APP_ID,
+                redirect_uri: _redirect_uri,
+                client_secret: process.env.FACEBOOK_SECRET_KEY,
+                code: _code,
             }
-        }
-        else {
-            console.error('Failed ' + lastInterface);
-            console.error(result.data);
-            const errorMsg = result.data.error.message;
-            res.status(result.status).json({ message: errorMsg });
+
+            lastInterface = facebookAccessTokenUrl;
+            const result = await axios.get(facebookAccessTokenUrl, { params });
+            if (result.status === 200) {
+                const { access_token } = result.data;
+                const userData = await user_data(access_token);
+                if (userData && userData.status === 200) {
+                    const { id, name, email, picture, locationName, pictureUrl } = userData;
+                    const user = await create_or_auth({ userID: id, name, email, picture, locationName, pictureUrl, accessToken: access_token, code: _code });
+                    if (user) {
+                        res.status(200).json({ user: user.toAuthJSON() });
+                    } else {
+                        res.status(500).json({ message: 'Unknown error' });
+                    }
+                } else {
+                    console.error(userData.errorMsg);
+                    res.status(userData.status).json({ message: userData.errorMsg });
+                }
+            }
+            else {
+                console.error('Failed ' + lastInterface);
+                console.error(result.data);
+                const errorMsg = result.data.error.message;
+                res.status(result.status).json({ message: errorMsg });
+            }
         }
     } catch (err) {
         console.error({ lastInterface });
@@ -100,9 +98,24 @@ export const users_code = async (req, res) => {
     }
 }
 
+const user_data = async accessToken => {
+    const url = `https://graph.facebook.com/v3.2/me?fields=id,name,email,picture,location&access_token=${accessToken}`;
+    const userData = await axios.get(url);
+    if (userData && userData.status === 200) {
+        const { id, name, email, picture, location } = userData.data;
+        const locationName = location ? location.name : null;
+        const pictureUrl = picture ? picture.data.url : null;
+        return { status: userData.status, id, name, email, picture, locationName, pictureUrl };
+    } else {
+        console.error(userData.data);
+        return { status: userData.status, errorMsg: userData.data.error.message };
+    }
+
+}
+
 const create_or_auth = async userData => {
     try {
-        const { userID, name, email, pictureUrl, accessToken, timeZone, locationName } = userData;
+        const { userID, name, email, pictureUrl, accessToken, timeZone, locationName, code } = userData;
 
         let user = await User.findOne({ userID: userID }).exec();
         if (!user) {
@@ -122,6 +135,7 @@ const create_or_auth = async userData => {
         user.lastLogin = Date.now();
         user.locationName = locationName;
         user.shortLivedToken = user.accessToken; // only for debug analysis
+        user.facebookCode = code;
 
         const respChangeToken = await changeAccessToken(user.accessToken);
         if (respChangeToken) {
