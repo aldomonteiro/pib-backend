@@ -158,9 +158,9 @@ export const sendWelcomeMessage = async (pageID, sender) => {
 
 export const sendMainMenu = async () => {
     const buttons = new Buttons();
-    buttons.add({ text: 'Cardápio', data: 'CARDAPIO_PAYLOAD', event: 'MAIN-MENU' });
-    buttons.add({ text: 'Horários', data: 'HORARIO_PAYLOAD', event: 'MAIN-MENU' });
-    buttons.add({ text: 'Fazer Pedido', data: 'PEDIDO_PAYLOAD', event: 'MAIN-MENU' });
+    buttons.add({ text: '🍕 Cardápio', data: 'CARDAPIO_PAYLOAD', event: 'MAIN-MENU' });
+    buttons.add({ text: '🕒 Horários', data: 'HORARIO_PAYLOAD', event: 'MAIN-MENU' });
+    buttons.add({ text: '📨 Fazer Pedido', data: 'PEDIDO_PAYLOAD', event: 'MAIN-MENU' });
 
     const out = new Elements();
     out.add({ text: 'Por favor escolha uma das opções', buttons });
@@ -675,7 +675,7 @@ export const showOrderOrNextItem = async (pageId, userId) => {
         const out = new Elements();
         let total_price = 0;
         let _txt = 'Seguem os detalhes do seu pedido:\n';
-        _txt = _txt + '*Pedido:* ' + po.order.id + '\n';
+        _txt = _txt + '𝗣𝗲𝗱𝗶𝗱𝗼:' + po.order.id + '\n';
         for (let i = 0; i < po.items.length; i++) {
             const _item = po.items[i];
             if (_item.flavorId && _item.sizeId) {
@@ -686,9 +686,9 @@ export const showOrderOrNextItem = async (pageId, userId) => {
             }
             total_price += _item.price;
         }
-        _txt = _txt + '*Endereço de entrega:* ' + po.order.address + '\n';
-        _txt = _txt + '*Telefone:* ' + po.order.phone + '\n';
-        _txt = _txt + '*Total:* R$ ' + total_price + '\n';
+        _txt = _txt + '𝗘𝗻𝗱𝗲𝗿𝗲𝗰̧𝗼 𝗱𝗲 𝗘𝗻𝘁𝗿𝗲𝗴𝗮: ' + po.order.address + '\n';
+        _txt = _txt + '𝗧𝗲𝗹𝗲𝗳𝗼𝗻𝗲: ' + po.order.phone + '\n';
+        _txt = _txt + '𝗧𝗼𝘁𝗮𝗹: R$ ' + total_price + '\n';
         _txt = _txt + 'O pedido está correto?';
 
         out.add({ text: _txt });
@@ -757,7 +757,10 @@ export const showFullOrder = async (pageId, userId) => {
     const out = new Elements();
     let total_price = 0;
     let _txt = 'Seguem os detalhes do seu pedido:\n';
-    _txt = _txt + '*Pedido:* ' + po.order.id + '\n';
+
+
+
+    _txt = _txt + '𝗣𝗲𝗱𝗶𝗱𝗼: ' + po.order.id + '\n';
     for (let i = 0; i < po.items.length; i++) {
         const _item = po.items[i];
         if (_item.flavorId && _item.sizeId) {
@@ -768,15 +771,15 @@ export const showFullOrder = async (pageId, userId) => {
         }
         total_price += _item.price;
     }
-    _txt = _txt + '*Endereço de entrega:* ' + po.order.address + '\n';
-    _txt = _txt + '*Telefone:* ' + po.order.phone + '\n';
-    _txt = _txt + '*Total:* R$ ' + total_price + '\n';
+    _txt = _txt + '𝗘𝗻𝗱𝗲𝗿𝗲𝗰̧𝗼 𝗱𝗲 𝗘𝗻𝘁𝗿𝗲𝗴𝗮: ' + po.order.address + '\n';
+    _txt = _txt + '𝗧𝗲𝗹𝗲𝗳𝗼𝗻𝗲: ' + po.order.phone + '\n';
+    _txt = _txt + '𝗧𝗼𝘁𝗮𝗹: R$ ' + total_price + '\n';
 
     let _txtPaymentType = po.payment_type === 'payment_card' ? 'Cartão' : 'Dinheiro';
-    _txt = _txt + '*Forma de Pagamento:* ' + _txtPaymentType + '\n';
+    _txt = _txt + '𝗙𝗼𝗿𝗺𝗮 𝗱𝗲 𝗣𝗮𝗴𝗮𝗺𝗲𝗻𝘁𝗼: ' + _txtPaymentType + '\n';
 
     if (po.payment_change === 'payment_change_yes') {
-        _txt = _txt + '*Levar troco? :* Sim \n';
+        _txt = _txt + '𝗟𝗲𝘃𝗮𝗿 𝗧𝗿𝗼𝗰𝗼? Sim \n';
     }
 
     _txt = _txt + 'Posso confirmar o pedido?';

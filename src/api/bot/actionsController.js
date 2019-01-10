@@ -582,10 +582,12 @@ export const getFlavorsAndToppings = async (pageID, sizeID) => {
 export const inputCardapioReplyMsg = (flavorArray) => {
     let replyMsg = '';
     if (flavorArray) {
-        for (const flavor of flavorArray) {
-            replyMsg = replyMsg + '*' + flavor.flavor + '*' + '\n';
-            replyMsg = replyMsg + flavor.toppingsNames.join();
-            replyMsg = replyMsg + '\n';
+        for (let i = 0; i < flavorArray.length; i++) {
+            const flavor = flavorArray[i];
+
+            replyMsg = replyMsg + '𝐒𝐚𝐛𝐨𝐫: ' + flavor.flavor + '\n';
+            replyMsg = replyMsg + '𝐈𝐧𝐠𝐫𝐞𝐝𝐢𝐞𝐧𝐭𝐞𝐬: ' + flavor.toppingsNames.join(", ");
+            replyMsg = replyMsg + '\n\n';
         }
     }
     return replyMsg;
