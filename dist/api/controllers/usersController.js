@@ -287,15 +287,16 @@ function () {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
+            _context3.prev = 0;
             url = "https://graph.facebook.com/v3.2/me?fields=id,name,email,picture,location&access_token=".concat(accessToken);
-            _context3.next = 3;
+            _context3.next = 4;
             return _axios.default.get(url);
 
-          case 3:
+          case 4:
             userData = _context3.sent;
 
             if (!(userData && userData.status === 200)) {
-              _context3.next = 11;
+              _context3.next = 12;
               break;
             }
 
@@ -312,19 +313,34 @@ function () {
               pictureUrl: pictureUrl
             });
 
-          case 11:
+          case 12:
             console.error(userData.data);
             return _context3.abrupt("return", {
               status: userData.status,
               errorMsg: userData.data.error.message
             });
 
-          case 13:
+          case 14:
+            _context3.next = 20;
+            break;
+
+          case 16:
+            _context3.prev = 16;
+            _context3.t0 = _context3["catch"](0);
+            console.error({
+              response_data: _context3.t0.response.data
+            });
+            return _context3.abrupt("return", {
+              status: _context3.t0.response.status,
+              errorMsg: _context3.t0.response.data.error.message
+            });
+
+          case 20:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, this);
+    }, _callee3, this, [[0, 16]]);
   }));
 
   return function user_data(_x5) {

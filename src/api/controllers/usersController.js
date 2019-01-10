@@ -99,16 +99,21 @@ export const users_code = async (req, res) => {
 }
 
 const user_data = async accessToken => {
-    const url = `https://graph.facebook.com/v3.2/me?fields=id,name,email,picture,location&access_token=${accessToken}`;
-    const userData = await axios.get(url);
-    if (userData && userData.status === 200) {
-        const { id, name, email, picture, location } = userData.data;
-        const locationName = location ? location.name : null;
-        const pictureUrl = picture ? picture.data.url : null;
-        return { status: userData.status, id, name, email, picture, locationName, pictureUrl };
-    } else {
-        console.error(userData.data);
-        return { status: userData.status, errorMsg: userData.data.error.message };
+    try {
+        const url = `https://graph.facebook.com/v3.2/me?fields=id,name,email,picture,location&access_token=${accessToken}`;
+        const userData = await axios.get(url);
+        if (userData && userData.status === 200) {
+            const { id, name, email, picture, location } = userData.data;
+            const locationName = location ? location.name : null;
+            const pictureUrl = picture ? picture.data.url : null;
+            return { status: userData.status, id, name, email, picture, locationName, pictureUrl };
+        } else {
+            console.error(userData.data);
+            return { status: userData.status, errorMsg: userData.data.error.message };
+        }
+    } catch (err) {
+        console.error({ response_data: err.response.data });
+        return { status: err.response.status, errorMsg: err.response.data.error.message };
     }
 
 }
