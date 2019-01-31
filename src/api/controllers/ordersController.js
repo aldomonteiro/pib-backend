@@ -7,10 +7,13 @@ import { configSortQuery, configRangeQueryNew, configFilterQueryMultiple, distan
 import { DateTime } from 'luxon';
 // import { Bot, Elements } from 'facebook-messenger-bot';
 // import { getOnePageToken } from './pagesController';
-import { sendShippingNotification } from '../bot/botController';
+import { sendShippingNotification, sendRejectionNotification } from '../bot/botController';
 const ORDERSTATUS_PENDING = 0;
 const ORDERSTATUS_CONFIRMED = 1;
-const ORDERSTATUS_DELIVERED = 2;
+const ORDERSTATUS_ACCEPTED = 2;
+const ORDERSTATUS_PRINTED = 3;
+const ORDERSTATUS_DELIVERED = 4;
+const ORDERSTATUS_REJECTED = 8;
 const ORDERSTATUS_CANCELLED = 9;
 
 // List all orders
@@ -26,12 +29,25 @@ export const order_get_all = async (req, res) => {
             queryParam['pageId'] = req.currentUser.activePage;
         }
 
+        if (!sortObj) {
+            sortObj['createdAt'] = "DESC";
+        }
+
         if (filterObj && filterObj.filterField && filterObj.filterField.length) {
             for (let i = 0; i < filterObj.filterField.length; i++) {
                 const filter = filterObj.filterField[i];
                 const value = filterObj.filterValues[i];
                 if (Array.isArray(value)) {
-                    queryParam[filter] = { $in: value };
+                    if (value.length === 2) {
+                        const dateIni = DateTime.fromISO(value[0]);
+                        const dateEnd = DateTime.fromISO(value[1]);
+
+                        if (!dateIni.invalid && !dateEnd.invalid)// is date
+                            queryParam[filter] = { $gte: dateIni.toISO(), $lt: dateEnd.toISO() };
+                        else
+                            queryParam[filter] = { $in: value };
+                    } else
+                        queryParam[filter] = { $in: value };
                 } else {
                     const date = DateTime.fromISO(value);
                     if (!date.invalid) { // is a date
@@ -42,6 +58,8 @@ export const order_get_all = async (req, res) => {
                 }
             }
         }
+
+        console.info('orders get_all queryParam:', queryParam, filterObj);
 
         Order.find(queryParam).sort(sortObj).exec(async (findError, result) => {
             if (findError) {
@@ -77,13 +95,19 @@ export const order_get_all = async (req, res) => {
                             address: order.address,
                             status: order.status,
                             status2: order.status2,
+                            status3: order.status3,
                             qty_total: order.qty_total,
                             total: order.total,
                             createdAt: order.createdAt,
                             items: items,
                             distanceFromStore: formattedDistance,
                             location_lat: order.location_lat,
-                            location_long: order.location_long
+                            location_long: order.location_long,
+                            confirmed_at: order.confirmed_at,
+                            deliverd_at: order.delivered_at,
+                            payment_type: order.payment_type,
+                            payment_change: order.payment_change,
+                            comments: order.comments,
                         }
                         ordersArray.push(jsonOrder);
                     }
@@ -116,28 +140,53 @@ export const order_get_one = async (req, res) => {
 export const order_update = async (req, res) => {
     if (req.body && req.body.id) {
         try {
+            const { id, operation } = req.body;
             const pageId = req.currentUser.activePage;
-            const doc = await Order.findOne({ pageId: pageId, id: req.body.id });
-            if (req.body.status2 === 'ordered') {
-                doc.status = ORDERSTATUS_CONFIRMED;
-            } else if (req.body.status2 === 'delivered') {
-                doc.status = ORDERSTATUS_DELIVERED;
-            } else if (req.body.status2 === 'cancelled') {
-                doc.status = ORDERSTATUS_DELIVERED;
-            }
+            const doc = await Order.findOne({ pageId: pageId, id: id });
 
-            if (doc.status === ORDERSTATUS_DELIVERED) {
+            if (operation === 'REJECT') {
+                const { rejectionExplanation } = req.body;
+
+                doc.status = ORDERSTATUS_REJECTED;
+                doc.sent_reject_notification = DateTime.local();
+                doc.rejection_reason = rejectionExplanation;
+                sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
+            }
+            else if (operation === 'ACCEPT') {
+                doc.status = ORDERSTATUS_ACCEPTED;
+                // sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
+            }
+            else if (operation === 'PRINT') {
+                doc.status = ORDERSTATUS_PRINTED;
+                // sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
+            }
+            else if (operation === 'DELIVER') {
+                doc.status = ORDERSTATUS_DELIVERED;
                 if (!doc.sent_shipping_notification) {
-                    console.info("I am going to send to " + doc.userId + ", about the order number:" + doc.id + " a shipping notification");
                     await sendShippingNotification(doc.pageId, doc.userId, doc.id);
                     doc.sent_shipping_notification = DateTime.local();
                 }
             }
+            else {
+                if (req.body.status2 === 'ordered') {
+                    doc.status = ORDERSTATUS_CONFIRMED;
+                } else if (req.body.status2 === 'delivered') {
+                    doc.status = ORDERSTATUS_DELIVERED;
+                    doc.delivered_at = DateTime.local();
+                } else if (req.body.status2 === 'cancelled') {
+                    doc.status = ORDERSTATUS_DELIVERED;
+                }
 
+                if (doc.status === ORDERSTATUS_DELIVERED) {
+                    if (!doc.sent_shipping_notification) {
+                        console.info("I am going to send to " + doc.userId + ", about the order number:" + doc.id + " a shipping notification");
+                        await sendShippingNotification(doc.pageId, doc.userId, doc.id);
+                        doc.sent_shipping_notification = DateTime.local();
+                    }
+                }
+            }
             await doc.save();
             const jsonOrder = await getOrderJson(pageId, doc.id);
-
-
             res.status(200).json(jsonOrder);
         }
         catch (orderUpdateErr) {
@@ -195,13 +244,19 @@ export const getOrderJson = async (pageId, orderId) => {
             qty_total: order.qty_total,
             status: order.status,
             status2: order.status2,
+            status3: order.status3,
             phone: order.phone,
             address: order.address,
             total: order.total,
-            payment_type: order.payment_type,
-            payment_change: order.payment_change,
             items: jsonItems,
             distanceFromStore: distanceFromStore,
+            location_lat: order.location_lat,
+            location_long: order.location_long,
+            confirmed_at: order.confirmed_at,
+            deliverd_at: order.delivered_at,
+            payment_type: order.payment_type,
+            payment_change: order.payment_change,
+            comments: order.comments,
         }
         return jsonOrder;
     } catch (getOrderJsonErr) {
@@ -320,6 +375,7 @@ export const updateOrder = async orderData => {
 
             if (confirmOrder) {
                 order.status = ORDERSTATUS_CONFIRMED;
+                order.confirmed_at = DateTime.local();
                 updateOrder = true;
             } else {
                 // when updateorder with flavor, I dont have neither split nor originalSplit

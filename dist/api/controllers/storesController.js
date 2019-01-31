@@ -172,6 +172,7 @@ var store_update = function store_update(req, res) {
         doc.hol_is_open = req.body.hol_is_open;
         doc.hol_open = req.body.hol_open;
         doc.hol_close = req.body.hol_close;
+        doc.printer = req.body.printer;
         doc.save(function (err, result) {
           if (err) {
             res.status(500).json({

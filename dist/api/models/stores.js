@@ -143,6 +143,9 @@ var schema = new Schema({
   sat_close: {
     type: String,
     required: true
+  },
+  printer: {
+    type: String
   }
 }, {
   timestamps: true

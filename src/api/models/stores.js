@@ -41,6 +41,7 @@ const schema = new Schema(
     thu_close: { type: String, required: true },
     fri_close: { type: String, required: true },
     sat_close: { type: String, required: true },
+    printer: { type: String },
   }, { timestamps: true },
 );
 

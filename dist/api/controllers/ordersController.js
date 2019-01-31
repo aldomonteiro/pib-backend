@@ -29,7 +29,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 var ORDERSTATUS_PENDING = 0;
 var ORDERSTATUS_CONFIRMED = 1;
-var ORDERSTATUS_DELIVERED = 2;
+var ORDERSTATUS_ACCEPTED = 2;
+var ORDERSTATUS_PRINTED = 3;
+var ORDERSTATUS_DELIVERED = 4;
+var ORDERSTATUS_REJECTED = 8;
 var ORDERSTATUS_CANCELLED = 9; // List all orders
 // TODO: use filters in the query req.query
 
@@ -39,7 +42,7 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(req, res) {
-    var sortObj, rangeObj, filterObj, queryParam, i, filter, value, date, nextDay;
+    var sortObj, rangeObj, filterObj, queryParam, i, filter, value, dateIni, dateEnd, date, nextDay;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -54,13 +57,27 @@ function () {
                 queryParam['pageId'] = req.currentUser.activePage;
               }
 
+              if (!sortObj) {
+                sortObj['createdAt'] = "DESC";
+              }
+
               if (filterObj && filterObj.filterField && filterObj.filterField.length) {
                 for (i = 0; i < filterObj.filterField.length; i++) {
                   filter = filterObj.filterField[i];
                   value = filterObj.filterValues[i];
 
                   if (Array.isArray(value)) {
-                    queryParam[filter] = {
+                    if (value.length === 2) {
+                      dateIni = _luxon.DateTime.fromISO(value[0]);
+                      dateEnd = _luxon.DateTime.fromISO(value[1]);
+                      if (!dateIni.invalid && !dateEnd.invalid) // is date
+                        queryParam[filter] = {
+                          $gte: dateIni.toISO(),
+                          $lt: dateEnd.toISO()
+                        };else queryParam[filter] = {
+                        $in: value
+                      };
+                    } else queryParam[filter] = {
                       $in: value
                     };
                   } else {
@@ -79,6 +96,8 @@ function () {
                   }
                 }
               }
+
+              console.info('orders get_all queryParam:', queryParam, filterObj);
 
               _orders.default.find(queryParam).sort(sortObj).exec(
               /*#__PURE__*/
@@ -164,13 +183,19 @@ function () {
                             address: order.address,
                             status: order.status,
                             status2: order.status2,
+                            status3: order.status3,
                             qty_total: order.qty_total,
                             total: order.total,
                             createdAt: order.createdAt,
                             items: items,
                             distanceFromStore: formattedDistance,
                             location_lat: order.location_lat,
-                            location_long: order.location_long
+                            location_long: order.location_long,
+                            confirmed_at: order.confirmed_at,
+                            deliverd_at: order.delivered_at,
+                            payment_type: order.payment_type,
+                            payment_change: order.payment_change,
+                            comments: order.comments
                           };
                           ordersArray.push(jsonOrder);
 
@@ -279,80 +304,142 @@ function () {
   var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee4(req, res) {
-    var pageId, doc, jsonOrder;
+    var _req$body, id, operation, pageId, doc, rejectionExplanation, jsonOrder;
+
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
             if (!(req.body && req.body.id)) {
-              _context4.next = 25;
+              _context4.next = 50;
               break;
             }
 
             _context4.prev = 1;
+            _req$body = req.body, id = _req$body.id, operation = _req$body.operation;
             pageId = req.currentUser.activePage;
-            _context4.next = 5;
+            _context4.next = 6;
             return _orders.default.findOne({
               pageId: pageId,
-              id: req.body.id
+              id: id
             });
 
-          case 5:
+          case 6:
             doc = _context4.sent;
 
+            if (!(operation === 'REJECT')) {
+              _context4.next = 15;
+              break;
+            }
+
+            rejectionExplanation = req.body.rejectionExplanation;
+            doc.status = ORDERSTATUS_REJECTED;
+            doc.sent_reject_notification = _luxon.DateTime.local();
+            doc.rejection_reason = rejectionExplanation;
+            (0, _botController.sendRejectionNotification)(doc.pageId, doc.userId, doc.id, rejectionExplanation);
+            _context4.next = 38;
+            break;
+
+          case 15:
+            if (!(operation === 'ACCEPT')) {
+              _context4.next = 19;
+              break;
+            }
+
+            doc.status = ORDERSTATUS_ACCEPTED; // sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
+
+            _context4.next = 38;
+            break;
+
+          case 19:
+            if (!(operation === 'PRINT')) {
+              _context4.next = 23;
+              break;
+            }
+
+            doc.status = ORDERSTATUS_PRINTED; // sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
+
+            _context4.next = 38;
+            break;
+
+          case 23:
+            if (!(operation === 'DELIVER')) {
+              _context4.next = 31;
+              break;
+            }
+
+            doc.status = ORDERSTATUS_DELIVERED;
+
+            if (doc.sent_shipping_notification) {
+              _context4.next = 29;
+              break;
+            }
+
+            _context4.next = 28;
+            return (0, _botController.sendShippingNotification)(doc.pageId, doc.userId, doc.id);
+
+          case 28:
+            doc.sent_shipping_notification = _luxon.DateTime.local();
+
+          case 29:
+            _context4.next = 38;
+            break;
+
+          case 31:
             if (req.body.status2 === 'ordered') {
               doc.status = ORDERSTATUS_CONFIRMED;
             } else if (req.body.status2 === 'delivered') {
               doc.status = ORDERSTATUS_DELIVERED;
+              doc.delivered_at = _luxon.DateTime.local();
             } else if (req.body.status2 === 'cancelled') {
               doc.status = ORDERSTATUS_DELIVERED;
             }
 
             if (!(doc.status === ORDERSTATUS_DELIVERED)) {
-              _context4.next = 13;
+              _context4.next = 38;
               break;
             }
 
             if (doc.sent_shipping_notification) {
-              _context4.next = 13;
+              _context4.next = 38;
               break;
             }
 
             console.info("I am going to send to " + doc.userId + ", about the order number:" + doc.id + " a shipping notification");
-            _context4.next = 12;
+            _context4.next = 37;
             return (0, _botController.sendShippingNotification)(doc.pageId, doc.userId, doc.id);
 
-          case 12:
+          case 37:
             doc.sent_shipping_notification = _luxon.DateTime.local();
 
-          case 13:
-            _context4.next = 15;
+          case 38:
+            _context4.next = 40;
             return doc.save();
 
-          case 15:
-            _context4.next = 17;
+          case 40:
+            _context4.next = 42;
             return getOrderJson(pageId, doc.id);
 
-          case 17:
+          case 42:
             jsonOrder = _context4.sent;
             res.status(200).json(jsonOrder);
-            _context4.next = 25;
+            _context4.next = 50;
             break;
 
-          case 21:
-            _context4.prev = 21;
+          case 46:
+            _context4.prev = 46;
             _context4.t0 = _context4["catch"](1);
             console.error(_context4.t0);
             res.status(500).json({
               message: _context4.t0.message
             });
 
-          case 25:
+          case 50:
           case "end":
             return _context4.stop();
         }
       }
-    }, _callee4, this, [[1, 21]]);
+    }, _callee4, this, [[1, 46]]);
   }));
 
   return function order_update(_x7, _x8) {
@@ -465,13 +552,19 @@ function () {
               qty_total: order.qty_total,
               status: order.status,
               status2: order.status2,
+              status3: order.status3,
               phone: order.phone,
               address: order.address,
               total: order.total,
+              items: jsonItems,
+              distanceFromStore: distanceFromStore,
+              location_lat: order.location_lat,
+              location_long: order.location_long,
+              confirmed_at: order.confirmed_at,
+              deliverd_at: order.delivered_at,
               payment_type: order.payment_type,
               payment_change: order.payment_change,
-              items: jsonItems,
-              distanceFromStore: distanceFromStore
+              comments: order.comments
             };
             return _context6.abrupt("return", jsonOrder);
 
@@ -631,6 +724,7 @@ function () {
 
             if (confirmOrder) {
               order.status = ORDERSTATUS_CONFIRMED;
+              order.confirmed_at = _luxon.DateTime.local();
               _updateOrder = true;
             } else {
               // when updateorder with flavor, I dont have neither split nor originalSplit

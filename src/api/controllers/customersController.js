@@ -28,8 +28,6 @@ export const customer_get_all = async (req, res) => {
                         queryObj[filter] = value;
                 }
             }
-
-            console.info({ filter: req.query.filter }, { filterObj: filterObj });
         }
         if (req.currentUser.activePage) {
             queryObj["pageId"] = req.currentUser.activePage;
@@ -50,8 +48,6 @@ export const customer_get_all = async (req, res) => {
                 for (let i = _rangeIni; i < _rangeEnd; i++) {
                     resultArray.push(result[i])
                 }
-
-                console.info({ resultArray });
 
                 res.setHeader('Content-Range', util.format("customers %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
                 res.status(200).json(resultArray);

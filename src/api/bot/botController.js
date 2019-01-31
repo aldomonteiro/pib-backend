@@ -984,5 +984,15 @@ export const sendShippingNotification = async (pageId, userId, orderId) => {
     await Bot.send_message_tag(accessToken, userId, out);
 }
 
+export const sendRejectionNotification = async (pageId, userId, orderId, rejectionExplanation) => {
+    const { accessToken } = await getOnePageToken(pageId);
+
+    const _txt = 'Infelizmente não poderemos atender o seu pedido número ' + orderId + '. Segue o motivo: ' + rejectionExplanation;
+
+    const out = new Elements();
+    out.add({ text: _txt });
+    await Bot.send_message_tag(accessToken, userId, out);
+}
+
 
 

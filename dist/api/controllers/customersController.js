@@ -55,12 +55,6 @@ function () {
                     } else queryObj[filter] = value;
                   }
                 }
-
-                console.info({
-                  filter: req.query.filter
-                }, {
-                  filterObj: filterObj
-                });
               }
 
               if (req.currentUser.activePage) {
@@ -88,9 +82,6 @@ function () {
                     resultArray.push(result[_i]);
                   }
 
-                  console.info({
-                    resultArray: resultArray
-                  });
                   res.setHeader('Content-Range', _util.default.format("customers %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
                   res.status(200).json(resultArray);
                 }

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.sendShippingNotification = exports.updateItemAskOptions = exports.showBeverage = exports.showNoBeverage = exports.askForBeverages = exports.askForWantBeverage = exports.askForSpecificItem = exports.askForOptionsToChange = exports.askForChangeOrder = exports.confirmOrder = exports.showFullOrder = exports.showPaymentChange = exports.askForPaymentChange = exports.showPaymentType = exports.askForPaymentType = exports.showOrderOrNextItem = exports.showFlavor = exports.askForFlavor = exports.askForFlavorOrConfirm = exports.showSplit = exports.askForSplitFlavorOrConfirm = exports.showSize = exports.askForSize = exports.showQuantity = exports.askForQuantityMore = exports.askForQuantity = exports.showPhone = exports.confirmTypedPhone = exports.askToTypePhone = exports.askForPhone = exports.showOrderOrAskForPhone = exports.showAddress = exports.confirmAddress = exports.askToTypeAddress = exports.confirmAddressOrAskLocation = exports.confirmLocationAddress = exports.askForLocation = exports.askForWantOrder = exports.sendCardapio = exports.sendHorario = exports.sendMainMenu = exports.sendWelcomeMessage = exports.passThreadControl = exports.optionsStopOrder = exports.checkLastAction = exports.askForContinue = exports.basicReply = exports.sendErrorMsg = void 0;
+exports.sendRejectionNotification = exports.sendShippingNotification = exports.updateItemAskOptions = exports.showBeverage = exports.showNoBeverage = exports.askForBeverages = exports.askForWantBeverage = exports.askForSpecificItem = exports.askForOptionsToChange = exports.askForChangeOrder = exports.confirmOrder = exports.showFullOrder = exports.showPaymentChange = exports.askForPaymentChange = exports.showPaymentType = exports.askForPaymentType = exports.showOrderOrNextItem = exports.showFlavor = exports.askForFlavor = exports.askForFlavorOrConfirm = exports.showSplit = exports.askForSplitFlavorOrConfirm = exports.showSize = exports.askForSize = exports.showQuantity = exports.askForQuantityMore = exports.askForQuantity = exports.showPhone = exports.confirmTypedPhone = exports.askToTypePhone = exports.askForPhone = exports.showOrderOrAskForPhone = exports.showAddress = exports.confirmAddress = exports.askToTypeAddress = exports.confirmAddressOrAskLocation = exports.confirmLocationAddress = exports.askForLocation = exports.askForWantOrder = exports.sendCardapio = exports.sendHorario = exports.sendMainMenu = exports.sendWelcomeMessage = exports.passThreadControl = exports.optionsStopOrder = exports.checkLastAction = exports.askForContinue = exports.basicReply = exports.sendErrorMsg = void 0;
 
 var _util = _interopRequireDefault(require("util"));
 
@@ -3144,4 +3144,45 @@ function () {
 }();
 
 exports.sendShippingNotification = sendShippingNotification;
+
+var sendRejectionNotification =
+/*#__PURE__*/
+function () {
+  var _ref51 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee49(pageId, userId, orderId, rejectionExplanation) {
+    var _ref52, accessToken, _txt, out;
+
+    return regeneratorRuntime.wrap(function _callee49$(_context49) {
+      while (1) {
+        switch (_context49.prev = _context49.next) {
+          case 0:
+            _context49.next = 2;
+            return (0, _pagesController.getOnePageToken)(pageId);
+
+          case 2:
+            _ref52 = _context49.sent;
+            accessToken = _ref52.accessToken;
+            _txt = 'Infelizmente não poderemos atender o seu pedido número ' + orderId + '. Segue o motivo: ' + rejectionExplanation;
+            out = new _facebookMessengerBot.Elements();
+            out.add({
+              text: _txt
+            });
+            _context49.next = 9;
+            return _facebookMessengerBot.Bot.send_message_tag(accessToken, userId, out);
+
+          case 9:
+          case "end":
+            return _context49.stop();
+        }
+      }
+    }, _callee49, this);
+  }));
+
+  return function sendRejectionNotification(_x118, _x119, _x120, _x121) {
+    return _ref51.apply(this, arguments);
+  };
+}();
+
+exports.sendRejectionNotification = sendRejectionNotification;
 //# sourceMappingURL=botController.js.map
