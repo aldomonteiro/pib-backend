@@ -5,21 +5,20 @@ import { getOnePricingByFlavor } from './pricingsController';
 import { getSize } from './sizesController';
 import { getBeverage } from './beveragesController';
 
-
 const ITEMSTATUS_PENDING = 0;
 const ITEMSTATUS_COMPLETED = 1;
 
 
 /**
  * Delete all records from a pageID
- * @param {*} pageID 
+ * @param {*} pageID
  */
 export const deleteManyItems = async (pageID) => {
     return await Items.deleteMany({ pageId: pageID }).exec();
 }
 
 export const updateItem = async orderData => {
-    const { orderId, userId, pageId,
+    const { orderId, currentItem, userId, pageId,
         qty, sizeId, flavorId,
         beverageId, beveragePrice, completeItem, split, originalSplit } = orderData;
 
@@ -30,7 +29,10 @@ export const updateItem = async orderData => {
         if (typeof completeItem === 'boolean' && !completeItem)
             _searchStatus = ITEMSTATUS_COMPLETED;
 
-        const item = await Items.findOne({ orderId: orderId, userId: userId, pageId: pageId, status: _searchStatus }).exec();
+        const item = await Items.findOne({
+            orderId: orderId, userId: userId,
+            pageId: pageId, status: _searchStatus,
+        }).exec();
         if (item) {
             if (qty) item.qty = qty;
             if (sizeId) item.sizeId = sizeId;
@@ -40,6 +42,7 @@ export const updateItem = async orderData => {
                 item.beverageId = beverageId;
                 item.price = beveragePrice;
             }
+            if (currentItem) item.itemId = currentItem;
             if (split) item.split = split;
             if (typeof completeItem === 'boolean')
                 item.status = completeItem === true ? ITEMSTATUS_COMPLETED : ITEMSTATUS_PENDING;
@@ -72,9 +75,11 @@ export const updateItem = async orderData => {
             const record = new Items({
                 id: itemId,
                 orderId: orderId,
+                itemId: currentItem,
                 userId: userId,
                 pageId: pageId,
-                qty: qty,
+                qty: qty || 1,
+                split: split || 1,
                 sizeId: sizeId,
                 flavorId: flavorId,
                 beverageId: beverageId,
@@ -143,8 +148,50 @@ export const getItems = async orderData => {
 }
 
 /**
+ * 
+ * @param {*} pageId
+ * @param {*} userId
+ * @param {*} itemId
+ */
+export const deleteItem = async (pageID, orderID, itemID) => {
+    try {
+        const result = await Items.deleteMany({ pageId: pageID, orderId: orderID, itemId: itemID }).exec();
+        return result;
+    } catch (err) {
+        console.error(err);
+        return null;
+    }
+}
+
+export const reorderItems = async (pageID, orderID) => {
+    try {
+        const items = await Items.find({ pageId: pageID, orderId: orderID }).sort({ itemId: 1 }).exec();
+
+        let seq = 1;
+        let changedId = 0;
+        for (let item of items) {
+            let currentId = item.itemId;
+            if (currentId !== changedId) {
+                if (currentId !== seq) {
+                    await Items.updateMany(
+                        { pageId: pageID, orderId: orderID, itemId: currentId },
+                        { $set: { itemId: seq } }).exec();
+                }
+                changedId = currentId;
+                seq++;
+            }
+        }
+        return seq;
+    } catch (err) {
+        console.error(err);
+        return null;
+    }
+}
+
+
+/**
  * Calculate total price of an orderId+pageId
- * @param {*} orderData 
+ * @param {*} orderData
  */
 export const getItemsTotal = async orderData => {
     const { orderId, pageId } = orderData;
@@ -159,5 +206,14 @@ export const getItemsTotal = async orderData => {
     }
 
     return _total;
+}
+
+export const cancelItems = async (pageId, orderId) => {
+    await Items.deleteMany({ pageId: pageId, orderId: orderId }, (err) => {
+        if (err) {
+            console.error(`Items.deleteMany orderId: ${orderId}`);
+            console.error(err);
+        }
+    });
 }
 

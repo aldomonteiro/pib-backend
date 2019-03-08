@@ -1,11 +1,6 @@
-import { getFlavors, getFlavorByName } from "../controllers/flavorsController";
-import { getToppings, getToppingsNames } from "../controllers/toppingsController";
-import { getStoreData } from '../controllers/storesController';
-import { getOnePricing } from '../controllers/pricingsController';
-import { Bot, Elements } from 'facebook-messenger-bot';
+import { Bot, Elements, Buttons, QuickReplies } from 'facebook-messenger-bot';
 import {
     sendWelcomeMessage,
-    sendErrorMsg,
     sendMainMenu,
     sendCardapio,
     askForPhone,
@@ -29,7 +24,9 @@ import {
     sendHorario,
     basicReply,
     askForChangeOrder,
-    askForSplitFlavorOrConfirm,
+    cancelItem,
+    changeItem,
+    checkSplit,
     askForFlavorOrConfirm,
     askForSpecificItem,
     updateItemAskOptions,
@@ -46,7 +43,13 @@ import {
     askForPaymentType,
     showPaymentType,
     showPaymentChange,
-    askForPaymentChange
+    askForPaymentChange,
+    cancelPendingOrder,
+    askForComments,
+    showComments,
+    askToTypeComments,
+    askForDeliver,
+    showDeliver,
 } from './botController';
 
 import {
@@ -62,12 +65,11 @@ import {
     m_howItWorks,
     m_askTestTypePizzaria,
     m_showPrices,
-    m_returnedCustomer
-} from "./botMarkController";
-import { getOrderPending } from "../controllers/ordersController";
+    m_returnedCustomer,
+} from './botMarkController';
+import { getOrderPending } from '../controllers/ordersController';
 
-
-const QTY_1 = [1, "um", "uma"];
+const QTY_1 = [1, 'um', 'uma'];
 
 export const checkTypedText = async ({ bot, sender, pageID, text }) => {
     try {
@@ -87,7 +89,11 @@ export const checkTypedText = async ({ bot, sender, pageID, text }) => {
                 const data = 'qty_' + text;
                 await mapEventsActions({ event: 'ORDER_QTY', data, bot, sender, pageID })
             }
-            else // Bot didn't understand what was typed 
+            else if (pendingOrder.order.waitingFor === 'typed_comments') {
+                await sendActions({ action: 'SHOW_COMMENTS', bot, sender, pageID, text });
+                await sendActions({ action: 'SHOW_FULL_ORDER', bot, sender, pageID });
+            }
+            else // Bot didn't understand what was typed
                 await sendActions({ action: 'ASK_FOR_CONTINUE', bot, sender, pageID });
         } else {
             await sendActions({ action: 'SEND_MAIN_MENU', bot, sender, pageID });
@@ -102,9 +108,9 @@ export const checkTypedText = async ({ bot, sender, pageID, text }) => {
 
 /**
  * Receive events, dispatch actions
- * @param {*} param0 
+ * @param {*} param
  */
-export const mapEventsActions = async ({ event, data, bot, sender, pageID }) => {
+export const mapEventsActions = async ({ event, data, bot, sender, pageID, text }) => {
     try {
         switch (event) {
             case 'ORDER_CONTINUE_ORDER':
@@ -120,7 +126,7 @@ export const mapEventsActions = async ({ event, data, bot, sender, pageID }) => 
             case 'STOP_ORDER_OPTIONS':
                 switch (data) {
                     case 'stoporder_init':
-                        await sendActions({ action: 'SEND_MAIN_MENU', bot, sender, pageID });
+                        await sendActions({ action: 'CANCEL_PENDING_ORDER', bot, sender, pageID });
                         break;
                     case 'stoporder_human':
                         await sendActions({ action: 'PASS_THREAD_CONTROL', bot, sender, pageID });
@@ -135,7 +141,8 @@ export const mapEventsActions = async ({ event, data, bot, sender, pageID }) => 
                         await sendActions({ action: 'ASK_FOR_ORDER', bot, sender, pageID });
                         break;
                     case 'PEDIDO_PAYLOAD':
-                        await sendActions({ action: 'CHECK_ADDRESS', bot, sender, pageID });
+                        // await sendActions({ action: 'CHECK_ADDRESS', bot, sender, pageID });
+                        await sendActions({ action: 'ASK_FOR_DELIVER', bot, sender, pageID });
                         break;
                     case 'HORARIO_PAYLOAD':
                         await sendActions({ action: 'SEND_HORARIO', bot, sender, pageID });
@@ -145,11 +152,23 @@ export const mapEventsActions = async ({ event, data, bot, sender, pageID }) => 
             case 'ORDER_WANT_ORDER':
                 switch (data) {
                     case 'wantorder_yes':
-                        await sendActions({ action: 'CHECK_ADDRESS', bot, sender, pageID });
+                        // await sendActions({ action: 'CHECK_ADDRESS', bot, sender, pageID });
+                        await sendActions({ action: 'ASK_FOR_DELIVER', bot, sender, pageID });
                         break;
                     case 'wantorder_no':
                         await sendActions({ action: 'BASIC_REPLY', bot, sender, pageID, data: 'Ok, vou enviar as opções então. Para continuar é só clicar em uma delas' });
                         await sendActions({ action: 'SEND_MAIN_MENU', bot, sender, pageID });
+                        break;
+                }
+                break;
+            case 'ORDER_DELIVER':
+                await sendActions({ action: 'SHOW_DELIVER', bot, sender, pageID, data });
+                switch (data.type) {
+                    case 'delivery':
+                        await sendActions({ action: 'CHECK_ADDRESS', bot, sender, pageID });
+                        break;
+                    case 'pickup':
+                        await sendActions({ action: 'ASK_FOR_PHONE', bot, sender, pageID });
                         break;
                 }
                 break;
@@ -216,12 +235,12 @@ export const mapEventsActions = async ({ event, data, bot, sender, pageID }) => 
                 }
                 break;
             case 'ORDER_PIZZA_CONFIRMATION':
-                switch (data) {
+                switch (data.type) {
                     case 'confirmation_yes':
                         await sendActions({ action: 'ASK_FOR_WANT_BEVERAGE', bot, sender, pageID });
                         break;
                     default:
-                        await sendActions({ action: 'ASK_FOR_CHANGE_ORDER', bot, sender, pageID });
+                        await sendActions({ action: 'ASK_FOR_CHANGE_ORDER', bot, sender, pageID, data });
                         break;
                 }
                 break;
@@ -245,6 +264,12 @@ export const mapEventsActions = async ({ event, data, bot, sender, pageID }) => 
                     default:
                         break;
                 }
+                break;
+            case 'ORDER_CHANGE_ITEM':
+                await sendActions({ action: 'CHANGE_ITEM', bot, sender, pageID, data });
+                break;
+            case 'ORDER_CANCEL_ITEM':
+                await sendActions({ action: 'CANCEL_ITEM', bot, sender, pageID, data });
                 break;
             case 'ORDER_CONFIRM_BEVERAGE':
                 switch (data) {
@@ -280,16 +305,27 @@ export const mapEventsActions = async ({ event, data, bot, sender, pageID }) => 
                         await sendActions({ action: 'ASK_FOR_PAYMENT_CHANGE', bot, sender, pageID })
                         break;
                     case 'payment_card':
-                        await sendActions({ action: 'SHOW_FULL_ORDER', bot, sender, pageID })
+                        await sendActions({ action: 'ASK_FOR_COMMENTS', bot, sender, pageID })
+                        // await sendActions({ action: 'SHOW_FULL_ORDER', bot, sender, pageID })
                         break;
                 }
                 break;
             case 'ORDER_PAYMENT_CHANGE':
                 await sendActions({ action: 'SHOW_PAYMENT_CHANGE', bot, sender, pageID, data })
-                await sendActions({ action: 'SHOW_FULL_ORDER', bot, sender, pageID })
+                await sendActions({ action: 'ASK_FOR_COMMENTS', bot, sender, pageID })
+                break;
+            case 'ORDER_COMMENTS':
+                switch (data) {
+                    case 'comments_yes':
+                        await sendActions({ action: 'ASK_FOR_TYPE_COMMENTS', bot, sender, pageID })
+                        break;
+                    default:
+                        await sendActions({ action: 'SHOW_FULL_ORDER', bot, sender, pageID })
+                        break;
+                }
                 break;
             case 'ORDER_CONFIRMATION':
-                switch (data) {
+                switch (data.type) {
                     case 'confirmation_yes':
                         await sendActions({ action: 'CONFIRM_ORDER', bot, sender, pageID });
                         if (bot.marketing) { // marketing. if the order is confirmed, go on in the conversation
@@ -311,67 +347,75 @@ export const mapEventsActions = async ({ event, data, bot, sender, pageID }) => 
     }
 }
 
-export const sendActions = async ({ action, bot, sender, pageID, multiple, split, data, payload, location, text, addrData }) => {
+export const sendActions = async ({ action, bot, sender, pageID, multiple, split,
+    data, payload, location, text, addrData }) => {
     try {
         let out = new Elements();
         await bot.startTyping(sender.id);
         await Bot.wait(500);
         switch (action) {
             case 'BASIC_REPLY':
-                out = await basicReply(data);
+                out = await getElement(basicReply, data);
                 break;
             case 'CHECK_TYPED_TEXT':
                 out = await checkTypedText(pageID, sender.id, text);
                 break;
             case 'ASK_FOR_CONTINUE':
-                out = await askForContinue(pageID, sender.id);
+                out = await getElement(askForContinue);
                 break;
             case 'CHECK_LAST_ACTION':
-                out = await checkLastAction(pageID, sender.id);
+                out = await getElement(checkLastAction, [pageID, sender.id]);
                 break;
             case 'CONTINUE_ORDER_NO':
-                out = await optionsStopOrder(pageID, sender.id);
+                out = await getElement(optionsStopOrder);
                 break;
             case 'PASS_THREAD_CONTROL':
-                out = await passThreadControl(pageID, sender.id);
+                out = await getElement(passThreadControl, [pageID, sender.id]);
                 break;
             case 'SEND_WELCOME':
-                out = await sendWelcomeMessage(pageID, sender)
+                out = await getElement(sendWelcomeMessage, [pageID, sender]);
                 break;
             case 'SEND_MAIN_MENU':
-                out = await sendMainMenu();
+                out = await getElement(sendMainMenu);
                 break;
             case 'SEND_CARDAPIO':
-                out = await sendCardapio(pageID);
+                out = await getElement(sendCardapio, [pageID]);
                 break;
             case 'SEND_HORARIO':
-                out = await sendHorario(pageID);
+                out = await getElement(sendHorario, [pageID]);
+                break;
+            case 'ASK_FOR_DELIVER':
+                out = await getElement(askForDeliver, [pageID, sender.id]);
+                break;
+            case 'SHOW_DELIVER':
+                out = await getElement(showDeliver, [pageID, sender.id, data]);
                 break;
             case 'CHECK_ADDRESS':
                 const user1 = await bot.fetchUser(sender.id);
-                out = await confirmAddressOrAskLocation(pageID, sender.id, user1);
+                out = await getElement(confirmAddressOrAskLocation, [pageID, sender.id, user1]);
                 break;
             case 'CONFIRM_ADDRESS':
-                out = await confirmAddress(pageID, sender.id, addrData);
+                out = await getElement(confirmAddress, [pageID, sender.id, addrData]);
                 break;
             case 'ASK_FOR_ORDER':
-                out = await askForWantOrder(pageID, sender.id);
+                out = await getElement(askForWantOrder);
                 break;
             case 'LOCATION_CONFIRM_ADDRESS':
                 const user2 = await bot.fetchUser(sender.id);
-                out = await confirmLocationAddress(pageID, sender.id, location, user2);
+                out = await getElement(confirmLocationAddress,
+                    [pageID, sender.id, location, user2]);
                 break;
             case 'ASK_FOR_PHONE':
-                out = await askForPhone(pageID, sender.id);
+                out = await getElement(askForPhone, [pageID, sender.id]);
                 break;
             case 'SHOW_PHONE':
                 out = await showPhone(pageID, sender.id, payload || data);
                 break;
             case 'SHOW_ADDRESS':
-                out = await showAddress(pageID, sender.id, data);
+                out = await getElement(showAddress, [pageID, sender.id, data]);
                 break;
             case 'SHOW_ORDER_OR_ASK_FOR_PHONE':
-                out = await showOrderOrAskForPhone(pageID, sender.id);
+                out = await getElement(showOrderOrAskForPhone, [pageID, sender.id]);
                 break;
             case 'ASK_TO_TYPE_PHONE':
                 out = await askToTypePhone(pageID, sender.id);
@@ -381,82 +425,103 @@ export const sendActions = async ({ action, bot, sender, pageID, multiple, split
                 break;
             case 'ASK_FOR_LOCATION':
                 const user = await bot.fetchUser(sender.id);
-                out = await askForLocation(pageID, sender.id, user);
+                out = await getElement(askForLocation, [pageID, sender.id, user]);
                 break;
             case 'ASK_TO_TYPE_ADDRESS':
-                out = await askToTypeAddress(pageID, sender.id);
+                out = await getElement(askToTypeAddress, [pageID, sender.id]);
                 break;
             case 'ASK_FOR_QUANTITY':
-                out = await askForQuantity(pageID, sender.id);
+                out = await getElement(askForQuantity, [pageID, sender.id]);
                 break;
             case 'ASK_FOR_QUANTITY_MORE':
-                out = await askForQuantityMore(pageID, sender.id);
+                out = await getElement(askForQuantityMore, [pageID, sender.id]);
                 break;
             case 'SHOW_QUANTITY':
-                out = await showQuantity(pageID, sender.id, data);
+                out = await getElement(showQuantity, [pageID, sender.id, data]);
                 break;
             case 'ASK_FOR_SIZE':
-                out = await askForSize(pageID, sender.id);
+                out = await getElement(askForSize, [pageID, sender.id]);
                 break;
             case 'SHOW_SIZE':
-                out = await showSize(pageID, sender.id, data);
+                out = await getElement(showSize, [pageID, sender.id, data]);
                 break;
             case 'SHOW_SPLIT':
-                out = await showSplit(pageID, sender.id, data);
+                out = await getElement(showSplit, [pageID, sender.id, data]);
                 break;
             case 'CHECK_SPLIT':
-                out = await askForSplitFlavorOrConfirm(pageID, sender.id, 1);
+                out = await getElement(checkSplit, [pageID, sender.id, 1]);
                 break;
             case 'CHECK_FLAVOR':
-                out = await askForFlavorOrConfirm(pageID, sender.id, 1, data);
+                out = await getElement(askForFlavorOrConfirm, [pageID, sender.id, 1]);
                 break;
             case 'ASK_FOR_FLAVOR':
-                out = await askForFlavor(pageID, sender.id, multiple, split);
+                out = await getElement(askForFlavor, [pageID, sender.id, multiple]);
                 break;
             case 'SHOW_FLAVOR':
-                out = await showFlavor(pageID, sender.id, data);
+                out = await getElement(showFlavor, [pageID, sender.id, data]);
                 break;
             case 'CHECK_ITEM':
-                out = await showOrderOrNextItem(pageID, sender.id);
+                out = await getElement(showOrderOrNextItem, [pageID, sender.id]);
                 break;
             case 'ASK_FOR_WANT_BEVERAGE':
-                out = await askForWantBeverage(pageID, sender.id);
+                out = await getElement(askForWantBeverage, [pageID, sender.id]);
                 break;
             case 'SHOW_NO_BEVERAGE':
-                out = await showNoBeverage(pageID, sender.id, data);
+                out = await getElement(showNoBeverage, [pageID, sender.id, data]);
                 break;
             case 'ASK_FOR_BEVERAGE_OPTIONS':
-                out = await askForBeverages(pageID, sender.id, multiple);
+                out = await getElement(askForBeverages, [pageID, sender.id, multiple]);
                 break;
             case 'SHOW_BEVERAGE':
-                out = await showBeverage(pageID, sender.id, data);
+                out = await getElement(showBeverage, [pageID, sender.id, data]);
                 break;
             case 'ASK_FOR_PAYMENT_TYPE':
-                out = await askForPaymentType(pageID, sender.id);
+                out = await getElement(askForPaymentType, [pageID, sender.id]);
                 break;
             case 'SHOW_PAYMENT_TYPE':
-                out = await showPaymentType(pageID, sender.id, data);
+                out = await getElement(showPaymentType, [pageID, sender.id, data]);
                 break;
             case 'ASK_FOR_PAYMENT_CHANGE':
-                out = await askForPaymentChange(pageID, sender.id);
+                out = await getElement(askForPaymentChange, [pageID, sender.id]);
                 break;
             case 'SHOW_PAYMENT_CHANGE':
-                out = await showPaymentChange(pageID, sender.id, data);
+                out = await getElement(showPaymentChange, [pageID, sender.id, data]);
+                break;
+            case 'ASK_FOR_COMMENTS':
+                out = await getElement(askForComments, [pageID, sender.id]);
+                break;
+            case 'ASK_FOR_TYPE_COMMENTS':
+                out = await getElement(askToTypeComments, [pageID, sender.id]);
+                break;
+            case 'SHOW_COMMENTS':
+                out = await getElement(showComments, [pageID, sender.id, text]);
+                break;
+            case 'ASK_TO_TYPE_COMMENTS':
+                out = await getElement(askToTypeComments, [pageID, sender.id]);
                 break;
             case 'SHOW_FULL_ORDER':
-                out = await showFullOrder(pageID, sender.id);
+                out = await getElement(showFullOrder, [pageID, sender.id]);
                 break;
             case 'ASK_FOR_CHANGE_ORDER':
-                out = await askForChangeOrder(pageID, sender.id);
+                out = await getElement(askForChangeOrder, [pageID, sender.id, data]);
                 break;
             case 'ASK_FOR_SPECIFIC_ITEM':
-                out = await askForSpecificItem(pageID, sender.id);
+                out = await getElement(askForSpecificItem, [pageID, sender.id]);
+                break;
+            case 'CHANGE_ITEM':
+                out = await getElement(changeItem, [pageID, sender.id, data]);
+                break;
+            case 'CANCEL_ITEM':
+                out = await getElement(cancelItem, [pageID, sender.id, data]);
                 break;
             case 'UPDATE_ITEM':
-                out = await updateItemAskOptions(pageID, sender.id, data);
+                out = await getElement(updateItemAskOptions, [pageID, sender.id, data]);
+                break;
+            case 'CANCEL_PENDING_ORDER':
+                out = await getElement(cancelPendingOrder, [pageID, sender.id]);
                 break;
             case 'CONFIRM_ORDER':
-                out = await confirmOrder(pageID, sender.id);
+                out = await getElement(confirmOrder, [pageID, sender.id]);
                 break;
             case 'PIZZAIBOT_MARKETING':
                 out = await marketing_flow(pageID, sender.id, data, text, payload);
@@ -471,6 +536,40 @@ export const sendActions = async ({ action, bot, sender, pageID, multiple, split
         throw sendActionsErr;
     }
 }
+
+const getElement = async (fn, params) => {
+    // TODO: Where check if it is facebook or whatsapp?
+
+    const out = new Elements();
+    const data = params ? await fn(...params) : await fn();
+    if (data.type === 'text') {
+        out.add({ text: data.text });
+    } else if (data.type === 'buttons') {
+        const buttons = new Buttons();
+        data.options.map(option => buttons.add(option));
+        out.add({ text: data.text, buttons });
+    }
+    else if (data.type === 'replies') {
+        out.add({ text: data.text });
+        const replies = new QuickReplies();
+        data.options.map(option => replies.add(option));
+        out.setQuickReplies(replies);
+    }
+    else if (data.type === 'list' || data.type === 'fulllist') {
+        out.setListStyle('compact');
+        data.options.map(option => {
+            if (!option.hidden) {
+                const buttons = new Buttons();
+                buttons.add(option.buttons);
+                if (option.isOnlyButtons) out.add({ isOnlyButtons: option.isOnlyButtons, buttons: buttons })
+                else out.add({ text: option.text, subtext: option.subtext, buttons: buttons })
+            }
+        });
+    }
+
+    return out;
+}
+
 
 /**
  * Actions for marketing controller
@@ -547,108 +646,62 @@ export const marketing_flow = async (pageID, userID, data, text, payload) => {
 }
 
 
-/**
- * Returns array of flavors. If sizeID was passed, only returns flavors with price.
- * @param {*} pageID 
- * @param {*} sizeID 
- */
-export const getFlavorsAndToppings = async (pageID, sizeID) => {
-    try {
-        const flavorArray = await getFlavors(pageID);
-        const flavorsWithPrice = new Array();
-        for (let flavor of flavorArray) {
-            if (sizeID) {
-                const pricing = await getOnePricing(pageID, flavor.kind, sizeID);
-                if (pricing) {
-                    flavor.price = pricing.price;
-                }
-            }
-            if (sizeID) {
-                if (flavor.price) {
-                    flavor.toppingsNames = await getToppingsNames(flavor.toppings, pageID);
-                    flavorsWithPrice.push(flavor);
-                }
-            } else {
-                flavor.toppingsNames = await getToppingsNames(flavor.toppings, pageID);
-                flavorsWithPrice.push(flavor);
-            }
-        }
-        return flavorsWithPrice;
-    } catch (flavorsAndToppingsErr) {
-        console.error({ flavorsAndToppingsErr });
-    }
-}
+// export const getOpenAndClose = async (pageID) => {
+//     // TODO: timezone from the store
+//     const weekDay = (new Date()).getDay();
 
-export const inputCardapioReplyMsg = (flavorArray) => {
-    let replyMsg = '';
-    if (flavorArray) {
-        for (let i = 0; i < flavorArray.length; i++) {
-            const flavor = flavorArray[i];
+//     const openingTimes = await getStoreData(pageID);
 
-            replyMsg = replyMsg + '𝐒𝐚𝐛𝐨𝐫: ' + flavor.flavor + '\n';
-            replyMsg = replyMsg + '𝐈𝐧𝐠𝐫𝐞𝐝𝐢𝐞𝐧𝐭𝐞𝐬: ' + flavor.toppingsNames.join(", ");
-            replyMsg = replyMsg + '\n\n';
-        }
-    }
-    return replyMsg;
-}
+//     if (openingTimes) {
+//         let openAndClose = { isOpen: false, openTime: null, closeTime: null };
+//         if (weekDay === 1) {
+//             openAndClose.isOpen = openingTimes.mon_is_open;
+//             openAndClose.openTime = openingTimes.mon_open;
+//             openAndClose.closeTime = openingTimes.mon_close;
+//         } else if (weekDay === 2) {
+//             openAndClose.isOpen = openingTimes.tue_is_open;
+//             openAndClose.openTime = openingTimes.tue_open;
+//             openAndClose.closeTime = openingTimes.tue_close;
+//         } else if (weekDay === 3) {
+//             openAndClose.isOpen = openingTimes.wed_is_open;
+//             openAndClose.openTime = openingTimes.wed_open;
+//             openAndClose.closeTime = openingTimes.wed_close;
+//         } else if (weekDay === 4) {
+//             openAndClose.isOpen = openingTimes.thu_is_open;
+//             openAndClose.openTime = openingTimes.thu_open;
+//             openAndClose.closeTime = openingTimes.thu_close;
+//         } else if (weekDay === 5) {
+//             openAndClose.isOpen = openingTimes.fri_is_open;
+//             openAndClose.openTime = openingTimes.fri_open;
+//             openAndClose.closeTime = openingTimes.fri_close;
+//         } else if (weekDay === 6) {
+//             openAndClose.isOpen = openingTimes.sat_is_open;
+//             openAndClose.openTime = openingTimes.sat_open;
+//             openAndClose.closeTime = openingTimes.sat_close;
+//         }
+//         else if (weekDay === 7) {
+//             openAndClose.isOpen = openingTimes.sun_is_open;
+//             openAndClose.openTime = openingTimes.sun_open;
+//             openAndClose.closeTime = openingTimes.sun_close;
+//         }
+//         return openAndClose;
+//     }
+//     return null;
+// }
 
-export const getOpenAndClose = async (pageID) => {
-    // TODO: timezone from the store
-    const weekDay = (new Date()).getDay();
+// export const inputHorarioReplyMsg = (openAndClose) => {
+//     let replyMsg = '';
+//     if (openAndClose) {
+//         if (openAndClose.isOpen === true) {
+//             const strOpenTime = new Date(openAndClose.openTime).getHours() + ':' + new Date(openAndClose.openTime).getMinutes().toString().padStart(2, '0');
+//             const strCloseTime = new Date(openAndClose.closeTime).getHours() + ':' + new Date(openAndClose.closeTime).getMinutes().toString().padStart(2, '0');
 
-    const openingTimes = await getStoreData(pageID);
-
-    if (openingTimes) {
-        let openAndClose = { isOpen: false, openTime: null, closeTime: null };
-        if (weekDay === 1) {
-            openAndClose.isOpen = openingTimes.mon_is_open;
-            openAndClose.openTime = openingTimes.mon_open;
-            openAndClose.closeTime = openingTimes.mon_close;
-        } else if (weekDay === 2) {
-            openAndClose.isOpen = openingTimes.tue_is_open;
-            openAndClose.openTime = openingTimes.tue_open;
-            openAndClose.closeTime = openingTimes.tue_close;
-        } else if (weekDay === 3) {
-            openAndClose.isOpen = openingTimes.wed_is_open;
-            openAndClose.openTime = openingTimes.wed_open;
-            openAndClose.closeTime = openingTimes.wed_close;
-        } else if (weekDay === 4) {
-            openAndClose.isOpen = openingTimes.thu_is_open;
-            openAndClose.openTime = openingTimes.thu_open;
-            openAndClose.closeTime = openingTimes.thu_close;
-        } else if (weekDay === 5) {
-            openAndClose.isOpen = openingTimes.fri_is_open;
-            openAndClose.openTime = openingTimes.fri_open;
-            openAndClose.closeTime = openingTimes.fri_close;
-        } else if (weekDay === 6) {
-            openAndClose.isOpen = openingTimes.sat_is_open;
-            openAndClose.openTime = openingTimes.sat_open;
-            openAndClose.closeTime = openingTimes.sat_close;
-        }
-        else if (weekDay === 7) {
-            openAndClose.isOpen = openingTimes.sun_is_open;
-            openAndClose.openTime = openingTimes.sun_open;
-            openAndClose.closeTime = openingTimes.sun_close;
-        }
-        return openAndClose;
-    }
-    return null;
-}
-
-export const inputHorarioReplyMsg = (openAndClose) => {
-    let replyMsg = '';
-    if (openAndClose) {
-        if (openAndClose.isOpen === true) {
-            const strOpenTime = new Date(openAndClose.openTime).getHours() + ':' + new Date(openAndClose.openTime).getMinutes().toString().padStart(2, '0');
-            const strCloseTime = new Date(openAndClose.closeTime).getHours() + ':' + new Date(openAndClose.closeTime).getMinutes().toString().padStart(2, '0');
-
-            replyMsg = 'Olá, hoje nosso horário de funcionamento é a partir das ';
-            replyMsg = replyMsg + strOpenTime + ' horas, até às ';
-            replyMsg = replyMsg + strCloseTime + ' horas.';
-        } else {
-            replyMsg = 'Olá, infelizmente hoje estamos fechados, então, não estamos aceitando pedidos. ';
-        }
-    }
-    return replyMsg;
-}
+//             replyMsg = 'Olá, hoje nosso horário de funcionamento é a partir das ';
+//             replyMsg = replyMsg + strOpenTime + ' horas, até às ';
+//             replyMsg = replyMsg + strCloseTime + ' horas.';
+//         } else {
+//             replyMsg = 'Olá, infelizmente hoje estamos fechados, então, não estamos aceitando pedidos. ';
+//         }
+//     }
+//     return replyMsg;
+// }

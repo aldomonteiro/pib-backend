@@ -1,10 +1,10 @@
 
-import Page from "../models/pages";
-import User from "../models/users";
+import Page from '../models/pages';
+import User from '../models/users';
 import axios from 'axios';
 import util from 'util';
 import { configSortQuery, configRangeQuery } from '../util/util';
-import { initialSetup } from "./systemController";
+import { initialSetup } from './systemController';
 import { deleteManyFlavors } from './flavorsController';
 import { deleteManyBeverages } from './beveragesController';
 import { deleteManyCustomers } from './customersController';
@@ -15,7 +15,7 @@ import { deleteManyPricings } from './pricingsController';
 import { deleteManySizes } from './sizesController';
 import { deleteManyToppings } from './toppingsController';
 import { deleteManyStores } from './storesController';
-import { removeUserActivePage } from "./usersController";
+import { removeUserActivePage } from './usersController';
 
 // List all flavors
 // TODO: use filters in the query req.query
@@ -41,13 +41,13 @@ export const page_resources_get_all = async (req, res) => {
             if (err) {
                 res.status(500).json({ message: err.errmsg });
             } else {
-                res.setHeader('Content-Range', util.format("pages %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
+                res.setHeader('Content-Range', util.format('pages %d-%d/%d', rangeObj['offset'], rangeObj['limit'], result.total));
                 res.status(200).json(result.docs);
             }
         });
     }
     else {
-        res.setHeader('Content-Range', util.format("pages %d-%d/%d", 0, 0, 0));
+        res.setHeader('Content-Range', util.format('pages %d-%d/%d', 0, 0, 0));
         res.status(200).json(new Array());
     }
 };
@@ -75,7 +75,7 @@ export const page_resources_get_one = (req, res) => {
 export const page_resources_delete = async (req, res) => {
     let lastResult;
     try {
-        console.info("page_resources_delete:", req.params);
+        console.info('page_resources_delete:', req.params);
 
         const pageID = req.params.id;
         const { accessToken } = await getOnePageToken(pageID);
@@ -111,7 +111,7 @@ export const page_resources_delete = async (req, res) => {
 // Update or create a new page
 export const page_update = async (req, res) => {
     try {
-        console.info("page_update: ", req.body.operation, req.body.id);
+        console.info('page_update: ', req.body.operation, req.body.id);
         const pageID = req.body.id;
         const operation = req.body.operation;
         let page = await Page.findOne({ id: pageID }).exec();
@@ -233,7 +233,7 @@ export const getAllPages = async () => {
     await Page.find({}, (err, result) => {
         pageArray = result.map(doc => { return { 'pageID': doc.id, 'accessToken': doc.accessToken, 'name': doc.name } });
     });
-    console.log("into getAllPages: ", Object.keys(pageArray).length);
+    console.log('into getAllPages: ', Object.keys(pageArray).length);
     return Promise.resolve(pageArray);
 }
 
@@ -273,10 +273,10 @@ const setFacebookFields = async (pageId, accessToken, _greeting) => {
                         payload: JSON.stringify({ data: 'PEDIDO_PAYLOAD', event: 'MAIN-MENU' })
                     },
                     {
-                        type: "web_url",
-                        title: "Powered by Pizzaibot",
-                        url: "m.me/pizzaibot",
-                        webview_height_ratio: "full"
+                        type: 'web_url',
+                        title: 'Powered by Pizzaibot',
+                        url: 'm.me/pizzaibot',
+                        webview_height_ratio: 'full'
                     }
 
                 ]
@@ -290,7 +290,7 @@ const deleteFacebookFields = async (pageId, accessToken) => {
 
     const result = await axios.get(facebookUrl, {
         headers: { 'Content-Type': 'application/json' },
-        fields: ["get_started", "persistent_menu", "greeting"]
+        fields: ['get_started', 'persistent_menu', 'greeting']
     });
 
     if (result.status === 200 && result.data && result.data.data && result.data.data.length > 0) {
@@ -298,7 +298,7 @@ const deleteFacebookFields = async (pageId, accessToken) => {
         const result1 = await axios.delete(facebookUrl, {
             headers: { 'Content-Type': 'application/json' },
             params: {
-                fields: ["get_started", "persistent_menu", "greeting"]
+                fields: ['get_started', 'persistent_menu', 'greeting'],
             }
         });
         console.info('deleteFacebookFields deleted fields:', result1);
@@ -318,8 +318,8 @@ export const sendPassThreadControl = async (pageID, recipientId) => {
         const result = await axios.post(facebookUrl, {
             headers: { 'Content-Type': 'application/json' },
             recipient: { id: recipientId },
-            target_app_id: "263902037430900",
-            metadata: "pass thread control to inbox"
+            target_app_id: '263902037430900',
+            metadata: 'pass thread control to inbox',
         });
         return result.status;
     } catch (passThreadError) {

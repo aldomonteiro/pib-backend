@@ -1,18 +1,22 @@
 import Order from '../models/orders';
 import util from "util";
-import { updateItem, getItems, getItemsTotal } from './itemsController';
-import { customer_update } from './customersController';
+import { updateItem, getItems, getItemsTotal, cancelItems } from './itemsController';
+import { updateCustomer, getCustomerById } from './customersController';
 import { getStoreData } from './storesController';
-import { configSortQuery, configRangeQueryNew, configFilterQueryMultiple, distanceBetweenCoordinates } from '../util/util';
+import {
+    configSortQuery, configRangeQueryNew,
+    configFilterQueryMultiple, distanceBetweenCoordinates,
+} from '../util/util';
 import { DateTime } from 'luxon';
 // import { Bot, Elements } from 'facebook-messenger-bot';
 // import { getOnePageToken } from './pagesController';
 import { sendShippingNotification, sendRejectionNotification } from '../bot/botController';
 const ORDERSTATUS_PENDING = 0;
 const ORDERSTATUS_CONFIRMED = 1;
-const ORDERSTATUS_ACCEPTED = 2;
-const ORDERSTATUS_PRINTED = 3;
-const ORDERSTATUS_DELIVERED = 4;
+const ORDERSTATUS_VIEWED = 2;
+const ORDERSTATUS_ACCEPTED = 3;
+const ORDERSTATUS_PRINTED = 4;
+const ORDERSTATUS_DELIVERED = 5;
 const ORDERSTATUS_REJECTED = 8;
 const ORDERSTATUS_CANCELLED = 9;
 
@@ -29,8 +33,10 @@ export const order_get_all = async (req, res) => {
             queryParam['pageId'] = req.currentUser.activePage;
         }
 
+        queryParam['status'] = { $gte: ORDERSTATUS_CONFIRMED };
+
         if (!sortObj) {
-            sortObj['createdAt'] = "DESC";
+            sortObj['createdAt'] = 'DESC';
         }
 
         if (filterObj && filterObj.filterField && filterObj.filterField.length) {
@@ -39,8 +45,8 @@ export const order_get_all = async (req, res) => {
                 const value = filterObj.filterValues[i];
                 if (Array.isArray(value)) {
                     if (value.length === 2) {
-                        const dateIni = DateTime.fromISO(value[0]);
-                        const dateEnd = DateTime.fromISO(value[1]);
+                        const dateIni = DateTime.fromISO(value[0]).set({ hour: 0, minute: 0, second: 0 }).setZone('UTC');
+                        const dateEnd = DateTime.fromISO(value[1]).set({ hour: 23, minute: 59, second: 59 }).setZone('UTC');
 
                         if (!dateIni.invalid && !dateEnd.invalid)// is date
                             queryParam[filter] = { $gte: dateIni.toISO(), $lt: dateEnd.toISO() };
@@ -51,8 +57,14 @@ export const order_get_all = async (req, res) => {
                 } else {
                     const date = DateTime.fromISO(value);
                     if (!date.invalid) { // is a date
-                        const nextDay = date.plus({ days: 1 });
-                        queryParam[filter] = { $gte: date.toISODate(), $lt: nextDay.toISODate() };
+                        // date comes with the current time, so, I am setting it to midnight.
+                        // Mongoose stores data on GMT timezone
+                        const rezonedIni = date.set({ hour: 0, minute: 0, second: 0 }).setZone('UTC');
+                        const rezonedEnd = rezonedIni.plus({ days: 1 });
+                        console.info('date:', date.toISO(),
+                            'rezoned:', rezonedIni.toISO(),
+                            'nextDay:', rezonedEnd.toISO());
+                        queryParam[filter] = { $gte: rezonedIni.toISO(), $lt: rezonedEnd.toISO() };
                     } else
                         queryParam[filter] = value;
                 }
@@ -73,7 +85,7 @@ export const order_get_all = async (req, res) => {
                     _rangeEnd = (rangeObj.offset + rangeObj.limit) <= result.length ? rangeObj.offset + rangeObj.limit : result.length;
                 }
                 let _totalCount = result.length;
-                let ordersArray = new Array();
+                let ordersArray = [];
                 if (result && result.length && result.length > 0) {
                     const store = await getStoreData(result[0].pageId);
                     for (let i = _rangeIni; i < _rangeEnd; i++) {
@@ -86,12 +98,19 @@ export const order_get_all = async (req, res) => {
                         } else {
                             formattedDistance = distanceFromStore.toFixed(2) + ' km';
                         }
+                        const deliverAt = order.deliver_time
+                            ? DateTime.fromJSDate(order.confirmed_at).plus({ minutes: order.deliver_time })
+                            : order.confirmed_at;
+
                         let jsonOrder = {
                             id: order.id,
                             pageId: order.pageId,
                             customerId: order.customerId,
                             userId: order.userId,
                             phone: order.phone,
+                            deliverAt: deliverAt,
+                            deliver_type: order.deliver_type,
+                            deliver_time: order.deliver_time,
                             address: order.address,
                             status: order.status,
                             status2: order.status2,
@@ -112,7 +131,9 @@ export const order_get_all = async (req, res) => {
                         ordersArray.push(jsonOrder);
                     }
                 }
-                res.setHeader('Content-Range', util.format("orders %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
+                res.setHeader('Content-Range',
+                    util.format('orders %d-%d/%d',
+                        _rangeIni, _rangeEnd, _totalCount));
                 res.status(200).json(ordersArray);
             }
         });
@@ -151,23 +172,24 @@ export const order_update = async (req, res) => {
                 doc.sent_reject_notification = DateTime.local();
                 doc.rejection_reason = rejectionExplanation;
                 sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
-            }
-            else if (operation === 'ACCEPT') {
+            } else if (operation === 'VIEW') {
+                doc.status = ORDERSTATUS_VIEWED;
+                // sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
+            } else if (operation === 'ACCEPT') {
                 doc.status = ORDERSTATUS_ACCEPTED;
                 // sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
-            }
-            else if (operation === 'PRINT') {
+            } else if (operation === 'PRINT') {
                 doc.status = ORDERSTATUS_PRINTED;
                 // sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
-            }
-            else if (operation === 'DELIVER') {
+            } else if (operation === 'DELIVER') {
                 doc.status = ORDERSTATUS_DELIVERED;
-                if (!doc.sent_shipping_notification) {
-                    await sendShippingNotification(doc.pageId, doc.userId, doc.id);
-                    doc.sent_shipping_notification = DateTime.local();
+                if (doc.source !== 'whatsapp') {
+                    if (!doc.sent_shipping_notification) {
+                        await sendShippingNotification(doc.pageId, doc.userId, doc.id);
+                        doc.sent_shipping_notification = DateTime.local();
+                    }
                 }
-            }
-            else {
+            } else {
                 if (req.body.status2 === 'ordered') {
                     doc.status = ORDERSTATUS_CONFIRMED;
                 } else if (req.body.status2 === 'delivered') {
@@ -178,10 +200,12 @@ export const order_update = async (req, res) => {
                 }
 
                 if (doc.status === ORDERSTATUS_DELIVERED) {
-                    if (!doc.sent_shipping_notification) {
-                        console.info("I am going to send to " + doc.userId + ", about the order number:" + doc.id + " a shipping notification");
-                        await sendShippingNotification(doc.pageId, doc.userId, doc.id);
-                        doc.sent_shipping_notification = DateTime.local();
+                    if (doc.source !== 'whatsapp') {
+                        if (!doc.sent_shipping_notification) {
+                            console.info("I am going to send to " + doc.userId + ", about the order number:" + doc.id + " a shipping notification");
+                            await sendShippingNotification(doc.pageId, doc.userId, doc.id);
+                            doc.sent_shipping_notification = DateTime.local();
+                        }
                     }
                 }
             }
@@ -218,9 +242,13 @@ export const deleteManyOrders = async (pageID) => {
 export const getOrderJson = async (pageId, orderId) => {
     try {
         const order = await Order.findOne({ pageId: pageId, id: orderId });
+        const customer = await getCustomerById(pageId, order.customerId);
         const items = await getItems({ pageId: pageId, orderId: orderId });
         const store = await getStoreData(order.pageId);
         const distanceFromStore = distanceBetweenCoordinates(store.location_lat, store.location_long, order.location_lat, order.location_long);
+        const deliverAt = order.deliver_time
+            ? DateTime.fromJSDate(order.confirmed_at).plus({ minutes: order.deliver_time })
+            : order.confirmed_at;
         let jsonItems = [];
         items.forEach(item => {
             let jsonItem = {
@@ -240,7 +268,11 @@ export const getOrderJson = async (pageId, orderId) => {
         let jsonOrder = {
             id: order.id,
             customerId: order.customerId,
+            customerName: customer.first_name + ' ' + customer.last_name,
             createdAt: order.createdAt,
+            deliverAt: deliverAt,
+            deliver_type: order.deliver_type,
+            deliver_time: order.deliver_time,
             qty_total: order.qty_total,
             status: order.status,
             status2: order.status2,
@@ -268,11 +300,11 @@ export const getOrderJson = async (pageId, orderId) => {
 
 export const updateOrder = async orderData => {
     try {
-        const { pageId, userId, qty, location, user,
+        const { pageId, userId, source, deliverType, deliverTime, qty, qty_total, location, user,
             phone, addrData, completeItem, confirmOrder,
-            waitingForAddress, waitingFor, currentItem, sizeId, calcTotal,
-            split, originalSplit, eraseSplit, noBeverage,
-            paymentType, paymentChange } = orderData;
+            waitingForAddress, waitingFor, undo, currentItem, sizeId, calcTotal,
+            originalSplit, split, currentItemSplit, eraseSplit, noBeverage,
+            paymentType, paymentChange, backToConfirmation, comments } = orderData;
 
         let customerID = 0;
         let customerData = {}
@@ -287,7 +319,7 @@ export const updateOrder = async orderData => {
         customerData.phone = phone;
         customerData.location = location;
         customerData.addrData = addrData;
-        customerID = await customer_update(customerData);
+        customerID = await updateCustomer(customerData);
         const order = await Order.findOne({ pageId: pageId, userId: userId, status: ORDERSTATUS_PENDING }).exec();
 
         if (order) {
@@ -306,8 +338,13 @@ export const updateOrder = async orderData => {
                 updateOrder = true;
             }
 
+            if (source) {
+                order.source = source;
+                updateOrder = true;
+            }
+
             if (qty) {
-                order.qty_total = qty;
+                order.qty = qty;
                 updateOrder = true;
 
                 // order has total quantity.
@@ -315,25 +352,54 @@ export const updateOrder = async orderData => {
                 orderData.qty = 1;
             }
 
-            // when I have a split, I am forcing size and qty
-            if (typeof split === 'number') {
-                order.currentItemSplit = split;
-                orderData.sizeId = order.currentItemSize;
-                orderData.qty = 1;
-
+            if (deliverType) {
+                order.deliver_type = deliverType;
                 updateOrder = true;
             }
+
+            if (deliverTime) {
+                order.deliver_time = deliverTime;
+                updateOrder = true;
+            }
+
+            if (qty_total) {
+                order.qty_total = qty_total;
+                updateOrder = true;
+            }
+
+            // // when I have a split, I am forcing size and qty
+            // if (typeof split === 'number') {
+            //     orderData.sizeId = order.currentItemSize;
+            //     orderData.qty = 1;
+
+            //     updateOrder = true;
+            // }
 
             if (originalSplit) {
                 // split increments the items number (+originalSplit)
                 //  and removes 1 (that was the original quantity asked by the user)
                 order.qty_total = order.qty_total + originalSplit - 1;
-                // saving the originalSplit in the order and... 
+                // saving the originalSplit in the order and...
                 order.originalSplit = originalSplit;
                 // ...always saving the split as originalSplit in item.
                 // because the split in the order will be decreased until 1
                 orderData.split = originalSplit;
                 updateOrder = true;
+            }
+
+            // starts from 1 until originalSplit
+            if (currentItemSplit) {
+                order.currentItemSplit = currentItemSplit;
+                updateOrder = true;
+            }
+
+            // originalSplit is passed as parameter only once: when user choose the
+            // split division. split is passed as the same value as originalSplit, so, here
+            // I am changing the quantity to assure the item will receive correct data.
+            // originalSplit changes the quantity, so, it can't be passed more than once.
+            if (split) {
+                orderData.sizeId = order.currentItemSize;
+                orderData.qty = 1;
             }
 
             // eraseSplit is sent when I am gonna ask the user
@@ -397,6 +463,22 @@ export const updateOrder = async orderData => {
                 updateOrder = true;
             }
 
+            if (undo) {
+                order.undo = undo;
+                updateOrder = true;
+            }
+
+            if (backToConfirmation) {
+                order.backToConfirmation = backToConfirmation;
+                updateOrder = true;
+            }
+
+            if (comments) {
+                order.comments = comments;
+                updateOrder = true;
+            }
+
+
             if (typeof calcTotal === 'boolean') {
                 const total = await getItemsTotal({ orderId: order.id, pageId: order.pageId });
                 if (total > 0 && total !== order.total) {
@@ -437,11 +519,12 @@ export const updateOrder = async orderData => {
                 id: orderId,
                 pageId: pageId,
                 userId: userId,
-                qty_total: qty ? qty : 0,
+                qty_total: qty || 0,
                 location_lat: location ? location.lat : null,
                 location_long: location ? location.long : null,
                 location_url: location ? location.url : null,
                 waitingForAddress: typeof waitingForAddress === 'boolean' ? waitingForAddress : false,
+                deliver_type: deliverType,
                 status: ORDERSTATUS_PENDING,
             });
             await record.save();
@@ -457,7 +540,10 @@ export const updateOrder = async orderData => {
 export const getOrderPending = async orderData => {
     const { userId, pageId, isComplete } = orderData;
 
-    const _order = await Order.findOne({ userId: userId, pageId: pageId, status: ORDERSTATUS_PENDING }).exec();
+    const _order = await Order.findOne({
+        userId: userId, pageId: pageId,
+        status: ORDERSTATUS_PENDING,
+    }).exec();
     if (_order) {
         if (isComplete && isComplete === true) {
             const _items = await getItems({ orderId: _order.id, pageId: pageId });
@@ -476,6 +562,25 @@ export const getOrderPending = async orderData => {
         }
     } else return null;
 }
+
+export const getLastOrder = async pageID => {
+    const resultLastId = await Order.find({ pageId: pageID, status: { $gte: ORDERSTATUS_CONFIRMED } }).select('id').sort('-confirmed_at').limit(1).exec();
+    if (resultLastId && resultLastId.length)
+        return resultLastId[0].id;
+    else return 0;
+}
+
+export const getLastPendingOrders = async pageID => {
+    const orders = await Order.find({ pageId: pageID, status: ORDERSTATUS_CONFIRMED })
+        .select('id confirmed_at')
+        .sort('-confirmed_at')
+        .exec();
+
+    if (orders && orders.length)
+        return orders;
+    else return [];
+}
+
 
 export const getOrdersCustomerStat = async orderData => {
     const { pageId, customerId } = orderData;
@@ -498,6 +603,27 @@ export const getOrdersCustomerStat = async orderData => {
     }
     return { total_spent, nb_orders, first_order, last_order };
 }
+
+export const cancelOrder = async orderData => {
+    const { pageId, userId } = orderData;
+
+    await Order.findOneAndDelete({ pageId: pageId, userId: userId, status: ORDERSTATUS_PENDING },
+        (err, res) => {
+            if (!err) {
+                if (res) {
+                    const orderId = res.id;
+                    cancelItems(pageId, orderId);
+                } else {
+                    console.error('Items from this order shall be deleted manually');
+                    console.info(res);
+                }
+            } else {
+                console.error('Order.findOneAndDelete');
+                console.error(err);
+            }
+        });
+}
+
 
 /**
  * Trying to reduce the number of calls to getFlavors and getSizes.

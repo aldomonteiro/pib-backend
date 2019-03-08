@@ -1,7 +1,7 @@
 import {
     getFlavorsAndToppings,
     inputCardapioReplyMsg,
-} from "./actionsController";
+} from "./botController";
 import { getPricingsWithSize } from "../controllers/pricingsController";
 import { choices_kinds } from '../util/util'
 

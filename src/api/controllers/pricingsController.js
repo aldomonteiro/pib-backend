@@ -61,7 +61,7 @@ export const pricing_create = (req, res) => {
 
         const newRecord = new Pricing({
             id: req.body.id,
-            kind: req.body.kind,
+            categoryId: req.body.categoryId,
             sizeId: req.body.sizeId,
             price: req.body.price, // TODO: how to handle float?
             pageId: pageId,
@@ -89,7 +89,7 @@ export const pricing_update = (req, res) => {
 
         Pricing.findOne({ pageId: pageId, id: req.body.id }, (err, doc) => {
             if (!err) {
-                doc.kind = req.body.kind;
+                doc.categoryId = req.body.categoryId;
                 doc.sizeId = req.body.sizeId;
                 doc.price = req.body.price;
 
@@ -139,22 +139,22 @@ export const getPricings = async (pageID) => {
     return await query.exec();
 }
 
-export const getOnePricing = async (pageID, kind, sizeID) => {
-    const query = Pricing.findOne({ pageId: pageID, kind: kind, sizeId: sizeID });
+export const getOnePricing = async (pageID, categoryId, sizeID) => {
+    const query = Pricing.findOne({ pageId: pageID, categoryId: categoryId, sizeId: sizeID });
     return await query.exec();
 }
 
 export const getOnePricingByFlavor = async (pageID, sizeID, flavorID) => {
     const flavor = await getFlavor(pageID, flavorID);
     if (flavor) {
-        return await getOnePricing(pageID, flavor.kind, sizeID);
+        return await getOnePricing(pageID, flavor.categoryId, sizeID);
     } else return null;
 }
 
 
 export const getPricingsWithSize = async pageID => {
     const query = Pricing.find({ pageId: pageID });
-    query.sort('kind');
+    query.sort('categoryId');
     const pricings = await query.exec();
     const sizes = await getSizes(pageID);
     for (let pricing of pricings) {

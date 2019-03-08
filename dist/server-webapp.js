@@ -75,7 +75,9 @@ app.use(function (req, res, next) {
   } else {
     next();
   }
-}); // Connect to mongodb
+});
+
+// Connect to mongodb
 
 _dotenv.default.config(); // mongoose.connect(
 //   process.env.MONGODB_URL,
@@ -161,7 +163,7 @@ app.use("/customers", _customers.default); // const env = process.env.NODE_ENV |
 
 if (env === 'production') app.listen(8080, function () {
   return console.log(env + "env. Server listening on port 8080");
-});else {
+}); else {
   // dev server
   // Lift the https server
   _https.default.createServer({

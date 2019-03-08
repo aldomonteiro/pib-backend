@@ -238,31 +238,22 @@ export const users_update = (req, res) => {
         email: req.body.email,
     };
 
-    User.findOneAndUpdate({ id: req.params.id }, updatedElement)
-        .then((oldResult) => {
-            User.findOne({ id: req.params.id })
-                .then((newResult) => {
-                    res.json({
-                        data: {
-                            _id: newResult._id,
-                            id: newResult.id,
-                            name: newResult.name,
-                            email: newResult.email,
-                        }
-                    });
-                })
-                .catch((err) => {
-                    console.log(err);
-                    res.status(500).json({ success: false, msg: `Something went wrong. ${err}` });
-                    return;
-                });
-        })
-        .catch((err) => {
-            if (err) {
-                console.log(err);
-                res.status(500).json({ success: false, msg: `Something went wrong. ${err}` });
-            }
-        });
+    User.findOne({ id: req.body.id }, (err, doc) => {
+        if (!err) {
+            doc.name = sanitizeName(req.body.name);
+            doc.email = req.body.email;
+
+            doc.save((err, result) => {
+                if (err) {
+                    res.status(500).json({ message: err.errmsg });
+                } else {
+                    res.status(200).json(result);
+                }
+            });
+        } else {
+            res.status(500).json({ message: err.errmsg });
+        }
+    });
 }
 
 // DELETE
@@ -271,22 +262,22 @@ export const users_delete = (req, res) => {
         .then((result) => {
             res.json({
                 success: true,
-                msg: `It has been deleted.`,
+                msg: 'It has been deleted.',
             });
         })
         .catch((err) => {
-            res.status(404).json({ success: false, msg: 'Nothing to delete.' });
+            console.log(err);
+            res.status(500).json({ message: err.message });
         });
 }
-
-
 
 export const changeAccessToken = async (accessToken) => {
     try {
         dotenv.config();
 
         const env = process.env.NODE_ENV || 'production';
-        let facebook_app_id, facebook_secret_key = '';
+        let facebook_app_id;
+        let facebook_secret_key = '';
 
         if (env === 'production') {
             facebook_app_id = process.env.FACEBOOK_APP_ID;

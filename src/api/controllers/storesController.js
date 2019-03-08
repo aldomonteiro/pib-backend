@@ -106,66 +106,87 @@ export const store_create = (req, res) => {
 
 // UPDATE
 export const store_update = (req, res) => {
-    if (req.body && req.body.id) {
+    console.info('store_update req.body:', req.body);
 
-        console.info('stores_update:', req.body.location_lat, req.body.location_long);
+    if (req.body && req.body.id) {
 
         const pageId = req.currentUser.activePage;
 
-        Store.findOne({ pageId: pageId, id: req.body.id }, (err, doc) => {
-            if (!err) {
-                doc.name = req.body.name;
-                doc.address = req.body.address;
-                doc.city = req.body.city;
-                doc.state = req.body.state;
-                doc.phone = req.body.phone;
-                doc.delivery_fee = req.body.delivery_fee;
-                doc.location_lat = req.body.location_lat;
-                doc.location_long = req.body.location_long;
-                // Opening times
-                doc.sun_is_open = req.body.sun_is_open;
-                doc.sun_open = req.body.sun_open;
-                doc.sun_close = req.body.sun_close;
-                doc.mon_is_open = req.body.mon_is_open;
-                doc.mon_open = req.body.mon_open;
-                doc.mon_close = req.body.mon_close;
-                doc.tue_is_open = req.body.tue_is_open;
-                doc.tue_open = req.body.tue_open;
-                doc.tue_close = req.body.tue_close;
-                doc.wed_is_open = req.body.wed_is_open;
-                doc.wed_open = req.body.wed_open;
-                doc.wed_close = req.body.wed_close;
-                doc.thu_is_open = req.body.thu_is_open;
-                doc.thu_open = req.body.thu_open;
-                doc.thu_close = req.body.thu_close;
-                doc.fri_is_open = req.body.fri_is_open;
-                doc.fri_open = req.body.fri_open;
-                doc.fri_close = req.body.fri_close;
-                doc.sat_is_open = req.body.sat_is_open;
-                doc.sat_open = req.body.sat_open;
-                doc.sat_close = req.body.sat_close;
-                doc.hol_is_open = req.body.hol_is_open;
-                doc.hol_open = req.body.hol_open;
-                doc.hol_close = req.body.hol_close;
-                doc.printer = req.body.printer;
+        const { id, operation, deliveryTime, pickupTime } = req.body;
+        if (operation) {
+            Store.findOne({ pageId: pageId, id: id }, (err, doc) => {
+                if (!err) {
+                    if (operation === 'UPDATE_DELIVERY_TIME' && deliveryTime)
+                        doc.delivery_time = deliveryTime;
+                    if (operation === 'UPDATE_PICKUP_TIME' && pickupTime)
+                        doc.pickup_time = pickupTime;
 
-                doc.save((err, result) => {
-                    if (err) {
-                        res.status(500).json({ message: err.errmsg });
-                    } else {
-                        res.status(200).json(result);
-                    }
-                });
-            } else {
-                res.status(500).json({ message: err.errmsg });
-            }
-        });
+                    doc.save((err, result) => {
+                        if (err) {
+                            res.status(500).json({ message: err.errmsg });
+                        } else {
+                            res.status(200).json(result);
+                        }
+                    });
+                }
+            });
+
+        } else {
+            Store.findOne({ pageId: pageId, id: id }, (err, doc) => {
+                if (!err) {
+                    doc.name = req.body.name;
+                    doc.address = req.body.address;
+                    doc.city = req.body.city;
+                    doc.state = req.body.state;
+                    doc.phone = req.body.phone;
+                    doc.delivery_fee = req.body.delivery_fee;
+                    doc.location_lat = req.body.location_lat;
+                    doc.location_long = req.body.location_long;
+                    // Opening times
+                    doc.sun_is_open = req.body.sun_is_open;
+                    doc.sun_open = req.body.sun_open;
+                    doc.sun_close = req.body.sun_close;
+                    doc.mon_is_open = req.body.mon_is_open;
+                    doc.mon_open = req.body.mon_open;
+                    doc.mon_close = req.body.mon_close;
+                    doc.tue_is_open = req.body.tue_is_open;
+                    doc.tue_open = req.body.tue_open;
+                    doc.tue_close = req.body.tue_close;
+                    doc.wed_is_open = req.body.wed_is_open;
+                    doc.wed_open = req.body.wed_open;
+                    doc.wed_close = req.body.wed_close;
+                    doc.thu_is_open = req.body.thu_is_open;
+                    doc.thu_open = req.body.thu_open;
+                    doc.thu_close = req.body.thu_close;
+                    doc.fri_is_open = req.body.fri_is_open;
+                    doc.fri_open = req.body.fri_open;
+                    doc.fri_close = req.body.fri_close;
+                    doc.sat_is_open = req.body.sat_is_open;
+                    doc.sat_open = req.body.sat_open;
+                    doc.sat_close = req.body.sat_close;
+                    doc.hol_is_open = req.body.hol_is_open;
+                    doc.hol_open = req.body.hol_open;
+                    doc.hol_close = req.body.hol_close;
+                    doc.printer = req.body.printer;
+
+                    doc.save((err, result) => {
+                        if (err) {
+                            res.status(500).json({ message: err.errmsg });
+                        } else {
+                            res.status(200).json(result);
+                        }
+                    });
+                } else {
+                    res.status(500).json({ message: err.errmsg });
+                }
+            });
+        }
     }
 }
 
 /**
  * Delete all records from a pageID
- * @param {*} pageID 
+ * @param {*} pageID
  */
 export const deleteManyStores = async (pageID) => {
     return await Store.deleteMany({ pageId: pageID }).exec();
@@ -187,14 +208,22 @@ export const store_delete = (req, res) => {
 
 export const getStores = async (pageID) => {
     // TODO: if is there more than one Store?
-    var query = Store.find({ pageId: pageID });
+    const query = Store.find({ pageId: pageID });
     return await query.exec();
 }
 
 export const getStoreData = async (pageID) => {
     // TODO: if is there more than one Store?
-    var query = Store.findOne({ pageId: pageID });
+    const query = Store.findOne({ pageId: pageID });
     return await query.exec();
+}
+
+/**
+ * Used by WhatsappController
+ * @param {*} phone
+ */
+export const getStoreByPhone = async (phone) => {
+    return await Store.findOne({ phone: phone }).exec();
 }
 
 export const getTodayOpeningTime = async pageID => {
@@ -205,8 +234,8 @@ export const getTodayOpeningTime = async pageID => {
     _tomorrow.get
     _tomorrow.setDate(_today.getDate() + 1);
 
-    let todayOpenAt, todayCloseAt, tomorrowOpenAt, tomorrowCloseAt = '';
-    let todayIsOpen, tomorrowIsOpen = false;
+    let todayOpenAt; let todayCloseAt; let tomorrowOpenAt; let tomorrowCloseAt = '';
+    let todayIsOpen; let tomorrowIsOpen = false;
 
     if (_today.getDay() === 1) {
         todayIsOpen = _store.sun_is_open;

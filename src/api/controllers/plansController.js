@@ -1,4 +1,4 @@
-import Topping from '../models/toppings';
+import Plan from '../models/plans';
 import util from 'util';
 import stringCapitalizeName from 'string-capitalize-name';
 import { configSortQuery, configRangeQuery, configFilterQueryMultiple } from '../util/util';
@@ -7,7 +7,7 @@ import { configSortQuery, configRangeQuery, configFilterQueryMultiple } from '..
 // List all toppings
 export const topping_get_all = async (req, res) => {
     // Getting the sort from the requisition
-    let sortObj = req.query.sort ? configSortQuery(req.query.sort) : { topping: 'ASC' };
+    let sortObj = req.query.sort ? configSortQuery(req.query.sort) : { plan: 'ASC' };
     // Getting the range from the requisition
     let rangeObj = configRangeQuery(req.query.range);
 
@@ -26,11 +26,8 @@ export const topping_get_all = async (req, res) => {
             }
         }
     }
-    if (req.currentUser.activePage) {
-        queryObj['pageId'] = req.currentUser.activePage;
-    }
 
-    Topping.find(queryObj).sort(sortObj).exec((err, result) => {
+    Plan.find(queryObj).sort(sortObj).exec((err, result) => {
         if (err) {
             res.status(500).json({ message: err.errmsg });
         } else {
@@ -41,40 +38,38 @@ export const topping_get_all = async (req, res) => {
                 _rangeEnd = (rangeObj.offset + rangeObj.limit) <= result.length ? rangeObj.offset + rangeObj.limit : result.length;
             }
             let _totalCount = result.length;
-            let toppingsArray = [];
+            let plansArray = [];
             for (let i = _rangeIni; i < _rangeEnd; i++) {
-                toppingsArray.push(result[i])
+                plansArray.push(result[i])
             }
-            res.setHeader('Content-Range', util.format('toppings %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
-            res.status(200).json(toppingsArray);
+            res.setHeader('Content-Range', util.format('plans %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
+            res.status(200).json(plansArray);
         }
     });
 }
 
 // List one record by filtering by ID
-export const topping_get_one = (req, res) => {
+export const plan_get_one = (req, res) => {
     if (req.params && req.params.id) {
-        const pageID = req.currentUser.activePage ? req.currentUser.activePage : null;
-
-        Topping.findOne({ pageId: pageID, id: req.params.id }, (err, doc) => {
+        Plan.findOne({ id: req.params.id }, (err, doc) => {
             if (err) {
                 res.status(500).json({ message: err.errmsg });
-            }
-            else {
-                res.status(200).json({ id: doc.id, topping: doc.topping });
+            } else {
+                res.status(200).json(doc);
             }
         });
     }
 }
 
 // CREATE A NEW RECORD
-export const topping_create = (req, res) => {
+export const plan_create = (req, res) => {
     if (req.body) {
-        const pageID = req.currentUser.activePage ? req.currentUser.activePage : null;
-        const newRecord = new Topping({
+        const newRecord = new Plan({
             id: req.body.id,
-            topping: stringCapitalizeName(req.body.topping),
-            pageId: pageID,
+            plan: stringCapitalizeName(req.body.plan),
+            amount: req.body.amount,
+            interval: req.body.interval,
+            currency: req.body.currency,
         });
 
         newRecord.save()
@@ -92,21 +87,18 @@ export const topping_create = (req, res) => {
 }
 
 // UPDATE
-export const topping_update = (req, res) => {
-
-    const pageID = req.currentUser.activePage;
-
-    Topping.findOne({ pageId: pageIE, id: req.body.id }, (err, doc) => {
+export const plan_update = (req, res) => {
+    Plan.findOne({ id: req.body.id }, (err, result) => {
         if (!err) {
-            doc.topping = stringCapitalizeName(req.body.topping);
-            doc.save((err, doc) => {
+            result.plan = stringCapitalizeName(req.body.plan);
+            result.ammount = req.body.ammount;
+            result.interval = req.body.interval;
+            result.currency = req.body.currency;
+            result.save((err, doc) => {
                 if (err) {
                     res.status(500).json({ message: err.errmsg });
                 } else {
-                    res.status(200).json({
-                        id: doc.id,
-                        topping: doc.topping,
-                    });
+                    res.status(200).json(doc);
                 }
             });
         } else {
@@ -118,49 +110,15 @@ export const topping_update = (req, res) => {
 }
 
 // DELETE
-export const topping_delete = (req, res) => {
-    const pageID = req.currentUser.activePage;
-
-    Topping.findOneAndRemove({ pageId: pageID, id: req.params.id })
+export const plan_delete = (req, res) => {
+    Plan.findOneAndRemove({ id: req.params.id })
         .then((result) => {
             res.status(200).json({
                 id: result.id,
-                topping: result.topping
+                plan: result.plan,
             });
         })
         .catch((err) => {
             res.status(500).json({ message: err.errmsg });
         });
 };
-
-export const getToppings = async (toppingsArray, pageID) => {
-    var queryTopping = Topping.find({ pageId: pageID, id: { $in: toppingsArray } });
-    queryTopping.sort('topping');
-    queryTopping.select('topping');
-    return await queryTopping.exec();
-}
-
-export const getToppingsNames = async (toppingsArray, pageID) => {
-    const toppingsModel = await getToppings(toppingsArray, pageID);
-    const toppingsNamesArray = [];
-    for (let topObj of toppingsModel) {
-        toppingsNamesArray.push(topObj.topping);
-    }
-    return toppingsNamesArray;
-}
-
-export const getToppingsFull = async (pageID) => {
-    let query = Topping.find({ pageId: pageID });
-    query.sort('topping');
-    return await query.exec();
-}
-
-
-/**
- * Delete all records from a pageID
- * @param {*} pageID 
- */
-export const deleteManyToppings = async (pageID) => {
-    return await Topping.deleteMany({ pageId: pageID }).exec();
-}
-

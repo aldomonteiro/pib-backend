@@ -119,4 +119,23 @@ export const distanceBetweenCoordinates = (lat1, lon1, lat2, lon2) => {
     else return null;
 }
 
+/**
+ * Whatsapp send the id this way: "554184163676@c.us",
+ * I am removing the last part, after @.
+ * @param {*} id
+ */
+export const formatWhatsappNumber = id => {
+    const index = id.indexOf('@');
+    if (index > 0)
+        return id.substr(0, index);
+    else
+        return id;
+}
 
+/**
+ * Format as a currency
+ * @param {*} amount
+ */
+export const formatAsCurrency = amount =>
+    amount.toLocaleString('pt-BR',
+        { style: 'currency', currency: 'BRL', maximumSignificantDigits: 2 });

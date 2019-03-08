@@ -1,9 +1,9 @@
-import Flavor from "../models/flavors";
-import util from "util";
+import Flavor from '../models/flavors';
+import util from 'util';
 import stringSimilarity from 'string-similarity';
 import stringCapitalizeName from 'string-capitalize-name';
 import { configSortQuery, configRangeQuery, configFilterQueryMultiple } from '../util/util';
-import { getToppings, getToppingsNames } from './toppingsController';
+import { getToppingsNames } from './toppingsController';
 
 // List all flavors
 // TODO: use filters in the query req.query
@@ -23,14 +23,13 @@ export const flavor_get_all = async (req, res) => {
                 const value = filterObj.filterValues[i];
                 if (Array.isArray(value)) {
                     queryObj[filter] = { $in: value };
-                }
-                else
+                } else
                     queryObj[filter] = value;
             }
         }
     }
     if (req.currentUser.activePage) {
-        queryObj["pageId"] = req.currentUser.activePage;
+        queryObj['pageId'] = req.currentUser.activePage;
     }
 
     Flavor.find(queryObj).sort(sortObj).exec(async (err, result) => {
@@ -44,13 +43,13 @@ export const flavor_get_all = async (req, res) => {
                 _rangeEnd = (rangeObj.offset + rangeObj.limit) <= result.length ? rangeObj.offset + rangeObj.limit : result.length;
             }
             let _totalCount = result.length;
-            let flavorsArray = new Array();
+            let flavorsArray = [];
             for (let i = _rangeIni; i < _rangeEnd; i++) {
                 const tn = await getToppingsNames(result[i].toppings, result[i].pageId);
                 let flavor = {
                     id: result[i].id,
                     flavor: result[i].flavor,
-                    kind: result[i].kind,
+                    categoryId: result[i].categoryId,
                     toppings: result[i].toppings,
                     createdAt: result[i].createdAt,
                     updatedAt: result[i].updatedAt,
@@ -58,7 +57,7 @@ export const flavor_get_all = async (req, res) => {
                 }
                 flavorsArray.push(flavor)
             }
-            res.setHeader('Content-Range', util.format("flavors %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
+            res.setHeader('Content-Range', util.format('flavors %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
             res.status(200).json(flavorsArray);
         }
     });
@@ -111,8 +110,7 @@ export const flavor_get_one = (req, res) => {
         Flavor.findOne({ pageId: pageId, id: req.params.id }, (err, doc) => {
             if (err) {
                 res.status(500).json({ message: err.errMsg });
-            }
-            else {
+            } else {
                 res.status(200).json(doc);
             }
         });
@@ -128,7 +126,7 @@ export const flavor_create = (req, res) => {
         const newRecord = new Flavor({
             id: req.body.id,
             flavor: stringCapitalizeName(req.body.flavor),
-            kind: req.body.kind,
+            categoryId: req.body.categoryId,
             pageId: pageId,
             toppings: req.body.toppings,
         });
@@ -157,7 +155,7 @@ export const flavor_update = (req, res) => {
         Flavor.findOne({ pageId: pageId, id: req.body.id }, (err, doc) => {
             if (!err) {
                 doc.flavor = stringCapitalizeName(req.body.flavor);
-                doc.kind = req.body.kind;
+                doc.categoryId = req.body.categoryId;
                 doc.toppings = req.body.toppings;
 
                 doc.save((err, result) => {
@@ -190,7 +188,7 @@ export const flavor_delete = (req, res) => {
 
 /**
  * Delete all records from a pageID
- * @param {*} pageID 
+ * @param {*} pageID
  */
 export const deleteManyFlavors = async (pageID) => {
     return await Flavor.deleteMany({ pageId: pageID }).exec();
@@ -199,13 +197,13 @@ export const deleteManyFlavors = async (pageID) => {
 export const getFlavors = async (pageID) => {
     var queryFlavor = Flavor.find({ pageId: pageID });
     queryFlavor.sort('flavor');
-    queryFlavor.select('id flavor kind toppings');
+    queryFlavor.select('id flavor categoryId toppings');
     return await queryFlavor.exec();
 }
 
 export const getFlavor = async (pageID, flavorID) => {
     var queryFlavor = Flavor.findOne({ pageId: pageID, id: flavorID });
-    queryFlavor.select('id flavor kind');
+    queryFlavor.select('id flavor categoryId');
     return await queryFlavor.exec();
 }
 

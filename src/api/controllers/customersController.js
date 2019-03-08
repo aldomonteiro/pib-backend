@@ -1,6 +1,7 @@
 import Customer from '../models/customers';
 import axios from 'axios';
-import util from "util";
+import util from 'util';
+import stringCapitalizeName from 'string-capitalize-name';
 import { shuffle } from '../util/util';
 import { configSortQuery, configRangeQuery, configFilterQueryMultiple } from '../util/util';
 import { getOrdersCustomerStat } from './ordersController';
@@ -104,6 +105,31 @@ export const customer_get_one = async (req, res) => {
     }
 }
 
+export const customer_update = (req, res) => {
+    if (req.body && req.body.id) {
+        const pageId = req.currentUser.activePage;
+
+        Customer.findOne({ pageId: pageId, id: req.body.id }, (err, doc) => {
+            if (!err) {
+                doc.first_name = stringCapitalizeName(req.body.first_name);
+                doc.last_name = stringCapitalizeName(req.body.last_name);
+                doc.addr_city = stringCapitalizeName(req.body.city);
+                doc.addr_postalcode = req.body.addr_postalcode;
+                doc.save((err, result) => {
+                    if (err) {
+                        res.status(500).json({ message: err.errmsg });
+                    } else {
+                        res.status(200).json(result);
+                    }
+                });
+            } else {
+                res.status(500).json({ message: err.errmsg });
+            }
+        });
+    }
+}
+
+
 /**
  * Delete all records from a pageID
  * @param {*} pageID 
@@ -124,6 +150,10 @@ export const checkCustomerAddress = async (pageID, userID, location) => {
         }
         else return null;
     }
+}
+
+export const getCustomerById = async (pageID, id) => {
+    return await Customer.findOne({ pageId: pageID, id: id }).exec();
 }
 
 export const getCustomerAddress = async (pageID, userID) => {
@@ -191,7 +221,7 @@ const googleMapsAPI = async (location, API_KEY) => {
     });
 }
 
-export const customer_update = async (custData) => {
+export const updateCustomer = async (custData) => {
     let customerID = 0;
     const customer = await Customer.findOne({ pageId: custData.pageId, userId: custData.userId }).exec();
 
