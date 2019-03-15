@@ -13,11 +13,13 @@ var Schema = _mongoose.default.Schema;
 var schema = new Schema({
   id: Number,
   flavor: String,
-  kind: String,
+  categoryId: Number,
   toppings: [{
     type: Number
   }],
-  pageId: String
+  pageId: String,
+  price_by_size: Boolean,
+  price: Number
 }, {
   timestamps: true
 });
@@ -28,7 +30,7 @@ schema.index({
   unique: true
 });
 
-var _default = _mongoose.default.model("flavors", schema);
+var _default = _mongoose.default.model('flavors', schema);
 
 exports.default = _default;
 //# sourceMappingURL=flavors.js.map

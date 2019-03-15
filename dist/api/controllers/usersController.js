@@ -82,7 +82,7 @@ function () {
             return _context.stop();
         }
       }
-    }, _callee, this, [[1, 9]]);
+    }, _callee, null, [[1, 9]]);
   }));
 
   return function users_auth(_x, _x2) {
@@ -241,7 +241,7 @@ function () {
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[2, 40]]);
+    }, _callee2, null, [[2, 40]]);
   }));
 
   return function users_code(_x3, _x4) {
@@ -316,7 +316,7 @@ function () {
             return _context3.stop();
         }
       }
-    }, _callee3, this, [[0, 16]]);
+    }, _callee3, null, [[0, 16]]);
   }));
 
   return function user_data(_x5) {
@@ -402,7 +402,7 @@ function () {
             return _context4.stop();
         }
       }
-    }, _callee4, this, [[0, 19]]);
+    }, _callee4, null, [[0, 19]]);
   }));
 
   return function create_or_auth(_x6) {
@@ -507,34 +507,24 @@ var users_update = function users_update(req, res) {
     email: req.body.email
   };
 
-  _users.default.findOneAndUpdate({
-    id: req.params.id
-  }, updatedElement).then(function (oldResult) {
-    _users.default.findOne({
-      id: req.params.id
-    }).then(function (newResult) {
-      res.json({
-        data: {
-          _id: newResult._id,
-          id: newResult.id,
-          name: newResult.name,
-          email: newResult.email
+  _users.default.findOne({
+    id: req.body.id
+  }, function (err, doc) {
+    if (!err) {
+      doc.name = sanitizeName(req.body.name);
+      doc.email = req.body.email;
+      doc.save(function (err, result) {
+        if (err) {
+          res.status(500).json({
+            message: err.errmsg
+          });
+        } else {
+          res.status(200).json(result);
         }
       });
-    }).catch(function (err) {
-      console.log(err);
+    } else {
       res.status(500).json({
-        success: false,
-        msg: "Something went wrong. ".concat(err)
-      });
-      return;
-    });
-  }).catch(function (err) {
-    if (err) {
-      console.log(err);
-      res.status(500).json({
-        success: false,
-        msg: "Something went wrong. ".concat(err)
+        message: err.errmsg
       });
     }
   });
@@ -549,12 +539,12 @@ var users_delete = function users_delete(req, res) {
   }).then(function (result) {
     res.json({
       success: true,
-      msg: "It has been deleted."
+      msg: 'It has been deleted.'
     });
   }).catch(function (err) {
-    res.status(404).json({
-      success: false,
-      msg: 'Nothing to delete.'
+    console.log(err);
+    res.status(500).json({
+      message: err.message
     });
   });
 };
@@ -615,7 +605,7 @@ function () {
             return _context5.stop();
         }
       }
-    }, _callee5, this, [[0, 12]]);
+    }, _callee5, null, [[0, 12]]);
   }));
 
   return function changeAccessToken(_x7) {
@@ -671,7 +661,7 @@ function () {
             return _context6.stop();
         }
       }
-    }, _callee6, this, [[0, 12]]);
+    }, _callee6, null, [[0, 12]]);
   }));
 
   return function removeUserActivePage(_x8) {

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.distanceBetweenCoordinates = exports.shuffle = exports.choices_kinds = exports.choices_sizes = exports.configFilterQueryMultiple = exports.configFilterQuery = exports.configRangeQueryNew = exports.configRangeQuery = exports.configSortQuery = void 0;
+exports.formatAsCurrency = exports.formatWhatsappNumber = exports.distanceBetweenCoordinates = exports.shuffle = exports.choices_kinds = exports.choices_sizes = exports.configFilterQueryMultiple = exports.configFilterQuery = exports.configRangeQueryNew = exports.configRangeQuery = exports.configSortQuery = void 0;
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -121,7 +121,7 @@ function () {
             return _context.stop();
         }
       }
-    }, _callee, this);
+    }, _callee);
   }));
 
   return function choices_sizes() {
@@ -187,6 +187,34 @@ var distanceBetweenCoordinates = function distanceBetweenCoordinates(lat1, lon1,
     return earthRadiusKm * c;
   } else return null;
 };
+/**
+ * Whatsapp send the id this way: "554184163676@c.us",
+ * I am removing the last part, after @.
+ * @param {*} id
+ */
+
 
 exports.distanceBetweenCoordinates = distanceBetweenCoordinates;
+
+var formatWhatsappNumber = function formatWhatsappNumber(id) {
+  var index = id.indexOf('@');
+  if (index > 0) return id.substr(0, index);else return id;
+};
+/**
+ * Format as a currency
+ * @param {*} amount
+ */
+
+
+exports.formatWhatsappNumber = formatWhatsappNumber;
+
+var formatAsCurrency = function formatAsCurrency(amount) {
+  return amount.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    maximumSignificantDigits: 2
+  });
+};
+
+exports.formatAsCurrency = formatAsCurrency;
 //# sourceMappingURL=util.js.map

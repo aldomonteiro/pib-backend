@@ -7,8 +7,6 @@ exports.default = void 0;
 
 var _mongoose = _interopRequireDefault(require("mongoose"));
 
-var _mongoosePaginate = _interopRequireDefault(require("mongoose-paginate"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Schema = _mongoose.default.Schema;
@@ -49,9 +47,8 @@ schema.index({
 }, {
   unique: true
 });
-schema.plugin(_mongoosePaginate.default);
 
-var _default = _mongoose.default.model("beverages", schema);
+var _default = _mongoose.default.model('beverages', schema);
 
 exports.default = _default;
 //# sourceMappingURL=beverages.js.map

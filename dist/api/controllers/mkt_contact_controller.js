@@ -83,7 +83,7 @@ function () {
             return _context.stop();
         }
       }
-    }, _callee, this, [[0, 10]]);
+    }, _callee, null, [[0, 10]]);
   }));
 
   return function updateMktContact(_x) {
@@ -119,7 +119,7 @@ function () {
             return _context2.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee2);
   }));
 
   return function getMktContact(_x2) {

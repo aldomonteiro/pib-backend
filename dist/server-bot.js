@@ -28,6 +28,8 @@ var _mkt_contact_controller = require("./api/controllers/mkt_contact_controller"
 
 var _botMarkController = require("./api/bot/botMarkController");
 
+var _whatController = require("./api/whatsapp/whatController");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -60,6 +62,8 @@ var connect = function connect() {
 connect();
 
 _mongoose.default.set('useCreateIndex', true);
+
+_mongoose.default.set('useFindAndModify', false);
 
 _mongoose.default.Promise = Promise;
 
@@ -94,26 +98,41 @@ process.on('SIGINT', function () {
   });
 }); // --- END MongoDB connection -----------------------------
 
-global.pagesKeyID = new Object();
-global.pagesMarketing = new Object();
+global.pagesKeyID = {};
+global.pagesMarketing = {};
 var app = (0, _express.default)();
 var bot = new _facebookMessengerBot.Bot(process.env.FB_VERIFY_TOKEN, true); // Beggining - That is all to log in the local timezone
+// eslint-disable-next-line max-len
 // https://medium.com/front-end-hacking/node-js-logs-in-local-timezone-on-morgan-and-winston-9e98b2b9ca45
 // [Node.js] Logs in Local Timezone on Morgan
 
 _morgan.default.token('date', function (req, res, tz) {
   return (0, _momentTimezone.default)().tz(tz).format();
-});
+}); // eslint-disable-next-line max-len
+
 
 _morgan.default.format('myformat', '[:date[America/Sao_Paulo]] ":method :url" :status :res[content-length] - :response-time ms');
 
-app.use((0, _morgan.default)("myformat")); // End - That is all to log in the right timezone
+app.use((0, _morgan.default)('myformat')); // End - That is all to log in the right timezone
 
 app.set('json spaces', 2);
 app.use(_bodyParser.default.urlencoded({
   extended: true
 }));
 app.use(_bodyParser.default.json());
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Authorization,Origin,X-Requested-With,Content-Type,Accept,application/json,Content-Range');
+  res.header('Access-Control-Expose-Headers', 'Content-Range');
+
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 app.use('/buckets/facebook',
 /*#__PURE__*/
 function () {
@@ -154,7 +173,7 @@ function () {
             break;
 
           case 10:
-            timerIdentifier = "getOnePageToken" + Math.random();
+            timerIdentifier = 'getOnePageToken' + Math.random();
             console.time(timerIdentifier);
             _context.next = 14;
             return (0, _pagesController.getOnePageToken)(pageID);
@@ -198,11 +217,111 @@ function () {
             return _context.stop();
         }
       }
-    }, _callee, this, [[3, 27]]);
+    }, _callee, null, [[3, 27]]);
   }));
 
   return function (_x, _x2, _x3) {
     return _ref.apply(this, arguments);
+  };
+}());
+app.use('/buckets/whatsapp',
+/*#__PURE__*/
+function () {
+  var _ref3 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee2(req, res, next) {
+    var message, sender, text, response, args, replyData;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            if (!req.body) {
+              _context2.next = 33;
+              break;
+            }
+
+            if (!(req.body.event === 'message')) {
+              _context2.next = 25;
+              break;
+            }
+
+            _context2.prev = 2;
+            message = req.body;
+            console.info('##### WHATSAPP req.body #####');
+            console.info(message);
+            console.info('#############################');
+            sender = message.contact.uid;
+
+            if (!(message.message.type === 'chat' && message.message.dir === 'i')) {
+              _context2.next = 18;
+              break;
+            }
+
+            _context2.next = 11;
+            return (0, _whatController.w_sendMainMenu)();
+
+          case 11:
+            text = _context2.sent;
+            _context2.next = 14;
+            return (0, _whatController.waboxapp_sendMessage)(sender, text);
+
+          case 14:
+            response = _context2.sent;
+            console.info('##### WHATSAPP response #####');
+            console.info(response);
+            console.info('#############################');
+
+          case 18:
+            _context2.next = 23;
+            break;
+
+          case 20:
+            _context2.prev = 20;
+            _context2.t0 = _context2["catch"](2);
+            console.error({
+              err: _context2.t0
+            });
+
+          case 23:
+            _context2.next = 31;
+            break;
+
+          case 25:
+            // ---------> Receiving data from Whatsapp Web <----------
+            args = req.body.args;
+
+            if (!args) {
+              _context2.next = 31;
+              break;
+            }
+
+            _context2.next = 29;
+            return (0, _whatController.w_controller)(args);
+
+          case 29:
+            replyData = _context2.sent;
+            res.json({
+              message: replyData
+            });
+
+          case 31:
+            _context2.next = 35;
+            break;
+
+          case 33:
+            console.info('***** No Body?? ****');
+            console.info(req);
+
+          case 35:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, null, [[2, 20]]);
+  }));
+
+  return function (_x4, _x5, _x6) {
+    return _ref3.apply(this, arguments);
   };
 }());
 app.use('/buckets/facebook', bot.router());
@@ -216,18 +335,18 @@ app.listen(process.env.FB_WEBHOOK_PORT, function () {
 bot.on('GET_STARTED',
 /*#__PURE__*/
 function () {
-  var _ref3 = _asyncToGenerator(
+  var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee2(message) {
+  regeneratorRuntime.mark(function _callee3(message) {
     var sender, recipient, outError;
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
             sender = message.sender, recipient = message.recipient;
             console.info("\x1B[43mGET_STARTED\x1B[0m, event:\x1B[32m".concat(message.event, "\x1B[0m, sender.id:\x1B[32m").concat(sender.id, "\x1B[0m, recipient.id:\x1B[32m").concat(recipient.id, "\x1B[0m, bot.mkt:\x1B[32m").concat(bot.marketing, "\x1B[0m"));
-            _context2.prev = 2;
-            _context2.next = 5;
+            _context3.prev = 2;
+            _context3.next = 5;
             return (0, _actionsController.sendActions)({
               action: 'SEND_WELCOME',
               bot: bot,
@@ -238,11 +357,11 @@ function () {
 
           case 5:
             if (!bot.marketing) {
-              _context2.next = 10;
+              _context3.next = 10;
               break;
             }
 
-            _context2.next = 8;
+            _context3.next = 8;
             return (0, _actionsController.sendActions)({
               action: 'PIZZAIBOT_MARKETING',
               bot: bot,
@@ -252,11 +371,11 @@ function () {
             });
 
           case 8:
-            _context2.next = 12;
+            _context3.next = 12;
             break;
 
           case 10:
-            _context2.next = 12;
+            _context3.next = 12;
             return (0, _actionsController.sendActions)({
               action: 'SEND_MAIN_MENU',
               bot: bot,
@@ -266,63 +385,63 @@ function () {
             });
 
           case 12:
-            _context2.next = 24;
+            _context3.next = 24;
             break;
 
           case 14:
-            _context2.prev = 14;
-            _context2.t0 = _context2["catch"](2);
-            console.error('GET_STARTED error:', _context2.t0.message);
-            _context2.next = 19;
-            return (0, _botController.sendErrorMsg)(_context2.t0.message);
+            _context3.prev = 14;
+            _context3.t0 = _context3["catch"](2);
+            console.error('GET_STARTED error:', _context3.t0.message);
+            _context3.next = 19;
+            return (0, _botController.sendErrorMsg)(_context3.t0.message);
 
           case 19:
-            outError = _context2.sent;
-            _context2.next = 22;
+            outError = _context3.sent;
+            _context3.next = 22;
             return bot.stopTyping(sender.id);
 
           case 22:
-            _context2.next = 24;
+            _context3.next = 24;
             return bot.send(sender.id, outError);
 
           case 24:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
       }
-    }, _callee2, this, [[2, 14]]);
+    }, _callee3, null, [[2, 14]]);
   }));
 
-  return function (_x4) {
-    return _ref3.apply(this, arguments);
+  return function (_x7) {
+    return _ref4.apply(this, arguments);
   };
 }()); // all postbacks are emitted via 'postback'
 
 bot.on('postback',
 /*#__PURE__*/
 function () {
-  var _ref4 = _asyncToGenerator(
+  var _ref5 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee3(event, message, data) {
+  regeneratorRuntime.mark(function _callee4(event, message, data) {
     var sender, recipient;
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context4.prev = _context4.next) {
           case 0:
             sender = message.sender, recipient = message.recipient;
             console.info("\x1B[43mPostback\x1B[0m, event:\x1B[32m".concat(event, "\x1B[0m, data:\x1B[32m").concat(data, "\x1B[0m, sender.id:\x1B[32m").concat(sender.id, "\x1B[0m, recipient.id:\x1B[32m").concat(recipient.id, "\x1B[0m, bot.mkt:\x1B[32m").concat(bot.marketing, "\x1B[0m"));
 
             if (!(event === 'PIZZAIBOT_MARKETING')) {
-              _context3.next = 12;
+              _context4.next = 12;
               break;
             }
 
             if (!(data === 'testtypecustomer_begin')) {
-              _context3.next = 8;
+              _context4.next = 8;
               break;
             }
 
-            _context3.next = 6;
+            _context4.next = 6;
             return (0, _actionsController.sendActions)({
               action: 'SEND_MAIN_MENU',
               bot: bot,
@@ -332,11 +451,11 @@ function () {
             });
 
           case 6:
-            _context3.next = 10;
+            _context4.next = 10;
             break;
 
           case 8:
-            _context3.next = 10;
+            _context4.next = 10;
             return (0, _actionsController.sendActions)({
               action: 'PIZZAIBOT_MARKETING',
               bot: bot,
@@ -346,11 +465,11 @@ function () {
             });
 
           case 10:
-            _context3.next = 14;
+            _context4.next = 14;
             break;
 
           case 12:
-            _context3.next = 14;
+            _context4.next = 14;
             return (0, _actionsController.mapEventsActions)({
               event: event,
               data: data,
@@ -361,14 +480,14 @@ function () {
 
           case 14:
           case "end":
-            return _context3.stop();
+            return _context4.stop();
         }
       }
-    }, _callee3, this);
+    }, _callee4);
   }));
 
-  return function (_x5, _x6, _x7) {
-    return _ref4.apply(this, arguments);
+  return function (_x8, _x9, _x10) {
+    return _ref5.apply(this, arguments);
   };
 }());
 /**
@@ -380,25 +499,25 @@ function () {
 bot.on('message',
 /*#__PURE__*/
 function () {
-  var _ref5 = _asyncToGenerator(
+  var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee4(message) {
+  regeneratorRuntime.mark(function _callee5(message) {
     var sender, recipient, location, text, _orderFlow, mktContact, _data, eAgradecimento, agradecimentosFinais, i, outError;
 
-    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
       while (1) {
-        switch (_context4.prev = _context4.next) {
+        switch (_context5.prev = _context5.next) {
           case 0:
             sender = message.sender, recipient = message.recipient, location = message.location, text = message.text;
             console.info("\x1B[43m on message \x1B[0m, sender.id:\x1B[32m".concat(sender.id, "\x1B[0m, recipient.id:\x1B[32m").concat(recipient.id, "\x1B[0m, message.text:\x1B[32m").concat(text && text.substr(0, 15), "\x1B[0m, bot.mkt:\x1B[32m").concat(bot.marketing, "\x1B[0m"));
-            _context4.prev = 2;
+            _context5.prev = 2;
 
             if (!location) {
-              _context4.next = 8;
+              _context5.next = 8;
               break;
             }
 
-            _context4.next = 6;
+            _context5.next = 6;
             return (0, _actionsController.sendActions)({
               action: 'LOCATION_CONFIRM_ADDRESS',
               bot: bot,
@@ -408,16 +527,16 @@ function () {
             });
 
           case 6:
-            _context4.next = 63;
+            _context5.next = 63;
             break;
 
           case 8:
             if (!(text === 'hello' || text === 'hi')) {
-              _context4.next = 13;
+              _context5.next = 13;
               break;
             }
 
-            _context4.next = 11;
+            _context5.next = 11;
             return (0, _actionsController.sendActions)({
               action: 'BASIC_REPLY',
               bot: bot,
@@ -427,36 +546,36 @@ function () {
             });
 
           case 11:
-            _context4.next = 63;
+            _context5.next = 63;
             break;
 
           case 13:
             _orderFlow = true;
 
             if (!bot.marketing) {
-              _context4.next = 60;
+              _context5.next = 60;
               break;
             }
 
             _orderFlow = false; // if it is an action from the marketing, so, this assures the order flow isn't called.
 
-            _context4.next = 18;
+            _context5.next = 18;
             return (0, _mkt_contact_controller.getMktContact)({
               pageID: recipient.id,
               userID: sender.id
             });
 
           case 18:
-            mktContact = _context4.sent;
+            mktContact = _context5.sent;
 
             if (!(mktContact.last_answer === 'testtype_customer')) {
-              _context4.next = 23;
+              _context5.next = 23;
               break;
             }
 
             _orderFlow = true; // this assures the order flow will continue and marketing won't be called.
 
-            _context4.next = 60;
+            _context5.next = 60;
             break;
 
           case 23:
@@ -464,7 +583,7 @@ function () {
             eAgradecimento = false;
 
             if (!(mktContact.final === true)) {
-              _context4.next = 38;
+              _context5.next = 38;
               break;
             }
 
@@ -473,82 +592,82 @@ function () {
 
           case 28:
             if (!(i < agradecimentosFinais.length)) {
-              _context4.next = 35;
+              _context5.next = 35;
               break;
             }
 
             if (!text.includes(agradecimentosFinais[i])) {
-              _context4.next = 32;
+              _context5.next = 32;
               break;
             }
 
             eAgradecimento = true;
-            return _context4.abrupt("break", 35);
+            return _context5.abrupt("break", 35);
 
           case 32:
             i++;
-            _context4.next = 28;
+            _context5.next = 28;
             break;
 
           case 35:
             if (!eAgradecimento) _data = 'returned_customer';
-            _context4.next = 57;
+            _context5.next = 57;
             break;
 
           case 38:
             if (!(mktContact.last_answer === 'finalquestion_mail')) {
-              _context4.next = 42;
+              _context5.next = 42;
               break;
             }
 
             _data = 'contact_mail';
-            _context4.next = 57;
+            _context5.next = 57;
             break;
 
           case 42:
             if (!(mktContact.last_answer === 'finalquestion_phone')) {
-              _context4.next = 46;
+              _context5.next = 46;
               break;
             }
 
             _data = 'contact_phone';
-            _context4.next = 57;
+            _context5.next = 57;
             break;
 
           case 46:
             if (!(mktContact.last_answer === 'type_phone' || mktContact.last_answer === 'retype_phone')) {
-              _context4.next = 50;
+              _context5.next = 50;
               break;
             }
 
             _data = 'contact_phone';
-            _context4.next = 57;
+            _context5.next = 57;
             break;
 
           case 50:
             if (!(mktContact.last_answer === 'orderConfirmation_question')) {
-              _context4.next = 54;
+              _context5.next = 54;
               break;
             }
 
             _data = 'open_question';
-            _context4.next = 57;
+            _context5.next = 57;
             break;
 
           case 54:
-            _context4.next = 56;
+            _context5.next = 56;
             return (0, _botMarkController.m_checkLastQuestion)(recipient.id, sender.id);
 
           case 56:
-            _data = _context4.sent;
+            _data = _context5.sent;
 
           case 57:
             if (eAgradecimento) {
-              _context4.next = 60;
+              _context5.next = 60;
               break;
             }
 
-            _context4.next = 60;
+            _context5.next = 60;
             return (0, _actionsController.sendActions)({
               action: 'PIZZAIBOT_MARKETING',
               bot: bot,
@@ -560,11 +679,11 @@ function () {
 
           case 60:
             if (!_orderFlow) {
-              _context4.next = 63;
+              _context5.next = 63;
               break;
             }
 
-            _context4.next = 63;
+            _context5.next = 63;
             return (0, _actionsController.checkTypedText)({
               bot: bot,
               sender: sender,
@@ -573,37 +692,37 @@ function () {
             });
 
           case 63:
-            _context4.next = 75;
+            _context5.next = 75;
             break;
 
           case 65:
-            _context4.prev = 65;
-            _context4.t0 = _context4["catch"](2);
+            _context5.prev = 65;
+            _context5.t0 = _context5["catch"](2);
             console.error({
-              onMessageError: _context4.t0
+              onMessageError: _context5.t0
             });
-            _context4.next = 70;
-            return (0, _botController.sendErrorMsg)(_context4.t0.message);
+            _context5.next = 70;
+            return (0, _botController.sendErrorMsg)(_context5.t0.message);
 
           case 70:
-            outError = _context4.sent;
-            _context4.next = 73;
+            outError = _context5.sent;
+            _context5.next = 73;
             return bot.stopTyping(sender.id);
 
           case 73:
-            _context4.next = 75;
+            _context5.next = 75;
             return bot.send(sender.id, outError);
 
           case 75:
           case "end":
-            return _context4.stop();
+            return _context5.stop();
         }
       }
-    }, _callee4, this, [[2, 65]]);
+    }, _callee5, null, [[2, 65]]);
   }));
 
-  return function (_x8) {
-    return _ref5.apply(this, arguments);
+  return function (_x11) {
+    return _ref6.apply(this, arguments);
   };
 }());
 /**
@@ -615,60 +734,60 @@ function () {
 bot.on('quick-reply',
 /*#__PURE__*/
 function () {
-  var _ref6 = _asyncToGenerator(
+  var _ref7 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee5(message, quick_reply) {
+  regeneratorRuntime.mark(function _callee6(message, quick_reply) {
     var sender, recipient, payload, _orderFlow, mktContact, outError;
 
-    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+    return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
             sender = message.sender, recipient = message.recipient;
             payload = quick_reply.payload;
             console.info("\x1B[43m quick-reply \x1B[0m, sender.id:\x1B[32m".concat(sender.id, "\x1B[0m, recipient.id:\x1B[32m").concat(recipient.id, "\x1B[0m, payload:\x1B[32m").concat(payload, "\x1B[0m, bot.mkt:\x1B[32m").concat(bot.marketing, "\x1B[0m"));
-            _context5.prev = 3;
+            _context6.prev = 3;
 
             if (!payload) {
-              _context5.next = 22;
+              _context6.next = 22;
               break;
             }
 
             /**
-             * Both marketing and Order flow use this quick_reply answer, so, I am
-             * checking if marketing is in a state where an test order has been placed and, if so,
-             * I redirect the flow to the order.
-             */
+            * Both marketing and Order flow use this quick_reply answer, so, I am
+            * checking if marketing is in a state where an test order has been placed and, if so,
+            * I redirect the flow to the order.
+            */
             _orderFlow = true;
 
             if (!bot.marketing) {
-              _context5.next = 17;
+              _context6.next = 17;
               break;
             }
 
             _orderFlow = false; // if it is an action from the marketing, so, this assures the order flow isn't called.
 
-            _context5.next = 10;
+            _context6.next = 10;
             return (0, _mkt_contact_controller.getMktContact)({
               pageID: recipient.id,
               userID: sender.id
             });
 
           case 10:
-            mktContact = _context5.sent;
+            mktContact = _context6.sent;
 
             if (!(mktContact.last_answer === 'testtype_customer')) {
-              _context5.next = 15;
+              _context6.next = 15;
               break;
             }
 
             _orderFlow = true; // this assures the order flow will continue and marketing won't be called.
 
-            _context5.next = 17;
+            _context6.next = 17;
             break;
 
           case 15:
-            _context5.next = 17;
+            _context6.next = 17;
             return (0, _actionsController.sendActions)({
               action: 'PIZZAIBOT_MARKETING',
               bot: bot,
@@ -680,11 +799,11 @@ function () {
 
           case 17:
             if (!_orderFlow) {
-              _context5.next = 22;
+              _context6.next = 22;
               break;
             }
 
-            _context5.next = 20;
+            _context6.next = 20;
             return (0, _actionsController.sendActions)({
               action: 'SHOW_PHONE',
               bot: bot,
@@ -694,7 +813,7 @@ function () {
             });
 
           case 20:
-            _context5.next = 22;
+            _context6.next = 22;
             return (0, _actionsController.sendActions)({
               action: 'ASK_FOR_QUANTITY',
               bot: bot,
@@ -703,61 +822,40 @@ function () {
             });
 
           case 22:
-            _context5.next = 34;
+            _context6.next = 34;
             break;
 
           case 24:
-            _context5.prev = 24;
-            _context5.t0 = _context5["catch"](3);
+            _context6.prev = 24;
+            _context6.t0 = _context6["catch"](3);
             console.error({
-              quickReplyError: _context5.t0
+              quickReplyError: _context6.t0
             });
-            _context5.next = 29;
-            return (0, _botController.sendErrorMsg)(_context5.t0.message);
+            _context6.next = 29;
+            return (0, _botController.sendErrorMsg)(_context6.t0.message);
 
           case 29:
-            outError = _context5.sent;
-            _context5.next = 32;
+            outError = _context6.sent;
+            _context6.next = 32;
             return bot.stopTyping(sender.id);
 
           case 32:
-            _context5.next = 34;
+            _context6.next = 34;
             return bot.send(sender.id, outError);
 
           case 34:
           case "end":
-            return _context5.stop();
-        }
-      }
-    }, _callee5, this, [[3, 24]]);
-  }));
-
-  return function (_x9, _x10) {
-    return _ref6.apply(this, arguments);
-  };
-}());
-bot.on('read',
-/*#__PURE__*/
-function () {
-  var _ref7 = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee6(message) {
-    return regeneratorRuntime.wrap(function _callee6$(_context6) {
-      while (1) {
-        switch (_context6.prev = _context6.next) {
-          case 0:
-          case "end":
             return _context6.stop();
         }
       }
-    }, _callee6, this);
+    }, _callee6, null, [[3, 24]]);
   }));
 
-  return function (_x11) {
+  return function (_x12, _x13) {
     return _ref7.apply(this, arguments);
   };
 }());
-bot.on('delivery',
+bot.on('read',
 /*#__PURE__*/
 function () {
   var _ref8 = _asyncToGenerator(
@@ -771,11 +869,32 @@ function () {
             return _context7.stop();
         }
       }
-    }, _callee7, this);
+    }, _callee7);
   }));
 
-  return function (_x12) {
+  return function (_x14) {
     return _ref8.apply(this, arguments);
+  };
+}());
+bot.on('delivery',
+/*#__PURE__*/
+function () {
+  var _ref9 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee8(message) {
+    return regeneratorRuntime.wrap(function _callee8$(_context8) {
+      while (1) {
+        switch (_context8.prev = _context8.next) {
+          case 0:
+          case "end":
+            return _context8.stop();
+        }
+      }
+    }, _callee8);
+  }));
+
+  return function (_x15) {
+    return _ref9.apply(this, arguments);
   };
 }());
 //# sourceMappingURL=server-bot.js.map

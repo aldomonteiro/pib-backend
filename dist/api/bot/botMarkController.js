@@ -50,7 +50,7 @@ function () {
             return _context.stop();
         }
       }
-    }, _callee, this);
+    }, _callee);
   }));
 
   return function m_checkLastQuestion(_x, _x2) {
@@ -116,7 +116,7 @@ function () {
             return _context2.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee2);
   }));
 
   return function m_askHowGetHere(_x3, _x4, _x5) {
@@ -171,7 +171,7 @@ function () {
             return _context3.stop();
         }
       }
-    }, _callee3, this);
+    }, _callee3);
   }));
 
   return function m_askForRestaurant(_x6, _x7, _x8) {
@@ -227,7 +227,7 @@ function () {
             return _context4.stop();
         }
       }
-    }, _callee4, this);
+    }, _callee4);
   }));
 
   return function m_askForOwnership(_x9, _x10, _x11) {
@@ -323,7 +323,7 @@ function () {
             return _context5.stop();
         }
       }
-    }, _callee5, this);
+    }, _callee5);
   }));
 
   return function m_askForOptions(_x12, _x13, _x14, _x15) {
@@ -375,7 +375,7 @@ function () {
             return _context6.stop();
         }
       }
-    }, _callee6, this);
+    }, _callee6);
   }));
 
   return function m_howItWorks(_x16, _x17, _x18) {
@@ -425,7 +425,7 @@ function () {
             return _context7.stop();
         }
       }
-    }, _callee7, this);
+    }, _callee7);
   }));
 
   return function m_howItWorks2(_x19, _x20, _x21) {
@@ -475,7 +475,7 @@ function () {
             return _context8.stop();
         }
       }
-    }, _callee8, this);
+    }, _callee8);
   }));
 
   return function m_howItWorks3(_x22, _x23, _x24) {
@@ -525,7 +525,7 @@ function () {
             return _context9.stop();
         }
       }
-    }, _callee9, this);
+    }, _callee9);
   }));
 
   return function m_howItWorks4(_x25, _x26, _x27) {
@@ -580,7 +580,7 @@ function () {
             return _context10.stop();
         }
       }
-    }, _callee10, this);
+    }, _callee10);
   }));
 
   return function m_howItWorks5(_x28, _x29, _x30) {
@@ -652,7 +652,7 @@ function () {
             return _context11.stop();
         }
       }
-    }, _callee11, this);
+    }, _callee11);
   }));
 
   return function m_showPrices(_x31, _x32, _x33) {
@@ -707,7 +707,7 @@ function () {
             return _context12.stop();
         }
       }
-    }, _callee12, this);
+    }, _callee12);
   }));
 
   return function m_askForTestType(_x34, _x35, _x36) {
@@ -758,7 +758,7 @@ function () {
             return _context13.stop();
         }
       }
-    }, _callee13, this);
+    }, _callee13);
   }));
 
   return function m_askForBeginTest(_x37, _x38, _x39) {
@@ -833,7 +833,7 @@ function () {
             return _context14.stop();
         }
       }
-    }, _callee14, this);
+    }, _callee14);
   }));
 
   return function m_askTestTypePizzaria(_x40, _x41, _x42) {
@@ -889,7 +889,7 @@ function () {
             return _context15.stop();
         }
       }
-    }, _callee15, this);
+    }, _callee15);
   }));
 
   return function m_afterOrderConfirmation(_x43, _x44, _x45) {
@@ -938,7 +938,7 @@ function () {
             return _context16.stop();
         }
       }
-    }, _callee16, this);
+    }, _callee16);
   }));
 
   return function m_startTrial(_x46, _x47, _x48) {
@@ -981,7 +981,7 @@ function () {
             return _context17.stop();
         }
       }
-    }, _callee17, this);
+    }, _callee17);
   }));
 
   return function m_openQuestion(_x49, _x50, _x51) {
@@ -1048,7 +1048,7 @@ function () {
             return _context18.stop();
         }
       }
-    }, _callee18, this);
+    }, _callee18);
   }));
 
   return function m_confirmOpenQuestion(_x52, _x53, _x54, _x55) {
@@ -1157,7 +1157,7 @@ function () {
             return _context19.stop();
         }
       }
-    }, _callee19, this);
+    }, _callee19);
   }));
 
   return function m_returnContact(_x56, _x57, _x58, _x59) {
@@ -1209,7 +1209,7 @@ function () {
             return _context20.stop();
         }
       }
-    }, _callee20, this);
+    }, _callee20);
   }));
 
   return function m_typePhone(_x60, _x61, _x62, _x63) {
@@ -1256,7 +1256,7 @@ function () {
             return _context21.stop();
         }
       }
-    }, _callee21, this);
+    }, _callee21);
   }));
 
   return function m_isValidPhone(_x64) {
@@ -1300,7 +1300,7 @@ function () {
             return _context22.stop();
         }
       }
-    }, _callee22, this);
+    }, _callee22);
   }));
 
   return function m_contactPhone(_x65, _x66, _x67, _x68) {
@@ -1344,7 +1344,7 @@ function () {
             return _context23.stop();
         }
       }
-    }, _callee23, this);
+    }, _callee23);
   }));
 
   return function m_contactMail(_x69, _x70, _x71, _x72) {
@@ -1404,7 +1404,7 @@ function () {
             return _context24.stop();
         }
       }
-    }, _callee24, this);
+    }, _callee24);
   }));
 
   return function m_returnedCustomer(_x73, _x74, _x75) {

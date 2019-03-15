@@ -91,7 +91,7 @@ function () {
                               message: err.errmsg
                             });
                           } else {
-                            res.setHeader('Content-Range', _util.default.format("pages %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
+                            res.setHeader('Content-Range', _util.default.format('pages %d-%d/%d', rangeObj['offset'], rangeObj['limit'], result.total));
                             res.status(200).json(result.docs);
                           }
 
@@ -100,7 +100,7 @@ function () {
                           return _context.stop();
                       }
                     }
-                  }, _callee, this);
+                  }, _callee);
                 }));
 
                 return function (_x3, _x4) {
@@ -108,7 +108,7 @@ function () {
                 };
               }());
             } else {
-              res.setHeader('Content-Range', _util.default.format("pages %d-%d/%d", 0, 0, 0));
+              res.setHeader('Content-Range', _util.default.format('pages %d-%d/%d', 0, 0, 0));
               res.status(200).json(new Array());
             }
 
@@ -117,7 +117,7 @@ function () {
             return _context2.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee2);
   }));
 
   return function page_resources_get_all(_x, _x2) {
@@ -165,7 +165,7 @@ function () {
         switch (_context3.prev = _context3.next) {
           case 0:
             _context3.prev = 0;
-            console.info("page_resources_delete:", req.params);
+            console.info('page_resources_delete:', req.params);
             pageID = req.params.id;
             _context3.next = 5;
             return getOnePageToken(pageID);
@@ -268,7 +268,7 @@ function () {
             return _context3.stop();
         }
       }
-    }, _callee3, this, [[0, 53]]);
+    }, _callee3, null, [[0, 53]]);
   }));
 
   return function page_resources_delete(_x5, _x6) {
@@ -291,7 +291,7 @@ function () {
         switch (_context4.prev = _context4.next) {
           case 0:
             _context4.prev = 0;
-            console.info("page_update: ", req.body.operation, req.body.id);
+            console.info('page_update: ', req.body.operation, req.body.id);
             pageID = req.body.id;
             operation = req.body.operation;
             _context4.next = 6;
@@ -419,7 +419,7 @@ function () {
             return _context4.stop();
         }
       }
-    }, _callee4, this, [[0, 51]]);
+    }, _callee4, null, [[0, 51]]);
   }));
 
   return function page_update(_x7, _x8) {
@@ -459,7 +459,7 @@ function () {
             return _context5.stop();
         }
       }
-    }, _callee5, this);
+    }, _callee5);
   }));
 
   return function subscribedApps(_x9, _x10) {
@@ -515,7 +515,7 @@ function () {
             return _context6.stop();
         }
       }
-    }, _callee6, this);
+    }, _callee6);
   }));
 
   return function unsubscribedApps(_x11, _x12) {
@@ -548,7 +548,7 @@ function () {
             return _context7.stop();
         }
       }
-    }, _callee7, this);
+    }, _callee7);
   }));
 
   return function debugToken(_x13) {
@@ -597,7 +597,7 @@ function () {
             return _context8.stop();
         }
       }
-    }, _callee8, this);
+    }, _callee8);
   }));
 
   return function getOnePageToken(_x14) {
@@ -636,7 +636,7 @@ function () {
             return _context9.stop();
         }
       }
-    }, _callee9, this);
+    }, _callee9);
   }));
 
   return function getOnePageData(_x15) {
@@ -670,7 +670,7 @@ function () {
             });
 
           case 3:
-            console.log("into getAllPages: ", Object.keys(pageArray).length);
+            console.log('into getAllPages: ', Object.keys(pageArray).length);
             return _context10.abrupt("return", Promise.resolve(pageArray));
 
           case 5:
@@ -678,7 +678,7 @@ function () {
             return _context10.stop();
         }
       }
-    }, _callee10, this);
+    }, _callee10);
   }));
 
   return function getAllPages() {
@@ -747,10 +747,10 @@ function () {
                     event: 'MAIN-MENU'
                   })
                 }, {
-                  type: "web_url",
-                  title: "Powered by Pizzaibot",
-                  url: "m.me/pizzaibot",
-                  webview_height_ratio: "full"
+                  type: 'web_url',
+                  title: 'Powered by Pizzaibot',
+                  url: 'm.me/pizzaibot',
+                  webview_height_ratio: 'full'
                 }]
               }]
             });
@@ -763,7 +763,7 @@ function () {
             return _context11.stop();
         }
       }
-    }, _callee11, this);
+    }, _callee11);
   }));
 
   return function setFacebookFields(_x16, _x17, _x18) {
@@ -788,7 +788,7 @@ function () {
               headers: {
                 'Content-Type': 'application/json'
               },
-              fields: ["get_started", "persistent_menu", "greeting"]
+              fields: ['get_started', 'persistent_menu', 'greeting']
             });
 
           case 3:
@@ -806,7 +806,7 @@ function () {
                 'Content-Type': 'application/json'
               },
               params: {
-                fields: ["get_started", "persistent_menu", "greeting"]
+                fields: ['get_started', 'persistent_menu', 'greeting']
               }
             });
 
@@ -824,7 +824,7 @@ function () {
             return _context12.stop();
         }
       }
-    }, _callee12, this);
+    }, _callee12);
   }));
 
   return function deleteFacebookFields(_x19, _x20) {
@@ -858,8 +858,8 @@ function () {
               recipient: {
                 id: recipientId
               },
-              target_app_id: "263902037430900",
-              metadata: "pass thread control to inbox"
+              target_app_id: '263902037430900',
+              metadata: 'pass thread control to inbox'
             });
 
           case 7:
@@ -879,7 +879,7 @@ function () {
             return _context13.stop();
         }
       }
-    }, _callee13, this, [[4, 11]]);
+    }, _callee13, null, [[4, 11]]);
   }));
 
   return function sendPassThreadControl(_x21, _x22) {

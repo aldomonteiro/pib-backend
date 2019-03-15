@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getTodayOpeningTime = exports.getStoreData = exports.getStores = exports.store_delete = exports.deleteManyStores = exports.store_update = exports.store_create = exports.store_get_one = exports.store_get_all = void 0;
+exports.getTodayOpeningTime = exports.getStoreByPhone = exports.getStoreData = exports.getStores = exports.store_delete = exports.deleteManyStores = exports.store_update = exports.store_create = exports.store_get_one = exports.store_get_all = void 0;
 
 var _stores = _interopRequireDefault(require("../models/stores"));
 
@@ -130,69 +130,96 @@ var store_create = function store_create(req, res) {
 exports.store_create = store_create;
 
 var store_update = function store_update(req, res) {
+  console.info('store_update req.body:', req.body);
+
   if (req.body && req.body.id) {
-    console.info('stores_update:', req.body.location_lat, req.body.location_long);
     var pageId = req.currentUser.activePage;
+    var _req$body = req.body,
+        id = _req$body.id,
+        operation = _req$body.operation,
+        deliveryTime = _req$body.deliveryTime,
+        pickupTime = _req$body.pickupTime;
 
-    _stores.default.findOne({
-      pageId: pageId,
-      id: req.body.id
-    }, function (err, doc) {
-      if (!err) {
-        doc.name = req.body.name;
-        doc.address = req.body.address;
-        doc.city = req.body.city;
-        doc.state = req.body.state;
-        doc.phone = req.body.phone;
-        doc.delivery_fee = req.body.delivery_fee;
-        doc.location_lat = req.body.location_lat;
-        doc.location_long = req.body.location_long; // Opening times
+    if (operation) {
+      _stores.default.findOne({
+        pageId: pageId,
+        id: id
+      }, function (err, doc) {
+        if (!err) {
+          if (operation === 'UPDATE_DELIVERY_TIME' && deliveryTime) doc.delivery_time = deliveryTime;
+          if (operation === 'UPDATE_PICKUP_TIME' && pickupTime) doc.pickup_time = pickupTime;
+          doc.save(function (err, result) {
+            if (err) {
+              res.status(500).json({
+                message: err.errmsg
+              });
+            } else {
+              res.status(200).json(result);
+            }
+          });
+        }
+      });
+    } else {
+      _stores.default.findOne({
+        pageId: pageId,
+        id: id
+      }, function (err, doc) {
+        if (!err) {
+          doc.name = req.body.name;
+          doc.address = req.body.address;
+          doc.city = req.body.city;
+          doc.state = req.body.state;
+          doc.phone = req.body.phone;
+          doc.delivery_fee = req.body.delivery_fee;
+          doc.location_lat = req.body.location_lat;
+          doc.location_long = req.body.location_long; // Opening times
 
-        doc.sun_is_open = req.body.sun_is_open;
-        doc.sun_open = req.body.sun_open;
-        doc.sun_close = req.body.sun_close;
-        doc.mon_is_open = req.body.mon_is_open;
-        doc.mon_open = req.body.mon_open;
-        doc.mon_close = req.body.mon_close;
-        doc.tue_is_open = req.body.tue_is_open;
-        doc.tue_open = req.body.tue_open;
-        doc.tue_close = req.body.tue_close;
-        doc.wed_is_open = req.body.wed_is_open;
-        doc.wed_open = req.body.wed_open;
-        doc.wed_close = req.body.wed_close;
-        doc.thu_is_open = req.body.thu_is_open;
-        doc.thu_open = req.body.thu_open;
-        doc.thu_close = req.body.thu_close;
-        doc.fri_is_open = req.body.fri_is_open;
-        doc.fri_open = req.body.fri_open;
-        doc.fri_close = req.body.fri_close;
-        doc.sat_is_open = req.body.sat_is_open;
-        doc.sat_open = req.body.sat_open;
-        doc.sat_close = req.body.sat_close;
-        doc.hol_is_open = req.body.hol_is_open;
-        doc.hol_open = req.body.hol_open;
-        doc.hol_close = req.body.hol_close;
-        doc.printer = req.body.printer;
-        doc.save(function (err, result) {
-          if (err) {
-            res.status(500).json({
-              message: err.errmsg
-            });
-          } else {
-            res.status(200).json(result);
-          }
-        });
-      } else {
-        res.status(500).json({
-          message: err.errmsg
-        });
-      }
-    });
+          doc.sun_is_open = req.body.sun_is_open;
+          doc.sun_open = req.body.sun_open;
+          doc.sun_close = req.body.sun_close;
+          doc.mon_is_open = req.body.mon_is_open;
+          doc.mon_open = req.body.mon_open;
+          doc.mon_close = req.body.mon_close;
+          doc.tue_is_open = req.body.tue_is_open;
+          doc.tue_open = req.body.tue_open;
+          doc.tue_close = req.body.tue_close;
+          doc.wed_is_open = req.body.wed_is_open;
+          doc.wed_open = req.body.wed_open;
+          doc.wed_close = req.body.wed_close;
+          doc.thu_is_open = req.body.thu_is_open;
+          doc.thu_open = req.body.thu_open;
+          doc.thu_close = req.body.thu_close;
+          doc.fri_is_open = req.body.fri_is_open;
+          doc.fri_open = req.body.fri_open;
+          doc.fri_close = req.body.fri_close;
+          doc.sat_is_open = req.body.sat_is_open;
+          doc.sat_open = req.body.sat_open;
+          doc.sat_close = req.body.sat_close;
+          doc.hol_is_open = req.body.hol_is_open;
+          doc.hol_open = req.body.hol_open;
+          doc.hol_close = req.body.hol_close;
+          doc.printer = req.body.printer;
+          doc.save(function (err, result) {
+            if (err) {
+              res.status(500).json({
+                message: err.errmsg
+              });
+            } else {
+              res.status(200).json(result);
+            }
+          });
+        } else {
+          res.status(500).json({
+            message: err.errmsg
+          });
+        }
+      });
+    }
   }
 };
 /**
  * Delete all records from a pageID
- * @param {*} pageID 
+ * @param {*} pageID
  */
 
 
@@ -221,7 +248,7 @@ function () {
             return _context.stop();
         }
       }
-    }, _callee, this);
+    }, _callee);
   }));
 
   return function deleteManyStores(_x) {
@@ -275,7 +302,7 @@ function () {
             return _context2.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee2);
   }));
 
   return function getStores(_x2) {
@@ -311,33 +338,71 @@ function () {
             return _context3.stop();
         }
       }
-    }, _callee3, this);
+    }, _callee3);
   }));
 
   return function getStoreData(_x3) {
     return _ref3.apply(this, arguments);
   };
 }();
+/**
+ * Used by WhatsappController
+ * @param {*} phone
+ */
+
 
 exports.getStoreData = getStoreData;
 
-var getTodayOpeningTime =
+var getStoreByPhone =
 /*#__PURE__*/
 function () {
   var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee4(pageID) {
-    var _store, _today, _tomorrow, todayOpenAt, todayCloseAt, tomorrowOpenAt, tomorrowCloseAt, todayIsOpen, tomorrowIsOpen, _openAtHours, _closeAtHours, _openAtHoursTom, _closeAtHoursTom;
-
+  regeneratorRuntime.mark(function _callee4(phone) {
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
             _context4.next = 2;
+            return _stores.default.findOne({
+              phone: phone
+            }).exec();
+
+          case 2:
+            return _context4.abrupt("return", _context4.sent);
+
+          case 3:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4);
+  }));
+
+  return function getStoreByPhone(_x4) {
+    return _ref4.apply(this, arguments);
+  };
+}();
+
+exports.getStoreByPhone = getStoreByPhone;
+
+var getTodayOpeningTime =
+/*#__PURE__*/
+function () {
+  var _ref5 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee5(pageID) {
+    var _store, _today, _tomorrow, todayOpenAt, todayCloseAt, tomorrowOpenAt, tomorrowCloseAt, todayIsOpen, tomorrowIsOpen, _openAtHours, _closeAtHours, _openAtHoursTom, _closeAtHoursTom;
+
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            _context5.next = 2;
             return getStoreData(pageID);
 
           case 2:
-            _store = _context4.sent;
+            _store = _context5.sent;
             _today = new Date();
             _tomorrow = new Date();
             _tomorrow.get;
@@ -418,7 +483,7 @@ function () {
               minute: '2-digit',
               hour12: false
             });
-            return _context4.abrupt("return", {
+            return _context5.abrupt("return", {
               todayIsOpen: todayIsOpen,
               todayOpenAt: _openAtHours,
               todayCloseAt: _closeAtHours,
@@ -429,14 +494,14 @@ function () {
 
           case 15:
           case "end":
-            return _context4.stop();
+            return _context5.stop();
         }
       }
-    }, _callee4, this);
+    }, _callee5);
   }));
 
-  return function getTodayOpeningTime(_x4) {
-    return _ref4.apply(this, arguments);
+  return function getTodayOpeningTime(_x5) {
+    return _ref5.apply(this, arguments);
   };
 }();
 

@@ -193,7 +193,7 @@ function () {
             return _context.stop();
         }
       }
-    }, _callee, this, [[0, 55]]);
+    }, _callee, null, [[0, 55]]);
   }));
 
   return function initialSetup(_x) {
@@ -310,7 +310,7 @@ function () {
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[1, 33], [9, 13, 17, 25], [18,, 20, 24]]);
+    }, _callee2, null, [[1, 33], [9, 13, 17, 25], [18,, 20, 24]]);
   }));
 
   return function insertFlavors(_x2, _x3) {
@@ -421,7 +421,7 @@ function () {
             return _context3.stop();
         }
       }
-    }, _callee3, this, [[1, 32], [9, 13, 17, 25], [18,, 20, 24]]);
+    }, _callee3, null, [[1, 32], [9, 13, 17, 25], [18,, 20, 24]]);
   }));
 
   return function insertSizes(_x4, _x5) {
@@ -532,7 +532,7 @@ function () {
             return _context4.stop();
         }
       }
-    }, _callee4, this, [[1, 32], [9, 13, 17, 25], [18,, 20, 24]]);
+    }, _callee4, null, [[1, 32], [9, 13, 17, 25], [18,, 20, 24]]);
   }));
 
   return function insertBeverages(_x6, _x7) {
@@ -641,7 +641,7 @@ function () {
             return _context5.stop();
         }
       }
-    }, _callee5, this, [[1, 32], [9, 13, 17, 25], [18,, 20, 24]]);
+    }, _callee5, null, [[1, 32], [9, 13, 17, 25], [18,, 20, 24]]);
   }));
 
   return function insertToppings(_x8, _x9) {
@@ -752,7 +752,7 @@ function () {
             return _context6.stop();
         }
       }
-    }, _callee6, this, [[1, 32], [9, 13, 17, 25], [18,, 20, 24]]);
+    }, _callee6, null, [[1, 32], [9, 13, 17, 25], [18,, 20, 24]]);
   }));
 
   return function insertPricings(_x10, _x11) {
@@ -885,7 +885,7 @@ function () {
             return _context7.stop();
         }
       }
-    }, _callee7, this, [[1, 32], [9, 13, 17, 25], [18,, 20, 24]]);
+    }, _callee7, null, [[1, 32], [9, 13, 17, 25], [18,, 20, 24]]);
   }));
 
   return function insertStores(_x12, _x13, _x14) {

@@ -49,7 +49,7 @@ var pricing_get_all = function pricing_get_all(req, res) {
         message: err.errmsg
       });
     } else {
-      res.setHeader('Content-Range', _util.default.format("pricings %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
+      res.setHeader('Content-Range', _util.default.format('pricings %d-%d/%d', rangeObj['offset'], rangeObj['limit'], result.total));
       res.status(200).json(result.docs);
     }
   });
@@ -81,32 +81,74 @@ var pricing_get_one = function pricing_get_one(req, res) {
 
 exports.pricing_get_one = pricing_get_one;
 
-var pricing_create = function pricing_create(req, res) {
-  if (req.body) {
-    var pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
-    var newRecord = new _pricings.default({
-      id: req.body.id,
-      kind: req.body.kind,
-      sizeId: req.body.sizeId,
-      price: req.body.price,
-      // TODO: how to handle float?
-      pageId: pageId
-    });
-    newRecord.save().then(function (result) {
-      res.status(200).json(result);
-    }).catch(function (err) {
-      if (err.code === 11000) {
-        res.status(500).json({
-          message: 'pos.messages.duplicatedKey'
-        });
-      } else {
-        res.status(500).json({
-          message: err.errmsg
-        });
+var pricing_create =
+/*#__PURE__*/
+function () {
+  var _ref = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee(req, res) {
+    var pageId, id, lastId, newRecord;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            if (!req.body) {
+              _context.next = 11;
+              break;
+            }
+
+            pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
+            id = req.body.id;
+
+            if (!(!id || id === 0)) {
+              _context.next = 9;
+              break;
+            }
+
+            _context.next = 6;
+            return _pricings.default.find({
+              pageId: pageId
+            }).select('id').sort('-id').limit(1).exec();
+
+          case 6:
+            lastId = _context.sent;
+            id = 1;
+            if (lastId && lastId.length) id = lastId[0].id + 1;
+
+          case 9:
+            newRecord = new _pricings.default({
+              id: id,
+              categoryId: req.body.categoryId,
+              sizeId: req.body.sizeId,
+              price: req.body.price,
+              pageId: pageId
+            });
+            newRecord.save().then(function (result) {
+              res.status(200).json(result);
+            }).catch(function (err) {
+              if (err.code === 11000) {
+                res.status(500).json({
+                  message: 'pos.messages.duplicatedKey'
+                });
+              } else {
+                res.status(500).json({
+                  message: err.errmsg
+                });
+              }
+            });
+
+          case 11:
+          case "end":
+            return _context.stop();
+        }
       }
-    });
-  }
-}; // UPDATE
+    }, _callee);
+  }));
+
+  return function pricing_create(_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}(); // UPDATE
 
 
 exports.pricing_create = pricing_create;
@@ -120,7 +162,7 @@ var pricing_update = function pricing_update(req, res) {
       id: req.body.id
     }, function (err, doc) {
       if (!err) {
-        doc.kind = req.body.kind;
+        doc.categoryId = req.body.categoryId;
         doc.sizeId = req.body.sizeId;
         doc.price = req.body.price;
         doc.save(function (err, result) {
@@ -160,7 +202,7 @@ var pricing_delete = function pricing_delete(req, res) {
 };
 /**
  * Delete all records from a pageID
- * @param {*} pageID 
+ * @param {*} pageID
  */
 
 
@@ -169,31 +211,31 @@ exports.pricing_delete = pricing_delete;
 var deleteManyPricings =
 /*#__PURE__*/
 function () {
-  var _ref = _asyncToGenerator(
+  var _ref2 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee(pageID) {
-    return regeneratorRuntime.wrap(function _callee$(_context) {
+  regeneratorRuntime.mark(function _callee2(pageID) {
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
-        switch (_context.prev = _context.next) {
+        switch (_context2.prev = _context2.next) {
           case 0:
-            _context.next = 2;
+            _context2.next = 2;
             return _pricings.default.deleteMany({
               pageId: pageID
             }).exec();
 
           case 2:
-            return _context.abrupt("return", _context.sent);
+            return _context2.abrupt("return", _context2.sent);
 
           case 3:
           case "end":
-            return _context.stop();
+            return _context2.stop();
         }
       }
-    }, _callee, this);
+    }, _callee2);
   }));
 
-  return function deleteManyPricings(_x) {
-    return _ref.apply(this, arguments);
+  return function deleteManyPricings(_x3) {
+    return _ref2.apply(this, arguments);
   };
 }();
 
@@ -202,33 +244,46 @@ exports.deleteManyPricings = deleteManyPricings;
 var getPricingSizing =
 /*#__PURE__*/
 function () {
-  var _ref2 = _asyncToGenerator(
+  var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee2(pageId) {
-    var query;
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+  regeneratorRuntime.mark(function _callee3(pageID, categoryID) {
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
-            query = _pricings.default.distinct('sizeId', {
-              pageId: pageId
-            });
-            _context2.next = 3;
-            return query.exec();
+            if (!categoryID) {
+              _context3.next = 6;
+              break;
+            }
+
+            _context3.next = 3;
+            return _pricings.default.distinct('sizeId', {
+              pageId: pageID,
+              categoryId: categoryID
+            }).exec();
 
           case 3:
-            return _context2.abrupt("return", _context2.sent);
+            return _context3.abrupt("return", _context3.sent);
 
-          case 4:
+          case 6:
+            _context3.next = 8;
+            return _pricings.default.distinct('sizeId', {
+              pageId: pageID
+            }).exec();
+
+          case 8:
+            return _context3.abrupt("return", _context3.sent);
+
+          case 9:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee3);
   }));
 
-  return function getPricingSizing(_x2) {
-    return _ref2.apply(this, arguments);
+  return function getPricingSizing(_x4, _x5) {
+    return _ref3.apply(this, arguments);
   };
 }();
 
@@ -237,53 +292,16 @@ exports.getPricingSizing = getPricingSizing;
 var getPricings =
 /*#__PURE__*/
 function () {
-  var _ref3 = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee3(pageID) {
-    var query;
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
-      while (1) {
-        switch (_context3.prev = _context3.next) {
-          case 0:
-            query = _pricings.default.find({
-              pageId: pageID
-            });
-            _context3.next = 3;
-            return query.exec();
-
-          case 3:
-            return _context3.abrupt("return", _context3.sent);
-
-          case 4:
-          case "end":
-            return _context3.stop();
-        }
-      }
-    }, _callee3, this);
-  }));
-
-  return function getPricings(_x3) {
-    return _ref3.apply(this, arguments);
-  };
-}();
-
-exports.getPricings = getPricings;
-
-var getOnePricing =
-/*#__PURE__*/
-function () {
   var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee4(pageID, kind, sizeID) {
+  regeneratorRuntime.mark(function _callee4(pageID) {
     var query;
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            query = _pricings.default.findOne({
-              pageId: pageID,
-              kind: kind,
-              sizeId: sizeID
+            query = _pricings.default.find({
+              pageId: pageID
             });
             _context4.next = 3;
             return query.exec();
@@ -296,11 +314,48 @@ function () {
             return _context4.stop();
         }
       }
-    }, _callee4, this);
+    }, _callee4);
   }));
 
-  return function getOnePricing(_x4, _x5, _x6) {
+  return function getPricings(_x6) {
     return _ref4.apply(this, arguments);
+  };
+}();
+
+exports.getPricings = getPricings;
+
+var getOnePricing =
+/*#__PURE__*/
+function () {
+  var _ref5 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee5(pageID, categoryId, sizeID) {
+    var query;
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            query = _pricings.default.findOne({
+              pageId: pageID,
+              categoryId: categoryId,
+              sizeId: sizeID
+            });
+            _context5.next = 3;
+            return query.exec();
+
+          case 3:
+            return _context5.abrupt("return", _context5.sent);
+
+          case 4:
+          case "end":
+            return _context5.stop();
+        }
+      }
+    }, _callee5);
+  }));
+
+  return function getOnePricing(_x7, _x8, _x9) {
+    return _ref5.apply(this, arguments);
   };
 }();
 
@@ -309,44 +364,44 @@ exports.getOnePricing = getOnePricing;
 var getOnePricingByFlavor =
 /*#__PURE__*/
 function () {
-  var _ref5 = _asyncToGenerator(
+  var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee5(pageID, sizeID, flavorID) {
+  regeneratorRuntime.mark(function _callee6(pageID, sizeID, flavorID) {
     var flavor;
-    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+    return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
-            _context5.next = 2;
+            _context6.next = 2;
             return (0, _flavorsController.getFlavor)(pageID, flavorID);
 
           case 2:
-            flavor = _context5.sent;
+            flavor = _context6.sent;
 
             if (!flavor) {
-              _context5.next = 9;
+              _context6.next = 9;
               break;
             }
 
-            _context5.next = 6;
-            return getOnePricing(pageID, flavor.kind, sizeID);
+            _context6.next = 6;
+            return getOnePricing(pageID, flavor.categoryId, sizeID);
 
           case 6:
-            return _context5.abrupt("return", _context5.sent);
+            return _context6.abrupt("return", _context6.sent);
 
           case 9:
-            return _context5.abrupt("return", null);
+            return _context6.abrupt("return", null);
 
           case 10:
           case "end":
-            return _context5.stop();
+            return _context6.stop();
         }
       }
-    }, _callee5, this);
+    }, _callee6);
   }));
 
-  return function getOnePricingByFlavor(_x7, _x8, _x9) {
-    return _ref5.apply(this, arguments);
+  return function getOnePricingByFlavor(_x10, _x11, _x12) {
+    return _ref6.apply(this, arguments);
   };
 }();
 
@@ -355,38 +410,38 @@ exports.getOnePricingByFlavor = getOnePricingByFlavor;
 var getPricingsWithSize =
 /*#__PURE__*/
 function () {
-  var _ref6 = _asyncToGenerator(
+  var _ref7 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee6(pageID) {
+  regeneratorRuntime.mark(function _callee7(pageID) {
     var query, pricings, sizes, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, pricing, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, size;
 
-    return regeneratorRuntime.wrap(function _callee6$(_context6) {
+    return regeneratorRuntime.wrap(function _callee7$(_context7) {
       while (1) {
-        switch (_context6.prev = _context6.next) {
+        switch (_context7.prev = _context7.next) {
           case 0:
             query = _pricings.default.find({
               pageId: pageID
             });
-            query.sort('kind');
-            _context6.next = 4;
+            query.sort('categoryId');
+            _context7.next = 4;
             return query.exec();
 
           case 4:
-            pricings = _context6.sent;
-            _context6.next = 7;
+            pricings = _context7.sent;
+            _context7.next = 7;
             return (0, _sizesController.getSizes)(pageID);
 
           case 7:
-            sizes = _context6.sent;
+            sizes = _context7.sent;
             _iteratorNormalCompletion = true;
             _didIteratorError = false;
             _iteratorError = undefined;
-            _context6.prev = 11;
+            _context7.prev = 11;
             _iterator = pricings[Symbol.iterator]();
 
           case 13:
             if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-              _context6.next = 37;
+              _context7.next = 37;
               break;
             }
 
@@ -394,7 +449,7 @@ function () {
             _iteratorNormalCompletion2 = true;
             _didIteratorError2 = false;
             _iteratorError2 = undefined;
-            _context6.prev = 18;
+            _context7.prev = 18;
 
             for (_iterator2 = sizes[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
               size = _step2.value;
@@ -404,91 +459,91 @@ function () {
               }
             }
 
-            _context6.next = 26;
+            _context7.next = 26;
             break;
 
           case 22:
-            _context6.prev = 22;
-            _context6.t0 = _context6["catch"](18);
+            _context7.prev = 22;
+            _context7.t0 = _context7["catch"](18);
             _didIteratorError2 = true;
-            _iteratorError2 = _context6.t0;
+            _iteratorError2 = _context7.t0;
 
           case 26:
-            _context6.prev = 26;
-            _context6.prev = 27;
+            _context7.prev = 26;
+            _context7.prev = 27;
 
             if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
               _iterator2.return();
             }
 
           case 29:
-            _context6.prev = 29;
+            _context7.prev = 29;
 
             if (!_didIteratorError2) {
-              _context6.next = 32;
+              _context7.next = 32;
               break;
             }
 
             throw _iteratorError2;
 
           case 32:
-            return _context6.finish(29);
+            return _context7.finish(29);
 
           case 33:
-            return _context6.finish(26);
+            return _context7.finish(26);
 
           case 34:
             _iteratorNormalCompletion = true;
-            _context6.next = 13;
+            _context7.next = 13;
             break;
 
           case 37:
-            _context6.next = 43;
+            _context7.next = 43;
             break;
 
           case 39:
-            _context6.prev = 39;
-            _context6.t1 = _context6["catch"](11);
+            _context7.prev = 39;
+            _context7.t1 = _context7["catch"](11);
             _didIteratorError = true;
-            _iteratorError = _context6.t1;
+            _iteratorError = _context7.t1;
 
           case 43:
-            _context6.prev = 43;
-            _context6.prev = 44;
+            _context7.prev = 43;
+            _context7.prev = 44;
 
             if (!_iteratorNormalCompletion && _iterator.return != null) {
               _iterator.return();
             }
 
           case 46:
-            _context6.prev = 46;
+            _context7.prev = 46;
 
             if (!_didIteratorError) {
-              _context6.next = 49;
+              _context7.next = 49;
               break;
             }
 
             throw _iteratorError;
 
           case 49:
-            return _context6.finish(46);
+            return _context7.finish(46);
 
           case 50:
-            return _context6.finish(43);
+            return _context7.finish(43);
 
           case 51:
-            return _context6.abrupt("return", pricings);
+            return _context7.abrupt("return", pricings);
 
           case 52:
           case "end":
-            return _context6.stop();
+            return _context7.stop();
         }
       }
-    }, _callee6, this, [[11, 39, 43, 51], [18, 22, 26, 34], [27,, 29, 33], [44,, 46, 50]]);
+    }, _callee7, null, [[11, 39, 43, 51], [18, 22, 26, 34], [27,, 29, 33], [44,, 46, 50]]);
   }));
 
-  return function getPricingsWithSize(_x10) {
-    return _ref6.apply(this, arguments);
+  return function getPricingsWithSize(_x13) {
+    return _ref7.apply(this, arguments);
   };
 }();
 

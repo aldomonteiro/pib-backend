@@ -42,7 +42,7 @@ function () {
             return _context.stop();
         }
       }
-    }, _callee, this);
+    }, _callee);
   }));
 
   return function deleteManyFlows(_x) {
@@ -89,7 +89,7 @@ function () {
             return _context2.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee2);
   }));
 
   return function updateFlow(_x2) {

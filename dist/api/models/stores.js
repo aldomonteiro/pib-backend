@@ -46,6 +46,12 @@ var schema = new Schema({
   location_long: {
     type: Number
   },
+  delivery_time: {
+    type: Number
+  },
+  pickup_time: {
+    type: Number
+  },
   // Holydays
   hol_is_open: {
     type: Boolean,
@@ -149,6 +155,17 @@ var schema = new Schema({
   }
 }, {
   timestamps: true
+});
+schema.index({
+  pageId: 1,
+  id: 1
+}, {
+  unique: true
+});
+schema.index({
+  phone: 1
+}, {
+  unique: true
 });
 schema.plugin(_mongoosePaginate.default);
 

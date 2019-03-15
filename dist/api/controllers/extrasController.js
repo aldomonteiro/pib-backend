@@ -178,7 +178,7 @@ function () {
             return _context.stop();
         }
       }
-    }, _callee, this);
+    }, _callee);
   }));
 
   return function deleteManyExtras(_x) {

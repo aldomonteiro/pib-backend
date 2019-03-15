@@ -90,7 +90,7 @@ function () {
             return _context.stop();
         }
       }
-    }, _callee, this);
+    }, _callee);
   }));
 
   return function size_get_all(_x, _x2) {
@@ -123,31 +123,74 @@ var size_get_one = function size_get_one(req, res) {
 
 exports.size_get_one = size_get_one;
 
-var size_create = function size_create(req, res) {
-  if (req.body) {
-    var pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
-    var newRecord = new _sizes.default({
-      id: req.body.id,
-      size: (0, _stringCapitalizeName.default)(req.body.size),
-      slices: req.body.slices,
-      split: req.body.split,
-      pageId: pageId
-    });
-    newRecord.save().then(function (result) {
-      res.status(200).json(result);
-    }).catch(function (err) {
-      if (err.code === 11000) {
-        res.status(500).json({
-          message: 'pos.messages.duplicatedKey'
-        });
-      } else {
-        res.status(500).json({
-          message: err.errmsg
-        });
+var size_create =
+/*#__PURE__*/
+function () {
+  var _ref2 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee2(req, res) {
+    var pageId, id, lastId, newRecord;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            if (!req.body) {
+              _context2.next = 11;
+              break;
+            }
+
+            pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
+            id = req.body.id;
+
+            if (!(!id || id === 0)) {
+              _context2.next = 9;
+              break;
+            }
+
+            _context2.next = 6;
+            return _sizes.default.find({
+              pageId: pageId
+            }).select('id').sort('-id').limit(1).exec();
+
+          case 6:
+            lastId = _context2.sent;
+            id = 1;
+            if (lastId && lastId.length) id = lastId[0].id + 1;
+
+          case 9:
+            newRecord = new _sizes.default({
+              id: id,
+              size: (0, _stringCapitalizeName.default)(req.body.size),
+              slices: req.body.slices,
+              split: req.body.split,
+              pageId: pageId
+            });
+            newRecord.save().then(function (result) {
+              res.status(200).json(result);
+            }).catch(function (err) {
+              if (err.code === 11000) {
+                res.status(500).json({
+                  message: 'pos.messages.duplicatedKey'
+                });
+              } else {
+                res.status(500).json({
+                  message: err.errmsg
+                });
+              }
+            });
+
+          case 11:
+          case "end":
+            return _context2.stop();
+        }
       }
-    });
-  }
-}; // UPDATE
+    }, _callee2);
+  }));
+
+  return function size_create(_x3, _x4) {
+    return _ref2.apply(this, arguments);
+  };
+}(); // UPDATE
 
 
 exports.size_create = size_create;
@@ -210,31 +253,31 @@ exports.size_delete = size_delete;
 var deleteManySizes =
 /*#__PURE__*/
 function () {
-  var _ref2 = _asyncToGenerator(
+  var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee2(pageID) {
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+  regeneratorRuntime.mark(function _callee3(pageID) {
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
-            _context2.next = 2;
+            _context3.next = 2;
             return _sizes.default.deleteMany({
               pageId: pageID
             }).exec();
 
           case 2:
-            return _context2.abrupt("return", _context2.sent);
+            return _context3.abrupt("return", _context3.sent);
 
           case 3:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee3);
   }));
 
-  return function deleteManySizes(_x3) {
-    return _ref2.apply(this, arguments);
+  return function deleteManySizes(_x5) {
+    return _ref3.apply(this, arguments);
   };
 }();
 
@@ -243,35 +286,35 @@ exports.deleteManySizes = deleteManySizes;
 var getSize =
 /*#__PURE__*/
 function () {
-  var _ref3 = _asyncToGenerator(
+  var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee3(pageID, sizeID) {
+  regeneratorRuntime.mark(function _callee4(pageID, sizeID) {
     var query;
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context4.prev = _context4.next) {
           case 0:
             query = _sizes.default.findOne({
               pageId: pageID,
               id: sizeID
             });
             query.select('id size slices split');
-            _context3.next = 4;
+            _context4.next = 4;
             return query.exec();
 
           case 4:
-            return _context3.abrupt("return", _context3.sent);
+            return _context4.abrupt("return", _context4.sent);
 
           case 5:
           case "end":
-            return _context3.stop();
+            return _context4.stop();
         }
       }
-    }, _callee3, this);
+    }, _callee4);
   }));
 
-  return function getSize(_x4, _x5) {
-    return _ref3.apply(this, arguments);
+  return function getSize(_x6, _x7) {
+    return _ref4.apply(this, arguments);
   };
 }();
 

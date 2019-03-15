@@ -17,6 +17,9 @@ var schema = new Schema({
     type: Number,
     required: true
   },
+  itemId: {
+    type: Number
+  },
   id: {
     type: Number
   },
@@ -25,6 +28,9 @@ var schema = new Schema({
   },
   pageId: {
     type: String
+  },
+  categoryId: {
+    type: Number
   },
   sizeId: {
     type: Number
@@ -61,7 +67,7 @@ var schema = new Schema({
 });
 schema.plugin(_mongoosePaginate.default);
 
-var _default = _mongoose.default.model("items", schema);
+var _default = _mongoose.default.model('items', schema);
 
 exports.default = _default;
 //# sourceMappingURL=items.js.map

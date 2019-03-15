@@ -57,7 +57,7 @@ function () {
             }
 
             if (req.currentUser.activePage) {
-              queryObj["pageId"] = req.currentUser.activePage;
+              queryObj['pageId'] = req.currentUser.activePage;
             }
 
             _toppings.default.find(queryObj).sort(sortObj).exec(function (err, result) {
@@ -75,13 +75,13 @@ function () {
                 }
 
                 var _totalCount = result.length;
-                var toppingsArray = new Array();
+                var toppingsArray = [];
 
                 for (var _i = _rangeIni; _i < _rangeEnd; _i++) {
                   toppingsArray.push(result[_i]);
                 }
 
-                res.setHeader('Content-Range', _util.default.format("toppings %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
+                res.setHeader('Content-Range', _util.default.format('toppings %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
                 res.status(200).json(toppingsArray);
               }
             });
@@ -91,7 +91,7 @@ function () {
             return _context.stop();
         }
       }
-    }, _callee, this);
+    }, _callee);
   }));
 
   return function topping_get_all(_x, _x2) {
@@ -127,29 +127,72 @@ var topping_get_one = function topping_get_one(req, res) {
 
 exports.topping_get_one = topping_get_one;
 
-var topping_create = function topping_create(req, res) {
-  if (req.body) {
-    var pageID = req.currentUser.activePage ? req.currentUser.activePage : null;
-    var newRecord = new _toppings.default({
-      id: req.body.id,
-      topping: (0, _stringCapitalizeName.default)(req.body.topping),
-      pageId: pageID
-    });
-    newRecord.save().then(function (result) {
-      res.status(200).json(result);
-    }).catch(function (err) {
-      if (err.code === 11000) {
-        res.status(500).json({
-          message: 'pos.messages.duplicatedKey'
-        });
-      } else {
-        res.status(500).json({
-          message: err.errmsg
-        });
+var topping_create =
+/*#__PURE__*/
+function () {
+  var _ref2 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee2(req, res) {
+    var pageID, id, lastId, newRecord;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            if (!req.body) {
+              _context2.next = 11;
+              break;
+            }
+
+            pageID = req.currentUser.activePage ? req.currentUser.activePage : null;
+            id = req.body.id;
+
+            if (!(!id || id === 0)) {
+              _context2.next = 9;
+              break;
+            }
+
+            _context2.next = 6;
+            return _toppings.default.find({
+              pageId: pageID
+            }).select('id').sort('-id').limit(1).exec();
+
+          case 6:
+            lastId = _context2.sent;
+            id = 1;
+            if (lastId && lastId.length) id = lastId[0].id + 1;
+
+          case 9:
+            newRecord = new _toppings.default({
+              id: id,
+              topping: (0, _stringCapitalizeName.default)(req.body.topping),
+              pageId: pageID
+            });
+            newRecord.save().then(function (result) {
+              res.status(200).json(result);
+            }).catch(function (err) {
+              if (err.code === 11000) {
+                res.status(500).json({
+                  message: 'pos.messages.duplicatedKey'
+                });
+              } else {
+                res.status(500).json({
+                  message: err.errmsg
+                });
+              }
+            });
+
+          case 11:
+          case "end":
+            return _context2.stop();
+        }
       }
-    });
-  }
-}; // UPDATE
+    }, _callee2);
+  }));
+
+  return function topping_create(_x3, _x4) {
+    return _ref2.apply(this, arguments);
+  };
+}(); // UPDATE
 
 
 exports.topping_create = topping_create;
@@ -209,13 +252,13 @@ exports.topping_delete = topping_delete;
 var getToppings =
 /*#__PURE__*/
 function () {
-  var _ref2 = _asyncToGenerator(
+  var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee2(toppingsArray, pageID) {
+  regeneratorRuntime.mark(function _callee3(toppingsArray, pageID) {
     var queryTopping;
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
             queryTopping = _toppings.default.find({
               pageId: pageID,
@@ -225,22 +268,22 @@ function () {
             });
             queryTopping.sort('topping');
             queryTopping.select('topping');
-            _context2.next = 5;
+            _context3.next = 5;
             return queryTopping.exec();
 
           case 5:
-            return _context2.abrupt("return", _context2.sent);
+            return _context3.abrupt("return", _context3.sent);
 
           case 6:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee3);
   }));
 
-  return function getToppings(_x3, _x4) {
-    return _ref2.apply(this, arguments);
+  return function getToppings(_x5, _x6) {
+    return _ref3.apply(this, arguments);
   };
 }();
 
@@ -249,77 +292,77 @@ exports.getToppings = getToppings;
 var getToppingsNames =
 /*#__PURE__*/
 function () {
-  var _ref3 = _asyncToGenerator(
+  var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee3(toppingsArray, pageID) {
+  regeneratorRuntime.mark(function _callee4(toppingsArray, pageID) {
     var toppingsModel, toppingsNamesArray, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, topObj;
 
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context4.prev = _context4.next) {
           case 0:
-            _context3.next = 2;
+            _context4.next = 2;
             return getToppings(toppingsArray, pageID);
 
           case 2:
-            toppingsModel = _context3.sent;
-            toppingsNamesArray = new Array();
+            toppingsModel = _context4.sent;
+            toppingsNamesArray = [];
             _iteratorNormalCompletion = true;
             _didIteratorError = false;
             _iteratorError = undefined;
-            _context3.prev = 7;
+            _context4.prev = 7;
 
             for (_iterator = toppingsModel[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
               topObj = _step.value;
               toppingsNamesArray.push(topObj.topping);
             }
 
-            _context3.next = 15;
+            _context4.next = 15;
             break;
 
           case 11:
-            _context3.prev = 11;
-            _context3.t0 = _context3["catch"](7);
+            _context4.prev = 11;
+            _context4.t0 = _context4["catch"](7);
             _didIteratorError = true;
-            _iteratorError = _context3.t0;
+            _iteratorError = _context4.t0;
 
           case 15:
-            _context3.prev = 15;
-            _context3.prev = 16;
+            _context4.prev = 15;
+            _context4.prev = 16;
 
             if (!_iteratorNormalCompletion && _iterator.return != null) {
               _iterator.return();
             }
 
           case 18:
-            _context3.prev = 18;
+            _context4.prev = 18;
 
             if (!_didIteratorError) {
-              _context3.next = 21;
+              _context4.next = 21;
               break;
             }
 
             throw _iteratorError;
 
           case 21:
-            return _context3.finish(18);
+            return _context4.finish(18);
 
           case 22:
-            return _context3.finish(15);
+            return _context4.finish(15);
 
           case 23:
-            return _context3.abrupt("return", toppingsNamesArray);
+            return _context4.abrupt("return", toppingsNamesArray);
 
           case 24:
           case "end":
-            return _context3.stop();
+            return _context4.stop();
         }
       }
-    }, _callee3, this, [[7, 11, 15, 23], [16,, 18, 22]]);
+    }, _callee4, null, [[7, 11, 15, 23], [16,, 18, 22]]);
   }));
 
-  return function getToppingsNames(_x5, _x6) {
-    return _ref3.apply(this, arguments);
+  return function getToppingsNames(_x7, _x8) {
+    return _ref4.apply(this, arguments);
   };
 }();
 
@@ -328,34 +371,34 @@ exports.getToppingsNames = getToppingsNames;
 var getToppingsFull =
 /*#__PURE__*/
 function () {
-  var _ref4 = _asyncToGenerator(
+  var _ref5 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee4(pageID) {
+  regeneratorRuntime.mark(function _callee5(pageID) {
     var query;
-    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
       while (1) {
-        switch (_context4.prev = _context4.next) {
+        switch (_context5.prev = _context5.next) {
           case 0:
             query = _toppings.default.find({
               pageId: pageID
             });
             query.sort('topping');
-            _context4.next = 4;
+            _context5.next = 4;
             return query.exec();
 
           case 4:
-            return _context4.abrupt("return", _context4.sent);
+            return _context5.abrupt("return", _context5.sent);
 
           case 5:
           case "end":
-            return _context4.stop();
+            return _context5.stop();
         }
       }
-    }, _callee4, this);
+    }, _callee5);
   }));
 
-  return function getToppingsFull(_x7) {
-    return _ref4.apply(this, arguments);
+  return function getToppingsFull(_x9) {
+    return _ref5.apply(this, arguments);
   };
 }();
 /**
@@ -369,31 +412,31 @@ exports.getToppingsFull = getToppingsFull;
 var deleteManyToppings =
 /*#__PURE__*/
 function () {
-  var _ref5 = _asyncToGenerator(
+  var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee5(pageID) {
-    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+  regeneratorRuntime.mark(function _callee6(pageID) {
+    return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
-            _context5.next = 2;
+            _context6.next = 2;
             return _toppings.default.deleteMany({
               pageId: pageID
             }).exec();
 
           case 2:
-            return _context5.abrupt("return", _context5.sent);
+            return _context6.abrupt("return", _context6.sent);
 
           case 3:
           case "end":
-            return _context5.stop();
+            return _context6.stop();
         }
       }
-    }, _callee5, this);
+    }, _callee6);
   }));
 
-  return function deleteManyToppings(_x8) {
-    return _ref5.apply(this, arguments);
+  return function deleteManyToppings(_x10) {
+    return _ref6.apply(this, arguments);
   };
 }();
 

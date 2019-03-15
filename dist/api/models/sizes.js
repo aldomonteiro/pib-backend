@@ -29,7 +29,7 @@ schema.index({
 });
 schema.plugin(_mongoosePaginate.default);
 
-var _default = _mongoose.default.model("sizes", schema);
+var _default = _mongoose.default.model('sizes', schema);
 
 exports.default = _default;
 //# sourceMappingURL=sizes.js.map

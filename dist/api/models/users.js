@@ -61,7 +61,7 @@ var schema = new Schema({
   },
   role: {
     type: String,
-    default: "user"
+    default: 'user'
   }
 }, {
   timestamps: true
@@ -88,7 +88,7 @@ schema.methods.toAuthJSON = function toAuthJSON() {
 }; // schema.plugin(paginate);
 
 
-var _default = _mongoose.default.model("users", schema);
+var _default = _mongoose.default.model('users', schema);
 
 exports.default = _default;
 //# sourceMappingURL=users.js.map

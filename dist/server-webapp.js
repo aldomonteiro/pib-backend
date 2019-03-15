@@ -10,6 +10,8 @@ var _bodyParser = _interopRequireDefault(require("body-parser"));
 
 var _https = _interopRequireDefault(require("https"));
 
+var _http = _interopRequireDefault(require("http"));
+
 var _fs = _interopRequireDefault(require("fs"));
 
 var _mongoose = _interopRequireDefault(require("mongoose"));
@@ -19,6 +21,8 @@ var _dotenv = _interopRequireDefault(require("dotenv"));
 var _bluebird = _interopRequireDefault(require("bluebird"));
 
 var _momentTimezone = _interopRequireDefault(require("moment-timezone"));
+
+var _socket = _interopRequireDefault(require("socket.io"));
 
 var _users = _interopRequireDefault(require("./api/routes/users"));
 
@@ -44,7 +48,17 @@ var _orders = _interopRequireDefault(require("./api/routes/orders"));
 
 var _customers = _interopRequireDefault(require("./api/routes/customers"));
 
+var _accounts = _interopRequireDefault(require("./api/routes/accounts"));
+
+var _categories = _interopRequireDefault(require("./api/routes/categories"));
+
+var _ordersController = require("./api/controllers/ordersController");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 var app = (0, _express.default)(); // Beggining - That is all to log in the local timezone
 // https://medium.com/front-end-hacking/node-js-logs-in-local-timezone-on-morgan-and-winston-9e98b2b9ca45
@@ -56,7 +70,7 @@ _morgan.default.token('date', function (req, res, tz) {
 
 _morgan.default.format('myformat', '[:date[America/Sao_Paulo]] ":method :url" :status :res[content-length] - :response-time ms');
 
-app.use((0, _morgan.default)("myformat")); // End - That is all to log in the right timezone
+app.use((0, _morgan.default)('myformat')); // End - That is all to log in the right timezone
 
 app.set('json spaces', 2);
 app.use(_bodyParser.default.urlencoded({
@@ -64,20 +78,18 @@ app.use(_bodyParser.default.urlencoded({
 }));
 app.use(_bodyParser.default.json());
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", '*');
-  res.header("Access-Control-Allow-Credentials", true);
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Credentials', true);
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header("Access-Control-Allow-Headers", 'Authorization,Origin,X-Requested-With,Content-Type,Accept,application/json,Content-Range');
-  res.header("Access-Control-Expose-Headers", 'Content-Range');
+  res.header('Access-Control-Allow-Headers', 'Authorization,Origin,X-Requested-With,Content-Type,Accept,application/json,Content-Range');
+  res.header('Access-Control-Expose-Headers', 'Content-Range');
 
   if (req.method === 'OPTIONS') {
     res.sendStatus(200);
   } else {
     next();
   }
-});
-
-// Connect to mongodb
+}); // Connect to mongodb
 
 _dotenv.default.config(); // mongoose.connect(
 //   process.env.MONGODB_URL,
@@ -148,29 +160,94 @@ process.on('SIGINT', function () {
   });
 }); // Setup the routes
 
-app.use("/users", _users.default);
-app.use("/flavors", _flavors.default);
-app.use("/toppings", _toppings.default);
-app.use("/pricings", _pricings.default);
-app.use("/beverages", _beverages.default);
-app.use("/stores", _stores.default);
-app.use("/openingtimes", _openingtimes.default);
-app.use("/pages", _pages.default);
-app.use("/sizes", _sizes.default);
-app.use("/extras", _extras.default);
-app.use("/orders", _orders.default);
-app.use("/customers", _customers.default); // const env = process.env.NODE_ENV || 'production';
+app.use('/users', _users.default);
+app.use('/flavors', _flavors.default);
+app.use('/toppings', _toppings.default);
+app.use('/pricings', _pricings.default);
+app.use('/beverages', _beverages.default);
+app.use('/stores', _stores.default);
+app.use('/openingtimes', _openingtimes.default);
+app.use('/pages', _pages.default);
+app.use('/sizes', _sizes.default);
+app.use('/extras', _extras.default);
+app.use('/orders', _orders.default);
+app.use('/customers', _customers.default);
+app.use('/accounts', _accounts.default);
+app.use('/categories', _categories.default); // const env = process.env.NODE_ENV || 'production';
 
-if (env === 'production') app.listen(8080, function () {
-  return console.log(env + "env. Server listening on port 8080");
-}); else {
+var server;
+
+if (env === 'production') {
+  app.listen(8080, function () {
+    return console.log(env + 'env. Server listening on port 8080');
+  });
+  server = _http.default.createServer(app);
+} else {
   // dev server
   // Lift the https server
-  _https.default.createServer({
-    key: _fs.default.readFileSync("/Users/aldo/.localhost-ssl/localhost.key"),
-    cert: _fs.default.readFileSync("/Users/aldo/.localhost-ssl/localhost.crt")
+  server = _https.default.createServer({
+    key: _fs.default.readFileSync('/Users/aldo/.localhost-ssl/localhost.key'),
+    cert: _fs.default.readFileSync('/Users/aldo/.localhost-ssl/localhost.crt')
   }, app).listen(8080, function () {
-    return console.log(env + " Server listening on port 8080");
+    return console.log(env + ' Server listening on port 8080');
   });
 }
+
+var io = (0, _socket.default)(server);
+var interval;
+io.on('connection', function (socket) {
+  console.info('New client connected');
+
+  if (interval) {
+    clearInterval(interval);
+  }
+
+  interval = setInterval(function () {
+    return getApiAndEmit(socket);
+  }, 30000);
+  socket.on('disconnect', function () {
+    console.info('Client disconnected');
+  });
+});
+
+var getApiAndEmit =
+/*#__PURE__*/
+function () {
+  var _ref = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee(socket) {
+    var pageID, lastOrders;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.prev = 0;
+            pageID = socket.handshake.query.pageID; // const lastOrderID = await getLastOrder(pageID);
+
+            _context.next = 4;
+            return (0, _ordersController.getLastPendingOrders)(pageID);
+
+          case 4:
+            lastOrders = _context.sent;
+            socket.emit('LastOrders', lastOrders);
+            _context.next = 11;
+            break;
+
+          case 8:
+            _context.prev = 8;
+            _context.t0 = _context["catch"](0);
+            console.error("Error: ".concat(_context.t0.code));
+
+          case 11:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, null, [[0, 8]]);
+  }));
+
+  return function getApiAndEmit(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
 //# sourceMappingURL=server-webapp.js.map

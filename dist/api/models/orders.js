@@ -50,6 +50,9 @@ var schema = new Schema({
   address: {
     type: String
   },
+  qty: {
+    type: Number
+  },
   qty_total: {
     type: Number
   },
@@ -62,6 +65,9 @@ var schema = new Schema({
   currentItemSize: {
     type: Number
   },
+  currentItemCategory: {
+    type: Number
+  },
   currentItemSplit: {
     type: Number
   },
@@ -72,6 +78,10 @@ var schema = new Schema({
     type: Boolean
   },
   waitingFor: {
+    type: String
+  },
+  waitingForData: Schema.Types.Mixed,
+  undo: {
     type: String
   },
   total: {
@@ -103,6 +113,18 @@ var schema = new Schema({
   },
   rejection_reason: {
     type: String
+  },
+  backToConfirmation: {
+    type: String
+  },
+  deliver_type: {
+    type: String
+  },
+  deliver_time: {
+    type: Number
+  },
+  source: {
+    type: String
   }
 }, {
   timestamps: true
@@ -120,16 +142,21 @@ schema.pre('save', function (next) {
       break;
 
     case 2:
-      this.status2 = 'accepted';
+      this.status2 = 'viewed';
       this.status3 = 'pending';
       break;
 
     case 3:
-      this.status2 = 'printed';
+      this.status2 = 'accepted';
       this.status3 = 'pending';
       break;
 
     case 4:
+      this.status2 = 'printed';
+      this.status3 = 'pending';
+      break;
+
+    case 5:
       this.status2 = 'delivered';
       this.status3 = 'delivered';
       break;

@@ -17,6 +17,8 @@ var _util2 = require("../util/util");
 
 var _toppingsController = require("./toppingsController");
 
+var _categoriesController = require("./categoriesController");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -54,13 +56,18 @@ function () {
                     queryObj[filter] = {
                       $in: value
                     };
+                  } else if (filter === 'flavor') {
+                    queryObj[filter] = {
+                      $regex: value,
+                      $options: 'i'
+                    };
                   } else queryObj[filter] = value;
                 }
               }
             }
 
             if (req.currentUser.activePage) {
-              queryObj["pageId"] = req.currentUser.activePage;
+              queryObj['pageId'] = req.currentUser.activePage;
             }
 
             _flavors.default.find(queryObj).sort(sortObj).exec(
@@ -69,73 +76,54 @@ function () {
               var _ref2 = _asyncToGenerator(
               /*#__PURE__*/
               regeneratorRuntime.mark(function _callee(err, result) {
-                var _rangeIni, _rangeEnd, _totalCount, flavorsArray, _i, tn, flavor;
+                var _rangeIni, _rangeEnd, _totalCount, flavorsArray, _i, flavor;
 
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
-                        if (!err) {
-                          _context.next = 4;
-                          break;
+                        if (err) {
+                          res.status(500).json({
+                            message: err.errmsg
+                          });
+                        } else {
+                          _rangeIni = 0;
+                          _rangeEnd = result.length;
+
+                          if (rangeObj) {
+                            _rangeIni = rangeObj.offset <= result.length ? rangeObj.offset : result.length;
+                            _rangeEnd = rangeObj.offset + rangeObj.limit <= result.length ? rangeObj.offset + rangeObj.limit : result.length;
+                          }
+
+                          _totalCount = result.length;
+                          flavorsArray = [];
+
+                          for (_i = _rangeIni; _i < _rangeEnd; _i++) {
+                            // const tn = await getToppingsNames(result[i].toppings, result[i].pageId);
+                            flavor = {
+                              id: result[_i].id,
+                              flavor: result[_i].flavor,
+                              categoryId: result[_i].categoryId,
+                              toppings: result[_i].toppings,
+                              price: result[_i].price,
+                              price_by_size: result[_i].price_by_size,
+                              createdAt: result[_i].createdAt,
+                              updatedAt: result[_i].updatedAt // tn: tn.join(),
+
+                            };
+                            flavorsArray.push(flavor);
+                          }
+
+                          res.setHeader('Content-Range', _util.default.format('flavors %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
+                          res.status(200).json(flavorsArray);
                         }
 
-                        res.status(500).json({
-                          message: err.errmsg
-                        });
-                        _context.next = 21;
-                        break;
-
-                      case 4:
-                        _rangeIni = 0;
-                        _rangeEnd = result.length;
-
-                        if (rangeObj) {
-                          _rangeIni = rangeObj.offset <= result.length ? rangeObj.offset : result.length;
-                          _rangeEnd = rangeObj.offset + rangeObj.limit <= result.length ? rangeObj.offset + rangeObj.limit : result.length;
-                        }
-
-                        _totalCount = result.length;
-                        flavorsArray = new Array();
-                        _i = _rangeIni;
-
-                      case 10:
-                        if (!(_i < _rangeEnd)) {
-                          _context.next = 19;
-                          break;
-                        }
-
-                        _context.next = 13;
-                        return (0, _toppingsController.getToppingsNames)(result[_i].toppings, result[_i].pageId);
-
-                      case 13:
-                        tn = _context.sent;
-                        flavor = {
-                          id: result[_i].id,
-                          flavor: result[_i].flavor,
-                          kind: result[_i].kind,
-                          toppings: result[_i].toppings,
-                          createdAt: result[_i].createdAt,
-                          updatedAt: result[_i].updatedAt,
-                          tn: tn.join()
-                        };
-                        flavorsArray.push(flavor);
-
-                      case 16:
-                        _i++;
-                        _context.next = 10;
-                        break;
-
-                      case 19:
-                        res.setHeader('Content-Range', _util.default.format("flavors %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
-                        res.status(200).json(flavorsArray);
-
-                      case 21:
+                      case 1:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, this);
+                }, _callee);
               }));
 
               return function (_x3, _x4) {
@@ -178,7 +166,7 @@ function () {
             return _context2.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee2);
   }));
 
   return function flavor_get_all(_x, _x2) {
@@ -211,66 +199,189 @@ var flavor_get_one = function flavor_get_one(req, res) {
 
 exports.flavor_get_one = flavor_get_one;
 
-var flavor_create = function flavor_create(req, res) {
-  if (req.body) {
-    var pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
-    var newRecord = new _flavors.default({
-      id: req.body.id,
-      flavor: (0, _stringCapitalizeName.default)(req.body.flavor),
-      kind: req.body.kind,
-      pageId: pageId,
-      toppings: req.body.toppings
-    });
-    newRecord.save().then(function (result) {
-      res.status(200).json(result);
-    }).catch(function (err) {
-      console.error(err);
+var flavor_create =
+/*#__PURE__*/
+function () {
+  var _ref3 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee3(req, res) {
+    var pageId, _req$body, categoryId, price, price_by_size, category, id, lastId, newRecord;
 
-      if (err.code === 11000) {
-        res.status(500).json({
-          message: 'pos.messages.duplicatedKey'
-        });
-      } else {
-        res.status(500).json({
-          message: err.errmsg
-        });
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            if (!req.body) {
+              _context3.next = 22;
+              break;
+            }
+
+            pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
+            _req$body = req.body, categoryId = _req$body.categoryId, price = _req$body.price;
+            price_by_size = false;
+
+            if (!categoryId) {
+              _context3.next = 9;
+              break;
+            }
+
+            _context3.next = 7;
+            return (0, _categoriesController.getCategory)(pageId, categoryId);
+
+          case 7:
+            category = _context3.sent;
+            if (category) price_by_size = category.price_by_size;
+
+          case 9:
+            if (!(price_by_size && price > 0)) {
+              _context3.next = 13;
+              break;
+            }
+
+            res.status(500).json({
+              message: 'pos.flavors.messages.priceNotAllowed'
+            });
+            _context3.next = 22;
+            break;
+
+          case 13:
+            id = req.body.id;
+
+            if (!(!id || id === 0)) {
+              _context3.next = 20;
+              break;
+            }
+
+            _context3.next = 17;
+            return _flavors.default.find({
+              pageId: pageId
+            }).select('id').sort('-id').limit(1).exec();
+
+          case 17:
+            lastId = _context3.sent;
+            id = 1;
+            if (lastId && lastId.length) id = lastId[0].id + 1;
+
+          case 20:
+            newRecord = new _flavors.default({
+              id: id,
+              flavor: (0, _stringCapitalizeName.default)(req.body.flavor),
+              categoryId: req.body.categoryId,
+              pageId: pageId,
+              toppings: req.body.toppings,
+              price: price,
+              price_by_size: price_by_size
+            });
+            newRecord.save().then(function (result) {
+              res.status(200).json(result);
+            }).catch(function (err) {
+              console.error(err);
+
+              if (err.code === 11000) {
+                res.status(500).json({
+                  message: 'pos.messages.duplicatedKey'
+                });
+              } else {
+                res.status(500).json({
+                  message: err.errmsg
+                });
+              }
+            });
+
+          case 22:
+          case "end":
+            return _context3.stop();
+        }
       }
-    });
-  }
-}; // UPDATE
+    }, _callee3);
+  }));
+
+  return function flavor_create(_x5, _x6) {
+    return _ref3.apply(this, arguments);
+  };
+}(); // UPDATE
 
 
 exports.flavor_create = flavor_create;
 
-var flavor_update = function flavor_update(req, res) {
-  if (req.body && req.body.id) {
-    var pageId = req.currentUser.activePage;
+var flavor_update =
+/*#__PURE__*/
+function () {
+  var _ref4 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee4(req, res) {
+    var pageId, _req$body2, id, flavor, categoryId, price, toppings, price_by_size, category;
 
-    _flavors.default.findOne({
-      pageId: pageId,
-      id: req.body.id
-    }, function (err, doc) {
-      if (!err) {
-        doc.flavor = (0, _stringCapitalizeName.default)(req.body.flavor);
-        doc.kind = req.body.kind;
-        doc.toppings = req.body.toppings;
-        doc.save(function (err, result) {
-          if (err) {
-            res.status(500).json({
-              message: err.errmsg
-            });
-          } else {
-            res.status(200).json(result);
-          }
-        });
-      } else {
-        res.status(500).json({
-          message: err.errmsg
-        });
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            if (!(req.body && req.body.id)) {
+              _context4.next = 10;
+              break;
+            }
+
+            pageId = req.currentUser.activePage;
+            _req$body2 = req.body, id = _req$body2.id, flavor = _req$body2.flavor, categoryId = _req$body2.categoryId, price = _req$body2.price, toppings = _req$body2.toppings;
+            price_by_size = false;
+
+            if (!categoryId) {
+              _context4.next = 9;
+              break;
+            }
+
+            _context4.next = 7;
+            return (0, _categoriesController.getCategory)(pageId, categoryId);
+
+          case 7:
+            category = _context4.sent;
+            if (category) price_by_size = category.price_by_size;
+
+          case 9:
+            if (price_by_size && price > 0) {
+              res.status(500).json({
+                message: 'pos.flavors.messages.priceNotAllowed'
+              });
+            } else {
+              _flavors.default.findOne({
+                pageId: pageId,
+                id: id
+              }, function (err, doc) {
+                if (!err) {
+                  doc.flavor = (0, _stringCapitalizeName.default)(flavor);
+                  doc.categoryId = categoryId;
+                  doc.toppings = toppings;
+                  doc.price = price;
+                  doc.price_by_size = price_by_size;
+                  doc.save(function (err, result) {
+                    if (err) {
+                      res.status(500).json({
+                        message: err.errmsg
+                      });
+                    } else {
+                      res.status(200).json(result);
+                    }
+                  });
+                } else {
+                  res.status(500).json({
+                    message: err.errmsg
+                  });
+                }
+              });
+            }
+
+          case 10:
+          case "end":
+            return _context4.stop();
+        }
       }
-    });
-  }
-}; // DELETE
+    }, _callee4);
+  }));
+
+  return function flavor_update(_x7, _x8) {
+    return _ref4.apply(this, arguments);
+  };
+}(); // DELETE
 
 
 exports.flavor_update = flavor_update;
@@ -291,7 +402,7 @@ var flavor_delete = function flavor_delete(req, res) {
 };
 /**
  * Delete all records from a pageID
- * @param {*} pageID 
+ * @param {*} pageID
  */
 
 
@@ -300,31 +411,31 @@ exports.flavor_delete = flavor_delete;
 var deleteManyFlavors =
 /*#__PURE__*/
 function () {
-  var _ref3 = _asyncToGenerator(
+  var _ref5 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee3(pageID) {
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+  regeneratorRuntime.mark(function _callee5(pageID) {
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context5.prev = _context5.next) {
           case 0:
-            _context3.next = 2;
+            _context5.next = 2;
             return _flavors.default.deleteMany({
               pageId: pageID
             }).exec();
 
           case 2:
-            return _context3.abrupt("return", _context3.sent);
+            return _context5.abrupt("return", _context5.sent);
 
           case 3:
           case "end":
-            return _context3.stop();
+            return _context5.stop();
         }
       }
-    }, _callee3, this);
+    }, _callee5);
   }));
 
-  return function deleteManyFlavors(_x5) {
-    return _ref3.apply(this, arguments);
+  return function deleteManyFlavors(_x9) {
+    return _ref5.apply(this, arguments);
   };
 }();
 
@@ -333,35 +444,35 @@ exports.deleteManyFlavors = deleteManyFlavors;
 var getFlavors =
 /*#__PURE__*/
 function () {
-  var _ref4 = _asyncToGenerator(
+  var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee4(pageID) {
+  regeneratorRuntime.mark(function _callee6(pageID) {
     var queryFlavor;
-    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+    return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
-        switch (_context4.prev = _context4.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
             queryFlavor = _flavors.default.find({
               pageId: pageID
             });
             queryFlavor.sort('flavor');
-            queryFlavor.select('id flavor kind toppings');
-            _context4.next = 5;
+            queryFlavor.select('id flavor categoryId toppings price');
+            _context6.next = 5;
             return queryFlavor.exec();
 
           case 5:
-            return _context4.abrupt("return", _context4.sent);
+            return _context6.abrupt("return", _context6.sent);
 
           case 6:
           case "end":
-            return _context4.stop();
+            return _context6.stop();
         }
       }
-    }, _callee4, this);
+    }, _callee6);
   }));
 
-  return function getFlavors(_x6) {
-    return _ref4.apply(this, arguments);
+  return function getFlavors(_x10) {
+    return _ref6.apply(this, arguments);
   };
 }();
 
@@ -370,35 +481,35 @@ exports.getFlavors = getFlavors;
 var getFlavor =
 /*#__PURE__*/
 function () {
-  var _ref5 = _asyncToGenerator(
+  var _ref7 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee5(pageID, flavorID) {
+  regeneratorRuntime.mark(function _callee7(pageID, flavorID) {
     var queryFlavor;
-    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+    return regeneratorRuntime.wrap(function _callee7$(_context7) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context7.prev = _context7.next) {
           case 0:
             queryFlavor = _flavors.default.findOne({
               pageId: pageID,
               id: flavorID
             });
-            queryFlavor.select('id flavor kind');
-            _context5.next = 4;
+            queryFlavor.select('id flavor categoryId price');
+            _context7.next = 4;
             return queryFlavor.exec();
 
           case 4:
-            return _context5.abrupt("return", _context5.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 5:
           case "end":
-            return _context5.stop();
+            return _context7.stop();
         }
       }
-    }, _callee5, this);
+    }, _callee7);
   }));
 
-  return function getFlavor(_x7, _x8) {
-    return _ref5.apply(this, arguments);
+  return function getFlavor(_x11, _x12) {
+    return _ref7.apply(this, arguments);
   };
 }();
 
@@ -407,20 +518,20 @@ exports.getFlavor = getFlavor;
 var getFlavorByName =
 /*#__PURE__*/
 function () {
-  var _ref6 = _asyncToGenerator(
+  var _ref8 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee6(pageID, flavorName) {
+  regeneratorRuntime.mark(function _callee8(pageID, flavorName) {
     var flavors, flavorsNames, i, stringResult, key;
-    return regeneratorRuntime.wrap(function _callee6$(_context6) {
+    return regeneratorRuntime.wrap(function _callee8$(_context8) {
       while (1) {
-        switch (_context6.prev = _context6.next) {
+        switch (_context8.prev = _context8.next) {
           case 0:
-            _context6.next = 2;
+            _context8.next = 2;
             return getFlavors(pageID);
 
           case 2:
-            flavors = _context6.sent;
-            flavorsNames = new Array();
+            flavors = _context8.sent;
+            flavorsNames = [];
 
             for (i = 0; i < flavors.length; i++) {
               flavorsNames.push(flavors[i].flavor);
@@ -437,27 +548,27 @@ function () {
                 */
 
             if (!(stringResult.bestMatch.rating > 0.6)) {
-              _context6.next = 12;
+              _context8.next = 12;
               break;
             }
 
             key = flavorsNames.indexOf(stringResult.bestMatch.target);
             console.log(stringResult, flavorsNames, key, flavors);
-            return _context6.abrupt("return", flavors[key]);
+            return _context8.abrupt("return", flavors[key]);
 
           case 12:
-            return _context6.abrupt("return", null);
+            return _context8.abrupt("return", null);
 
           case 13:
           case "end":
-            return _context6.stop();
+            return _context8.stop();
         }
       }
-    }, _callee6, this);
+    }, _callee8);
   }));
 
-  return function getFlavorByName(_x9, _x10) {
-    return _ref6.apply(this, arguments);
+  return function getFlavorByName(_x13, _x14) {
+    return _ref8.apply(this, arguments);
   };
 }();
 

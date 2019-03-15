@@ -16,13 +16,13 @@ var _default = function _default(req, res, next) {
   var token; // in pib-frontend App.js
   // options.headers.set('Authorization', `Bearer ${token}`);
 
-  if (header) token = header.split(" ")[1];
+  if (header) token = header.split(' ')[1];
 
   if (token) {
     _jsonwebtoken.default.verify(token, process.env.JWT_SECRET, function (err, decoded) {
       if (err) {
         res.status(401).json({
-          message: "pos.auth.invalid_token"
+          message: 'pos.auth.invalid_token'
         });
       } else {
         _users.default.findOne({
@@ -35,7 +35,7 @@ var _default = function _default(req, res, next) {
     });
   } else {
     res.status(401).json({
-      message: "No token"
+      message: 'No token'
     });
   }
 };

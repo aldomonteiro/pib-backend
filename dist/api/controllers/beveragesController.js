@@ -18,35 +18,59 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 // List all records
-// TODO: use filters in the query req.query
 var beverage_get_all = function beverage_get_all(req, res) {
   // Getting the sort from the requisition
-  var sortObj = (0, _util2.configSortQuery)(req.query.sort); // Getting the range from the requisition
+  var sortObj = req.query.sort ? (0, _util2.configSortQuery)(req.query.sort) : {
+    name: 'ASC'
+  }; // Getting the range from the requisition
 
   var rangeObj = (0, _util2.configRangeQuery)(req.query.range);
-  var options = {
-    offset: rangeObj['offset'],
-    limit: rangeObj['limit'],
-    sort: sortObj,
-    lean: true,
-    leanWithId: false
-  };
-  var query = {};
+  var queryObj = {};
 
-  if (req.currentUser.activePage) {
-    query = _beverages.default.find({
-      pageId: req.currentUser.activePage
-    });
+  if (req.query.filter) {
+    var filterObj = (0, _util2.configFilterQueryMultiple)(req.query.filter);
+
+    if (filterObj && filterObj.filterField && filterObj.filterField.length) {
+      for (var i = 0; i < filterObj.filterField.length; i++) {
+        var filter = filterObj.filterField[i];
+        var value = filterObj.filterValues[i];
+
+        if (Array.isArray(value)) {
+          queryObj[filter] = {
+            $in: value
+          };
+        } else queryObj[filter] = value;
+      }
+    }
   }
 
-  _beverages.default.paginate(query, options, function (err, result) {
+  if (req.currentUser.activePage) {
+    queryObj['pageId'] = req.currentUser.activePage;
+  }
+
+  _beverages.default.find(queryObj).sort(sortObj).exec(function (err, result) {
     if (err) {
       res.status(500).json({
         message: err.errmsg
       });
     } else {
-      res.setHeader('Content-Range', _util.default.format("beverages %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
-      res.status(200).json(result.docs);
+      var _rangeIni = 0;
+      var _rangeEnd = result.length;
+
+      if (rangeObj) {
+        _rangeIni = rangeObj.offset <= result.length ? rangeObj.offset : result.length;
+        _rangeEnd = rangeObj.offset + rangeObj.limit <= result.length ? rangeObj.offset + rangeObj.limit : result.length;
+      }
+
+      var _totalCount = result.length;
+      var responseArr = [];
+
+      for (var _i = _rangeIni; _i < _rangeEnd; _i++) {
+        responseArr.push(result[_i]);
+      }
+
+      res.setHeader('Content-Range', _util.default.format('beverages %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
+      res.status(200).json(responseArr);
     }
   });
 }; // List one record by filtering by ID
@@ -178,7 +202,7 @@ function () {
             return _context.stop();
         }
       }
-    }, _callee, this);
+    }, _callee);
   }));
 
   return function deleteManyBeverages(_x) {
@@ -214,7 +238,7 @@ function () {
             return _context2.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee2);
   }));
 
   return function getBeverages(_x2) {
@@ -251,7 +275,7 @@ function () {
             return _context3.stop();
         }
       }
-    }, _callee3, this);
+    }, _callee3);
   }));
 
   return function getBeverage(_x3, _x4) {

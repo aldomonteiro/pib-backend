@@ -17,8 +17,8 @@ var schema = new Schema({
     type: Number,
     required: true
   },
-  kind: {
-    type: String,
+  categoryId: {
+    type: Number,
     required: true
   },
   sizeId: {
@@ -38,7 +38,7 @@ var schema = new Schema({
 });
 schema.index({
   pageId: 1,
-  kind: 1,
+  categoryId: 1,
   sizeId: 1
 }, {
   unique: true
@@ -49,7 +49,7 @@ schema.index({
 
 schema.plugin(_mongoosePaginate.default);
 
-var _default = _mongoose.default.model("pricings", schema);
+var _default = _mongoose.default.model('pricings', schema);
 
 exports.default = _default;
 //# sourceMappingURL=pricings.js.map

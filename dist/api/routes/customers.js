@@ -17,9 +17,11 @@ var router = _express.default.Router();
 
 router.use(_authenticate.default); // CHECK TOKEN
 
-router.get("/", _customersController.customer_get_all); // GET_ALL
+router.get('/', _customersController.customer_get_all); // GET_ALL
 
-router.get("/:id", _customersController.customer_get_one); // GET_ONE
+router.get('/:id', _customersController.customer_get_one); // GET_ONE
+
+router.put('/:id', _customersController.customer_update); // UPDATE
 
 var _default = router;
 exports.default = _default;
