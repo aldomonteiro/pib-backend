@@ -7,7 +7,8 @@ const schema = new Schema(
         id: { type: Number, required: true },
         name: { type: String, required: true },
         pageId: { type: String, required: true },
-        isPizza: { type: Boolean },
+        price_by_size: { type: Boolean },
+        is_pizza: { type: Boolean },
     }, { timestamps: true },
 );
 

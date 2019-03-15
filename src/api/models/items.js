@@ -9,6 +9,7 @@ const schema = new Schema({
     id: { type: Number },
     userId: { type: String },
     pageId: { type: String },
+    categoryId: { type: Number },
     sizeId: { type: Number },
     flavorId: { type: Number },
     beverageId: { type: Number },

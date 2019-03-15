@@ -68,15 +68,26 @@ export const category_get_one = (req, res) => {
 }
 
 // CREATE A NEW RECORD
-export const category_create = (req, res) => {
+export const category_create = async (req, res) => {
     if (req.body) {
 
-        const pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
+        const pageID = req.currentUser.activePage ? req.currentUser.activePage : null;
+
+        let { id } = req.body;
+
+        if (!id || id === 0) {
+            const lastId = await Category.find({ pageId: pageID }).select('id').sort('-id').limit(1).exec();
+            id = 1;
+            if (lastId && lastId.length)
+                id = lastId[0].id + 1;
+        }
 
         const newRecord = new Category({
-            id: req.body.id,
+            id: id,
             name: req.body.name,
-            pageId: pageId,
+            price_by_size: req.body.price_by_size,
+            is_pizza: req.body.is_pizza,
+            pageId: pageID,
         });
 
         newRecord.save()
@@ -98,7 +109,8 @@ export const category_update = (req, res) => {
         Category.findOne({ pageId: pageId, id: req.body.id }, (err, doc) => {
             if (!err) {
                 doc.name = req.body.name;
-
+                doc.price_by_size = req.body.price_by_size;
+                doc.is_pizza = req.body.is_pizza;
                 doc.save((err, result) => {
                     if (err) {
                         res.status(500).json({ message: err.errmsg });
@@ -135,10 +147,9 @@ export const deleteManyCategories = async (pageID) => {
     return await Category.deleteMany({ pageId: pageID }).exec();
 }
 
-
 export const getCategories = async (pageID) => {
     let query = Category.find({ pageId: pageID });
-    query.sort('name');
+    query.sort('id');
     return await query.exec();
 }
 

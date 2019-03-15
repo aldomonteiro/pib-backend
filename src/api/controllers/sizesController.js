@@ -70,12 +70,21 @@ export const size_get_one = (req, res) => {
 }
 
 // CREATE A NEW RECORD
-export const size_create = (req, res) => {
+export const size_create = async (req, res) => {
     if (req.body) {
         const pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
 
+        let { id } = req.body;
+
+        if (!id || id === 0) {
+            const lastId = await Size.find({ pageId: pageId }).select('id').sort('-id').limit(1).exec();
+            id = 1;
+            if (lastId && lastId.length)
+                id = lastId[0].id + 1;
+        }
+
         const newRecord = new Size({
-            id: req.body.id,
+            id: id,
             size: stringCapitalizeName(req.body.size),
             slices: req.body.slices,
             split: req.body.split,

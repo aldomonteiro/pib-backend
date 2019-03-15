@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 import Items from '../models/items';
-import { getFlavor } from './flavorsController';
+import { getFlavors } from './flavorsController';
 import { getOnePricingByFlavor } from './pricingsController';
-import { getSize } from './sizesController';
-import { getBeverage } from './beveragesController';
+import { getSizes } from './sizesController';
+import { getCategories } from './categoriesController';
 
 const ITEMSTATUS_PENDING = 0;
 const ITEMSTATUS_COMPLETED = 1;
@@ -19,58 +19,43 @@ export const deleteManyItems = async (pageID) => {
 
 export const updateItem = async orderData => {
     const { orderId, currentItem, userId, pageId,
-        qty, sizeId, flavorId,
-        beverageId, beveragePrice, completeItem, split, originalSplit } = orderData;
+        qty, sizeId, flavorId, categoryId,
+        price, completeItem, split, eraseSize } = orderData;
 
-    if (qty || sizeId || flavorId || beverageId || typeof completeItem === 'boolean') {
-        let _searchStatus = ITEMSTATUS_PENDING;
-        // Received a completeItem = false from botController, so,
-        // the search is for a completed item.
-        if (typeof completeItem === 'boolean' && !completeItem)
-            _searchStatus = ITEMSTATUS_COMPLETED;
+    if (sizeId || flavorId || categoryId || typeof completeItem === 'boolean' || eraseSize) {
 
         const item = await Items.findOne({
             orderId: orderId, userId: userId,
-            pageId: pageId, status: _searchStatus,
+            pageId: pageId, flavorId: null,
+            status: ITEMSTATUS_PENDING,
         }).exec();
+
+        // when flavorId is set, a new item will be created.
         if (item) {
             if (qty) item.qty = qty;
             if (sizeId) item.sizeId = sizeId;
+            if (eraseSize) item.sizeId = null;
             if (flavorId) item.flavorId = flavorId;
-            if (beverageId) {
-                item.qty = 1;
-                item.beverageId = beverageId;
-                item.price = beveragePrice;
-            }
+            if (categoryId) item.categoryId = categoryId;
+            if (price) item.price = price;
             if (currentItem) item.itemId = currentItem;
             if (split) item.split = split;
             if (typeof completeItem === 'boolean')
                 item.status = completeItem === true ? ITEMSTATUS_COMPLETED : ITEMSTATUS_PENDING;
 
-            if (item.sizeId && item.flavorId) {
-                const pricing = await getOnePricingByFlavor(pageId, item.sizeId, item.flavorId);
-                if (pricing) {
-                    const _qty = item.qty && item.qty > 0 ? item.qty : 1;
-                    item.price = (pricing.price * _qty)
-                    if (item.split && item.split > 1) {
-                        item.price = item.price / item.split;
-                    }
-                }
+            const _split = split || item.split;
+            const _price = price || item.price;
+
+            if (_split && _split > 1 && _price) {
+                item.price = _price / _split;
             }
 
-            if (qty || sizeId || flavorId || split || beverageId || originalSplit || typeof completeItem === 'boolean')
-                await item.save();
-        }
-        else {
+            await item.save();
+        } else {
             let resultLastId = await Items.find({ pageId: pageId, orderId: orderId }).select('id').sort('-id').limit(1).exec();
             let itemId = 1;
             if (resultLastId && resultLastId.length)
                 itemId = resultLastId[0].id + 1;
-
-            let price = 0;
-            if (beverageId && beveragePrice) {
-                price = beveragePrice;
-            }
 
             const record = new Items({
                 id: itemId,
@@ -82,7 +67,7 @@ export const updateItem = async orderData => {
                 split: split || 1,
                 sizeId: sizeId,
                 flavorId: flavorId,
-                beverageId: beverageId,
+                categoryId: categoryId,
                 price: price,
                 status: ITEMSTATUS_PENDING,
             });
@@ -109,35 +94,55 @@ export const updateStatusSpecificItem = async (objectId, status) => {
 export const getItems = async orderData => {
     const { orderId, pageId, completeItems } = orderData;
 
-    let queryAuxTables = true;
+    let queryAuxTables = false;
     if (typeof completeItems !== 'undefined') {
         queryAuxTables = completeItems;
     }
 
     const items = await Items.find({ orderId: orderId, pageId: pageId }).exec();
+
+    let flavors = [];
+    let sizes = [];
+    let categories = [];
+
+    if (queryAuxTables) {
+        flavors = await getFlavors(pageId);
+        sizes = await getSizes(pageId);
+        categories = await getCategories(pageId);
+    }
+
     if (items && items.length) {
         for (let i = 0; i < items.length; i++) {
             if (items[i].flavorId && items[i].flavorId > 0) {
                 if (queryAuxTables) {
-                    const flavor = await getFlavor(pageId, items[i].flavorId);
-                    if (flavor)
-                        items[i].flavor = flavor.flavor;
+                    for (let flavor of flavors) {
+                        if (flavor.id === items[i].flavorId) {
+                            items[i].flavor = flavor.flavor;
+                            break;
+                        }
+                    }
                 }
             }
 
             if (items[i].sizeId && items[i].sizeId > 0) {
                 if (queryAuxTables) {
-                    const size = await getSize(pageId, items[i].sizeId);
-                    if (size)
-                        items[i].size = size.size;
+                    for (let size of sizes) {
+                        if (size.id === items[i].sizeId) {
+                            items[i].size = size.size;
+                            break;
+                        }
+                    }
                 }
             }
 
-            if (items[i].beverageId && items[i].beverageId > 0) {
+            if (items[i].categoryId && items[i].categoryId > 0) {
                 if (queryAuxTables) {
-                    const beverage = await getBeverage(pageId, items[i].beverageId);
-                    if (beverage)
-                        items[i].beverage = beverage.name;
+                    for (let category of categories) {
+                        if (category.id === items[i].categoryId) {
+                            items[i].category = category.name;
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -156,6 +161,16 @@ export const getItems = async orderData => {
 export const deleteItem = async (pageID, orderID, itemID) => {
     try {
         const result = await Items.deleteMany({ pageId: pageID, orderId: orderID, itemId: itemID }).exec();
+        return result;
+    } catch (err) {
+        console.error(err);
+        return null;
+    }
+}
+
+export const deletePendingItem = async (pageID, orderID) => {
+    try {
+        const result = await Items.deleteMany({ pageId: pageID, orderId: orderID, status: ITEMSTATUS_PENDING }).exec();
         return result;
     } catch (err) {
         console.error(err);
@@ -188,6 +203,25 @@ export const reorderItems = async (pageID, orderID) => {
     }
 }
 
+/**
+ * Updates all items with same itemID, setting their status as COMPLETED. It is used
+ * when an item has split, and the status is PENDING whle the user is choosing all the flavors.
+ * @param {*} pageID
+ * @param {*} orderID
+ * @param {*} itemID
+ */
+export const updateItemStatus = async (pageID, orderID, itemID) => {
+    try {
+        const result = await Items.updateMany(
+            { pageId: pageID, orderId: orderID, itemId: itemID },
+            { $set: { status: ITEMSTATUS_COMPLETED } }).exec();
+        console.info(result);
+        return result;
+    } catch (err) {
+        console.error(err);
+        return null;
+    }
+}
 
 /**
  * Calculate total price of an orderId+pageId

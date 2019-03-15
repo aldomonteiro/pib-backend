@@ -243,7 +243,7 @@ export const getOrderJson = async (pageId, orderId) => {
     try {
         const order = await Order.findOne({ pageId: pageId, id: orderId });
         const customer = await getCustomerById(pageId, order.customerId);
-        const items = await getItems({ pageId: pageId, orderId: orderId });
+        const items = await getItems({ pageId: pageId, orderId: orderId, completeItems: true });
         const store = await getStoreData(order.pageId);
         const distanceFromStore = distanceBetweenCoordinates(store.location_lat, store.location_long, order.location_lat, order.location_long);
         const deliverAt = order.deliver_time
@@ -302,9 +302,10 @@ export const updateOrder = async orderData => {
     try {
         const { pageId, userId, source, deliverType, deliverTime, qty, qty_total, location, user,
             phone, addrData, completeItem, confirmOrder,
-            waitingForAddress, waitingFor, undo, currentItem, sizeId, calcTotal,
+            waitingForAddress, waitingFor, waitingForData, undo, currentItem, sizeId, calcTotal,
             originalSplit, split, currentItemSplit, eraseSplit, noBeverage,
-            paymentType, paymentChange, backToConfirmation, comments } = orderData;
+            paymentType, paymentChange, backToConfirmation, comments,
+            categoryId, eraseSize } = orderData;
 
         let customerID = 0;
         let customerData = {}
@@ -367,14 +368,6 @@ export const updateOrder = async orderData => {
                 updateOrder = true;
             }
 
-            // // when I have a split, I am forcing size and qty
-            // if (typeof split === 'number') {
-            //     orderData.sizeId = order.currentItemSize;
-            //     orderData.qty = 1;
-
-            //     updateOrder = true;
-            // }
-
             if (originalSplit) {
                 // split increments the items number (+originalSplit)
                 //  and removes 1 (that was the original quantity asked by the user)
@@ -433,6 +426,13 @@ export const updateOrder = async orderData => {
                 updateOrder = true;
             }
 
+            /** EraseSize only in the item, because, user can navigate through categories
+             * of the same size.
+             */
+            // if (eraseSize) {
+            //     order.currentItemSize = null;
+            // }
+
             if (completeItem) {
                 if (order.item_complete) order.item_complete = order.item_complete + 1;
                 else order.item_complete = 1;
@@ -460,6 +460,14 @@ export const updateOrder = async orderData => {
 
             if (waitingFor) {
                 order.waitingFor = waitingFor;
+                updateOrder = true;
+
+                if (!undo)
+                    order.undo = null;
+            }
+
+            if (waitingForData) {
+                order.waitingForData = waitingForData;
                 updateOrder = true;
             }
 
@@ -499,6 +507,11 @@ export const updateOrder = async orderData => {
 
             if (paymentChange) {
                 order.payment_change = paymentChange;
+                updateOrder = true;
+            }
+
+            if (categoryId) {
+                order.currentItemCategory = categoryId;
                 updateOrder = true;
             }
 
@@ -546,7 +559,7 @@ export const getOrderPending = async orderData => {
     }).exec();
     if (_order) {
         if (isComplete && isComplete === true) {
-            const _items = await getItems({ orderId: _order.id, pageId: pageId });
+            const _items = await getItems({ orderId: _order.id, pageId: pageId, completeItems: isComplete });
 
             const completeOrder = {
                 order: _order,
@@ -607,12 +620,12 @@ export const getOrdersCustomerStat = async orderData => {
 export const cancelOrder = async orderData => {
     const { pageId, userId } = orderData;
 
-    await Order.findOneAndDelete({ pageId: pageId, userId: userId, status: ORDERSTATUS_PENDING },
-        (err, res) => {
+    await Order.findOneAndRemove({ pageId: pageId, userId: userId, status: ORDERSTATUS_PENDING },
+        async (err, res) => {
             if (!err) {
                 if (res) {
                     const orderId = res.id;
-                    cancelItems(pageId, orderId);
+                    await cancelItems(pageId, orderId);
                 } else {
                     console.error('Items from this order shall be deleted manually');
                     console.info(res);

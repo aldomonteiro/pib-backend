@@ -1,8 +1,8 @@
-import Pricing from "../models/pricings";
-import util from "util";
+import Pricing from '../models/pricings';
+import util from 'util';
 import { configSortQuery, configRangeQuery } from '../util/util';
-import { getSizes } from "./sizesController";
-import { getFlavor } from "./flavorsController";
+import { getSizes } from './sizesController';
+import { getFlavor } from './flavorsController';
 
 // List all records
 // TODO: use filters in the query req.query
@@ -30,7 +30,7 @@ export const pricing_get_all = (req, res) => {
         if (err) {
             res.status(500).json({ message: err.errmsg });
         } else {
-            res.setHeader('Content-Range', util.format("pricings %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
+            res.setHeader('Content-Range', util.format('pricings %d-%d/%d', rangeObj['offset'], rangeObj['limit'], result.total));
             res.status(200).json(result.docs);
         }
     });
@@ -45,8 +45,7 @@ export const pricing_get_one = (req, res) => {
         Pricing.findOne({ pageId: pageId, id: req.params.id }, (err, doc) => {
             if (err) {
                 res.status(500).json({ message: err.errmsg });
-            }
-            else {
+            } else {
                 res.status(200).json(doc);
             }
         });
@@ -54,16 +53,25 @@ export const pricing_get_one = (req, res) => {
 }
 
 // CREATE A NEW RECORD
-export const pricing_create = (req, res) => {
+export const pricing_create = async (req, res) => {
     if (req.body) {
 
         const pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
 
+        let { id } = req.body;
+
+        if (!id || id === 0) {
+            const lastId = await Pricing.find({ pageId: pageId }).select('id').sort('-id').limit(1).exec();
+            id = 1;
+            if (lastId && lastId.length)
+                id = lastId[0].id + 1;
+        }
+
         const newRecord = new Pricing({
-            id: req.body.id,
+            id: id,
             categoryId: req.body.categoryId,
             sizeId: req.body.sizeId,
-            price: req.body.price, // TODO: how to handle float?
+            price: req.body.price,
             pageId: pageId,
         });
 
@@ -123,15 +131,17 @@ export const pricing_delete = (req, res) => {
 
 /**
  * Delete all records from a pageID
- * @param {*} pageID 
+ * @param {*} pageID
  */
 export const deleteManyPricings = async (pageID) => {
     return await Pricing.deleteMany({ pageId: pageID }).exec();
 }
 
-export const getPricingSizing = async pageId => {
-    const query = Pricing.distinct('sizeId', { pageId: pageId });
-    return await query.exec();
+export const getPricingSizing = async (pageID, categoryID) => {
+    if (categoryID)
+        return await Pricing.distinct('sizeId', { pageId: pageID, categoryId: categoryID }).exec();
+    else
+        return await Pricing.distinct('sizeId', { pageId: pageID }).exec();
 }
 
 export const getPricings = async (pageID) => {

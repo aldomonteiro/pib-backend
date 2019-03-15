@@ -2,10 +2,10 @@ import util from 'util';
 import fs from 'fs';
 import { Bot, Elements, Buttons, QuickReplies } from 'facebook-messenger-bot';
 import { getOnePageToken, getOnePageData, sendPassThreadControl } from '../controllers/pagesController';
-import { getPricingSizing, getOnePricing } from '../controllers/pricingsController';
+import { getPricingSizing, getPricings } from '../controllers/pricingsController';
 import { getFlavors } from '../controllers/flavorsController';
-import { getToppingsNames, getAllToppingsNames, getToppingsFull } from '../controllers/toppingsController';
-import getCardapio from './show_cardapio';
+import { getToppingsFull } from '../controllers/toppingsController';
+import { getCardapio } from './show_cardapio';
 import { getSizes, getSize } from '../controllers/sizesController';
 import { getBeverages } from '../controllers/beveragesController';
 import { getTodayOpeningTime, getStoreData } from '../controllers/storesController';
@@ -14,8 +14,9 @@ import {
     getAddressLocation,
     getCustomerAddress, formatAddrData,
 } from '../controllers/customersController';
-import { updateStatusSpecificItem, deleteItem, reorderItems } from '../controllers/itemsController';
+import { updateStatusSpecificItem, deleteItem, reorderItems, deletePendingItem, updateItemStatus } from '../controllers/itemsController';
 import { formatWhatsappNumber, formatAsCurrency } from '../util/util';
+import { getCategories, getCategory } from '../controllers/categoriesController';
 
 // TODO: create a debugger with json format
 var log_file = fs.createWriteStream(__dirname + '/debug.log', { flags: 'w' });
@@ -74,43 +75,50 @@ export const checkLastAction = async (pageId, userId) => {
     const pendingOrder = await getOrderPending({ pageId, userId });
 
     if (pendingOrder.order) {
-        if (pendingOrder.order.waitingFor === 'confirm_address') {
+        const wf = pendingOrder.order.waitingFor;
+        const wfd = pendingOrder.order.waitingForData;
+
+        if (wf === 'confirm_address') {
             const addrData = await getCustomerAddress(pageId, userId);
             return await confirmAddress(pageId, userId, addrData);
-        } else if (pendingOrder.order.waitingFor === 'location')
+        } else if (wf === 'location')
             return await askForLocation(pageId, userId);
-        else if (pendingOrder.order.waitingFor === 'location_address') {
+        else if (wf === 'location_address') {
             const location = {
                 lat: pendingOrder.order.location_lat,
                 long: pendingOrder.order.location_long,
                 url: pendingOrder.order.location_url,
             }
             return await confirmLocationAddress(pageId, userId, location);
-        } else if (pendingOrder.order.waitingFor === 'size')
-            return await askForSize(pageId, userId)
-        else if (pendingOrder.order.waitingFor === 'deliver')
+        } else if (wf === 'size')
+            return await askForSizeCat(pageId, userId)
+        else if (wf === 'deliver')
             return await askForDeliver(pageId, userId);
-        else if (pendingOrder.order.waitingFor === 'quantity')
+        else if (wf === 'category')
+            return await askForCategory(pageId, userId, wfd);
+        else if (wf === 'quantity')
             return await askForQuantity(pageId, userId);
-        else if (pendingOrder.order.waitingFor === 'split')
+        else if (wf === 'split')
             return checkSplit(pageId, userId, 1);
-        else if (pendingOrder.order.waitingFor === 'flavor')
+        else if (wf === 'flavor')
             return await askForFlavor(pageId, userId, 1);
-        else if (pendingOrder.order.waitingFor === 'change_order')
+        else if (wf === 'change_order')
             return await askForChangeOrder(pageId, userId);
-        else if (pendingOrder.order.waitingFor === 'partial_confirmation')
-            return await showOrderOrNextItem(pageId, userId);
-        else if (pendingOrder.order.waitingFor === 'want_beverage')
+        else if (wf === 'partial_confirmation')
+            return await showPartialOrder(pageId, userId);
+        else if (wf === 'want_beverage')
             return await askForWantBeverage(pageId, userId);
-        else if (pendingOrder.order.waitingFor === 'beverage')
+        else if (wf === 'beverage')
             return await askForBeverages(pageId, userId, 1);
-        else if (pendingOrder.order.waitingFor === 'payment_type')
+        else if (wf === 'payment_type')
             return await askForPaymentType(pageId, userId);
-        else if (pendingOrder.order.waitingFor === 'payment_change')
+        else if (wf === 'payment_change')
             return await askForPaymentChange(pageId, userId);
-        else if (pendingOrder.order.waitingFor === 'full_confirmation')
+        else if (wf === 'comments')
+            return await askForComments(pageId, userId);
+        else if (wf === 'full_confirmation')
             return await showFullOrder(pageId, userId);
-        else if (pendingOrder.order.waitingFor === 'nothing')
+        else if (wf === 'nothing')
             return await showOrderOrNextItem(pageId, userId);
         else
             return await sendMainMenu();
@@ -215,8 +223,8 @@ export const sendHorario = async (pageID, source) => {
  * Returns only the formatted text to be sent to the user
  * @param {*} pageID
  */
-export const sendCardapio = async (pageID, source) => {
-    const replyMsg = await getCardapio(pageID);
+export const sendCardapio = async (pageID, data, source) => {
+    const replyMsg = await getCardapio(pageID, data.id);
 
     if (source && source === 'whatsapp') {
         const reply = await sendMainMenu();
@@ -226,56 +234,39 @@ export const sendCardapio = async (pageID, source) => {
         return { type: 'text', text: replyMsg };
 }
 
-export const inputCardapioReplyMsg = (flavorArray) => {
-    let replyMsg = '';
-    if (flavorArray) {
-        for (let i = 0; i < flavorArray.length; i++) {
-            const flavor = flavorArray[i];
-
-            replyMsg = replyMsg + '𝐒𝐚𝐛𝐨𝐫: ' + flavor.flavor + '\n';
-            replyMsg = replyMsg + '𝐈𝐧𝐠𝐫𝐞𝐝𝐢𝐞𝐧𝐭𝐞𝐬: ' + flavor.toppingsNames.join(', ');
-            replyMsg = replyMsg + '\n\n';
-        }
-    }
-    return replyMsg;
-}
-
 
 /**
  * Returns array of flavors. If sizeID was passed, only returns flavors with price.
  * @param {*} pageID
  * @param {*} sizeID
  */
-export const getFlavorsAndToppings = async (pageID, sizeID) => {
+export const getFlavorsAndToppings = async (pageID, categoryID, sizeID) => {
     try {
         const flavorArray = await getFlavors(pageID);
         const allToppings = await getToppingsFull(pageID);
+        const pricings = await getPricings(pageID);
         const flavorsWithPrice = [];
         for (let flavor of flavorArray) {
-            if (sizeID) {
-                const pricing = await getOnePricing(pageID, flavor.kind, sizeID);
-                if (pricing) {
-                    flavor.price = pricing.price;
+            if (categoryID && flavor.categoryId === categoryID) {
+                if (sizeID) {
+                    for (let price of pricings) {
+                        if (price.categoryId === flavor.categoryId && price.sizeId === sizeID) {
+                            flavor.price = price.price;
+                            break;
+                        }
+                    }
                 }
-            }
-            if (sizeID) {
                 if (flavor.price) {
                     flavor.toppingsNames = [];
-                    for (let i = 0; i < flavor.toppings.length; i++) {
-                        const tId = flavor.toppings[i];
-                        for (let k = 0; k < allToppings.length; k++) {
-                            const topping = allToppings[k];
+                    for (let tId of flavor.toppings) {
+                        for (let topping of allToppings) {
                             if (topping.id === tId) {
                                 flavor.toppingsNames.push(topping.topping);
                             }
                         }
                     }
-                    // flavor.toppingsNames = await getToppingsNames(flavor.toppings, pageID);
                     flavorsWithPrice.push(flavor);
                 }
-            } else {
-                flavor.toppingsNames = await getToppingsNames(flavor.toppings, pageID);
-                flavorsWithPrice.push(flavor);
             }
         }
         return flavorsWithPrice;
@@ -585,6 +576,7 @@ export const showDeliverAskForQuantity = async (pageId, userId, data, user, sour
     return nextQuestion;
 }
 
+
 /**
  * Show Address only stores the addres in database. Ignoring the return.
  * The user is gonna see the AskForQuantity.
@@ -829,7 +821,9 @@ export const askForFlavorOrConfirm = async (pageId, userId, multiple) => {
 
 export const showSplitCheckFlavor = async (pageId, userId, data) => {
     const prevAnswer = await showSplit(pageId, userId, data);
-    const nextQuestion = await askForFlavorOrConfirm(pageId, userId, 1);
+    // Changing based on categories
+    // const nextQuestion = await askForFlavorOrConfirm(pageId, userId, 1);
+    const nextQuestion = await askForFlavor(pageId, userId, 1);
 
     nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
     return nextQuestion;
@@ -849,7 +843,7 @@ export const askForFlavor = async (pageId, userId, multiple, pendingOrder) => {
         po = pendingOrder;
     else po = await getOrderPending({ pageId: pageId, userId: userId, isComplete: false });
 
-    const flavorsArray = await getFlavorsAndToppings(pageId, po.order.currentItemSize);
+    const flavorsArray = await getFlavorsAndToppings(pageId, po.order.currentItemCategory, po.order.currentItemSize);
 
     // This variable will be passed as split parameter to updateOrder, so,
     // updateOrder can update the item properly, with the value of originalSplit.
@@ -868,7 +862,7 @@ export const askForFlavor = async (pageId, userId, multiple, pendingOrder) => {
     }
 
     // Rule to show 'Escolha o 1o. sabor', 'Escolha o 2o. sabor'
-    let _txt = 'Escolha o sabor:'
+    let _txt = 'Escolha o produto:'
     if (currentSplit) {
         // First time currentItemSplit is undefined, so, I am gonna use the originalSplit itself.
         _txt = `Escolha o ${currentSplit}o. sabor:`
@@ -882,10 +876,12 @@ export const askForFlavor = async (pageId, userId, multiple, pendingOrder) => {
     for (let i = 0; i < flavorsArray.length; i++) {
         if (flavorsArray[i]) {
             const _fl = flavorsArray[i];
-            const _data = { id: _fl.id, flavor: _fl.flavor }
-            let _subtext = _fl.toppingsNames.join();
+            const _data = { id: _fl.id, flavor: _fl.flavor, price: _fl.price }
+            let _subtext = '';
+            if (_fl.toppingsNames && _fl.toppingsNames.length > 0)
+                _subtext = _fl.toppingsNames.join() + '\n';
             if (_fl.price) {
-                _subtext = _subtext.concat('\n R$', _fl.price);
+                _subtext = _subtext.concat('R$', _fl.price);
             }
             const buttons = { text: 'Quero', data: _data, event: 'ORDER_FLAVOR' };
 
@@ -896,7 +892,11 @@ export const askForFlavor = async (pageId, userId, multiple, pendingOrder) => {
         }
     }
 
+
     if (flavorsArray.length > _rangeEnd) {
+        const buttons = { text: 'Voltar', data: currentSplit, event: 'ORDER_ASK_CATEGORY' };
+        _options.push({ text: 'Ver outra categoria', subtext: 'Ver outra categoria', buttons, hidden: true });
+
         multiple++;
         const buttonsOpt = {
             text: '+ Opções',
@@ -906,6 +906,9 @@ export const askForFlavor = async (pageId, userId, multiple, pendingOrder) => {
             text: 'Ver + sabores', subtext: '+ sabores do cardápio',
             buttons: buttonsOpt, isOnlyButtons: true,
         });
+    } else {
+        const buttons = { text: 'Voltar', data: currentSplit, event: 'ORDER_ASK_CATEGORY' };
+        _options.push({ text: 'Ver outra categoria', subtext: 'Ver outra categoria', buttons });
     }
 
     updateOrder({
@@ -925,18 +928,47 @@ export const askForFlavor = async (pageId, userId, multiple, pendingOrder) => {
 export const showFlavor = async (pageId, userId, data) => {
     const po = await getOrderPending({ pageId: pageId, userId: userId, isComplete: false });
     let currentSplit;
-    if (po.order.originalSplit > 1 && po.order.currentItemSplit <= po.order.originalSplit) {
+    let itemId;
+    let origSplit = po.order.originalSplit;
+    let orderId = po.order.id;
+    if (origSplit > 1 && po.order.currentItemSplit <= origSplit) {
+        if (po.order.currentItemSplit === 1)
+            itemId = po.order.currentItem ? po.order.currentItem + 1 : 1;
+        else
+            itemId = po.order.currentItem;
+
         currentSplit = po.order.currentItemSplit + 1;
+    } else {
+        itemId = po.order.currentItem ? po.order.currentItem + 1 : 1;
     }
+
+    let _complete = false;
+    if (origSplit > 1 && currentSplit > origSplit)
+        _complete = true;
+    else if (!po.order.originalSplit || origSplit === 1)
+        _complete = true;
+
+
+    console.info('showFlavor _complete:', _complete,
+        ' originalSplit:', po.order.originalSplit,
+        'currentSplit: ', currentSplit,
+        ' price: ', data.price);
 
     await updateOrder({
         pageId, userId, flavorId: data.id,
-        completeItem: true,
+        price: data.price,
+        completeItem: _complete,
         waitingFor: 'nothing',
         currentItemSplit: currentSplit,
-        currentItem: po.order.currentItem,
+        currentItem: itemId,
+        categoryId: po.order.currentItemCategory,
         calcTotal: true,
     });
+
+    if (_complete) {
+        // without await, so, it can run later
+        updateItemStatus(pageId, orderId, itemId);
+    }
 
     if (currentSplit) {
         const showSplit = currentSplit - 1;
@@ -956,38 +988,112 @@ export const showOrderOrNextItem = async (pageId, userId) => {
     const po = await getOrderPending({ pageId, userId, isComplete: true });
 
     if (po.order.originalSplit > 1 && po.order.currentItemSplit <= po.order.originalSplit) {
-        return await askForFlavor(pageId, userId, 1, po);
-    } else if (po.order.qty > 1 && po.order.currentItem < po.order.qty) {
-        const nextItem = po.order.currentItem + 1;
-        await updateOrder({ pageId, userId, waitingFor: 'size', currentItem: nextItem });
-        return await askForSize(pageId, userId);
+        return await askForCategory(pageId, userId, po.order.currentItemSplit);
+        // return await askForFlavor(pageId, userId, 1, po);
     } else {
-        await updateOrder({ pageId, userId, waitingFor: 'partial_confirmation', backToConfirmation: null });
+        return await showPartialOrder(pageId, userId, po);
+        // await updateOrder({ pageId, userId, waitingFor: 'partial_confirmation', eraseSplit: true });
 
-        let total_price = 0;
-        let _txt = 'Seguem os detalhes do seu pedido:\n';
-        _txt = _txt + '𝗣𝗲𝗱𝗶𝗱𝗼:' + po.order.id + '\n';
+        // let total_price = 0;
+        // _txt = _txt + '𝗣𝗲𝗱𝗶𝗱𝗼:' + po.order.id + '\n';
+        // let _txt = 'Seguem os detalhes do seu pedido:\n';
+        // for (let i = 0; i < po.items.length; i++) {
+        //     const _item = po.items[i];
+        //     if (_item.flavorId) {
+        //         let _txtQty = _item.split > 1 ? _item.qty + '/' + _item.split : _item.qty;
+
+        //         let _txtSize = '';
+        //         if (_item.sizeId)
+        //             _txtSize = _item.size;
+
+        //         _txt = _txt + `${_item.category}: ${_txtQty} ${_item.flavor} ${_txtSize} \n`;
+        //     }
+        //     total_price += _item.price;
+        // }
+        // _txt = _txt + '𝗧𝗼𝘁𝗮𝗹: ' + formatAsCurrency(total_price) + '\n\n';
+
+        // _txt = _txt + 'Deseja incluir mais itens?';
+
+        // const _options = [];
+        // _options.push({
+        //     text: 'Sim, mostre-me as opções',
+        //     data: {
+        //         type: 'confirmation_yes',
+        //         backTo: 'partial_confirmation',
+        //     },
+        //     event: 'ORDER_ASK_CATEGORY',
+        // });
+        // _options.push({
+        //     text: 'Não, confirmar o pedido',
+        //     data: {
+        //         type: 'confirmation_yes',
+        //         backTo: 'partial_confirmation',
+        //     },
+        //     event: 'ORDER_PIZZA_CONFIRMATION',
+        // });
+
+        // return {
+        //     type: 'replies',
+        //     text: _txt,
+        //     options: _options,
+        // };
+    }
+}
+
+export const cancelPendingShowPartialOrder = async (pageId, userId) => {
+    // TODO: delete items with status 0;
+    const po = await getOrderPending({ pageId, userId, isComplete: true });
+
+    if (po.items && po.items.length > 0) {
+        await deletePendingItem(pageId, po.order.id);
+
         for (let i = 0; i < po.items.length; i++) {
-            const _item = po.items[i];
-            if (_item.flavorId && _item.sizeId) {
-                let _txtQty = _item.split > 1 ? _item.qty + '/' + _item.split : _item.qty;
-                _txt = _txt + `${_txtQty} pizza ${_item.size} de ${_item.flavor}\n`;
-            } else if (_item.beverageId && _item.beverage) {
-                _txt = _txt + `1 ${_item.beverage}\n`;
+            if (po.items[i].status === 0) {
+                po.items.splice(i, 1);
             }
-            total_price += _item.price;
         }
-        if (po.order.deliver_type && po.order.deliver_type === 'pickup')
-            _txt += 'Cliente vem retirar.'
-        else
-            _txt = _txt + '𝗘𝗻𝗱𝗲𝗿𝗲𝗰̧𝗼 𝗱𝗲 𝗘𝗻𝘁𝗿𝗲𝗴𝗮: ' + po.order.address + '\n';
-        _txt = _txt + '𝗧𝗲𝗹𝗲𝗳𝗼𝗻𝗲: ' + po.order.phone + '\n';
-        _txt = _txt + '𝗧𝗼𝘁𝗮𝗹: ' + formatAsCurrency(total_price) + '\n';
-        _txt = _txt + 'O pedido está correto?';
+    }
+    return await showPartialOrder(pageId, userId, po);
+}
 
-        const _options = [];
+export const showPartialOrder = async (pageId, userId, po) => {
+    if (!po)
+        po = await getOrderPending({ pageId, userId, isComplete: true });
+
+    await updateOrder({ pageId, userId, waitingFor: 'partial_confirmation', eraseSplit: true, undo: '' });
+
+    let total_price = 0;
+    let _txt = '𝗣𝗲𝗱𝗶𝗱𝗼:' + po.order.id + '\n';
+
+    if (po.items && po.items.length > 0) {
+        _txt = _txt + 'Seguem os detalhes do seu pedido:\n\n';
+        for (const item of po.items) {
+            if (item.flavorId) {
+                let _txtQty = item.split > 1 ? item.qty + '/' + item.split : item.qty;
+
+                let _txtSize = '';
+                if (item.sizeId)
+                    _txtSize = item.size;
+
+                _txt = _txt + `${item.category}: ${_txtQty} ${item.flavor} ${_txtSize} - ${formatAsCurrency(item.price)} \n`;
+            }
+            total_price += item.price;
+        }
+        _txt = _txt + '𝗧𝗼𝘁𝗮𝗹: ' + formatAsCurrency(total_price) + '\n\n';
+    } else {
+        _txt = _txt + 'Ainda não foram incluídos itens no seu pedido.\n\n';
+    }
+
+    _txt = _txt + 'O que deseja fazer?';
+
+    const _options = [];
+    _options.push({
+        text: `Incluir ${po.items && po.items.length > 0 ? 'mais' : ''} itens no pedido`,
+        event: 'ORDER_ASK_CATEGORY',
+    });
+    if (po.items && po.items.length > 0) {
         _options.push({
-            text: 'Sim',
+            text: 'Confirmar o pedido',
             data: {
                 type: 'confirmation_yes',
                 backTo: 'partial_confirmation',
@@ -995,21 +1101,86 @@ export const showOrderOrNextItem = async (pageId, userId) => {
             event: 'ORDER_PIZZA_CONFIRMATION',
         });
         _options.push({
-            text: 'Não',
+            text: 'Remover/alterar algum item',
             data: {
-                type: 'confirmation_no',
                 backTo: 'partial_confirmation',
             },
-            event: 'ORDER_PIZZA_CONFIRMATION',
+            event: 'ORDER_WANT_CHANGE',
         });
-
-        return {
-            type: 'replies',
-            text: _txt,
-            options: _options,
-        };
     }
+    _options.push({
+        text: 'Voltar p/ Início',
+        data: 'stoporder_init',
+        event: 'STOP_ORDER_OPTIONS',
+    });
+
+    return {
+        type: 'replies',
+        text: _txt,
+        options: _options,
+    };
 }
+
+
+// export const showOrderOrNextItem = async (pageId, userId) => {
+//     const po = await getOrderPending({ pageId, userId, isComplete: true });
+
+//     if (po.order.originalSplit > 1 && po.order.currentItemSplit <= po.order.originalSplit) {
+//         return await askForFlavor(pageId, userId, 1, po);
+//     } else if (po.order.qty > 1 && po.order.currentItem < po.order.qty) {
+//         const nextItem = po.order.currentItem + 1;
+//         await updateOrder({ pageId, userId, waitingFor: 'size', currentItem: nextItem });
+//         return await askForSize(pageId, userId);
+//     } else {
+//         await updateOrder({ pageId, userId, waitingFor: 'partial_confirmation', backToConfirmation: null });
+
+//         let total_price = 0;
+//         let _txt = 'Seguem os detalhes do seu pedido:\n';
+//         _txt = _txt + '𝗣𝗲𝗱𝗶𝗱𝗼:' + po.order.id + '\n';
+//         for (let i = 0; i < po.items.length; i++) {
+//             const _item = po.items[i];
+//             if (_item.flavorId && _item.sizeId) {
+//                 let _txtQty = _item.split > 1 ? _item.qty + '/' + _item.split : _item.qty;
+//                 _txt = _txt + `${_txtQty} pizza ${_item.size} de ${_item.flavor}\n`;
+//             } else if (_item.beverageId && _item.beverage) {
+//                 _txt = _txt + `1 ${_item.beverage}\n`;
+//             }
+//             total_price += _item.price;
+//         }
+//         if (po.order.deliver_type && po.order.deliver_type === 'pickup')
+//             _txt += 'Cliente vem retirar.'
+//         else
+//             _txt = _txt + '𝗘𝗻𝗱𝗲𝗿𝗲𝗰̧𝗼 𝗱𝗲 𝗘𝗻𝘁𝗿𝗲𝗴𝗮: ' + po.order.address + '\n';
+//         _txt = _txt + '𝗧𝗲𝗹𝗲𝗳𝗼𝗻𝗲: ' + po.order.phone + '\n';
+//         _txt = _txt + '𝗧𝗼𝘁𝗮𝗹: ' + formatAsCurrency(total_price) + '\n';
+//         _txt = _txt + 'O pedido está correto?';
+
+//         const _options = [];
+//         _options.push({
+//             text: 'Sim',
+//             data: {
+//                 type: 'confirmation_yes',
+//                 backTo: 'partial_confirmation',
+//             },
+//             event: 'ORDER_PIZZA_CONFIRMATION',
+//         });
+//         _options.push({
+//             text: 'Não',
+//             data: {
+//                 type: 'confirmation_no',
+//                 backTo: 'partial_confirmation',
+//             },
+//             event: 'ORDER_PIZZA_CONFIRMATION',
+//         });
+
+//         return {
+//             type: 'replies',
+//             text: _txt,
+//             options: _options,
+//         };
+//     }
+// }
+
 
 /**
  * Used on Whatsapp
@@ -1139,27 +1310,25 @@ export const showComments = async (pageId, userId, text) => {
 }
 
 export const showFullOrder = async (pageId, userId) => {
-    await updateOrder({ pageId, userId, waitingFor: 'full_confirmation', backToConfirmation: null });
+    // await updateOrder({ pageId, userId, waitingFor: 'full_confirmation', backToConfirmation: null });
 
     const po = await getOrderPending({ pageId, userId, isComplete: true });
 
     let total_price = 0;
-    let _txt = 'Seguem os detalhes do seu pedido:\n';
+    let _txt = 'Seguem os detalhes do seu pedido:\n\n';
 
     _txt = _txt + '𝗣𝗲𝗱𝗶𝗱𝗼: ' + po.order.id + '\n';
-    for (let i = 0; i < po.items.length; i++) {
-        const _item = po.items[i];
-        if (_item.flavorId && _item.sizeId) {
-            let _txtQty = _item.split > 1 ? _item.qty + '/' + _item.split : _item.qty;
-            _txt = _txt + `${_txtQty} pizza ${_item.size} de ${_item.flavor}\n`;
-        } else if (_item.beverageId && _item.beverage) {
-            _txt = _txt + `1 ${_item.beverage}\n`;
+    for (const item of po.items) {
+        if (item.flavorId) {
+            let _txtQty = item.split > 1 ? item.qty + '/' + item.split : item.qty;
+            let _txtSize = item.sizeId ? item.size : '';
+            _txt = _txt + `_${item.category}_: ${_txtQty} ${item.flavor}  ${_txtSize}\n`;
         }
-        total_price += _item.price;
+        total_price += item.price;
     }
 
     if (po.order.deliver_type && po.order.deliver_type === 'pickup')
-        _txt += 'Cliente vem retirar.'
+        _txt += 'Cliente vem retirar.\n'
     else
         _txt = _txt + '𝗘𝗻𝗱𝗲𝗿𝗲𝗰̧𝗼 𝗱𝗲 𝗘𝗻𝘁𝗿𝗲𝗴𝗮: ' + po.order.address + '\n';
 
@@ -1176,31 +1345,37 @@ export const showFullOrder = async (pageId, userId) => {
     let _txtComments = po.order.comments || 'Sem observações';
     _txt = _txt + '𝗢𝗯𝘀𝗲𝗿𝘃𝗮𝗰̧𝗼̃𝗲𝘀: ' + _txtComments + '\n';
 
-    _txt = _txt + 'Posso confirmar o pedido?';
-
-    const _options = [];
-    _options.push({
-        text: 'Sim',
-        data: {
-            type: 'confirmation_yes',
-            backTo: 'full_confirmation',
-        },
-        event: 'ORDER_CONFIRMATION',
-    });
-    _options.push({
-        text: 'Não',
-        data: {
-            type: 'confirmation_no',
-            backTo: 'full_confirmation',
-        },
-        event: 'ORDER_CONFIRMATION',
-    });
-
     return {
-        type: 'replies',
+        type: 'text',
         text: _txt,
-        options: _options,
-    };
+    }
+
+    // the code below was used to ask for a final confirmation.
+    // _txt = _txt + 'Posso confirmar o pedido?';
+
+    // const _options = [];
+    // _options.push({
+    //     text: 'Sim',
+    //     data: {
+    //         type: 'confirmation_yes',
+    //         backTo: 'full_confirmation',
+    //     },
+    //     event: 'ORDER_CONFIRMATION',
+    // });
+    // _options.push({
+    //     text: 'Não',
+    //     data: {
+    //         type: 'confirmation_no',
+    //         backTo: 'full_confirmation',
+    //     },
+    //     event: 'ORDER_CONFIRMATION',
+    // });
+
+    // return {
+    //     type: 'replies',
+    //     text: _txt,
+    //     options: _options,
+    // };
 }
 
 /**
@@ -1223,12 +1398,16 @@ export const showPaymentTypeAskForComments = async (pageId, userId, data) => {
  * @param {*} userId
  * @param {*} data
  */
-export const showCommentsShowFullOrder = async (pageId, userId, data) => {
-    const prevAnswer = await showComments(pageId, userId, data);
-    const nextQuestion = await showFullOrder(pageId, userId);
+export const showFullOrderConfirmOrder = async (pageId, userId, data) => {
+    if (data && data !== 'comments_no')
+        await showComments(pageId, userId, data);
+    // const nextQuestion = await showFullOrder(pageId, userId);
 
-    nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
-    return nextQuestion;
+    const prevAnswer = await showFullOrder(pageId, userId);
+    const nextAnswer = await confirmOrder(pageId, userId);
+
+    nextAnswer.text = prevAnswer.text + '\n\n' + nextAnswer.text;
+    return nextAnswer;
 }
 
 export const confirmOrder = async (pageId, userId) => {
@@ -1305,26 +1484,33 @@ export const askForSpecificItem = async (pageId, userId) => {
     const pendingOrder = await getOrderPending({ pageId, userId, isComplete: true });
     if (pendingOrder.items && pendingOrder.items.length > 1) {
 
-        let _txt = 'Primeiro, escolha qual dos itens deseja mudar:';
+        let _txt = 'Escolha qual dos itens deseja alterar/remover:';
 
         const _options = [];
         let _itemId = 0;
-        pendingOrder.items.forEach(item => {
+        for (let item of pendingOrder.items) {
             if (item.itemId !== _itemId) {
                 let _txt;
                 if (item.size && item.flavor) {
-                    const _flavors = item.split && item.split > 1 ? 'Sabores' : 'Sabor';
-                    _txt = `${item.size} ${item.split} ${_flavors}`;
-                } else if (item.beverageId) {
-                    _txt = item.beverage;
+                    let _sizeSplit = `${item.size}`;
+                    if (item.split && item.split > 1) {
+                        if (item.category.toUpperCase().indexOf('PIZZA') > -1)
+                            _sizeSplit = 'Pizza ' + _sizeSplit;
+                        _sizeSplit = _sizeSplit + ` ${item.split} Sabores`;
+                    } else
+                        _sizeSplit = item.flavor + ' ' + _sizeSplit;
+
+                    _txt = `${_sizeSplit}`;
+                } else {
+                    _txt = item.flavor;
                 }
 
                 if (_txt) {
-                    _options.push({ text: _txt, data: item, event: 'ORDER_CHANGE_SELECT_ITEM' });
+                    _options.push({ text: _txt, data: item, event: 'ORDER_CANCEL_ITEM' });
                 }
                 _itemId = item.itemId;
             }
-        });
+        }
         return {
             type: 'replies',
             text: _txt,
@@ -1498,16 +1684,16 @@ export const changeItem = async (pageId, userId, itemId) => {
     }
 }
 
-export const cancelItem = async (pageId, userId, itemId) => {
+export const cancelItem = async (pageId, userId, item) => {
     const po = await getOrderPending({ pageId, userId, isComplete: false });
-    const result1 = await deleteItem(pageId, po.order.id, itemId);
-    if (result1) {
-        if (po.order.backToConfirmation === 'full_confirmation') {
-            return await showFullOrder(pageId, userId);
-        } else if (po.order.backToConfirmation === 'partial_confirmation') {
-            return await showOrderOrNextItem(pageId, userId);
-        }
-    }
+    const result1 = await deleteItem(pageId, po.order.id, item.itemId);
+    console.info('cancelItem:', result1);
+    // if (result1) {
+    if (po.order.backToConfirmation === 'full_confirmation') {
+        return await showFullOrder(pageId, userId);
+    } else
+        return await showPartialOrder(pageId, userId);
+    // }
 }
 
 
@@ -1541,8 +1727,8 @@ export const sendRejectionNotification = async (pageId, userId, orderId, rejecti
 
 /**
  * Delete the pending order and shows the Main Menu.
- * @param {*} pageId 
- * @param {*} userId 
+ * @param {*} pageId
+ * @param {*} userId
  */
 export const cancelPendingOrder = async (pageId, userId) => {
     await cancelOrder({ pageId, userId });
@@ -1551,4 +1737,119 @@ export const cancelPendingOrder = async (pageId, userId) => {
     out.text = '❌ Pedido Cancelado!' + '\n\n' + out.text;
 
     return out;
+}
+
+export const showDeliverAskForCategory = async (pageId, userId, data, user, source) => {
+    const prevAnswer = await showDeliver(pageId, userId, data, user, source);
+    const nextQuestion = await askForCategory(pageId, userId);
+
+    nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
+    return nextQuestion;
+}
+
+
+export const showAddressAskForCategory = async (pageId, userId, addrData, source) => {
+    const prevAnswer = await showAddress(pageId, userId, addrData, source);
+    const nextQuestion = await askForCategory(pageId, userId);
+
+    nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
+    return nextQuestion;
+}
+
+/**
+ * 
+ * @param {*} pageId
+ * @param {*} userId
+ * @param {*} split: if true, only show categories that are marked 'is_pizza'.
+ * Show only categories with split to allow user mix categories in same pizza.
+ */
+export const askForCategory = async (pageId, userId, split) => {
+    await updateOrder({ pageId, userId, waitingFor: 'category', waitingForData: split });
+
+    const categories = await getCategories(pageId);
+
+    let _txt = '';
+    if (split) {
+        _txt = `Para escolher o ${split}o. sabor, escolha a categoria:\n`
+    } else {
+        _txt = 'Selecione uma categoria:';
+    }
+
+    const _options = [];
+    for (let item of categories) {
+        if (split && !item.is_pizza)
+            continue;
+
+        const _data = { id: item.id, name: item.name }
+        const buttons = { text: 'Quero', data: _data, event: 'ORDER_CATEGORY' };
+
+        _options.push({ text: item.name, subtext: item.name, buttons });
+    }
+
+    const buttons = { text: 'Voltar', data: 'partial_confirmation', event: 'ORDER_PARTIAL_CONFIRMATION' };
+    _options.push({ text: 'Voltar para o pedido', subtext: 'Voltar para o pedido', buttons });
+
+    return {
+        type: 'list',
+        text: _txt,
+        options: _options,
+    }
+}
+
+export const showCategory = async (pageId, userId, data) => {
+    await updateOrder({ pageId, userId, categoryId: data.id, eraseSize: true });
+
+    return {
+        type: 'text',
+        text: '✅ ' + 'Categoria: ' + data.name,
+    }
+}
+
+
+export const showCategoryAskForSize = async (pageId, userId, data) => {
+    const prevAnswer = await showCategory(pageId, userId, data);
+    const nextQuestion = await askForSizeCat(pageId, userId, data.id);
+
+    nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
+    return nextQuestion;
+}
+
+export const askForSizeCat = async (pageId, userId, categoryId) => {
+    const po = await getOrderPending({ pageId, userId, isComplete: false });
+
+    if (!categoryId)
+        categoryId = po.order.currentItemCategory;
+
+    // User is spliting the pizza into more than one category
+    if (po.order.originalSplit > 1 && po.order.currentItemSplit <= po.order.originalSplit) {
+        return askForFlavor(pageId, userId, 1, po);
+    } else {
+
+        const category = await getCategory(pageId, categoryId);
+
+        if (category.price_by_size) {
+
+            // Without await, to run later
+            updateOrder({ pageId, userId, waitingFor: 'size' });
+
+            const _text = 'Selecione o tamanho:';
+
+            const _options = [];
+            const sizesWithPricing = await getPricingSizing(pageId, categoryId); // only sizes with pricing
+            const sizes = await getSizes(pageId, sizesWithPricing);
+
+            for (let i = 0; i < sizes.length; i++) {
+                const _data = { id: sizes[i].id, size: sizes[i].size, split: sizes[i].split };
+                _options.push({ text: sizes[i].size, data: _data, event: 'ORDER_SIZE' });
+            }
+
+            return {
+                type: 'replies',
+                text: _text,
+                options: _options,
+            }
+        } else {
+            return await askForFlavor(pageId, userId, 1);
+        }
+    }
 }

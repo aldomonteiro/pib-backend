@@ -54,6 +54,7 @@ const connect = () => {
 connect();
 
 mongoose.set('useCreateIndex', true);
+mongoose.set('useFindAndModify', false);
 mongoose.Promise = Promise;
 
 mongoose.connection.on('error', () => {

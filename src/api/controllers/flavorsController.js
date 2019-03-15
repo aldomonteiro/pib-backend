@@ -4,6 +4,7 @@ import stringSimilarity from 'string-similarity';
 import stringCapitalizeName from 'string-capitalize-name';
 import { configSortQuery, configRangeQuery, configFilterQueryMultiple } from '../util/util';
 import { getToppingsNames } from './toppingsController';
+import { getCategory } from './categoriesController';
 
 // List all flavors
 // TODO: use filters in the query req.query
@@ -23,6 +24,8 @@ export const flavor_get_all = async (req, res) => {
                 const value = filterObj.filterValues[i];
                 if (Array.isArray(value)) {
                     queryObj[filter] = { $in: value };
+                } else if (filter === 'flavor') {
+                    queryObj[filter] = { $regex: value, $options: 'i' };
                 } else
                     queryObj[filter] = value;
             }
@@ -45,15 +48,17 @@ export const flavor_get_all = async (req, res) => {
             let _totalCount = result.length;
             let flavorsArray = [];
             for (let i = _rangeIni; i < _rangeEnd; i++) {
-                const tn = await getToppingsNames(result[i].toppings, result[i].pageId);
+                // const tn = await getToppingsNames(result[i].toppings, result[i].pageId);
                 let flavor = {
                     id: result[i].id,
                     flavor: result[i].flavor,
                     categoryId: result[i].categoryId,
                     toppings: result[i].toppings,
+                    price: result[i].price,
+                    price_by_size: result[i].price_by_size,
                     createdAt: result[i].createdAt,
                     updatedAt: result[i].updatedAt,
-                    tn: tn.join(),
+                    // tn: tn.join(),
                 }
                 flavorsArray.push(flavor)
             }
@@ -118,57 +123,95 @@ export const flavor_get_one = (req, res) => {
 }
 
 // CREATE A NEW RECORD
-export const flavor_create = (req, res) => {
+export const flavor_create = async (req, res) => {
     if (req.body) {
 
         const pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
 
-        const newRecord = new Flavor({
-            id: req.body.id,
-            flavor: stringCapitalizeName(req.body.flavor),
-            categoryId: req.body.categoryId,
-            pageId: pageId,
-            toppings: req.body.toppings,
-        });
+        const { categoryId, price } = req.body;
+        let price_by_size = false;
+        if (categoryId) {
+            const category = await getCategory(pageId, categoryId);
+            if (category)
+                price_by_size = category.price_by_size;
+        }
 
-        newRecord.save()
-            .then((result) => {
-                res.status(200).json(result);
-            })
-            .catch((err) => {
-                console.error(err);
-                if (err.code === 11000) {
-                    res.status(500).json({ message: 'pos.messages.duplicatedKey' });
-                } else {
-                    res.status(500).json({ message: err.errmsg });
-                }
+        if (price_by_size && price > 0) {
+            res.status(500).json({ message: 'pos.flavors.messages.priceNotAllowed' });
+        } else {
+            let { id } = req.body;
+
+            if (!id || id === 0) {
+                const lastId = await Flavor.find({ pageId: pageId }).select('id').sort('-id').limit(1).exec();
+                id = 1;
+                if (lastId && lastId.length)
+                    id = lastId[0].id + 1;
+            }
+
+            const newRecord = new Flavor({
+                id: id,
+                flavor: stringCapitalizeName(req.body.flavor),
+                categoryId: req.body.categoryId,
+                pageId: pageId,
+                toppings: req.body.toppings,
+                price: price,
+                price_by_size: price_by_size,
             });
+
+            newRecord.save()
+                .then((result) => {
+                    res.status(200).json(result);
+                })
+                .catch((err) => {
+                    console.error(err);
+                    if (err.code === 11000) {
+                        res.status(500).json({ message: 'pos.messages.duplicatedKey' });
+                    } else {
+                        res.status(500).json({ message: err.errmsg });
+                    }
+                });
+        }
     }
 }
 
 // UPDATE
-export const flavor_update = (req, res) => {
+export const flavor_update = async (req, res) => {
     if (req.body && req.body.id) {
 
         const pageId = req.currentUser.activePage;
 
-        Flavor.findOne({ pageId: pageId, id: req.body.id }, (err, doc) => {
-            if (!err) {
-                doc.flavor = stringCapitalizeName(req.body.flavor);
-                doc.categoryId = req.body.categoryId;
-                doc.toppings = req.body.toppings;
+        const { id, flavor, categoryId, price, toppings } = req.body;
 
-                doc.save((err, result) => {
-                    if (err) {
-                        res.status(500).json({ message: err.errmsg });
-                    } else {
-                        res.status(200).json(result);
-                    }
-                });
-            } else {
-                res.status(500).json({ message: err.errmsg });
-            }
-        });
+        let price_by_size = false;
+        if (categoryId) {
+            const category = await getCategory(pageId, categoryId);
+            if (category)
+                price_by_size = category.price_by_size;
+        }
+
+        if (price_by_size && price > 0) {
+            res.status(500).json({ message: 'pos.flavors.messages.priceNotAllowed' });
+        } else {
+
+            Flavor.findOne({ pageId: pageId, id: id }, (err, doc) => {
+                if (!err) {
+                    doc.flavor = stringCapitalizeName(flavor);
+                    doc.categoryId = categoryId;
+                    doc.toppings = toppings;
+                    doc.price = price;
+                    doc.price_by_size = price_by_size;
+                    doc.save((err, result) => {
+                        if (err) {
+                            res.status(500).json({ message: err.errmsg });
+                        } else {
+                            res.status(200).json(result);
+                        }
+                    });
+                } else {
+                    res.status(500).json({ message: err.errmsg });
+                }
+            });
+        }
     }
 }
 
@@ -197,19 +240,19 @@ export const deleteManyFlavors = async (pageID) => {
 export const getFlavors = async (pageID) => {
     var queryFlavor = Flavor.find({ pageId: pageID });
     queryFlavor.sort('flavor');
-    queryFlavor.select('id flavor categoryId toppings');
+    queryFlavor.select('id flavor categoryId toppings price');
     return await queryFlavor.exec();
 }
 
 export const getFlavor = async (pageID, flavorID) => {
     var queryFlavor = Flavor.findOne({ pageId: pageID, id: flavorID });
-    queryFlavor.select('id flavor categoryId');
+    queryFlavor.select('id flavor categoryId price');
     return await queryFlavor.exec();
 }
 
 export const getFlavorByName = async (pageID, flavorName) => {
     const flavors = await getFlavors(pageID);
-    var flavorsNames = new Array();
+    var flavorsNames = [];
 
     for (var i = 0; i < flavors.length; i++) {
         flavorsNames.push(flavors[i].flavor);

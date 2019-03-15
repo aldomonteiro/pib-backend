@@ -3,25 +3,27 @@ import {
     basicReply, askForContinue, passThreadControl,
     sendMainMenu, sendWelcomeMessage, sendCardapio, sendHorario,
     checkLastAction, optionsStopOrder,
-    showDeliverCheckAddress, showDeliverAskForQuantity,
+    showDeliverCheckAddress,
     confirmLocationAddress, confirmAddressOrAskLocation, confirmAddress,
-    showAddressAskForQuantity,
     askForLocation, askToTypeAddress,
     askForQuantityMore, showQuantityAskForSize,
-    askForSize, showSizeCheckSplit,
+    showSizeCheckSplit,
     showSplitCheckFlavor, askForQuantity,
     showFlavor, showFlavorCheckItem, showOrderOrNextItem,
     askForWantBeverage, askForBeverages, showBeverageAskForPaymentType,
     showNoBeverageAskForPaymentType,
     showPaymentTypeAskForPaymentChange,
     showPaymentTypeAskForComments, showPaymentChangeAskForComments,
-    confirmOrder, askForChangeOrder, askForSpecificItem, updateItemAskOptions, askForFlavorOrConfirm,
-    cancelPendingOrder,
-    changeItem, cancelItem, askForDeliver, askForComments,
-    showFullOrder, showCommentsShowFullOrder, askToTypeComments,
+    confirmOrder, askForChangeOrder, askForSpecificItem, updateItemAskOptions,
+    askForFlavorOrConfirm, cancelPendingOrder, changeItem, cancelItem,
+    askForDeliver, askForComments,
+    showFullOrderConfirmOrder, askToTypeComments, showDeliverAskForCategory,
+    showCategoryAskForSize, askForCategory, askForPaymentType, showAddressAskForCategory,
+    askForSizeCat, cancelPendingShowPartialOrder,
 } from '../bot/botController';
 import { getStoreByPhone } from '../controllers/storesController';
 import { getOrderPending } from '../controllers/ordersController';
+import { askForCategoryCardapio } from '../bot/show_cardapio';
 
 /**
  * Receives the user and message from whatsapp and
@@ -66,11 +68,11 @@ export const w_controller = async (args) => {
                             action: 'ASK_FOR_QUANTITY',
                             pageID: pageId, userID: userId,
                         });
-                    }
-                    else if (pendingOrder.order.undo === 'size') {
+                    } else if (pendingOrder.order.undo === 'size') {
                         return await sendActions({
                             action: 'ASK_FOR_SIZE',
                             pageID: pageId, userID: userId,
+                            data: pendingOrder.order.currentItemCategory,
                         });
                     }
                 }
@@ -86,9 +88,21 @@ export const w_controller = async (args) => {
                     });
                 } else if (pendingOrder.order.waitingFor === 'typed_comments') {
                     result = await sendActions({
-                        action: 'SHOW_COMMENTS_SHOW_FULL_ORDER',
+                        action: 'SHOW_FULL_ORDER_CONFIRM_ORDER',
                         pageID: pageId, userID: userId, data: message,
                     });
+                } else if (pendingOrder.order.waitingFor === 'location') {
+                    if (location) {
+                        result = await sendActions({
+                            action: 'LOCATION_CONFIRM_ADDRESS',
+                            pageID: pageId, userID: userId, location,
+                        });
+                    } else {
+                        result = await sendActions({
+                            action: 'ASK_TO_TYPE_ADDRESS',
+                            pageID: pageId, userID: userId,
+                        });
+                    }
                 } else {
                     result = await sendActions({
                         action: 'ASK_FOR_CONTINUE',
@@ -146,6 +160,8 @@ const getText = async (fn, params) => {
 
 const mapEventsActions = (event, data) => {
     switch (event) {
+        case 'MAIN_MENU':
+            return 'SEND_MAIN_MENU'
         case 'ORDER_CONTINUE_ORDER':
             switch (data) {
                 case 'continueorder_yes':
@@ -185,11 +201,11 @@ const mapEventsActions = (event, data) => {
                 case 'delivery':
                     return 'SHOW_DELIVER_CHECK_ADDRESS'
                 case 'pickup':
-                    return 'SHOW_DELIVER_ASK_FOR_QUANTITY';
+                    return 'SHOW_DELIVER_ASK_FOR_CATEGORY';
             }
             break;
         case 'CORRECT_SAVED_ADDRESS':
-            return 'SHOW_ADDRESS_ASK_FOR_QUANTITY';
+            return 'SHOW_ADDRESS_ASK_FOR_CATEGORY';
         case 'WRONG_SAVED_ADDRESS':
             return 'ASK_FOR_LOCATION';
         case 'LOCATION':
@@ -203,7 +219,7 @@ const mapEventsActions = (event, data) => {
                 case 'incorrect_address':
                     return 'ASK_TO_TYPE_ADDRESS';
                 default:
-                    return 'SHOW_ADDRESS_ASK_FOR_QUANTITY';
+                    return 'SHOW_ADDRESS_ASK_FOR_CATEGORY';
             }
         case 'ORDER_QTY':
             switch (data) {
@@ -228,7 +244,7 @@ const mapEventsActions = (event, data) => {
         case 'ORDER_PIZZA_CONFIRMATION':
             switch (data.type) {
                 case 'confirmation_yes':
-                    return 'ASK_FOR_WANT_BEVERAGE';
+                    return 'ASK_FOR_PAYMENT_TYPE';
                 default:
                     return 'ASK_FOR_CHANGE_ORDER';
             }
@@ -285,7 +301,7 @@ const mapEventsActions = (event, data) => {
                 case 'comments_yes':
                     return 'ASK_FOR_TYPE_COMMENTS';
                 default:
-                    return 'SHOW_FULL_ORDER';
+                    return 'SHOW_FULL_ORDER_CONFIRM_ORDER';
             }
         case 'ORDER_CONFIRMATION':
             switch (data.type) {
@@ -296,8 +312,18 @@ const mapEventsActions = (event, data) => {
             }
         case 'ORDER_CHANGE_SELECT_ITEM':
             return 'UPDATE_ITEM';
+        case 'ORDER_PARTIAL_CONFIRMATION':
+            return 'CANCEL_PENDING_SHOW_PARTIAL_ORDER';
+        case 'ORDER_CATEGORY':
+            return 'SHOW_CATEGORY_ASK_FOR_SIZE';
+        case 'ORDER_ASK_CATEGORY':
+            return 'ASK_FOR_CATEGORY';
+        case 'ORDER_CATEGORY_CARDAPIO':
+            return 'SHOW_FLAVORS_CATEGORY';
     }
+
 }
+
 
 export const sendActions = async ({
     action, pageID, userID, multiple, data, payload,
@@ -330,7 +356,7 @@ export const sendActions = async ({
                 out = await getElement(sendMainMenu);
                 break;
             case 'SEND_CARDAPIO':
-                out = await getElement(sendCardapio, [pageID, 'whatsapp']);
+                out = await getElement(askForCategoryCardapio, [pageID]);
                 break;
             case 'SEND_HORARIO':
                 out = await getElement(sendHorario, [pageID, 'whatsapp']);
@@ -355,8 +381,8 @@ export const sendActions = async ({
             case 'LOCATION_CONFIRM_ADDRESS':
                 out = await getElement(confirmLocationAddress, [pageID, userID, location]);
                 break;
-            case 'SHOW_ADDRESS_ASK_FOR_QUANTITY':
-                out = await getElement(showAddressAskForQuantity, [pageID, userID, data, 'whatsapp']);
+            case 'SHOW_ADDRESS_ASK_FOR_CATEGORY':
+                out = await getElement(showAddressAskForCategory, [pageID, userID, data, 'whatsapp']);
                 break;
             case 'ASK_FOR_LOCATION':
                 out = await getElement(askForLocation, [pageID, userID, user, 'whatsapp']);
@@ -364,8 +390,8 @@ export const sendActions = async ({
             case 'ASK_TO_TYPE_ADDRESS':
                 out = await askToTypeAddress(pageID, userID);
                 break;
-            case 'SHOW_DELIVER_ASK_FOR_QUANTITY':
-                out = await getElement(showDeliverAskForQuantity, [pageID, userID, data, user, 'whatsapp']);
+            case 'SHOW_DELIVER_ASK_FOR_CATEGORY':
+                out = await getElement(showDeliverAskForCategory, [pageID, userID, data, user, 'whatsapp']);
                 break;
             case 'ASK_FOR_QUANTITY':
                 out = await getElement(askForQuantity, [pageID, userID]);
@@ -377,7 +403,7 @@ export const sendActions = async ({
                 out = await getElement(showQuantityAskForSize, [pageID, userID, data]);
                 break;
             case 'ASK_FOR_SIZE':
-                out = await askForSize(pageID, userID);
+                out = await askForSizeCat(pageID, userID, data);
                 break;
             case 'SHOW_SIZE_CHECK_SPLIT':
                 out = await showSizeCheckSplit(pageID, userID, data, 1);
@@ -409,6 +435,9 @@ export const sendActions = async ({
             case 'SHOW_BEVERAGE_ASK_FOR_PAYMENT_TYPE':
                 out = await showBeverageAskForPaymentType(pageID, userID, data);
                 break;
+            case 'ASK_FOR_PAYMENT_TYPE':
+                out = await askForPaymentType(pageID, userID);
+                break;
             case 'SHOW_PAYMENT_TYPE_ASK_FOR_COMMENTS':
                 out = await showPaymentTypeAskForComments(pageID, userID, data);
                 break;
@@ -424,11 +453,8 @@ export const sendActions = async ({
             case 'ASK_FOR_TYPE_COMMENTS':
                 out = await getElement(askToTypeComments, [pageID, userID]);
                 break;
-            case 'SHOW_COMMENTS_SHOW_FULL_ORDER':
-                out = await showCommentsShowFullOrder(pageID, userID, data);
-                break;
-            case 'SHOW_FULL_ORDER':
-                out = await showFullOrder(pageID, userID);
+            case 'SHOW_FULL_ORDER_CONFIRM_ORDER':
+                out = await showFullOrderConfirmOrder(pageID, userID, data);
                 break;
             case 'ASK_FOR_CHANGE_ORDER':
                 out = await askForChangeOrder(pageID, userID, data);
@@ -450,6 +476,18 @@ export const sendActions = async ({
                 break;
             case 'CANCEL_PENDING_ORDER':
                 out = await cancelPendingOrder(pageID, userID);
+                break;
+            case 'SHOW_CATEGORY_ASK_FOR_SIZE':
+                out = await getElement(showCategoryAskForSize, [pageID, userID, data]);
+                break;
+            case 'ASK_FOR_CATEGORY':
+                out = await getElement(askForCategory, [pageID, userID, data]);
+                break;
+            case 'CANCEL_PENDING_SHOW_PARTIAL_ORDER':
+                out = await getElement(cancelPendingShowPartialOrder, [pageID, userID]);
+                break;
+            case 'SHOW_FLAVORS_CATEGORY':
+                out = await getElement(sendCardapio, [pageID, data, 'whatsapp']);
                 break;
             default:
                 break;

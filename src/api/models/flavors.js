@@ -9,6 +9,8 @@ const schema = new Schema(
         categoryId: Number,
         toppings: [{ type: Number }],
         pageId: String,
+        price_by_size: Boolean,
+        price: Number,
     },
     { timestamps: true }
 );
