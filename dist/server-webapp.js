@@ -201,8 +201,9 @@ if (env === 'production') {
   });
 }
 
-var io = (0, _socket.default)(server, {
-  origins: allowedOrigins
+var io = (0, _socket.default)(server);
+io.origins(function (origin, callback) {
+  if (allowedOrigins.indexOf(origin) > -1) callback(null, true);else return callback('Socket.io: origin not allowed', false);
 });
 var interval;
 io.on('connection', function (socket) {

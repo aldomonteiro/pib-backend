@@ -175,7 +175,15 @@ if (env === 'production') {
 }
 
 
-const io = socketIo(server, { origins: allowedOrigins });
+const io = socketIo(server);
+
+io.origins((origin, callback) => {
+    if (allowedOrigins.indexOf(origin) > -1)
+        callback(null, true);
+    else
+        return callback('Socket.io: origin not allowed', false);
+
+});
 
 let interval;
 io.on('connection', socket => {
