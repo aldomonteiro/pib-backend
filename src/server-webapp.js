@@ -46,8 +46,17 @@ app.use(logger('myformat'));
 app.set('json spaces', 2);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+dotenv.config();
+const env = process.env.NODE_ENV || 'production';
+
+let allowedOrigins = process.env.DEV_ALLOWED_ORIGIN;
+if (env === 'production')
+    allowedOrigins = process.env.PRD_ALLOWED_ORIGIN;
+
+
 app.use(function (req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Origin', allowedOrigins);
     res.header('Access-Control-Allow-Credentials', true);
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Authorization,Origin,X-Requested-With,Content-Type,Accept,application/json,Content-Range');
@@ -60,15 +69,6 @@ app.use(function (req, res, next) {
     }
 });
 
-// Connect to mongodb
-dotenv.config();
-// mongoose.connect(
-//   process.env.MONGODB_URL,
-//   { useNewUrlParser: true }
-// );
-// mongoose.set('useCreateIndex', true);
-// mongoose.Promise = Promise;
-
 const RETRY_TIMEOUT = 3000
 
 const options = {
@@ -80,9 +80,6 @@ const options = {
 }
 
 let isConnectedBefore = false
-
-const env = process.env.NODE_ENV || 'production';
-
 let mongo_url = process.env.DEV_MONGODB_URL;
 if (env === 'production')
     mongo_url = process.env.PRD_MONGODB_URL;
@@ -172,7 +169,8 @@ if (env === 'production') {
         .listen(8080, () => console.log(env + ' Server listening on port 8080'));
 }
 
-const io = socketIo(server);
+
+const io = socketIo(server, { origins: allowedOrigins });
 
 let interval;
 io.on('connection', socket => {

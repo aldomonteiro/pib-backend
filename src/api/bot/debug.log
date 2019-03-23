@@ -1,19 +1,1 @@
 dev Server listening on port 8080
-{ email: 'aldomonteiro@gmail.com',
-  nome: 'Aldo',
-  whatsapp: '4119191919' }
-{ email: 'joao@pizzaria.com',
-  nome: 'Joao',
-  whatsapp: '41292929' }
-{ email: 'teste@teste.com.br',
-  nome: 'Teste',
-  whatsapp: '41984163676' }
-{ email: 'aldomonteiro@gmail.com',
-  nome: 'Aldo',
-  whatsapp: '41984163676' }
-{ email: 'novoteste@gmai.com',
-  nome: 'Novo Teste',
-  whatsapp: 'ssdsdsds' }
-{ email: 'alala@alala.com',
-  nome: 'dlskdlasdksl',
-  whatsapp: 'dklasdkasl' }
