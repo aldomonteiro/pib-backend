@@ -52,7 +52,8 @@ function () {
               id: id,
               name: req.body.nome,
               email: req.body.email,
-              phone: req.body.whatsapp
+              phone: req.body.whatsapp,
+              obs: req.body.obs
             });
             newRecord.save().then(function (result) {
               res.status(200).json(result);

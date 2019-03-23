@@ -18,6 +18,7 @@ export const webform_create = async (req, res) => {
             name: req.body.nome,
             email: req.body.email,
             phone: req.body.whatsapp,
+            obs: req.body.obs,
         });
 
         newRecord.save()
