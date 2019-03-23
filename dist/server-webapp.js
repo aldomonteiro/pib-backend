@@ -186,10 +186,10 @@ app.use('/webforms', _webForms.default); // const env = process.env.NODE_ENV || 
 var server;
 
 if (env === 'production') {
-  app.listen(8080, function () {
-    return console.log(env + 'env. Server listening on port 8080');
+  // app.listen(8080, () => console.log(env + 'env. Server listening on port 8080'));
+  server = _http.default.createServer(app).listen(8080, function () {
+    return console.log(env + ' Server listening on port 8080');
   });
-  server = _http.default.createServer(app);
 } else {
   // dev server
   // Lift the https server

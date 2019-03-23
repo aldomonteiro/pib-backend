@@ -156,8 +156,10 @@ app.use('/webforms', webForms);
 let server;
 
 if (env === 'production') {
-    app.listen(8080, () => console.log(env + 'env. Server listening on port 8080'));
-    server = http.createServer(app);
+    // app.listen(8080, () => console.log(env + 'env. Server listening on port 8080'));
+    server = http
+        .createServer(app)
+        .listen(8080, () => console.log(env + ' Server listening on port 8080'));
 } else {
     // dev server
     // Lift the https server
