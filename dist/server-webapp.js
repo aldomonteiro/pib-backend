@@ -46,11 +46,15 @@ var _sizes = _interopRequireDefault(require("./api/routes/sizes"));
 
 var _orders = _interopRequireDefault(require("./api/routes/orders"));
 
+var _items = _interopRequireDefault(require("./api/routes/items"));
+
 var _customers = _interopRequireDefault(require("./api/routes/customers"));
 
 var _accounts = _interopRequireDefault(require("./api/routes/accounts"));
 
 var _categories = _interopRequireDefault(require("./api/routes/categories"));
+
+var _webForms = _interopRequireDefault(require("./api/routes/webForms"));
 
 var _ordersController = require("./api/controllers/ordersController");
 
@@ -77,8 +81,14 @@ app.use(_bodyParser.default.urlencoded({
   extended: true
 }));
 app.use(_bodyParser.default.json());
+
+_dotenv.default.config();
+
+var env = process.env.NODE_ENV || 'production';
+var allowedOrigins = process.env.DEV_ALLOWED_ORIGIN;
+if (env === 'production') allowedOrigins = process.env.PRD_ALLOWED_ORIGIN;
 app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Origin', allowedOrigins);
   res.header('Access-Control-Allow-Credentials', true);
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Authorization,Origin,X-Requested-With,Content-Type,Accept,application/json,Content-Range');
@@ -89,16 +99,7 @@ app.use(function (req, res, next) {
   } else {
     next();
   }
-}); // Connect to mongodb
-
-_dotenv.default.config(); // mongoose.connect(
-//   process.env.MONGODB_URL,
-//   { useNewUrlParser: true }
-// );
-// mongoose.set('useCreateIndex', true);
-// mongoose.Promise = Promise;
-
-
+});
 var RETRY_TIMEOUT = 3000;
 var options = {
   useNewUrlParser: true,
@@ -108,7 +109,6 @@ var options = {
   reconnectTries: 10000
 };
 var isConnectedBefore = false;
-var env = process.env.NODE_ENV || 'production';
 var mongo_url = process.env.DEV_MONGODB_URL;
 if (env === 'production') mongo_url = process.env.PRD_MONGODB_URL;
 
@@ -173,7 +173,10 @@ app.use('/extras', _extras.default);
 app.use('/orders', _orders.default);
 app.use('/customers', _customers.default);
 app.use('/accounts', _accounts.default);
-app.use('/categories', _categories.default); // const env = process.env.NODE_ENV || 'production';
+app.use('/categories', _categories.default);
+app.use('/reportOrders', _orders.default);
+app.use('/reportFlavors', _items.default);
+app.use('/webforms', _webForms.default); // const env = process.env.NODE_ENV || 'production';
 
 var server;
 
@@ -193,7 +196,9 @@ if (env === 'production') {
   });
 }
 
-var io = (0, _socket.default)(server);
+var io = (0, _socket.default)(server, {
+  origins: allowedOrigins
+});
 var interval;
 io.on('connection', function (socket) {
   console.info('New client connected');

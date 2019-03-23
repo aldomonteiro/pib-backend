@@ -12,7 +12,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 var configSortQuery = function configSortQuery(sortString) {
   var sortObj = {};
 
-  if (typeof sortString != "undefined") {
+  if (typeof sortString != 'undefined') {
     var arr = JSON.parse(sortString);
     sortObj[arr[0]] = arr[1];
   }
@@ -30,7 +30,7 @@ var configSortQuery = function configSortQuery(sortString) {
 exports.configSortQuery = configSortQuery;
 
 var configRangeQuery = function configRangeQuery(rangeString) {
-  if (typeof rangeString !== "undefined") {
+  if (typeof rangeString !== 'undefined') {
     var arr = JSON.parse(rangeString);
     return {
       offset: arr[0],
@@ -47,7 +47,7 @@ var configRangeQuery = function configRangeQuery(rangeString) {
 exports.configRangeQuery = configRangeQuery;
 
 var configRangeQueryNew = function configRangeQueryNew(rangeString) {
-  if (typeof rangeString !== "undefined") {
+  if (typeof rangeString !== 'undefined') {
     var json = JSON.parse(rangeString);
     return {
       offset: json[0],
@@ -59,7 +59,7 @@ var configRangeQueryNew = function configRangeQueryNew(rangeString) {
 exports.configRangeQueryNew = configRangeQueryNew;
 
 var configFilterQuery = function configFilterQuery(filterString) {
-  if (typeof filterString !== "undefined") {
+  if (typeof filterString !== 'undefined') {
     var json = JSON.parse(filterString);
     var _field = Object.keys(json)[0];
     var _values = Object.values(json)[0];
@@ -73,7 +73,7 @@ var configFilterQuery = function configFilterQuery(filterString) {
 exports.configFilterQuery = configFilterQuery;
 
 var configFilterQueryMultiple = function configFilterQueryMultiple(filterString) {
-  if (typeof filterString !== "undefined") {
+  if (typeof filterString !== 'undefined') {
     var json = JSON.parse(filterString);
     return {
       filterField: Object.keys(json),
@@ -94,7 +94,7 @@ function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            return _context.abrupt("return", new Object([{
+            return _context.abrupt("return", [{
               id: 'mini',
               name: 'Mini',
               order: 1
@@ -114,7 +114,7 @@ function () {
               id: 'gigante',
               name: 'Gigante',
               order: 5
-            }]));
+            }]);
 
           case 1:
           case "end":

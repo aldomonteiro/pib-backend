@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.cancelOrder = exports.getOrdersCustomerStat = exports.getLastPendingOrders = exports.getLastOrder = exports.getOrderPending = exports.updateOrder = exports.getOrderJson = exports.deleteManyOrders = exports.order_update = exports.order_get_one = exports.order_get_all = void 0;
+exports.cancelOrder = exports.getOrdersCustomerStat = exports.getLastPendingOrders = exports.getLastOrder = exports.getOrderPending = exports.updateOrder = exports.getOrderJson = exports.deleteManyOrders = exports.order_update = exports.order_get_one = exports.order_get_all = exports.ORDERSTATUS_CANCELLED = exports.ORDERSTATUS_REJECTED = exports.ORDERSTATUS_DELIVERED = exports.ORDERSTATUS_PRINTED = exports.ORDERSTATUS_ACCEPTED = exports.ORDERSTATUS_VIEWED = exports.ORDERSTATUS_CONFIRMED = exports.ORDERSTATUS_PENDING = void 0;
 
 var _orders = _interopRequireDefault(require("../models/orders"));
 
@@ -28,14 +28,23 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 var ORDERSTATUS_PENDING = 0;
+exports.ORDERSTATUS_PENDING = ORDERSTATUS_PENDING;
 var ORDERSTATUS_CONFIRMED = 1;
+exports.ORDERSTATUS_CONFIRMED = ORDERSTATUS_CONFIRMED;
 var ORDERSTATUS_VIEWED = 2;
+exports.ORDERSTATUS_VIEWED = ORDERSTATUS_VIEWED;
 var ORDERSTATUS_ACCEPTED = 3;
+exports.ORDERSTATUS_ACCEPTED = ORDERSTATUS_ACCEPTED;
 var ORDERSTATUS_PRINTED = 4;
+exports.ORDERSTATUS_PRINTED = ORDERSTATUS_PRINTED;
 var ORDERSTATUS_DELIVERED = 5;
+exports.ORDERSTATUS_DELIVERED = ORDERSTATUS_DELIVERED;
 var ORDERSTATUS_REJECTED = 8;
+exports.ORDERSTATUS_REJECTED = ORDERSTATUS_REJECTED;
 var ORDERSTATUS_CANCELLED = 9; // List all orders
 // TODO: use filters in the query req.query
+
+exports.ORDERSTATUS_CANCELLED = ORDERSTATUS_CANCELLED;
 
 var order_get_all =
 /*#__PURE__*/
@@ -43,7 +52,8 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(req, res) {
-    var sortObj, rangeObj, filterObj, queryParam, i, filter, value, dateIni, dateEnd, date, rezonedIni, rezonedEnd;
+    var sortObj, rangeObj, filterObj, queryParam, i, filter, value, dateIni, dateEnd, date, rezonedIni, _rezonedIni, rezonedEnd, _rezonedIni2, _rezonedEnd;
+
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -100,25 +110,50 @@ function () {
                       // is a date
                       // date comes with the current time, so, I am setting it to midnight.
                       // Mongoose stores data on GMT timezone
-                      rezonedIni = date.set({
-                        hour: 0,
-                        minute: 0,
-                        second: 0
-                      }).setZone('UTC');
-                      rezonedEnd = rezonedIni.plus({
-                        days: 1
-                      });
-                      console.info('date:', date.toISO(), 'rezoned:', rezonedIni.toISO(), 'nextDay:', rezonedEnd.toISO());
-                      queryParam[filter] = {
-                        $gte: rezonedIni.toISO(),
-                        $lt: rezonedEnd.toISO()
-                      };
+                      if (filter.endsWith('_rangestart')) {
+                        filter = filter.replace('_rangestart', '');
+                        rezonedIni = date.set({
+                          hour: 0,
+                          minute: 0,
+                          second: 0
+                        }).setZone('UTC');
+                        queryParam[filter] = {
+                          $gte: rezonedIni.toISO()
+                        };
+                      } else if (filter.endsWith('_rangeend')) {
+                        filter = filter.replace('_rangeend', '');
+                        _rezonedIni = date.set({
+                          hour: 0,
+                          minute: 0,
+                          second: 0
+                        }).setZone('UTC');
+                        rezonedEnd = _rezonedIni.plus({
+                          days: 1
+                        });
+                        if (queryParam[filter]) queryParam[filter] = {
+                          $gte: Object.values(queryParam[filter])[0],
+                          $lt: rezonedEnd.toISO()
+                        };else queryParam[filter] = {
+                          $lt: rezonedEnd.toISO()
+                        };
+                      } else {
+                        _rezonedIni2 = date.set({
+                          hour: 0,
+                          minute: 0,
+                          second: 0
+                        }).setZone('UTC');
+                        _rezonedEnd = _rezonedIni2.plus({
+                          days: 1
+                        });
+                        queryParam[filter] = {
+                          $gte: _rezonedIni2.toISO(),
+                          $lt: _rezonedEnd.toISO()
+                        };
+                      }
                     } else queryParam[filter] = value;
                   }
                 }
               }
-
-              console.info('orders get_all queryParam:', queryParam, filterObj);
 
               _orders.default.find(queryParam).sort(sortObj).exec(
               /*#__PURE__*/
@@ -126,7 +161,7 @@ function () {
                 var _ref2 = _asyncToGenerator(
                 /*#__PURE__*/
                 regeneratorRuntime.mark(function _callee(findError, result) {
-                  var _rangeIni, _rangeEnd, _totalCount, ordersArray, store, _i, order, items, distanceFromStore, formattedDistance, deliverAt, jsonOrder;
+                  var _rangeIni, _rangeEnd, _totalCount, ordersArray, asideTotalAmount, asideTotalItems, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, _order2, store, _i, order, items, distanceFromStore, formattedDistance, deliverAt, jsonOrder;
 
                   return regeneratorRuntime.wrap(function _callee$(_context) {
                     while (1) {
@@ -143,7 +178,7 @@ function () {
                           res.status(500).json({
                             message: findError.message
                           });
-                          _context.next = 31;
+                          _context.next = 52;
                           break;
 
                         case 5:
@@ -159,32 +194,81 @@ function () {
                           ordersArray = [];
 
                           if (!(result && result.length && result.length > 0)) {
-                            _context.next = 29;
+                            _context.next = 50;
                             break;
                           }
 
-                          _context.next = 13;
+                          // workaround to show totalamount and totalitems in the frontend, because
+                          // I am only sending part of the list (pagination)
+                          asideTotalAmount = 0;
+                          asideTotalItems = result.length;
+                          _iteratorNormalCompletion = true;
+                          _didIteratorError = false;
+                          _iteratorError = undefined;
+                          _context.prev = 16;
+
+                          for (_iterator = result[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                            _order2 = _step.value;
+                            asideTotalAmount = asideTotalAmount + _order2.total;
+                          } // workaround end: all orders will receive these values.
+
+
+                          _context.next = 24;
+                          break;
+
+                        case 20:
+                          _context.prev = 20;
+                          _context.t0 = _context["catch"](16);
+                          _didIteratorError = true;
+                          _iteratorError = _context.t0;
+
+                        case 24:
+                          _context.prev = 24;
+                          _context.prev = 25;
+
+                          if (!_iteratorNormalCompletion && _iterator.return != null) {
+                            _iterator.return();
+                          }
+
+                        case 27:
+                          _context.prev = 27;
+
+                          if (!_didIteratorError) {
+                            _context.next = 30;
+                            break;
+                          }
+
+                          throw _iteratorError;
+
+                        case 30:
+                          return _context.finish(27);
+
+                        case 31:
+                          return _context.finish(24);
+
+                        case 32:
+                          _context.next = 34;
                           return (0, _storesController.getStoreData)(result[0].pageId);
 
-                        case 13:
+                        case 34:
                           store = _context.sent;
                           _i = _rangeIni;
 
-                        case 15:
+                        case 36:
                           if (!(_i < _rangeEnd)) {
-                            _context.next = 29;
+                            _context.next = 50;
                             break;
                           }
 
                           order = result[_i];
-                          _context.next = 19;
+                          _context.next = 40;
                           return (0, _itemsController.getItems)({
                             orderId: order.id,
                             pageId: order.pageId,
                             completeItems: false
                           });
 
-                        case 19:
+                        case 40:
                           items = _context.sent;
                           distanceFromStore = (0, _util2.distanceBetweenCoordinates)(store.location_lat, store.location_long, order.location_lat, order.location_long);
                           formattedDistance = void 0;
@@ -222,25 +306,27 @@ function () {
                             deliverd_at: order.delivered_at,
                             payment_type: order.payment_type,
                             payment_change: order.payment_change,
-                            comments: order.comments
+                            comments: order.comments,
+                            asideTotalAmount: asideTotalAmount,
+                            asideTotalItems: asideTotalItems
                           };
                           ordersArray.push(jsonOrder);
 
-                        case 26:
+                        case 47:
                           _i++;
-                          _context.next = 15;
+                          _context.next = 36;
                           break;
 
-                        case 29:
+                        case 50:
                           res.setHeader('Content-Range', _util.default.format('orders %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
                           res.status(200).json(ordersArray);
 
-                        case 31:
+                        case 52:
                         case "end":
                           return _context.stop();
                       }
                     }
-                  }, _callee);
+                  }, _callee, null, [[16, 20, 24, 32], [25,, 27, 31]]);
                 }));
 
                 return function (_x3, _x4) {
@@ -1149,7 +1235,7 @@ function () {
   var _ref11 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee11(orderData) {
-    var pageId, customerId, orders, total_spent, nb_orders, first_order, last_order, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, order;
+    var pageId, customerId, orders, total_spent, nb_orders, first_order, last_order, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, order;
 
     return regeneratorRuntime.wrap(function _callee11$(_context11) {
       while (1) {
@@ -1168,13 +1254,13 @@ function () {
             nb_orders = 0;
             first_order = Date.now();
             last_order = null;
-            _iteratorNormalCompletion = true;
-            _didIteratorError = false;
-            _iteratorError = undefined;
+            _iteratorNormalCompletion2 = true;
+            _didIteratorError2 = false;
+            _iteratorError2 = undefined;
             _context11.prev = 11;
 
-            for (_iterator = orders[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-              order = _step.value;
+            for (_iterator2 = orders[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              order = _step2.value;
               total_spent += order.total;
               nb_orders += 1;
 
@@ -1193,26 +1279,26 @@ function () {
           case 15:
             _context11.prev = 15;
             _context11.t0 = _context11["catch"](11);
-            _didIteratorError = true;
-            _iteratorError = _context11.t0;
+            _didIteratorError2 = true;
+            _iteratorError2 = _context11.t0;
 
           case 19:
             _context11.prev = 19;
             _context11.prev = 20;
 
-            if (!_iteratorNormalCompletion && _iterator.return != null) {
-              _iterator.return();
+            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+              _iterator2.return();
             }
 
           case 22:
             _context11.prev = 22;
 
-            if (!_didIteratorError) {
+            if (!_didIteratorError2) {
               _context11.next = 25;
               break;
             }
 
-            throw _iteratorError;
+            throw _iteratorError2;
 
           case 25:
             return _context11.finish(22);

@@ -481,7 +481,7 @@ function () {
                 data: 'stoporder_init',
                 event: 'STOP_ORDER_OPTIONS'
               }, {
-                text: 'Falar c/ Humano',
+                text: 'Falar c/ Atendente',
                 data: 'stoporder_human',
                 event: 'STOP_ORDER_OPTIONS'
               }]
@@ -508,33 +508,35 @@ function () {
   var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee6(pageId, userId, source) {
-    var result, _txt;
+    var _txt, result;
 
     return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
+            _txt = 'Ok, a partir de agora você está nas mãos do nosso atendente.';
+            _txt += ' O que você escrever a partir de agora será respondido por uma pessoa,';
+            _txt += 'o mais rápido possível!';
+
             if (!(source && source === 'whatsapp')) {
-              _context6.next = 3;
+              _context6.next = 7;
               break;
             }
 
-            _context6.next = 9;
-            break;
+            return _context6.abrupt("return", {
+              type: 'text',
+              text: _txt,
+              hidden: 'stoporder_human'
+            });
 
-          case 3:
-            _context6.next = 5;
+          case 7:
+            _context6.next = 9;
             return (0, _pagesController.sendPassThreadControl)(pageId, userId);
 
-          case 5:
+          case 9:
             result = _context6.sent;
-            _txt = '';
 
-            if (result === 200) {
-              _txt = 'Ok, a partir de agora você está nas mãos do nosso humano.';
-              _txt += ' O que você escrever a partir de agora será respondido por uma pessoa,';
-              _txt += 'o mais rápido possível!';
-            } else {
+            if (result !== 200) {
               _txt = 'Ops, tivemos um probleminha. Tente novamente';
             }
 
@@ -543,7 +545,7 @@ function () {
               text: _txt
             });
 
-          case 9:
+          case 12:
           case "end":
             return _context6.stop();
         }
@@ -646,6 +648,10 @@ function () {
               }, {
                 text: '📨 Fazer Pedido',
                 data: 'PEDIDO_PAYLOAD',
+                event: 'MAIN-MENU'
+              }, {
+                text: '🗣 Falar c/ Atendente',
+                data: 'stoporder_human',
                 event: 'MAIN-MENU'
               }]
             });

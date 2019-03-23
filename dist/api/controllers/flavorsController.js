@@ -446,24 +446,25 @@ var getFlavors =
 function () {
   var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee6(pageID) {
-    var queryFlavor;
+  regeneratorRuntime.mark(function _callee6(pageID, categoryId, sort) {
+    var query, queryFlavor;
     return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
-            queryFlavor = _flavors.default.find({
-              pageId: pageID
-            });
-            queryFlavor.sort('flavor');
+            query = {};
+            query['pageId'] = pageID;
+            if (categoryId) query['categoryId'] = categoryId;
+            queryFlavor = _flavors.default.find(query);
+            if (!sort) queryFlavor.sort('flavor');else queryFlavor.sort(sort);
             queryFlavor.select('id flavor categoryId toppings price');
-            _context6.next = 5;
+            _context6.next = 8;
             return queryFlavor.exec();
 
-          case 5:
+          case 8:
             return _context6.abrupt("return", _context6.sent);
 
-          case 6:
+          case 9:
           case "end":
             return _context6.stop();
         }
@@ -471,7 +472,7 @@ function () {
     }, _callee6);
   }));
 
-  return function getFlavors(_x10) {
+  return function getFlavors(_x10, _x11, _x12) {
     return _ref6.apply(this, arguments);
   };
 }();
@@ -508,7 +509,7 @@ function () {
     }, _callee7);
   }));
 
-  return function getFlavor(_x11, _x12) {
+  return function getFlavor(_x13, _x14) {
     return _ref7.apply(this, arguments);
   };
 }();
@@ -567,7 +568,7 @@ function () {
     }, _callee8);
   }));
 
-  return function getFlavorByName(_x13, _x14) {
+  return function getFlavorByName(_x15, _x16) {
     return _ref8.apply(this, arguments);
   };
 }();

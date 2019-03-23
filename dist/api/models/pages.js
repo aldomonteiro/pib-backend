@@ -7,8 +7,6 @@ exports.default = void 0;
 
 var _mongoose = _interopRequireDefault(require("mongoose"));
 
-var _mongoosePaginate = _interopRequireDefault(require("mongoose-paginate"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var schema = new _mongoose.default.Schema({
@@ -64,8 +62,6 @@ var schema = new _mongoose.default.Schema({
 }, {
   timestamps: true
 }); //TODO: store access_token expiring date
-
-schema.plugin(_mongoosePaginate.default);
 
 var _default = _mongoose.default.model("pages", schema);
 

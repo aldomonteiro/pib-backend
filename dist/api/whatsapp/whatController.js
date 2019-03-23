@@ -388,6 +388,9 @@ var mapEventsActions = function mapEventsActions(event, data) {
 
         case 'HORARIO_PAYLOAD':
           return 'SEND_HORARIO';
+
+        case 'stoporder_human':
+          return 'PASS_THREAD_CONTROL';
       }
 
       break;
