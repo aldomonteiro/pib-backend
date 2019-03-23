@@ -22,9 +22,11 @@ import pages from './api/routes/pages';
 import extras from './api/routes/extras';
 import sizes from './api/routes/sizes';
 import orders from './api/routes/orders';
+import items from './api/routes/items';
 import customers from './api/routes/customers';
 import accounts from './api/routes/accounts';
 import categories from './api/routes/categories';
+import webForms from './api/routes/webForms';
 import { getLastPendingOrders } from './api/controllers/ordersController';
 
 
@@ -145,6 +147,9 @@ app.use('/orders', orders);
 app.use('/customers', customers);
 app.use('/accounts', accounts);
 app.use('/categories', categories);
+app.use('/reportOrders', orders);
+app.use('/reportFlavors', items);
+app.use('/webforms', webForms);
 
 // const env = process.env.NODE_ENV || 'production';
 

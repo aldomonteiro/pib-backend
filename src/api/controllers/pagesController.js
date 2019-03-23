@@ -3,7 +3,7 @@ import Page from '../models/pages';
 import User from '../models/users';
 import axios from 'axios';
 import util from 'util';
-import { configSortQuery, configRangeQuery } from '../util/util';
+import { configSortQuery, configRangeQuery, configFilterQueryMultiple } from '../util/util';
 import { initialSetup } from './systemController';
 import { deleteManyFlavors } from './flavorsController';
 import { deleteManyBeverages } from './beveragesController';
@@ -20,36 +20,52 @@ import { removeUserActivePage } from './usersController';
 // List all flavors
 // TODO: use filters in the query req.query
 export const page_resources_get_all = async (req, res) => {
+
     // Getting the sort from the requisition
-    var sortObj = configSortQuery(req.query.sort);
+    let sortObj = req.query.sort ? configSortQuery(req.query.sort) : { name: 'ASC' };
     // Getting the range from the requisition
-    var rangeObj = configRangeQuery(req.query.range);
+    let rangeObj = configRangeQuery(req.query.range);
 
-    let options = {
-        offset: rangeObj['offset'],
-        limit: rangeObj['limit'],
-        sort: sortObj,
-        lean: true,
-        leanWithId: false,
-    };
+    let queryObj = {};
+    if (req.query.filter) {
+        const filterObj = configFilterQueryMultiple(req.query.filter);
 
-    var query = {};
+        if (filterObj && filterObj.filterField && filterObj.filterField.length) {
+            for (let i = 0; i < filterObj.filterField.length; i++) {
+                const filter = filterObj.filterField[i];
+                const value = filterObj.filterValues[i];
+                if (Array.isArray(value)) {
+                    queryObj[filter] = { $in: value };
+                } else
+                    queryObj[filter] = value;
+            }
+        }
+    }
 
     if (req.currentUser.activePage) {
-        query = Page.find({ id: req.currentUser.activePage });
-        Page.paginate(query, options, async (err, result) => {
-            if (err) {
-                res.status(500).json({ message: err.errmsg });
-            } else {
-                res.setHeader('Content-Range', util.format('pages %d-%d/%d', rangeObj['offset'], rangeObj['limit'], result.total));
-                res.status(200).json(result.docs);
+        if (req.currentUser.role !== 'admin')
+            queryObj['id'] = req.currentUser.activePage;
+    }
+
+    Page.find(queryObj).sort(sortObj).exec((err, result) => {
+        if (err) {
+            res.status(500).json({ message: err.errmsg });
+        } else {
+            let _rangeIni = 0;
+            let _rangeEnd = result.length;
+            if (rangeObj) {
+                _rangeIni = rangeObj.offset <= result.length ? rangeObj.offset : result.length;
+                _rangeEnd = (rangeObj.offset + rangeObj.limit) <= result.length ? rangeObj.offset + rangeObj.limit : result.length;
             }
-        });
-    }
-    else {
-        res.setHeader('Content-Range', util.format('pages %d-%d/%d', 0, 0, 0));
-        res.status(200).json(new Array());
-    }
+            let _totalCount = result.length;
+            let resultArray = [];
+            for (let i = _rangeIni; i < _rangeEnd; i++) {
+                resultArray.push(result[i])
+            }
+            res.setHeader('Content-Range', util.format('pages %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
+            res.status(200).json(resultArray);
+        }
+    });
 };
 
 // List one record by filtering by ID
@@ -111,9 +127,10 @@ export const page_resources_delete = async (req, res) => {
 // Update or create a new page
 export const page_update = async (req, res) => {
     try {
-        console.info('page_update: ', req.body.operation, req.body.id);
         const pageID = req.body.id;
-        const operation = req.body.operation;
+        const { operation, picture } = req.body;
+        const pictureUrl = picture ? picture.pictureUrl : null;
+
         let page = await Page.findOne({ id: pageID }).exec();
 
         if (page && operation === 'ACTIVATE') { // only deactivating the bot in the page
@@ -137,6 +154,7 @@ export const page_update = async (req, res) => {
                     name: req.body.name,
                     userID: req.currentUser.userID,
                     activeBot: false,
+                    pictureUrl: pictureUrl,
                 });
                 isNew = true;
             }
@@ -146,7 +164,8 @@ export const page_update = async (req, res) => {
                 page.greetingText = req.body.greetingText;
             if (req.body.firstResponseText)
                 page.firstResponseText = req.body.firstResponseText;
-
+            if (pictureUrl)
+                page.pictureUrl = pictureUrl;
             // update ActivePage for the current user
             if (req.currentUser) {
                 page.userID = req.currentUser.userID;

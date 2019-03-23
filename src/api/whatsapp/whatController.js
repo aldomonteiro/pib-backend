@@ -186,6 +186,8 @@ const mapEventsActions = (event, data) => {
                     return 'ASK_FOR_DELIVER';
                 case 'HORARIO_PAYLOAD':
                     return 'SEND_HORARIO';
+                case 'stoporder_human':
+                    return 'PASS_THREAD_CONTROL';
             }
             break;
         case 'ORDER_WANT_ORDER':

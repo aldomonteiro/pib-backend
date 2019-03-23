@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import paginate from 'mongoose-paginate';
 
 const schema = new mongoose.Schema({
     id: { type: String, required: true },
@@ -16,12 +15,9 @@ const schema = new mongoose.Schema({
     initialSetupStores: { type: Number },
     initialSetupBeverages: { type: Number },
     initialSetupToppings: { type: Number },
-    marketing: { type: Boolean, default: false }
+    marketing: { type: Boolean, default: false },
 }, { timestamps: true });
 
 //TODO: store access_token expiring date
-
-schema.plugin(paginate);
-
 
 export default mongoose.model("pages", schema);

@@ -1,6 +1,7 @@
+
 export const configSortQuery = sortString => {
     var sortObj = {};
-    if (typeof (sortString) != "undefined") {
+    if (typeof (sortString) != 'undefined') {
         var arr = JSON.parse(sortString);
         sortObj[arr[0]] = arr[1];
     }
@@ -14,7 +15,7 @@ export const configSortQuery = sortString => {
  * @param {*} rangeString 
  */
 export const configRangeQuery = rangeString => {
-    if (typeof rangeString !== "undefined") {
+    if (typeof rangeString !== 'undefined') {
         var arr = JSON.parse(rangeString);
         return {
             offset: arr[0],
@@ -28,7 +29,7 @@ export const configRangeQuery = rangeString => {
  * @param {*} rangeString 
  */
 export const configRangeQueryNew = rangeString => {
-    if (typeof (rangeString) !== "undefined") {
+    if (typeof (rangeString) !== 'undefined') {
         let json = JSON.parse(rangeString);
         return {
             offset: json[0],
@@ -39,7 +40,7 @@ export const configRangeQueryNew = rangeString => {
 }
 
 export const configFilterQuery = filterString => {
-    if (typeof filterString !== "undefined") {
+    if (typeof filterString !== 'undefined') {
         const json = JSON.parse(filterString);
         const _field = Object.keys(json)[0];
         const _values = Object.values(json)[0];
@@ -49,7 +50,7 @@ export const configFilterQuery = filterString => {
 }
 
 export const configFilterQueryMultiple = filterString => {
-    if (typeof filterString !== "undefined") {
+    if (typeof filterString !== 'undefined') {
         const json = JSON.parse(filterString);
         return { filterField: Object.keys(json), filterValues: Object.values(json) };
     } else return null;
@@ -57,13 +58,13 @@ export const configFilterQueryMultiple = filterString => {
 
 
 export const choices_sizes = async () => {
-    return new Object([
+    return [
         { id: 'mini', name: 'Mini', order: 1 },
         { id: 'pequena', name: 'Pequena', order: 2 },
         { id: 'media', name: 'Média', order: 3 },
         { id: 'grande', name: 'Grande', order: 4 },
         { id: 'gigante', name: 'Gigante', order: 5 }
-    ]);
+    ];
 }
 
 export const choices_kinds = () => {

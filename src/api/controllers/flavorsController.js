@@ -237,9 +237,16 @@ export const deleteManyFlavors = async (pageID) => {
     return await Flavor.deleteMany({ pageId: pageID }).exec();
 }
 
-export const getFlavors = async (pageID) => {
-    var queryFlavor = Flavor.find({ pageId: pageID });
-    queryFlavor.sort('flavor');
+export const getFlavors = async (pageID, categoryId, sort) => {
+    let query = {}
+    query['pageId'] = pageID;
+    if (categoryId)
+        query['categoryId'] = categoryId;
+
+    let queryFlavor = Flavor.find(query);
+    if (!sort)
+        queryFlavor.sort('flavor');
+    else queryFlavor.sort(sort);
     queryFlavor.select('id flavor categoryId toppings price');
     return await queryFlavor.exec();
 }

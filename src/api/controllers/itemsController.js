@@ -1,13 +1,140 @@
 import mongoose from 'mongoose';
+import { DateTime } from 'luxon';
+import util from 'util';
+import Order from '../models/orders';
 import Items from '../models/items';
 import { getFlavors } from './flavorsController';
-import { getOnePricingByFlavor } from './pricingsController';
 import { getSizes } from './sizesController';
 import { getCategories } from './categoriesController';
+import {
+    configSortQuery, configRangeQueryNew,
+    configFilterQueryMultiple,
+} from '../util/util';
+import { ORDERSTATUS_CONFIRMED, ORDERSTATUS_REJECTED } from './ordersController';
 
 const ITEMSTATUS_PENDING = 0;
 const ITEMSTATUS_COMPLETED = 1;
 
+// List all orders
+// TODO: use filters in the query req.query
+export const item_get_all = async (req, res) => {
+    try {
+        const sortObj = configSortQuery(req.query.sort);
+        const rangeObj = configRangeQueryNew(req.query.range);
+        const filterObj = configFilterQueryMultiple(req.query.filter);
+        const pageID = req.currentUser ? req.currentUser.activePage : null;
+
+        if (pageID) {
+            let queryParamOrder = {};
+            let queryParamItem = {};
+            queryParamOrder['pageId'] = pageID;
+            queryParamItem['pageId'] = pageID;
+
+            queryParamOrder['status'] = { $gte: ORDERSTATUS_CONFIRMED, $lt: ORDERSTATUS_REJECTED };
+
+            if (filterObj && filterObj.filterField && filterObj.filterField.length) {
+                for (let i = 0; i < filterObj.filterField.length; i++) {
+                    let filter = filterObj.filterField[i];
+                    const value = filterObj.filterValues[i];
+                    if (filter.endsWith('_rangestart')) {
+                        const date = DateTime.fromISO(value);
+                        filter = filter.replace('_rangestart', '');
+                        const rezonedIni = date.set({ hour: 0, minute: 0, second: 0 }).setZone('UTC');
+                        queryParamOrder[filter] = { $gte: rezonedIni.toISO() };
+                    } else if (filter.endsWith('_rangeend')) {
+                        const date = DateTime.fromISO(value);
+                        filter = filter.replace('_rangeend', '');
+                        const rezonedIni = date.set({ hour: 0, minute: 0, second: 0 }).setZone('UTC');
+                        const rezonedEnd = rezonedIni.plus({ days: 1 });
+                        if (queryParamOrder[filter])
+                            queryParamOrder[filter] = { $gte: Object.values(queryParamOrder[filter])[0], $lt: rezonedEnd.toISO() };
+                        else
+                            queryParamOrder[filter] = { $lt: rezonedEnd.toISO() };
+                    } else {
+                        queryParamItem[filter] = value;
+                    }
+                }
+            }
+
+            const orders = await Order.find(queryParamOrder).exec();
+            const ordersArray = orders.map(order => order.id);
+
+            queryParamItem['orderId'] = { $in: ordersArray };
+            queryParamItem['flavorId'] = { $gt: 0 };
+
+            console.info(queryParamOrder);
+            console.info(queryParamItem);
+
+            const items = await Items.find(queryParamItem).sort('flavorId').exec();
+            const flavors = await getFlavors(pageID, queryParamItem['categoryId'], 'id');
+
+            let i = 0;
+            const itemsStats = [];
+            for (let flavor of flavors) {
+                const itemStat = {
+                    id: flavor.id,
+                    flavor: flavor.flavor,
+                    categoryId: flavor.categoryId,
+                    itemsSold: 0,
+                    amountSold: 0,
+                    firstSale: null,
+                    lastSale: null,
+                }
+
+                while (1) {
+                    if (i < items.length) {
+                        if (items[i].flavorId === flavor.id) {
+                            itemStat.itemsSold = itemStat.itemsSold + 1;
+                            itemStat.amountSold = itemStat.amountSold + items[i].price;
+                            if (!itemStat.firstSale || items[i].updatedAt < itemStat.firstSale)
+                                itemStat.firstSale = items[i].updatedAt;
+                            if (!itemStat.lastSale || items[i].updatedAt > itemStat.lastSale)
+                                itemStat.lastSale = items[i].updatedAt;
+                        } else
+                            break;
+                    } else
+                        break;
+                    i++
+                }
+                itemsStats.push(itemStat);
+            }
+
+            let _rangeIni = 0;
+            let _rangeEnd = itemsStats.length;
+            if (rangeObj) {
+                _rangeIni = rangeObj.offset <= itemsStats.length ? rangeObj.offset : itemsStats.length;
+                _rangeEnd = (rangeObj.offset + rangeObj.limit) <= itemsStats.length ? rangeObj.offset + rangeObj.limit : itemsStats.length;
+            }
+            let _totalCount = itemsStats.length;
+            let resultArray = [];
+
+            if (itemsStats && itemsStats.length > 0) {
+                for (let k = _rangeIni; k < _rangeEnd; k++) {
+                    resultArray.push(itemsStats[k]);
+                }
+
+                // https://stackoverflow.com/a/1129270/7948731
+                if (sortObj) {
+                    const field = Object.keys(sortObj)[0];
+                    if (sortObj[field] === 'ASC')
+                        resultArray.sort((a, b) => a[field] > b[field] ? 1 : b[field] > a[field] ? -1 : 0);
+                    else
+                        resultArray.sort((a, b) => b[field] > a[field] ? 1 : a[field] > b[field] ? -1 : 0);
+                }
+            }
+            // All lists must have an ID field, if not, React-admin throws a Content-Range error.
+            // https://marmelab.com/react-admin/FAQ.html#can-i-have-custom-identifiersprimary-keys-for-my-resources
+            res.setHeader('Content-Range', util.format('items %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
+            res.status(200).json(resultArray);
+        } else {
+            res.setHeader('Content-Range', 'items 0-0/0');
+            res.status(200).json([]);
+        }
+    } catch (itemGetAllErr) {
+        console.error({ itemGetAllErr })
+        res.status(500).json({ message: itemGetAllErr.message });
+    }
+}
 
 /**
  * Delete all records from a pageID

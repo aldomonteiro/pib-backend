@@ -11,14 +11,14 @@ import { DateTime } from 'luxon';
 // import { Bot, Elements } from 'facebook-messenger-bot';
 // import { getOnePageToken } from './pagesController';
 import { sendShippingNotification, sendRejectionNotification } from '../bot/botController';
-const ORDERSTATUS_PENDING = 0;
-const ORDERSTATUS_CONFIRMED = 1;
-const ORDERSTATUS_VIEWED = 2;
-const ORDERSTATUS_ACCEPTED = 3;
-const ORDERSTATUS_PRINTED = 4;
-const ORDERSTATUS_DELIVERED = 5;
-const ORDERSTATUS_REJECTED = 8;
-const ORDERSTATUS_CANCELLED = 9;
+export const ORDERSTATUS_PENDING = 0;
+export const ORDERSTATUS_CONFIRMED = 1;
+export const ORDERSTATUS_VIEWED = 2;
+export const ORDERSTATUS_ACCEPTED = 3;
+export const ORDERSTATUS_PRINTED = 4;
+export const ORDERSTATUS_DELIVERED = 5;
+export const ORDERSTATUS_REJECTED = 8;
+export const ORDERSTATUS_CANCELLED = 9;
 
 // List all orders
 // TODO: use filters in the query req.query
@@ -41,7 +41,7 @@ export const order_get_all = async (req, res) => {
 
         if (filterObj && filterObj.filterField && filterObj.filterField.length) {
             for (let i = 0; i < filterObj.filterField.length; i++) {
-                const filter = filterObj.filterField[i];
+                let filter = filterObj.filterField[i];
                 const value = filterObj.filterValues[i];
                 if (Array.isArray(value)) {
                     if (value.length === 2) {
@@ -59,19 +59,29 @@ export const order_get_all = async (req, res) => {
                     if (!date.invalid) { // is a date
                         // date comes with the current time, so, I am setting it to midnight.
                         // Mongoose stores data on GMT timezone
-                        const rezonedIni = date.set({ hour: 0, minute: 0, second: 0 }).setZone('UTC');
-                        const rezonedEnd = rezonedIni.plus({ days: 1 });
-                        console.info('date:', date.toISO(),
-                            'rezoned:', rezonedIni.toISO(),
-                            'nextDay:', rezonedEnd.toISO());
-                        queryParam[filter] = { $gte: rezonedIni.toISO(), $lt: rezonedEnd.toISO() };
+                        if (filter.endsWith('_rangestart')) {
+                            filter = filter.replace('_rangestart', '');
+                            const rezonedIni = date.set({ hour: 0, minute: 0, second: 0 }).setZone('UTC');
+                            queryParam[filter] = { $gte: rezonedIni.toISO() };
+                        } else if (filter.endsWith('_rangeend')) {
+                            filter = filter.replace('_rangeend', '');
+                            const rezonedIni = date.set({ hour: 0, minute: 0, second: 0 }).setZone('UTC');
+                            const rezonedEnd = rezonedIni.plus({ days: 1 });
+                            if (queryParam[filter])
+                                queryParam[filter] = { $gte: Object.values(queryParam[filter])[0], $lt: rezonedEnd.toISO() };
+                            else
+                                queryParam[filter] = { $lt: rezonedEnd.toISO() };
+                        } else {
+                            const rezonedIni = date.set({ hour: 0, minute: 0, second: 0 }).setZone('UTC');
+                            const rezonedEnd = rezonedIni.plus({ days: 1 });
+                            queryParam[filter] = { $gte: rezonedIni.toISO(), $lt: rezonedEnd.toISO() };
+
+                        }
                     } else
                         queryParam[filter] = value;
                 }
             }
         }
-
-        console.info('orders get_all queryParam:', queryParam, filterObj);
 
         Order.find(queryParam).sort(sortObj).exec(async (findError, result) => {
             if (findError) {
@@ -87,6 +97,16 @@ export const order_get_all = async (req, res) => {
                 let _totalCount = result.length;
                 let ordersArray = [];
                 if (result && result.length && result.length > 0) {
+
+                    // workaround to show totalamount and totalitems in the frontend, because
+                    // I am only sending part of the list (pagination)
+                    let asideTotalAmount = 0;
+                    let asideTotalItems = result.length;
+                    for (const order of result) {
+                        asideTotalAmount = asideTotalAmount + order.total;
+                    }
+                    // workaround end: all orders will receive these values.
+
                     const store = await getStoreData(result[0].pageId);
                     for (let i = _rangeIni; i < _rangeEnd; i++) {
                         const order = result[i];
@@ -127,6 +147,8 @@ export const order_get_all = async (req, res) => {
                             payment_type: order.payment_type,
                             payment_change: order.payment_change,
                             comments: order.comments,
+                            asideTotalAmount: asideTotalAmount,
+                            asideTotalItems: asideTotalItems,
                         }
                         ordersArray.push(jsonOrder);
                     }

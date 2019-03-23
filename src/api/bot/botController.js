@@ -132,24 +132,22 @@ export const optionsStopOrder = async () => {
         text: 'Muito bem, aqui estão as opções:',
         options: [
             { text: 'Voltar p/ Início', data: 'stoporder_init', event: 'STOP_ORDER_OPTIONS' },
-            { text: 'Falar c/ Humano', data: 'stoporder_human', event: 'STOP_ORDER_OPTIONS' },
+            { text: 'Falar c/ Atendente', data: 'stoporder_human', event: 'STOP_ORDER_OPTIONS' },
         ],
     }
 }
 
 export const passThreadControl = async (pageId, userId, source) => {
-    if (source && source === 'whatsapp') {
+    let _txt = 'Ok, a partir de agora você está nas mãos do nosso atendente.';
+    _txt += ' O que você escrever a partir de agora será respondido por uma pessoa,'
+    _txt += 'o mais rápido possível!';
 
+    if (source && source === 'whatsapp') {
+        return { type: 'text', text: _txt, hidden: 'stoporder_human' };
     } else {
         const result = await sendPassThreadControl(pageId, userId);
 
-        let _txt = '';
-
-        if (result === 200) {
-            _txt = 'Ok, a partir de agora você está nas mãos do nosso humano.';
-            _txt += ' O que você escrever a partir de agora será respondido por uma pessoa,'
-            _txt += 'o mais rápido possível!';
-        } else {
+        if (result !== 200) {
             _txt = 'Ops, tivemos um probleminha. Tente novamente';
         }
         return { type: 'text', text: _txt };
@@ -187,6 +185,7 @@ export const sendMainMenu = async () => {
             { text: '🍕 Cardápio', data: 'CARDAPIO_PAYLOAD', event: 'MAIN-MENU' },
             { text: '🕒 Horários', data: 'HORARIO_PAYLOAD', event: 'MAIN-MENU' },
             { text: '📨 Fazer Pedido', data: 'PEDIDO_PAYLOAD', event: 'MAIN-MENU' },
+            { text: '🗣 Falar c/ Atendente', data: 'stoporder_human', event: 'MAIN-MENU' },
         ],
     };
 
