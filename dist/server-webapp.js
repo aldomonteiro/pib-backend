@@ -85,10 +85,15 @@ app.use(_bodyParser.default.json());
 _dotenv.default.config();
 
 var env = process.env.NODE_ENV || 'production';
-var allowedOrigins = process.env.DEV_ALLOWED_ORIGIN;
-if (env === 'production') allowedOrigins = process.env.PRD_ALLOWED_ORIGIN;
+var allowedOrigins = process.env.DEV_ALLOWED_ORIGIN.split(' ');
+if (env === 'production') allowedOrigins = process.env.PRD_ALLOWED_ORIGIN.split(' ');
 app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', allowedOrigins);
+  var origin = req.headers.origin;
+
+  if (allowedOrigins.indexOf(origin) > -1) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
   res.header('Access-Control-Allow-Credentials', true);
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Authorization,Origin,X-Requested-With,Content-Type,Accept,application/json,Content-Range');
