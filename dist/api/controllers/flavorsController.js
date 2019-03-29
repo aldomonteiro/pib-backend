@@ -351,7 +351,12 @@ function () {
                 id: id
               }, function (err, doc) {
                 if (!err) {
-                  if (flavor) doc.flavor = (0, _stringCapitalizeName.default)(flavor);
+                  if (flavor) {
+                    var _flavor = (0, _util2.fixNonCapitalizeWords)((0, _stringCapitalizeName.default)(flavor));
+
+                    doc.flavor = _flavor;
+                  }
+
                   if (categoryId) doc.categoryId = categoryId;
                   if (toppings) doc.toppings = toppings;
                   if (price) doc.price = price;

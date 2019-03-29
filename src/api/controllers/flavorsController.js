@@ -2,7 +2,7 @@ import Flavor from '../models/flavors';
 import util from 'util';
 import stringSimilarity from 'string-similarity';
 import stringCapitalizeName from 'string-capitalize-name';
-import { configSortQuery, configRangeQuery, configFilterQueryMultiple } from '../util/util';
+import { configSortQuery, configRangeQuery, configFilterQueryMultiple, fixNonCapitalizeWords } from '../util/util';
 import { getToppingsNames } from './toppingsController';
 import { getCategory } from './categoriesController';
 
@@ -198,8 +198,10 @@ export const flavor_update = async (req, res) => {
 
             Flavor.findOne({ pageId: pageId, id: id }, (err, doc) => {
                 if (!err) {
-                    if (flavor)
-                        doc.flavor = stringCapitalizeName(flavor);
+                    if (flavor) {
+                        let _flavor = fixNonCapitalizeWords(stringCapitalizeName(flavor));
+                        doc.flavor = _flavor;
+                    }
                     if (categoryId)
                         doc.categoryId = categoryId;
                     if (toppings)

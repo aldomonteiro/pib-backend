@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.formatAsCurrency = exports.formatWhatsappNumber = exports.distanceBetweenCoordinates = exports.shuffle = exports.choices_kinds = exports.choices_sizes = exports.configFilterQueryMultiple = exports.configFilterQuery = exports.configRangeQueryNew = exports.configRangeQuery = exports.configSortQuery = void 0;
+exports.fixNonCapitalizeWords = exports.formatAsCurrency = exports.formatWhatsappNumber = exports.distanceBetweenCoordinates = exports.shuffle = exports.choices_kinds = exports.choices_sizes = exports.configFilterQueryMultiple = exports.configFilterQuery = exports.configRangeQueryNew = exports.configRangeQuery = exports.configSortQuery = void 0;
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -218,4 +218,10 @@ var formatAsCurrency = function formatAsCurrency(amount) {
 };
 
 exports.formatAsCurrency = formatAsCurrency;
+
+var fixNonCapitalizeWords = function fixNonCapitalizeWords(word) {
+  if (word.includes(' Iii')) return word.replace(' Iii', 'III');else if (word.includes(' Ii')) return word.replace(' Ii', 'II');else return word;
+};
+
+exports.fixNonCapitalizeWords = fixNonCapitalizeWords;
 //# sourceMappingURL=util.js.map

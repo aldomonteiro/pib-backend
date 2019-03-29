@@ -145,3 +145,11 @@ export const formatAsCurrency = amount =>
             minimumSignificantDigits: 2,
             maximumSignificantDigits: 2,
         });
+
+export const fixNonCapitalizeWords = word => {
+    if (word.includes(' Iii'))
+        return word.replace(' Iii', 'III');
+    else if (word.includes(' Ii'))
+        return word.replace(' Ii', 'II');
+    else return word;
+}
