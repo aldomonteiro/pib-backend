@@ -106,7 +106,7 @@ export const topping_update = (req, res) => {
 
     const pageID = req.currentUser.activePage;
 
-    Topping.findOne({ pageId: pageIE, id: req.body.id }, (err, doc) => {
+    Topping.findOne({ pageId: pageID, id: req.body.id }, (err, doc) => {
         if (!err) {
             doc.topping = stringCapitalizeName(req.body.topping);
             doc.save((err, doc) => {
@@ -135,7 +135,7 @@ export const topping_delete = (req, res) => {
         .then((result) => {
             res.status(200).json({
                 id: result.id,
-                topping: result.topping
+                topping: result.topping,
             });
         })
         .catch((err) => {
@@ -168,7 +168,7 @@ export const getToppingsFull = async (pageID) => {
 
 /**
  * Delete all records from a pageID
- * @param {*} pageID 
+ * @param {*} pageID
  */
 export const deleteManyToppings = async (pageID) => {
     return await Topping.deleteMany({ pageId: pageID }).exec();

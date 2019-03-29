@@ -201,7 +201,7 @@ var topping_update = function topping_update(req, res) {
   var pageID = req.currentUser.activePage;
 
   _toppings.default.findOne({
-    pageId: pageIE,
+    pageId: pageID,
     id: req.body.id
   }, function (err, doc) {
     if (!err) {
@@ -403,7 +403,7 @@ function () {
 }();
 /**
  * Delete all records from a pageID
- * @param {*} pageID 
+ * @param {*} pageID
  */
 
 

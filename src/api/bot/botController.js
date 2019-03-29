@@ -1,7 +1,10 @@
 import util from 'util';
 import fs from 'fs';
 import { Bot, Elements, QuickReplies } from 'facebook-messenger-bot';
-import { getOnePageToken, getOnePageData, sendPassThreadControl } from '../controllers/pagesController';
+import {
+    getOnePageToken,
+    getOnePageData, sendPassThreadControl,
+} from '../controllers/pagesController';
 import { getPricingSizing, getPricings } from '../controllers/pricingsController';
 import { getFlavors } from '../controllers/flavorsController';
 import { getToppingsFull } from '../controllers/toppingsController';
