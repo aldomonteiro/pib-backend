@@ -220,7 +220,7 @@ var formatAsCurrency = function formatAsCurrency(amount) {
 exports.formatAsCurrency = formatAsCurrency;
 
 var fixNonCapitalizeWords = function fixNonCapitalizeWords(word) {
-  if (word.includes(' Iii')) return word.replace(' Iii', 'III');else if (word.includes(' Ii')) return word.replace(' Ii', 'II');else return word;
+  if (word.includes(' Iii')) return word.replace(' Iii', ' III');else if (word.includes(' Ii')) return word.replace(' Ii', ' II');else if (word.includes(' Com ')) return word.replace(' Com ', ' com ');else return word;
 };
 
 exports.fixNonCapitalizeWords = fixNonCapitalizeWords;
