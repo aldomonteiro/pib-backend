@@ -679,7 +679,7 @@ export const showQuantity = async (pageId, userId, data) => {
         };
     }
 
-    out.text = out.text + '(digite 0 p/ desfazer)'
+    // out.text = out.text + '(digite 0 p/ desfazer)'
 
     return out;
 }
@@ -752,7 +752,7 @@ export const showSize = async (pageId, userId, data) => {
 
     return {
         type: 'text',
-        text: '✅ ' + ' Tamanho: ' + data.size + ' (digite 0 p/ desfazer)',
+        text: '✅ ' + ' Tamanho: ' + data.size, // + ' (digite 0 p/ desfazer)',
     };
 }
 
@@ -1096,7 +1096,8 @@ export const showPartialOrder = async (pageId, userId, po) => {
                 if (item.sizeId)
                     _txtSize = item.size;
 
-                _txt = _txt + `${item.category}: ${_txtQty} ${item.flavor} ${_txtSize} - ${formatAsCurrency(item.price)} \n`;
+                // _txt = _txt + `${item.category}: ${_txtQty} ${item.flavor} ${_txtSize} - ${formatAsCurrency(item.price)} \n`;
+                _txt = _txt + `${_txtQty} ${item.flavor} ${_txtSize} - ${formatAsCurrency(item.price)} \n`;
             }
             if (item.price)
                 total_price += item.price;
@@ -1399,7 +1400,8 @@ export const showFullOrder = async (pageId, userId) => {
         if (item.flavorId) {
             let _txtQty = item.split > 1 ? item.qty + '/' + item.split : item.qty;
             let _txtSize = item.sizeId ? item.size : '';
-            _txt = _txt + `_${item.category}_: ${_txtQty} ${item.flavor}  ${_txtSize}\n`;
+            // _txt = _txt + `_${item.category}_: ${_txtQty} ${item.flavor}  ${_txtSize}\n`;
+            _txt = _txt + `${_txtQty} ${item.flavor}  ${_txtSize}\n`;
             total_price += item.price;
         }
     }
@@ -1925,25 +1927,36 @@ export const askForSizeCat = async (pageId, userId, categoryId) => {
         const category = await getCategory(pageId, categoryId);
 
         if (category.price_by_size) {
-
-            // Without await, to run later
-            updateOrder({ pageId, userId, waitingFor: 'size' });
-
-            const _text = 'Selecione o tamanho:';
-
-            const _options = [];
             const sizesWithPricing = await getPricingSizing(pageId, categoryId); // only sizes with pricing
-            const sizes = await getSizes(pageId, sizesWithPricing);
 
-            for (let i = 0; i < sizes.length; i++) {
-                const _data = { id: sizes[i].id, size: sizes[i].size, split: sizes[i].split };
-                _options.push({ text: sizes[i].size, data: _data, event: 'ORDER_SIZE' });
-            }
+            // only 1 size priced, bot IS NOT ASKS FOR THAT.
+            if (sizesWithPricing.length === 1) {
+                const size = await getSize(pageId, sizesWithPricing[0]);
+                const sizeData = {
+                    id: size.id,
+                    size: size.size,
+                }
+                // Update the order with the unique size and checkSplit
+                return showSizeCheckSplit(pageId, userId, sizeData);
+            } else {
+                // Without await, to run later
+                updateOrder({ pageId, userId, waitingFor: 'size' });
 
-            return {
-                type: 'replies',
-                text: _text,
-                options: _options,
+                const _text = 'Selecione o tamanho:';
+
+                const _options = [];
+                const sizes = await getSizes(pageId, sizesWithPricing);
+
+                for (let i = 0; i < sizes.length; i++) {
+                    const _data = { id: sizes[i].id, size: sizes[i].size, split: sizes[i].split };
+                    _options.push({ text: sizes[i].size, data: _data, event: 'ORDER_SIZE' });
+                }
+
+                return {
+                    type: 'replies',
+                    text: _text,
+                    options: _options,
+                }
             }
         } else {
             return await askForFlavor(pageId, userId, 1);

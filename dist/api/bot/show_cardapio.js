@@ -27,35 +27,109 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(pageID, categoryID) {
-    var replyText;
+    var category, flavorArray, pricingArray, replyText, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, pricing;
+
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            // const category = await getCategory(pageID, categoryID);
-            // const flavorArray = await getFlavorsAndToppingsCardapio(pageID, categoryID);
-            // let pricingArray = []
-            // if (category && category.price_by_size)
-            //     pricingArray = await getPricingsWithSize(pageID);
-            replyText = '/cardapio'; // if (flavorArray && category) {
-            //     replyText = `Seguem nossas opções de ${category.name}:\n`;
-            //     if (category && category.price_by_size) {
-            //         for (const pricing of pricingArray) {
-            //             if (pricing.categoryId == category.id)
-            //                 replyText = replyText + `${pricing.size} - R$ ${pricing.price}\n`;
-            //         }
-            //     }
-            //     replyText = replyText + '\n' + await inputCardapioReplyMsg(flavorArray, category.price_by_size);
-            // }
-
-            return _context.abrupt("return", replyText);
+            _context.next = 2;
+            return (0, _categoriesController.getCategory)(pageID, categoryID);
 
           case 2:
+            category = _context.sent;
+            _context.next = 5;
+            return getFlavorsAndToppingsCardapio(pageID, categoryID);
+
+          case 5:
+            flavorArray = _context.sent;
+            pricingArray = [];
+
+            if (!(category && category.price_by_size)) {
+              _context.next = 11;
+              break;
+            }
+
+            _context.next = 10;
+            return (0, _pricingsController.getPricingsWithSize)(pageID);
+
+          case 10:
+            pricingArray = _context.sent;
+
+          case 11:
+            if (!(flavorArray && category)) {
+              _context.next = 38;
+              break;
+            }
+
+            replyText = "Seguem nossas op\xE7\xF5es de ".concat(category.name, ":\n");
+
+            if (!(category && category.price_by_size)) {
+              _context.next = 33;
+              break;
+            }
+
+            _iteratorNormalCompletion = true;
+            _didIteratorError = false;
+            _iteratorError = undefined;
+            _context.prev = 17;
+
+            for (_iterator = pricingArray[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              pricing = _step.value;
+              if (pricing.categoryId === category.id) replyText = replyText + "".concat(pricing.size, " - R$ ").concat(pricing.price, "\n");
+            }
+
+            _context.next = 25;
+            break;
+
+          case 21:
+            _context.prev = 21;
+            _context.t0 = _context["catch"](17);
+            _didIteratorError = true;
+            _iteratorError = _context.t0;
+
+          case 25:
+            _context.prev = 25;
+            _context.prev = 26;
+
+            if (!_iteratorNormalCompletion && _iterator.return != null) {
+              _iterator.return();
+            }
+
+          case 28:
+            _context.prev = 28;
+
+            if (!_didIteratorError) {
+              _context.next = 31;
+              break;
+            }
+
+            throw _iteratorError;
+
+          case 31:
+            return _context.finish(28);
+
+          case 32:
+            return _context.finish(25);
+
+          case 33:
+            _context.t1 = replyText + '\n';
+            _context.next = 36;
+            return inputCardapioReplyMsg(flavorArray, category.price_by_size);
+
+          case 36:
+            _context.t2 = _context.sent;
+            replyText = _context.t1 + _context.t2;
+
+          case 38:
+            return _context.abrupt("return", replyText);
+
+          case 39:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee);
+    }, _callee, null, [[17, 21, 25, 33], [26,, 28, 32]]);
   }));
 
   return function getCardapio(_x, _x2) {
@@ -76,7 +150,7 @@ function () {
   var _ref2 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(pageId) {
-    var storeData, _images, img, _img, reply, categories, _txt, _options, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, item, _data, _buttons, buttons;
+    var storeData, _images, img, _img, reply, categories, _txt, _options, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, item, _data, _buttons, buttons;
 
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
@@ -130,13 +204,13 @@ function () {
             categories = _context2.sent;
             _txt = 'Selecione uma categoria:';
             _options = [];
-            _iteratorNormalCompletion = true;
-            _didIteratorError = false;
-            _iteratorError = undefined;
+            _iteratorNormalCompletion2 = true;
+            _didIteratorError2 = false;
+            _iteratorError2 = undefined;
             _context2.prev = 23;
 
-            for (_iterator = categories[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-              item = _step.value;
+            for (_iterator2 = categories[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              item = _step2.value;
               _data = {
                 id: item.id,
                 name: item.name
@@ -160,26 +234,26 @@ function () {
           case 27:
             _context2.prev = 27;
             _context2.t0 = _context2["catch"](23);
-            _didIteratorError = true;
-            _iteratorError = _context2.t0;
+            _didIteratorError2 = true;
+            _iteratorError2 = _context2.t0;
 
           case 31:
             _context2.prev = 31;
             _context2.prev = 32;
 
-            if (!_iteratorNormalCompletion && _iterator.return != null) {
-              _iterator.return();
+            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+              _iterator2.return();
             }
 
           case 34:
             _context2.prev = 34;
 
-            if (!_didIteratorError) {
+            if (!_didIteratorError2) {
               _context2.next = 37;
               break;
             }
 
-            throw _iteratorError;
+            throw _iteratorError2;
 
           case 37:
             return _context2.finish(34);
@@ -227,7 +301,7 @@ function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee3(pageID, categoryID) {
-    var flavorArray, allToppings, flavorsWithToppings, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, flavor, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, tId, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, topping;
+    var flavorArray, allToppings, flavorsWithToppings, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, flavor, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, tId, _iteratorNormalCompletion5, _didIteratorError5, _iteratorError5, _iterator5, _step5, topping;
 
     return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
@@ -245,19 +319,19 @@ function () {
           case 6:
             allToppings = _context3.sent;
             flavorsWithToppings = [];
-            _iteratorNormalCompletion2 = true;
-            _didIteratorError2 = false;
-            _iteratorError2 = undefined;
+            _iteratorNormalCompletion3 = true;
+            _didIteratorError3 = false;
+            _iteratorError3 = undefined;
             _context3.prev = 11;
-            _iterator2 = flavorArray[Symbol.iterator]();
+            _iterator3 = flavorArray[Symbol.iterator]();
 
           case 13:
-            if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
+            if (_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done) {
               _context3.next = 65;
               break;
             }
 
-            flavor = _step2.value;
+            flavor = _step3.value;
 
             if (!(categoryID && flavor.categoryId === categoryID)) {
               _context3.next = 62;
@@ -271,26 +345,26 @@ function () {
               break;
             }
 
-            _iteratorNormalCompletion3 = true;
-            _didIteratorError3 = false;
-            _iteratorError3 = undefined;
+            _iteratorNormalCompletion4 = true;
+            _didIteratorError4 = false;
+            _iteratorError4 = undefined;
             _context3.prev = 21;
-            _iterator3 = flavor.toppings[Symbol.iterator]();
+            _iterator4 = flavor.toppings[Symbol.iterator]();
 
           case 23:
-            if (_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done) {
+            if (_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done) {
               _context3.next = 47;
               break;
             }
 
-            tId = _step3.value;
-            _iteratorNormalCompletion4 = true;
-            _didIteratorError4 = false;
-            _iteratorError4 = undefined;
+            tId = _step4.value;
+            _iteratorNormalCompletion5 = true;
+            _didIteratorError5 = false;
+            _iteratorError5 = undefined;
             _context3.prev = 28;
 
-            for (_iterator4 = allToppings[Symbol.iterator](); !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-              topping = _step4.value;
+            for (_iterator5 = allToppings[Symbol.iterator](); !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+              topping = _step5.value;
 
               if (topping.id === tId) {
                 flavor.toppingsNames.push(topping.topping);
@@ -303,26 +377,26 @@ function () {
           case 32:
             _context3.prev = 32;
             _context3.t0 = _context3["catch"](28);
-            _didIteratorError4 = true;
-            _iteratorError4 = _context3.t0;
+            _didIteratorError5 = true;
+            _iteratorError5 = _context3.t0;
 
           case 36:
             _context3.prev = 36;
             _context3.prev = 37;
 
-            if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-              _iterator4.return();
+            if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
+              _iterator5.return();
             }
 
           case 39:
             _context3.prev = 39;
 
-            if (!_didIteratorError4) {
+            if (!_didIteratorError5) {
               _context3.next = 42;
               break;
             }
 
-            throw _iteratorError4;
+            throw _iteratorError5;
 
           case 42:
             return _context3.finish(39);
@@ -331,7 +405,7 @@ function () {
             return _context3.finish(36);
 
           case 44:
-            _iteratorNormalCompletion3 = true;
+            _iteratorNormalCompletion4 = true;
             _context3.next = 23;
             break;
 
@@ -342,26 +416,26 @@ function () {
           case 49:
             _context3.prev = 49;
             _context3.t1 = _context3["catch"](21);
-            _didIteratorError3 = true;
-            _iteratorError3 = _context3.t1;
+            _didIteratorError4 = true;
+            _iteratorError4 = _context3.t1;
 
           case 53:
             _context3.prev = 53;
             _context3.prev = 54;
 
-            if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-              _iterator3.return();
+            if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
+              _iterator4.return();
             }
 
           case 56:
             _context3.prev = 56;
 
-            if (!_didIteratorError3) {
+            if (!_didIteratorError4) {
               _context3.next = 59;
               break;
             }
 
-            throw _iteratorError3;
+            throw _iteratorError4;
 
           case 59:
             return _context3.finish(56);
@@ -373,7 +447,7 @@ function () {
             flavorsWithToppings.push(flavor);
 
           case 62:
-            _iteratorNormalCompletion2 = true;
+            _iteratorNormalCompletion3 = true;
             _context3.next = 13;
             break;
 
@@ -384,26 +458,26 @@ function () {
           case 67:
             _context3.prev = 67;
             _context3.t2 = _context3["catch"](11);
-            _didIteratorError2 = true;
-            _iteratorError2 = _context3.t2;
+            _didIteratorError3 = true;
+            _iteratorError3 = _context3.t2;
 
           case 71:
             _context3.prev = 71;
             _context3.prev = 72;
 
-            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-              _iterator2.return();
+            if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
+              _iterator3.return();
             }
 
           case 74:
             _context3.prev = 74;
 
-            if (!_didIteratorError2) {
+            if (!_didIteratorError3) {
               _context3.next = 77;
               break;
             }
 
-            throw _iteratorError2;
+            throw _iteratorError3;
 
           case 77:
             return _context3.finish(74);
@@ -442,7 +516,7 @@ function () {
   var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee4(flavorArray, priceBySize) {
-    var replyMsg, _iteratorNormalCompletion5, _didIteratorError5, _iteratorError5, _iterator5, _step5, flavor;
+    var replyMsg, _iteratorNormalCompletion6, _didIteratorError6, _iteratorError6, _iterator6, _step6, flavor;
 
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
@@ -456,13 +530,13 @@ function () {
               break;
             }
 
-            _iteratorNormalCompletion5 = true;
-            _didIteratorError5 = false;
-            _iteratorError5 = undefined;
+            _iteratorNormalCompletion6 = true;
+            _didIteratorError6 = false;
+            _iteratorError6 = undefined;
             _context4.prev = 6;
 
-            for (_iterator5 = flavorArray[Symbol.iterator](); !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-              flavor = _step5.value;
+            for (_iterator6 = flavorArray[Symbol.iterator](); !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+              flavor = _step6.value;
               replyMsg = replyMsg + flavor.flavor;
               if (!priceBySize) replyMsg = replyMsg + ' - RS ' + flavor.price;
               replyMsg = replyMsg + '\n';
@@ -475,26 +549,26 @@ function () {
           case 10:
             _context4.prev = 10;
             _context4.t0 = _context4["catch"](6);
-            _didIteratorError5 = true;
-            _iteratorError5 = _context4.t0;
+            _didIteratorError6 = true;
+            _iteratorError6 = _context4.t0;
 
           case 14:
             _context4.prev = 14;
             _context4.prev = 15;
 
-            if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
-              _iterator5.return();
+            if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
+              _iterator6.return();
             }
 
           case 17:
             _context4.prev = 17;
 
-            if (!_didIteratorError5) {
+            if (!_didIteratorError6) {
               _context4.next = 20;
               break;
             }
 
-            throw _iteratorError5;
+            throw _iteratorError6;
 
           case 20:
             return _context4.finish(17);

@@ -6,25 +6,25 @@ import { getStoreData } from '../controllers/storesController';
 import { sendMainMenu } from './botController';
 
 export const getCardapio = async (pageID, categoryID) => {
-    // const category = await getCategory(pageID, categoryID);
-    // const flavorArray = await getFlavorsAndToppingsCardapio(pageID, categoryID);
+    const category = await getCategory(pageID, categoryID);
+    const flavorArray = await getFlavorsAndToppingsCardapio(pageID, categoryID);
 
-    // let pricingArray = []
-    // if (category && category.price_by_size)
-    //     pricingArray = await getPricingsWithSize(pageID);
+    let pricingArray = []
+    if (category && category.price_by_size)
+        pricingArray = await getPricingsWithSize(pageID);
 
-    let replyText = '/cardapio';
+    let replyText;
 
-    // if (flavorArray && category) {
-    //     replyText = `Seguem nossas opções de ${category.name}:\n`;
-    //     if (category && category.price_by_size) {
-    //         for (const pricing of pricingArray) {
-    //             if (pricing.categoryId == category.id)
-    //                 replyText = replyText + `${pricing.size} - R$ ${pricing.price}\n`;
-    //         }
-    //     }
-    //     replyText = replyText + '\n' + await inputCardapioReplyMsg(flavorArray, category.price_by_size);
-    // }
+    if (flavorArray && category) {
+        replyText = `Seguem nossas opções de ${category.name}:\n`;
+        if (category && category.price_by_size) {
+            for (const pricing of pricingArray) {
+                if (pricing.categoryId === category.id)
+                    replyText = replyText + `${pricing.size} - R$ ${pricing.price}\n`;
+            }
+        }
+        replyText = replyText + '\n' + await inputCardapioReplyMsg(flavorArray, category.price_by_size);
+    }
     return replyText;
 }
 

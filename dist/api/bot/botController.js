@@ -2326,12 +2326,12 @@ function () {
                 type: 'text',
                 text: '✅ ' + qty + ' pizzas.'
               };
-            }
+            } // out.text = out.text + '(digite 0 p/ desfazer)'
 
-            out.text = out.text + '(digite 0 p/ desfazer)';
+
             return _context31.abrupt("return", out);
 
-          case 6:
+          case 5:
           case "end":
             return _context31.stop();
         }
@@ -2554,7 +2554,8 @@ function () {
           case 7:
             return _context34.abrupt("return", {
               type: 'text',
-              text: '✅ ' + ' Tamanho: ' + data.size + ' (digite 0 p/ desfazer)'
+              text: '✅ ' + ' Tamanho: ' + data.size // + ' (digite 0 p/ desfazer)',
+
             });
 
           case 8:
@@ -3315,8 +3316,9 @@ function () {
               if (item.flavorId) {
                 _txtQty = item.split > 1 ? item.qty + '/' + item.split : item.qty;
                 _txtSize = '';
-                if (item.sizeId) _txtSize = item.size;
-                _txt = _txt + "".concat(item.category, ": ").concat(_txtQty, " ").concat(item.flavor, " ").concat(_txtSize, " - ").concat((0, _util2.formatAsCurrency)(item.price), " \n");
+                if (item.sizeId) _txtSize = item.size; // _txt = _txt + `${item.category}: ${_txtQty} ${item.flavor} ${_txtSize} - ${formatAsCurrency(item.price)} \n`;
+
+                _txt = _txt + "".concat(_txtQty, " ").concat(item.flavor, " ").concat(_txtSize, " - ").concat((0, _util2.formatAsCurrency)(item.price), " \n");
               }
 
               if (item.price) total_price += item.price;
@@ -4090,8 +4092,9 @@ function () {
 
               if (item.flavorId) {
                 _txtQty = item.split > 1 ? item.qty + '/' + item.split : item.qty;
-                _txtSize = item.sizeId ? item.size : '';
-                _txt = _txt + "_".concat(item.category, "_: ").concat(_txtQty, " ").concat(item.flavor, "  ").concat(_txtSize, "\n");
+                _txtSize = item.sizeId ? item.size : ''; // _txt = _txt + `_${item.category}_: ${_txtQty} ${item.flavor}  ${_txtSize}\n`;
+
+                _txt = _txt + "".concat(_txtQty, " ").concat(item.flavor, "  ").concat(_txtSize, "\n");
                 total_price += item.price;
               }
             }
@@ -5642,7 +5645,7 @@ function () {
   var _ref83 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee80(pageId, userId, categoryId) {
-    var po, category, _text, _options, sizesWithPricing, sizes, i, _data;
+    var po, category, sizesWithPricing, size, sizeData, _text, _options, sizes, i, _data;
 
     return regeneratorRuntime.wrap(function _callee80$(_context80) {
       while (1) {
@@ -5674,10 +5677,34 @@ function () {
             category = _context80.sent;
 
             if (!category.price_by_size) {
-              _context80.next = 25;
+              _context80.next = 33;
               break;
             }
 
+            _context80.next = 14;
+            return (0, _pricingsController.getPricingSizing)(pageId, categoryId);
+
+          case 14:
+            sizesWithPricing = _context80.sent;
+
+            if (!(sizesWithPricing.length === 1)) {
+              _context80.next = 23;
+              break;
+            }
+
+            _context80.next = 18;
+            return (0, _sizesController.getSize)(pageId, sizesWithPricing[0]);
+
+          case 18:
+            size = _context80.sent;
+            sizeData = {
+              id: size.id,
+              size: size.size // Update the order with the unique size and checkSplit
+
+            };
+            return _context80.abrupt("return", showSizeCheckSplit(pageId, userId, sizeData));
+
+          case 23:
             // Without await, to run later
             (0, _ordersController.updateOrder)({
               pageId: pageId,
@@ -5686,15 +5713,10 @@ function () {
             });
             _text = 'Selecione o tamanho:';
             _options = [];
-            _context80.next = 17;
-            return (0, _pricingsController.getPricingSizing)(pageId, categoryId);
-
-          case 17:
-            sizesWithPricing = _context80.sent;
-            _context80.next = 20;
+            _context80.next = 28;
             return (0, _sizesController.getSizes)(pageId, sizesWithPricing);
 
-          case 20:
+          case 28:
             sizes = _context80.sent;
 
             for (i = 0; i < sizes.length; i++) {
@@ -5717,14 +5739,18 @@ function () {
               options: _options
             });
 
-          case 25:
-            _context80.next = 27;
+          case 31:
+            _context80.next = 36;
+            break;
+
+          case 33:
+            _context80.next = 35;
             return askForFlavor(pageId, userId, 1);
 
-          case 27:
+          case 35:
             return _context80.abrupt("return", _context80.sent);
 
-          case 28:
+          case 36:
           case "end":
             return _context80.stop();
         }
