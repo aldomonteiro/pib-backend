@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getTodayOpeningTime = exports.getStoreByPhone = exports.getStoreData = exports.getStores = exports.store_delete = exports.deleteManyStores = exports.store_update = exports.store_create = exports.store_get_one = exports.store_get_all = void 0;
+exports.calcDeliveryFee = exports.getTodayOpeningTime = exports.getStoreByPhone = exports.getStoreData = exports.getStores = exports.store_delete = exports.deleteManyStores = exports.store_update = exports.store_create = exports.store_get_one = exports.store_get_all = void 0;
 
 var _stores = _interopRequireDefault(require("../models/stores"));
 
@@ -45,7 +45,7 @@ var store_get_all = function store_get_all(req, res) {
         message: err.errmsg
       });
     } else {
-      res.setHeader('Content-Range', _util.default.format("stores %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
+      res.setHeader('Content-Range', _util.default.format('stores %d-%d/%d', rangeObj['offset'], rangeObj['limit'], result.total));
       res.status(200).json(result.docs);
     }
   });
@@ -114,7 +114,9 @@ var store_create = function store_create(req, res) {
       sat_close: req.body.sat_close,
       hol_is_open: req.body.hol_is_open,
       hol_open: req.body.hol_open,
-      hol_close: req.body.hol_close
+      hol_close: req.body.hol_close,
+      catalog_url1: req.body.catalog_url1,
+      catalog_url2: req.body.catalog_url2
     });
     newRecord.save().then(function (result) {
       res.status(200).json(result);
@@ -171,6 +173,7 @@ var store_update = function store_update(req, res) {
           doc.state = req.body.state;
           doc.phone = req.body.phone;
           doc.delivery_fee = req.body.delivery_fee;
+          doc.delivery_fees = req.body.delivery_fees;
           doc.location_lat = req.body.location_lat;
           doc.location_long = req.body.location_long; // Opening times
 
@@ -197,8 +200,12 @@ var store_update = function store_update(req, res) {
           doc.sat_close = req.body.sat_close;
           doc.hol_is_open = req.body.hol_is_open;
           doc.hol_open = req.body.hol_open;
-          doc.hol_close = req.body.hol_close;
+          doc.hol_close = req.body.hol_close; // Customizing
+
           doc.printer = req.body.printer;
+          doc.catalog_url1 = req.body.catalog_url1;
+          doc.catalog_url2 = req.body.catalog_url2;
+          doc.payment_types = req.body.payment_types;
           doc.save(function (err, result) {
             if (err) {
               res.status(500).json({
@@ -506,4 +513,37 @@ function () {
 }();
 
 exports.getTodayOpeningTime = getTodayOpeningTime;
+
+var calcDeliveryFee = function calcDeliveryFee(deliveryFees, distanceFromStore) {
+  if (deliveryFees && deliveryFees.length > 0) {
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = deliveryFees[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var delivFee = _step.value;
+
+        if (delivFee.from <= distanceFromStore && delivFee.to > distanceFromStore) {
+          return delivFee.fee;
+        }
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return != null) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+  } else return 0;
+};
+
+exports.calcDeliveryFee = calcDeliveryFee;
 //# sourceMappingURL=storesController.js.map

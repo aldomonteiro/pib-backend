@@ -139,4 +139,9 @@ export const formatWhatsappNumber = id => {
  */
 export const formatAsCurrency = amount =>
     amount.toLocaleString('pt-BR',
-        { style: 'currency', currency: 'BRL', maximumSignificantDigits: 2 });
+        {
+            style: 'currency',
+            currency: 'BRL',
+            minimumSignificantDigits: 2,
+            maximumSignificantDigits: 2,
+        });

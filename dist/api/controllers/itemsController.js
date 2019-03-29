@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.cancelItems = exports.getItemsTotal = exports.updateItemStatus = exports.reorderItems = exports.deletePendingItem = exports.deleteItem = exports.getItems = exports.updateStatusSpecificItem = exports.updateItem = exports.deleteManyItems = exports.item_get_all = void 0;
+exports.cancelItems = exports.getItemsTotal = exports.updateItemDirect = exports.updateItemStatus = exports.reorderItems = exports.deletePendingItem = exports.deleteItem = exports.getItems = exports.updateStatusSpecificItem = exports.updateItem = exports.deleteManyItems = exports.item_get_all = void 0;
 
 var _mongoose = _interopRequireDefault(require("mongoose"));
 
@@ -349,16 +349,16 @@ function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee3(orderData) {
-    var orderId, currentItem, userId, pageId, qty, sizeId, flavorId, categoryId, price, completeItem, split, eraseSize, item, _split, _price, resultLastId, itemId, record;
+    var orderId, currentItem, userId, pageId, qty, sizeId, flavorId, categoryId, price, completeItem, split, eraseSize, commentsItem, item, _split, _price, resultLastId, itemId, record;
 
     return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            orderId = orderData.orderId, currentItem = orderData.currentItem, userId = orderData.userId, pageId = orderData.pageId, qty = orderData.qty, sizeId = orderData.sizeId, flavorId = orderData.flavorId, categoryId = orderData.categoryId, price = orderData.price, completeItem = orderData.completeItem, split = orderData.split, eraseSize = orderData.eraseSize;
+            orderId = orderData.orderId, currentItem = orderData.currentItem, userId = orderData.userId, pageId = orderData.pageId, qty = orderData.qty, sizeId = orderData.sizeId, flavorId = orderData.flavorId, categoryId = orderData.categoryId, price = orderData.price, completeItem = orderData.completeItem, split = orderData.split, eraseSize = orderData.eraseSize, commentsItem = orderData.commentsItem;
 
             if (!(sizeId || flavorId || categoryId || typeof completeItem === 'boolean' || eraseSize)) {
-              _context3.next = 30;
+              _context3.next = 31;
               break;
             }
 
@@ -375,7 +375,7 @@ function () {
             item = _context3.sent;
 
             if (!item) {
-              _context3.next = 22;
+              _context3.next = 23;
               break;
             }
 
@@ -387,6 +387,7 @@ function () {
             if (price) item.price = price;
             if (currentItem) item.itemId = currentItem;
             if (split) item.split = split;
+            if (commentsItem) item.comments = commentsItem;
             if (typeof completeItem === 'boolean') item.status = completeItem === true ? ITEMSTATUS_COMPLETED : ITEMSTATUS_PENDING;
             _split = split || item.split;
             _price = price || item.price;
@@ -395,21 +396,21 @@ function () {
               item.price = _price / _split;
             }
 
-            _context3.next = 20;
+            _context3.next = 21;
             return item.save();
 
-          case 20:
-            _context3.next = 30;
+          case 21:
+            _context3.next = 31;
             break;
 
-          case 22:
-            _context3.next = 24;
+          case 23:
+            _context3.next = 25;
             return _items.default.find({
               pageId: pageId,
               orderId: orderId
             }).select('id').sort('-id').limit(1).exec();
 
-          case 24:
+          case 25:
             resultLastId = _context3.sent;
             itemId = 1;
             if (resultLastId && resultLastId.length) itemId = resultLastId[0].id + 1;
@@ -427,10 +428,10 @@ function () {
               price: price,
               status: ITEMSTATUS_PENDING
             });
-            _context3.next = 30;
+            _context3.next = 31;
             return record.save();
 
-          case 30:
+          case 31:
           case "end":
             return _context3.stop();
         }
@@ -1083,27 +1084,82 @@ function () {
   };
 }();
 /**
- * Calculate total price of an orderId+pageId
- * @param {*} orderData
+ * @param {*} pageID
+ * @param {*} orderID
+ * @param {*} itemID
  */
 
 
 exports.updateItemStatus = updateItemStatus;
 
-var getItemsTotal =
+var updateItemDirect =
 /*#__PURE__*/
 function () {
   var _ref10 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee10(orderData) {
-    var orderId, pageId, items, _total, _iteratorNormalCompletion6, _didIteratorError6, _iteratorError6, _iterator6, _step6, item;
-
+  regeneratorRuntime.mark(function _callee10(pageID, orderID, itemID, data) {
+    var result;
     return regeneratorRuntime.wrap(function _callee10$(_context10) {
       while (1) {
         switch (_context10.prev = _context10.next) {
           case 0:
-            orderId = orderData.orderId, pageId = orderData.pageId;
+            _context10.prev = 0;
             _context10.next = 3;
+            return _items.default.updateOne({
+              pageId: pageID,
+              orderId: orderID,
+              id: itemID
+            }, {
+              $set: {
+                comments: data
+              }
+            }).exec();
+
+          case 3:
+            result = _context10.sent;
+            console.info(result);
+            return _context10.abrupt("return", result);
+
+          case 8:
+            _context10.prev = 8;
+            _context10.t0 = _context10["catch"](0);
+            console.error(_context10.t0);
+            return _context10.abrupt("return", null);
+
+          case 12:
+          case "end":
+            return _context10.stop();
+        }
+      }
+    }, _callee10, null, [[0, 8]]);
+  }));
+
+  return function updateItemDirect(_x18, _x19, _x20, _x21) {
+    return _ref10.apply(this, arguments);
+  };
+}();
+/**
+ * Calculate total price of an orderId+pageId
+ * @param {*} orderData
+ */
+
+
+exports.updateItemDirect = updateItemDirect;
+
+var getItemsTotal =
+/*#__PURE__*/
+function () {
+  var _ref11 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee11(orderData) {
+    var orderId, pageId, items, _total, _iteratorNormalCompletion6, _didIteratorError6, _iteratorError6, _iterator6, _step6, item;
+
+    return regeneratorRuntime.wrap(function _callee11$(_context11) {
+      while (1) {
+        switch (_context11.prev = _context11.next) {
+          case 0:
+            orderId = orderData.orderId, pageId = orderData.pageId;
+            _context11.next = 3;
             return getItems({
               orderId: orderId,
               pageId: pageId,
@@ -1111,70 +1167,70 @@ function () {
             });
 
           case 3:
-            items = _context10.sent;
+            items = _context11.sent;
             _total = 0;
 
             if (!(items && items.length)) {
-              _context10.next = 25;
+              _context11.next = 25;
               break;
             }
 
             _iteratorNormalCompletion6 = true;
             _didIteratorError6 = false;
             _iteratorError6 = undefined;
-            _context10.prev = 9;
+            _context11.prev = 9;
 
             for (_iterator6 = items[Symbol.iterator](); !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
               item = _step6.value;
               _total += item.price ? item.price : 0;
             }
 
-            _context10.next = 17;
+            _context11.next = 17;
             break;
 
           case 13:
-            _context10.prev = 13;
-            _context10.t0 = _context10["catch"](9);
+            _context11.prev = 13;
+            _context11.t0 = _context11["catch"](9);
             _didIteratorError6 = true;
-            _iteratorError6 = _context10.t0;
+            _iteratorError6 = _context11.t0;
 
           case 17:
-            _context10.prev = 17;
-            _context10.prev = 18;
+            _context11.prev = 17;
+            _context11.prev = 18;
 
             if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
               _iterator6.return();
             }
 
           case 20:
-            _context10.prev = 20;
+            _context11.prev = 20;
 
             if (!_didIteratorError6) {
-              _context10.next = 23;
+              _context11.next = 23;
               break;
             }
 
             throw _iteratorError6;
 
           case 23:
-            return _context10.finish(20);
+            return _context11.finish(20);
 
           case 24:
-            return _context10.finish(17);
+            return _context11.finish(17);
 
           case 25:
-            return _context10.abrupt("return", _total);
+            return _context11.abrupt("return", _total);
 
           case 26:
           case "end":
-            return _context10.stop();
+            return _context11.stop();
         }
       }
-    }, _callee10, null, [[9, 13, 17, 25], [18,, 20, 24]]);
+    }, _callee11, null, [[9, 13, 17, 25], [18,, 20, 24]]);
   }));
 
-  return function getItemsTotal(_x18) {
-    return _ref10.apply(this, arguments);
+  return function getItemsTotal(_x22) {
+    return _ref11.apply(this, arguments);
   };
 }();
 
@@ -1183,14 +1239,14 @@ exports.getItemsTotal = getItemsTotal;
 var cancelItems =
 /*#__PURE__*/
 function () {
-  var _ref11 = _asyncToGenerator(
+  var _ref12 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee11(pageId, orderId) {
-    return regeneratorRuntime.wrap(function _callee11$(_context11) {
+  regeneratorRuntime.mark(function _callee12(pageId, orderId) {
+    return regeneratorRuntime.wrap(function _callee12$(_context12) {
       while (1) {
-        switch (_context11.prev = _context11.next) {
+        switch (_context12.prev = _context12.next) {
           case 0:
-            _context11.next = 2;
+            _context12.next = 2;
             return _items.default.deleteMany({
               pageId: pageId,
               orderId: orderId
@@ -1203,14 +1259,14 @@ function () {
 
           case 2:
           case "end":
-            return _context11.stop();
+            return _context12.stop();
         }
       }
-    }, _callee11);
+    }, _callee12);
   }));
 
-  return function cancelItems(_x19, _x20) {
-    return _ref11.apply(this, arguments);
+  return function cancelItems(_x23, _x24) {
+    return _ref12.apply(this, arguments);
   };
 }();
 

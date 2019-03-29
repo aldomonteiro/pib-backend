@@ -30,7 +30,7 @@ schema.index({
   unique: true
 });
 
-var _default = _mongoose.default.model("toppings", schema);
+var _default = _mongoose.default.model('toppings', schema);
 
 exports.default = _default;
 //# sourceMappingURL=toppings.js.map

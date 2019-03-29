@@ -20,6 +20,7 @@ const schema = new Schema({
     description: { type: String },
     price: { type: Number },
     status: { type: Number },
+    comments: { type: String },
 }, { timestamps: true });
 
 schema.plugin(paginate);

@@ -20,6 +20,7 @@ import {
     showFullOrderConfirmOrder, askToTypeComments, showDeliverAskForCategory,
     showCategoryAskForSize, askForCategory, askForPaymentType, showAddressAskForCategory,
     askForSizeCat, cancelPendingShowPartialOrder,
+    showCommentsItem,
 } from '../bot/botController';
 import { getStoreByPhone } from '../controllers/storesController';
 import { getOrderPending } from '../controllers/ordersController';
@@ -89,6 +90,11 @@ export const w_controller = async (args) => {
                 } else if (pendingOrder.order.waitingFor === 'typed_comments') {
                     result = await sendActions({
                         action: 'SHOW_FULL_ORDER_CONFIRM_ORDER',
+                        pageID: pageId, userID: userId, data: message,
+                    });
+                } else if (pendingOrder.order.waitingFor === 'typed_comments_item') {
+                    result = await sendActions({
+                        action: 'SHOW_COMMENTS_ITEM',
                         pageID: pageId, userID: userId, data: message,
                     });
                 } else if (pendingOrder.order.waitingFor === 'location') {
@@ -289,13 +295,13 @@ const mapEventsActions = (event, data) => {
                     return 'SHOW_BEVERAGE_ASK_FOR_PAYMENT_TYPE';
             }
         case 'ORDER_PAYMENT_TYPE':
-            switch (data) {
-                case 'payment_money':
-                    return 'SHOW_PAYMENT_TYPE_ASK_FOR_PAYMENT_CHANGE';
-                case 'payment_card':
-                    return 'SHOW_PAYMENT_TYPE_ASK_FOR_COMMENTS';
-            }
-            break;
+            // switch (data) {
+            //     case 'payment_money':
+            //         return 'SHOW_PAYMENT_TYPE_ASK_FOR_PAYMENT_CHANGE';
+            //     case 'payment_card':
+            return 'SHOW_PAYMENT_TYPE_ASK_FOR_COMMENTS';
+        // }
+        // break;
         case 'ORDER_PAYMENT_CHANGE':
             return 'SHOW_PAYMENT_CHANGE_ASK_FOR_COMMENTS';
         case 'ORDER_COMMENTS':
@@ -462,10 +468,13 @@ export const sendActions = async ({
                 out = await askForChangeOrder(pageID, userID, data);
                 break;
             case 'ASK_FOR_SPECIFIC_ITEM':
-                out = await askForSpecificItem(pageID, userID);
+                out = await askForSpecificItem(pageID, userID, data);
                 break;
             case 'CHANGE_ITEM':
                 out = await changeItem(pageID, userID, data);
+                break;
+            case 'SHOW_COMMENTS_ITEM':
+                out = await showCommentsItem(pageID, userID, data);
                 break;
             case 'CANCEL_ITEM':
                 out = await cancelItem(pageID, userID, data);

@@ -173,7 +173,7 @@ var beverage_delete = function beverage_delete(req, res) {
 };
 /**
  * Delete all records from a pageID
- * @param {*} pageID 
+ * @param {*} pageID
  */
 
 

@@ -1,6 +1,6 @@
 import util from 'util';
 import fs from 'fs';
-import { Bot, Elements, Buttons, QuickReplies } from 'facebook-messenger-bot';
+import { Bot, Elements, QuickReplies } from 'facebook-messenger-bot';
 import { getOnePageToken, getOnePageData, sendPassThreadControl } from '../controllers/pagesController';
 import { getPricingSizing, getPricings } from '../controllers/pricingsController';
 import { getFlavors } from '../controllers/flavorsController';
@@ -14,7 +14,10 @@ import {
     getAddressLocation,
     getCustomerAddress, formatAddrData,
 } from '../controllers/customersController';
-import { updateStatusSpecificItem, deleteItem, reorderItems, deletePendingItem, updateItemStatus } from '../controllers/itemsController';
+import {
+    updateStatusSpecificItem, deleteItem,
+    updateItemDirect, deletePendingItem, updateItemStatus,
+} from '../controllers/itemsController';
 import { formatWhatsappNumber, formatAsCurrency } from '../util/util';
 import { getCategories, getCategory } from '../controllers/categoriesController';
 
@@ -307,10 +310,17 @@ export const askForDeliver = async (pageId, userId) => {
     let _txt = '';
 
     if (storeData.delivery_time) {
-        _txt += `Tempo de entrega: por volta de *${storeData.delivery_time}* minutos\n`;
+        _txt += `👉 Tempo de entrega: ⏱ *${storeData.delivery_time}* minutos\n`;
+    }
+    if (storeData.delivery_fees && storeData.delivery_fees.length > 0) {
+        _txt += 'Taxa de Entrega: ';
+        for (let delivFee of storeData.delivery_fees) {
+            _txt += `${formatAsCurrency(delivFee.fee)} (até ${delivFee.to} km) `
+        }
+        _txt += '\n';
     }
     if (storeData.pickup_time) {
-        _txt += `Para retirar aqui: por volta de *${storeData.pickup_time}* minutos\n`;
+        _txt += `👉 Para retirar aqui: ⏱ *${storeData.pickup_time}* minutos\n`;
     }
 
     _txt += 'O pedido é para entregar ou você vem retirar aqui?'
@@ -326,7 +336,7 @@ export const askForDeliver = async (pageId, userId) => {
             },
             {
                 text: 'Retirar',
-                data: { type: 'pickup', time: storeData.pickup_time },
+                data: { type: 'pickup', time: storeData.pickup_time, address: storeData.address },
                 event: 'ORDER_DELIVER',
             },
         ],
@@ -339,9 +349,21 @@ export const showDeliver = async (pageId, userId, data, user, source) => {
         _phone = formatWhatsappNumber(userId);
     }
 
-    await updateOrder({ pageId, userId, deliverType: data.type, deliverTime: data.time, user: user, phone: _phone, source: source });
+    await updateOrder({
+        pageId, userId,
+        deliverType: data.type, deliverTime: data.time, storeAddress: data.address,
+        user: user,
+        phone: _phone, source: source,
+    });
 
-    let _txtReply = data === 'delivery' ? 'Entregaremos o seu pedido.' : 'Retirar o pedido conosco.';
+    let _txtReply;
+    if (data && data.type === 'delivery')
+        _txtReply = 'Entregaremos o seu pedido.';
+    else {
+        _txtReply = 'Retirar o pedido conosco.\n';
+        if (data.address)
+            _txtReply += '📌 Nosso endereço: ' + data.address;
+    }
 
     return {
         type: 'text',
@@ -1076,9 +1098,17 @@ export const showPartialOrder = async (pageId, userId, po) => {
 
                 _txt = _txt + `${item.category}: ${_txtQty} ${item.flavor} ${_txtSize} - ${formatAsCurrency(item.price)} \n`;
             }
-            total_price += item.price;
+            if (item.price)
+                total_price += item.price;
+        }
+        if (po.order.deliver_type && po.order.deliver_type === 'delivery') {
+            if (po.order.delivery_fee > 0) {
+                _txt += `*Taxa de Entrega:* ${formatAsCurrency(po.order.delivery_fee)}\n`
+                total_price += po.order.delivery_fee;
+            }
         }
         _txt = _txt + '𝗧𝗼𝘁𝗮𝗹: ' + formatAsCurrency(total_price) + '\n\n';
+
     } else {
         _txt = _txt + 'Ainda não foram incluídos itens no seu pedido.\n\n';
     }
@@ -1092,7 +1122,7 @@ export const showPartialOrder = async (pageId, userId, po) => {
     });
     if (po.items && po.items.length > 0) {
         _options.push({
-            text: 'Confirmar o pedido',
+            text: '*Confirmar o pedido*',
             data: {
                 type: 'confirmation_yes',
                 backTo: 'partial_confirmation',
@@ -1100,9 +1130,18 @@ export const showPartialOrder = async (pageId, userId, po) => {
             event: 'ORDER_PIZZA_CONFIRMATION',
         });
         _options.push({
-            text: 'Remover/alterar algum item',
+            text: 'Remover algum item',
             data: {
                 backTo: 'partial_confirmation',
+                option: 'remove_item',
+            },
+            event: 'ORDER_WANT_CHANGE',
+        });
+        _options.push({
+            text: 'Observações em algum item',
+            data: {
+                backTo: 'partial_confirmation',
+                option: 'change_item',
             },
             event: 'ORDER_WANT_CHANGE',
         });
@@ -1198,8 +1237,38 @@ export const showFlavorCheckItem = async (pageId, userId, data) => {
 
 export const askForPaymentType = async (pageId, userId) => {
     const _options = [];
-    _options.push({ text: 'Dinheiro', data: 'payment_money', event: 'ORDER_PAYMENT_TYPE' });
-    _options.push({ text: 'Cartão', data: 'payment_card', event: 'ORDER_PAYMENT_TYPE' });
+
+    const storeData = await getStoreData(pageId);
+    if (storeData.payment_types && storeData.payment_types.length > 0) {
+        for (let paymentType of storeData.payment_types) {
+            let _txt = paymentType.payment_type;
+            if (paymentType.surcharge_percent > 0) {
+                _txt += ` (Cobramos + ${paymentType.surcharge_percent}% no valor do pedido)`;
+            } else if (paymentType.surcharge_amount > 0) {
+                _txt += ` (Cobramos + ${formatAsCurrency(paymentType.surcharge_amount)} no valor do pedido)`;
+            }
+
+            _options.push({
+                text: _txt, data: {
+                    payment_type: paymentType.payment_type,
+                    surcharge_percent: paymentType.surcharge_percent,
+                    surcharge_amount: paymentType.surcharge_amount,
+                }, event: 'ORDER_PAYMENT_TYPE',
+            });
+        }
+    } else {
+        _options.push({
+            text: 'Dinheiro', data: {
+                payment_type: 'Dinheiro', surcharge_percent: 0, surcharge_amonut: 0,
+            }, event: 'ORDER_PAYMENT_TYPE',
+        });
+        _options.push({
+            text: 'Cartão', data: {
+                payment_type: 'Cartão', surcharge_percent: 0, surcharge_amount: 0,
+            }, event: 'ORDER_PAYMENT_TYPE',
+        });
+    }
+
 
     await updateOrder({ pageId, userId, waitingFor: 'payment_type' });
 
@@ -1211,9 +1280,12 @@ export const askForPaymentType = async (pageId, userId) => {
 }
 
 export const showPaymentType = async (pageId, userId, data) => {
-    await updateOrder({ pageId, userId, paymentType: data });
+    await updateOrder({
+        pageId, userId, paymentType: data.payment_type,
+        surcharge_percent: data.surcharge_percent, surcharge_amount: data.surcharge_amount,
+    });
 
-    let _txtPaymentType = data === 'payment_money' ? 'Dinheiro' : 'Cartão';
+    let _txtPaymentType = data.payment_type;
 
     return {
         type: 'text',
@@ -1286,12 +1358,18 @@ export const showPaymentChangeAskForComments = async (pageId, userId, data) => {
 }
 
 
-export const askToTypeComments = async (pageID, userID) => {
-    await updateOrder({ pageId: pageID, userId: userID, waitingFor: 'typed_comments' });
-
+export const askToTypeComments = async (pageID, userID, item) => {
+    let _txt;
+    if (item) {
+        await updateOrder({ pageId: pageID, userId: userID, waitingFor: 'typed_comments_item', waitingForData: item.id });
+        _txt = 'Diga o que gostaria de pedir: por ex. sem cebola ou ovos. Pode digitar:';
+    } else {
+        await updateOrder({ pageId: pageID, userId: userID, waitingFor: 'typed_comments' });
+        _txt = 'Digite as observações que você tem para a entrega ou pedido. Pode digitar!';
+    }
     return {
         type: 'text',
-        text: 'Digite as observações que você tem para a entrega ou pedido. Pode digitar!',
+        text: _txt,
     }
 }
 
@@ -1322,24 +1400,41 @@ export const showFullOrder = async (pageId, userId) => {
             let _txtQty = item.split > 1 ? item.qty + '/' + item.split : item.qty;
             let _txtSize = item.sizeId ? item.size : '';
             _txt = _txt + `_${item.category}_: ${_txtQty} ${item.flavor}  ${_txtSize}\n`;
+            total_price += item.price;
         }
-        total_price += item.price;
     }
 
-    if (po.order.deliver_type && po.order.deliver_type === 'pickup')
-        _txt += 'Cliente vem retirar.\n'
-    else
-        _txt = _txt + '𝗘𝗻𝗱𝗲𝗿𝗲𝗰̧𝗼 𝗱𝗲 𝗘𝗻𝘁𝗿𝗲𝗴𝗮: ' + po.order.address + '\n';
+    if (po.order.deliver_type && po.order.deliver_type === 'pickup') {
+        _txt += 'Cliente retira.\n'
+        if (po.order.store_address)
+            _txt += '📌 Nosso endereço: ' + po.order.store_address + '\n';
+    } else {
+        _txt += '𝗘𝗻𝗱𝗲𝗿𝗲𝗰̧𝗼 𝗱𝗲 𝗘𝗻𝘁𝗿𝗲𝗴𝗮: ' + po.order.address + '\n';
+
+        if (po.order.delivery_fee > 0) {
+            _txt += `𝗧𝗮𝘅𝗮 𝗱𝗲 𝗘𝗻𝘁𝗿𝗲𝗴𝗮: ${formatAsCurrency(po.order.delivery_fee)}\n`
+            total_price += po.order.delivery_fee;
+        }
+    }
 
     _txt = _txt + '𝗧𝗲𝗹𝗲𝗳𝗼𝗻𝗲: ' + po.order.phone + '\n';
-    _txt = _txt + '𝗧𝗼𝘁𝗮𝗹: ' + formatAsCurrency(total_price) + '\n';
-
-    let _txtPaymentType = po.order.payment_type === 'payment_card' ? 'Cartão' : 'Dinheiro';
-    _txt = _txt + '𝗙𝗼𝗿𝗺𝗮 𝗱𝗲 𝗣𝗮𝗴𝗮𝗺𝗲𝗻𝘁𝗼: ' + _txtPaymentType + '\n';
+    _txt = _txt + '𝗙𝗼𝗿𝗺𝗮 𝗱𝗲 𝗣𝗮𝗴𝗮𝗺𝗲𝗻𝘁𝗼: ' + po.order.payment_type + '\n';
 
     if (po.payment_change === 'payment_change_yes') {
         _txt = _txt + '𝗟𝗲𝘃𝗮𝗿 𝗧𝗿𝗼𝗰𝗼? Sim \n';
     }
+
+    if (po.order.surcharge_percent > 0) {
+        _txt += `𝗧𝗮𝘅𝗮 𝗱𝗲 ${po.order.payment_type}: ${po.order.surcharge_percent * 100}%\n`
+        total_price += total_price * po.order.surcharge_percent;
+    }
+
+    if (po.order.surcharge_amount > 0) {
+        _txt += `𝗧𝗮𝘅𝗮 𝗱𝗲 ${po.order.payment_type}: ${formatAsCurrency(po.order.surcharge_amount)}\n`
+        total_price += po.order.surcharge_amount;
+    }
+
+    _txt = _txt + '𝗧𝗼𝘁𝗮𝗹: ' + formatAsCurrency(total_price) + '\n';
 
     let _txtComments = po.order.comments || 'Sem observações';
     _txt = _txt + '𝗢𝗯𝘀𝗲𝗿𝘃𝗮𝗰̧𝗼̃𝗲𝘀: ' + _txtComments + '\n';
@@ -1458,32 +1553,26 @@ export const askForChangeOrder = async (pageId, userId, data) => {
 
 export const askForOptionsToChange = async (pageId, userId, item) => {
     try {
-        if (item && item.beverageId) {
-            return await askForBeverages(pageId, userId, 1);
-        } else {
-            let _txt = 'Ok, o que você gostaria de alterar?';
+        let _txt = 'Ok, o que você gostaria de fazer?';
 
-            const _options = [];
-            _options.push({ text: 'Tamanho/Sabor', data: item.itemId, event: 'ORDER_CHANGE_ITEM' });
-            _options.push({ text: 'Cancelar/Remover', data: item.itemId, event: 'ORDER_CANCEL_ITEM' });
+        const _options = [];
+        _options.push({ text: 'Mandar observação para esse item', data: item, event: 'ORDER_CHANGE_ITEM' });
+        _options.push({ text: 'Cancelar/Remover', data: item, event: 'ORDER_CANCEL_ITEM' });
 
-            return {
-                type: 'replies',
-                text: _txt,
-                options: _options,
-            };
-        }
+        return {
+            type: 'replies',
+            text: _txt,
+            options: _options,
+        };
     } catch (askForOptionsToChangeErr) {
         console.error({ askForOptionsToChangeErr });
         throw askForOptionsToChangeErr;
     }
 }
 
-export const askForSpecificItem = async (pageId, userId) => {
+export const askForSpecificItem = async (pageId, userId, data) => {
     const pendingOrder = await getOrderPending({ pageId, userId, isComplete: true });
     if (pendingOrder.items && pendingOrder.items.length > 1) {
-
-        let _txt = 'Escolha qual dos itens deseja alterar/remover:';
 
         const _options = [];
         let _itemId = 0;
@@ -1505,14 +1594,27 @@ export const askForSpecificItem = async (pageId, userId) => {
                 }
 
                 if (_txt) {
-                    _options.push({ text: _txt, data: item, event: 'ORDER_CANCEL_ITEM' });
+                    if (data && data.option === 'change_item') {
+                        _options.push({ text: _txt, data: item, event: 'ORDER_CHANGE_ITEM' });
+                    } else {
+                        _options.push({ text: _txt, data: item, event: 'ORDER_CANCEL_ITEM' });
+                    }
                 }
+
                 _itemId = item.itemId;
             }
         }
+
+        let _txtHead = 'Escolha qual dos itens deseja ';
+        if (data && data.option === 'change_item')
+            _txtHead = _txtHead + 'alterar:';
+        else
+            _txtHead = _txtHead + 'remover:';
+
+
         return {
             type: 'replies',
-            text: _txt,
+            text: _txtHead,
             options: _options,
         };
     } else {
@@ -1663,25 +1765,21 @@ export const showNoBeverageAskForPaymentType = async (pageId, userId, data) => {
  * @param {*} userId
  * @param {*} itemId
  */
-export const changeItem = async (pageId, userId, itemId) => {
-    const po = await getOrderPending({ pageId, userId, isComplete: false });
-    const result1 = await deleteItem(pageId, po.order.id, itemId);
-    if (result1) {
-        // result2 is the number of items
-        const newItemsNumber = await reorderItems(pageId, po.order.id);
-        if (newItemsNumber) {
-            const _currentItem = newItemsNumber;
-            const _qty = newItemsNumber;
-
-            await updateOrder({
-                pageId, userId, waitingFor: 'size',
-                qty: _qty, currentItem: _currentItem, eraseSplit: true,
-            });
-
-            return await askForSize(pageId, userId);
-        }
-    }
+export const changeItem = async (pageId, userId, item) => {
+    return askToTypeComments(pageId, userId, item);
 }
+
+export const showCommentsItem = async (pageId, userId, data) => {
+    const po = await getOrderPending({ pageId, userId, isComplete: false });
+
+    if (po && po.order && po.order.waitingFor === 'typed_comments_item') {
+        // without await to run later.
+        updateItemDirect(pageId, po.order.id, po.order.waitingForData, data);
+    }
+
+    return await showPartialOrder(pageId, userId);
+}
+
 
 export const cancelItem = async (pageId, userId, item) => {
     const po = await getOrderPending({ pageId, userId, isComplete: false });

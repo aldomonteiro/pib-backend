@@ -91,15 +91,18 @@ export const pricing_create = async (req, res) => {
 
 // UPDATE
 export const pricing_update = (req, res) => {
-    if (req.body && req.body.id) {
+    if (req.body && req.params.id) {
 
         const pageId = req.currentUser.activePage;
+        const { id } = req.params;
+        const { categoryId, sizeId, price } = req.body;
 
-        Pricing.findOne({ pageId: pageId, id: req.body.id }, (err, doc) => {
+        Pricing.findOne({ pageId: pageId, id: id }, (err, doc) => {
             if (!err) {
-                doc.categoryId = req.body.categoryId;
-                doc.sizeId = req.body.sizeId;
-                doc.price = req.body.price;
+
+                if (categoryId) doc.categoryId = categoryId;
+                if (sizeId) doc.sizeId = sizeId;
+                if (price) doc.price = price;
 
                 doc.save((err, result) => {
                     if (err) {

@@ -154,17 +154,22 @@ function () {
 exports.pricing_create = pricing_create;
 
 var pricing_update = function pricing_update(req, res) {
-  if (req.body && req.body.id) {
+  if (req.body && req.params.id) {
     var pageId = req.currentUser.activePage;
+    var id = req.params.id;
+    var _req$body = req.body,
+        categoryId = _req$body.categoryId,
+        sizeId = _req$body.sizeId,
+        price = _req$body.price;
 
     _pricings.default.findOne({
       pageId: pageId,
-      id: req.body.id
+      id: id
     }, function (err, doc) {
       if (!err) {
-        doc.categoryId = req.body.categoryId;
-        doc.sizeId = req.body.sizeId;
-        doc.price = req.body.price;
+        if (categoryId) doc.categoryId = categoryId;
+        if (sizeId) doc.sizeId = sizeId;
+        if (price) doc.price = price;
         doc.save(function (err, result) {
           if (err) {
             res.status(500).json({

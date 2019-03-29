@@ -212,6 +212,7 @@ var formatAsCurrency = function formatAsCurrency(amount) {
   return amount.toLocaleString('pt-BR', {
     style: 'currency',
     currency: 'BRL',
+    minimumSignificantDigits: 2,
     maximumSignificantDigits: 2
   });
 };

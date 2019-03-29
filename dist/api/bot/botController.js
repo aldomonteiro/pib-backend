@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.askForSizeCat = exports.showCategoryAskForSize = exports.showCategory = exports.askForCategory = exports.showAddressAskForCategory = exports.showDeliverAskForCategory = exports.cancelPendingOrder = exports.sendRejectionNotification = exports.sendShippingNotification = exports.updateItemAskOptions = exports.cancelItem = exports.changeItem = exports.showNoBeverageAskForPaymentType = exports.showBeverageAskForPaymentType = exports.showBeverage = exports.showNoBeverage = exports.askForBeverages = exports.askForWantBeverage = exports.askForSpecificItem = exports.askForOptionsToChange = exports.askForChangeOrder = exports.confirmOrder = exports.showFullOrderConfirmOrder = exports.showPaymentTypeAskForComments = exports.showFullOrder = exports.showComments = exports.askToTypeComments = exports.showPaymentChangeAskForComments = exports.askForComments = exports.showPaymentChange = exports.showPaymentTypeAskForPaymentChange = exports.askForPaymentChange = exports.showPaymentType = exports.askForPaymentType = exports.showFlavorCheckItem = exports.showPartialOrder = exports.cancelPendingShowPartialOrder = exports.showOrderOrNextItem = exports.showFlavor = exports.askForFlavor = exports.showSplitCheckFlavor = exports.askForFlavorOrConfirm = exports.showSplit = exports.showSizeCheckSplit = exports.checkSplit = exports.showSize = exports.showQuantityAskForSize = exports.askForSize = exports.showQuantity = exports.askForQuantityMore = exports.askForQuantity = exports.showAddressAskForQuantity = exports.showDeliverAskForQuantity = exports.showPhone = exports.confirmTypedPhone = exports.askToTypePhone = exports.askForPhone = exports.showOrderOrAskForPhone = exports.showAddress = exports.confirmAddress = exports.askToTypeAddress = exports.confirmAddressOrAskLocation = exports.confirmLocationAddress = exports.askForLocation = exports.showDeliverCheckAddress = exports.showDeliver = exports.askForDeliver = exports.askForWantOrder = exports.getFlavorsAndToppings = exports.sendCardapio = exports.sendHorario = exports.sendMainMenu = exports.sendWelcomeMessage = exports.passThreadControl = exports.optionsStopOrder = exports.checkLastAction = exports.askForContinue = exports.basicReply = exports.sendErrorMsg = void 0;
+exports.askForSizeCat = exports.showCategoryAskForSize = exports.showCategory = exports.askForCategory = exports.showAddressAskForCategory = exports.showDeliverAskForCategory = exports.cancelPendingOrder = exports.sendRejectionNotification = exports.sendShippingNotification = exports.updateItemAskOptions = exports.cancelItem = exports.showCommentsItem = exports.changeItem = exports.showNoBeverageAskForPaymentType = exports.showBeverageAskForPaymentType = exports.showBeverage = exports.showNoBeverage = exports.askForBeverages = exports.askForWantBeverage = exports.askForSpecificItem = exports.askForOptionsToChange = exports.askForChangeOrder = exports.confirmOrder = exports.showFullOrderConfirmOrder = exports.showPaymentTypeAskForComments = exports.showFullOrder = exports.showComments = exports.askToTypeComments = exports.showPaymentChangeAskForComments = exports.askForComments = exports.showPaymentChange = exports.showPaymentTypeAskForPaymentChange = exports.askForPaymentChange = exports.showPaymentType = exports.askForPaymentType = exports.showFlavorCheckItem = exports.showPartialOrder = exports.cancelPendingShowPartialOrder = exports.showOrderOrNextItem = exports.showFlavor = exports.askForFlavor = exports.showSplitCheckFlavor = exports.askForFlavorOrConfirm = exports.showSplit = exports.showSizeCheckSplit = exports.checkSplit = exports.showSize = exports.showQuantityAskForSize = exports.askForSize = exports.showQuantity = exports.askForQuantityMore = exports.askForQuantity = exports.showAddressAskForQuantity = exports.showDeliverAskForQuantity = exports.showPhone = exports.confirmTypedPhone = exports.askToTypePhone = exports.askForPhone = exports.showOrderOrAskForPhone = exports.showAddress = exports.confirmAddress = exports.askToTypeAddress = exports.confirmAddressOrAskLocation = exports.confirmLocationAddress = exports.askForLocation = exports.showDeliverCheckAddress = exports.showDeliver = exports.askForDeliver = exports.askForWantOrder = exports.getFlavorsAndToppings = exports.sendCardapio = exports.sendHorario = exports.sendMainMenu = exports.sendWelcomeMessage = exports.passThreadControl = exports.optionsStopOrder = exports.checkLastAction = exports.askForContinue = exports.basicReply = exports.sendErrorMsg = void 0;
 
 var _util = _interopRequireDefault(require("util"));
 
@@ -1130,7 +1130,7 @@ function () {
   var _ref14 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee13(pageId, userId) {
-    var storeData, _txt;
+    var storeData, _txt, _iteratorNormalCompletion5, _didIteratorError5, _iteratorError5, _iterator5, _step5, delivFee;
 
     return regeneratorRuntime.wrap(function _callee13$(_context13) {
       while (1) {
@@ -1152,11 +1152,64 @@ function () {
             _txt = '';
 
             if (storeData.delivery_time) {
-              _txt += "Tempo de entrega: por volta de *".concat(storeData.delivery_time, "* minutos\n");
+              _txt += "\uD83D\uDC49 Tempo de entrega: \u23F1 *".concat(storeData.delivery_time, "* minutos\n");
             }
 
+            if (!(storeData.delivery_fees && storeData.delivery_fees.length > 0)) {
+              _context13.next = 29;
+              break;
+            }
+
+            _txt += 'Taxa de Entrega: ';
+            _iteratorNormalCompletion5 = true;
+            _didIteratorError5 = false;
+            _iteratorError5 = undefined;
+            _context13.prev = 12;
+
+            for (_iterator5 = storeData.delivery_fees[Symbol.iterator](); !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+              delivFee = _step5.value;
+              _txt += "".concat((0, _util2.formatAsCurrency)(delivFee.fee), " (at\xE9 ").concat(delivFee.to, " km) ");
+            }
+
+            _context13.next = 20;
+            break;
+
+          case 16:
+            _context13.prev = 16;
+            _context13.t0 = _context13["catch"](12);
+            _didIteratorError5 = true;
+            _iteratorError5 = _context13.t0;
+
+          case 20:
+            _context13.prev = 20;
+            _context13.prev = 21;
+
+            if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
+              _iterator5.return();
+            }
+
+          case 23:
+            _context13.prev = 23;
+
+            if (!_didIteratorError5) {
+              _context13.next = 26;
+              break;
+            }
+
+            throw _iteratorError5;
+
+          case 26:
+            return _context13.finish(23);
+
+          case 27:
+            return _context13.finish(20);
+
+          case 28:
+            _txt += '\n';
+
+          case 29:
             if (storeData.pickup_time) {
-              _txt += "Para retirar aqui: por volta de *".concat(storeData.pickup_time, "* minutos\n");
+              _txt += "\uD83D\uDC49 Para retirar aqui: \u23F1 *".concat(storeData.pickup_time, "* minutos\n");
             }
 
             _txt += 'O pedido é para entregar ou você vem retirar aqui?';
@@ -1174,18 +1227,19 @@ function () {
                 text: 'Retirar',
                 data: {
                   type: 'pickup',
-                  time: storeData.pickup_time
+                  time: storeData.pickup_time,
+                  address: storeData.address
                 },
                 event: 'ORDER_DELIVER'
               }]
             });
 
-          case 10:
+          case 32:
           case "end":
             return _context13.stop();
         }
       }
-    }, _callee13);
+    }, _callee13, null, [[12, 16, 20, 28], [21,, 23, 27]]);
   }));
 
   return function askForDeliver(_x18, _x19) {
@@ -1219,13 +1273,17 @@ function () {
               userId: userId,
               deliverType: data.type,
               deliverTime: data.time,
+              storeAddress: data.address,
               user: user,
               phone: _phone,
               source: source
             });
 
           case 4:
-            _txtReply = data === 'delivery' ? 'Entregaremos o seu pedido.' : 'Retirar o pedido conosco.';
+            if (data && data.type === 'delivery') _txtReply = 'Entregaremos o seu pedido.';else {
+              _txtReply = 'Retirar o pedido conosco.\n';
+              if (data.address) _txtReply += '📌 Nosso endereço: ' + data.address;
+            }
             return _context14.abrupt("return", {
               type: 'text',
               text: '✅ ' + _txtReply
@@ -3205,7 +3263,7 @@ function () {
   var _ref45 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee44(pageId, userId, po) {
-    var total_price, _txt, _iteratorNormalCompletion5, _didIteratorError5, _iteratorError5, _iterator5, _step5, item, _txtQty, _txtSize, _options;
+    var total_price, _txt, _iteratorNormalCompletion6, _didIteratorError6, _iteratorError6, _iterator6, _step6, item, _txtQty, _txtSize, _options;
 
     return regeneratorRuntime.wrap(function _callee44$(_context44) {
       while (1) {
@@ -3241,18 +3299,18 @@ function () {
             _txt = '𝗣𝗲𝗱𝗶𝗱𝗼:' + po.order.id + '\n';
 
             if (!(po.items && po.items.length > 0)) {
-              _context44.next = 32;
+              _context44.next = 33;
               break;
             }
 
             _txt = _txt + 'Seguem os detalhes do seu pedido:\n\n';
-            _iteratorNormalCompletion5 = true;
-            _didIteratorError5 = false;
-            _iteratorError5 = undefined;
+            _iteratorNormalCompletion6 = true;
+            _didIteratorError6 = false;
+            _iteratorError6 = undefined;
             _context44.prev = 13;
 
-            for (_iterator5 = po.items[Symbol.iterator](); !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-              item = _step5.value;
+            for (_iterator6 = po.items[Symbol.iterator](); !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+              item = _step6.value;
 
               if (item.flavorId) {
                 _txtQty = item.split > 1 ? item.qty + '/' + item.split : item.qty;
@@ -3261,7 +3319,7 @@ function () {
                 _txt = _txt + "".concat(item.category, ": ").concat(_txtQty, " ").concat(item.flavor, " ").concat(_txtSize, " - ").concat((0, _util2.formatAsCurrency)(item.price), " \n");
               }
 
-              total_price += item.price;
+              if (item.price) total_price += item.price;
             }
 
             _context44.next = 21;
@@ -3270,26 +3328,26 @@ function () {
           case 17:
             _context44.prev = 17;
             _context44.t0 = _context44["catch"](13);
-            _didIteratorError5 = true;
-            _iteratorError5 = _context44.t0;
+            _didIteratorError6 = true;
+            _iteratorError6 = _context44.t0;
 
           case 21:
             _context44.prev = 21;
             _context44.prev = 22;
 
-            if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
-              _iterator5.return();
+            if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
+              _iterator6.return();
             }
 
           case 24:
             _context44.prev = 24;
 
-            if (!_didIteratorError5) {
+            if (!_didIteratorError6) {
               _context44.next = 27;
               break;
             }
 
-            throw _iteratorError5;
+            throw _iteratorError6;
 
           case 27:
             return _context44.finish(24);
@@ -3298,14 +3356,21 @@ function () {
             return _context44.finish(21);
 
           case 29:
+            if (po.order.deliver_type && po.order.deliver_type === 'delivery') {
+              if (po.order.delivery_fee > 0) {
+                _txt += "*Taxa de Entrega:* ".concat((0, _util2.formatAsCurrency)(po.order.delivery_fee), "\n");
+                total_price += po.order.delivery_fee;
+              }
+            }
+
             _txt = _txt + '𝗧𝗼𝘁𝗮𝗹: ' + (0, _util2.formatAsCurrency)(total_price) + '\n\n';
-            _context44.next = 33;
+            _context44.next = 34;
             break;
 
-          case 32:
+          case 33:
             _txt = _txt + 'Ainda não foram incluídos itens no seu pedido.\n\n';
 
-          case 33:
+          case 34:
             _txt = _txt + 'O que deseja fazer?';
             _options = [];
 
@@ -3316,7 +3381,7 @@ function () {
 
             if (po.items && po.items.length > 0) {
               _options.push({
-                text: 'Confirmar o pedido',
+                text: '*Confirmar o pedido*',
                 data: {
                   type: 'confirmation_yes',
                   backTo: 'partial_confirmation'
@@ -3325,9 +3390,19 @@ function () {
               });
 
               _options.push({
-                text: 'Remover/alterar algum item',
+                text: 'Remover algum item',
                 data: {
-                  backTo: 'partial_confirmation'
+                  backTo: 'partial_confirmation',
+                  option: 'remove_item'
+                },
+                event: 'ORDER_WANT_CHANGE'
+              });
+
+              _options.push({
+                text: 'Observações em algum item',
+                data: {
+                  backTo: 'partial_confirmation',
+                  option: 'change_item'
                 },
                 event: 'ORDER_WANT_CHANGE'
               });
@@ -3345,7 +3420,7 @@ function () {
               options: _options
             });
 
-          case 39:
+          case 40:
           case "end":
             return _context44.stop();
         }
@@ -3466,46 +3541,129 @@ function () {
   var _ref47 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee46(pageId, userId) {
-    var _options;
+    var _options, storeData, _iteratorNormalCompletion7, _didIteratorError7, _iteratorError7, _iterator7, _step7, paymentType, _txt;
 
     return regeneratorRuntime.wrap(function _callee46$(_context46) {
       while (1) {
         switch (_context46.prev = _context46.next) {
           case 0:
             _options = [];
+            _context46.next = 3;
+            return (0, _storesController.getStoreData)(pageId);
 
+          case 3:
+            storeData = _context46.sent;
+
+            if (!(storeData.payment_types && storeData.payment_types.length > 0)) {
+              _context46.next = 26;
+              break;
+            }
+
+            _iteratorNormalCompletion7 = true;
+            _didIteratorError7 = false;
+            _iteratorError7 = undefined;
+            _context46.prev = 8;
+
+            for (_iterator7 = storeData.payment_types[Symbol.iterator](); !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+              paymentType = _step7.value;
+              _txt = paymentType.payment_type;
+
+              if (paymentType.surcharge_percent > 0) {
+                _txt += " (Cobramos + ".concat(paymentType.surcharge_percent, "% no valor do pedido)");
+              } else if (paymentType.surcharge_amount > 0) {
+                _txt += " (Cobramos + ".concat((0, _util2.formatAsCurrency)(paymentType.surcharge_amount), " no valor do pedido)");
+              }
+
+              _options.push({
+                text: _txt,
+                data: {
+                  payment_type: paymentType.payment_type,
+                  surcharge_percent: paymentType.surcharge_percent,
+                  surcharge_amount: paymentType.surcharge_amount
+                },
+                event: 'ORDER_PAYMENT_TYPE'
+              });
+            }
+
+            _context46.next = 16;
+            break;
+
+          case 12:
+            _context46.prev = 12;
+            _context46.t0 = _context46["catch"](8);
+            _didIteratorError7 = true;
+            _iteratorError7 = _context46.t0;
+
+          case 16:
+            _context46.prev = 16;
+            _context46.prev = 17;
+
+            if (!_iteratorNormalCompletion7 && _iterator7.return != null) {
+              _iterator7.return();
+            }
+
+          case 19:
+            _context46.prev = 19;
+
+            if (!_didIteratorError7) {
+              _context46.next = 22;
+              break;
+            }
+
+            throw _iteratorError7;
+
+          case 22:
+            return _context46.finish(19);
+
+          case 23:
+            return _context46.finish(16);
+
+          case 24:
+            _context46.next = 28;
+            break;
+
+          case 26:
             _options.push({
               text: 'Dinheiro',
-              data: 'payment_money',
+              data: {
+                payment_type: 'Dinheiro',
+                surcharge_percent: 0,
+                surcharge_amonut: 0
+              },
               event: 'ORDER_PAYMENT_TYPE'
             });
 
             _options.push({
               text: 'Cartão',
-              data: 'payment_card',
+              data: {
+                payment_type: 'Cartão',
+                surcharge_percent: 0,
+                surcharge_amount: 0
+              },
               event: 'ORDER_PAYMENT_TYPE'
             });
 
-            _context46.next = 5;
+          case 28:
+            _context46.next = 30;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
               waitingFor: 'payment_type'
             });
 
-          case 5:
+          case 30:
             return _context46.abrupt("return", {
               type: 'replies',
               text: 'Qual a forma de pagamento?',
               options: _options
             });
 
-          case 6:
+          case 31:
           case "end":
             return _context46.stop();
         }
       }
-    }, _callee46);
+    }, _callee46, null, [[8, 12, 16, 24], [17,, 19, 23]]);
   }));
 
   return function askForPaymentType(_x122, _x123) {
@@ -3531,11 +3689,13 @@ function () {
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
-              paymentType: data
+              paymentType: data.payment_type,
+              surcharge_percent: data.surcharge_percent,
+              surcharge_amount: data.surcharge_amount
             });
 
           case 2:
-            _txtPaymentType = data === 'payment_money' ? 'Dinheiro' : 'Cartão';
+            _txtPaymentType = data.payment_type;
             return _context47.abrupt("return", {
               type: 'text',
               text: '✅ ' + ' Forma de pagamento: ' + _txtPaymentType
@@ -3797,25 +3957,49 @@ var askToTypeComments =
 function () {
   var _ref54 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee53(pageID, userID) {
+  regeneratorRuntime.mark(function _callee53(pageID, userID, item) {
+    var _txt;
+
     return regeneratorRuntime.wrap(function _callee53$(_context53) {
       while (1) {
         switch (_context53.prev = _context53.next) {
           case 0:
-            _context53.next = 2;
+            if (!item) {
+              _context53.next = 6;
+              break;
+            }
+
+            _context53.next = 3;
+            return (0, _ordersController.updateOrder)({
+              pageId: pageID,
+              userId: userID,
+              waitingFor: 'typed_comments_item',
+              waitingForData: item.id
+            });
+
+          case 3:
+            _txt = 'Diga o que gostaria de pedir: por ex. sem cebola ou ovos. Pode digitar:';
+            _context53.next = 9;
+            break;
+
+          case 6:
+            _context53.next = 8;
             return (0, _ordersController.updateOrder)({
               pageId: pageID,
               userId: userID,
               waitingFor: 'typed_comments'
             });
 
-          case 2:
+          case 8:
+            _txt = 'Digite as observações que você tem para a entrega ou pedido. Pode digitar!';
+
+          case 9:
             return _context53.abrupt("return", {
               type: 'text',
-              text: 'Digite as observações que você tem para a entrega ou pedido. Pode digitar!'
+              text: _txt
             });
 
-          case 3:
+          case 10:
           case "end":
             return _context53.stop();
         }
@@ -3823,7 +4007,7 @@ function () {
     }, _callee53);
   }));
 
-  return function askToTypeComments(_x140, _x141) {
+  return function askToTypeComments(_x140, _x141, _x142) {
     return _ref54.apply(this, arguments);
   };
 }();
@@ -3865,7 +4049,7 @@ function () {
     }, _callee54);
   }));
 
-  return function showComments(_x142, _x143, _x144) {
+  return function showComments(_x143, _x144, _x145) {
     return _ref55.apply(this, arguments);
   };
 }();
@@ -3878,7 +4062,7 @@ function () {
   var _ref56 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee55(pageId, userId) {
-    var po, total_price, _txt, _iteratorNormalCompletion6, _didIteratorError6, _iteratorError6, _iterator6, _step6, item, _txtQty, _txtSize, _txtPaymentType, _txtComments;
+    var po, total_price, _txt, _iteratorNormalCompletion8, _didIteratorError8, _iteratorError8, _iterator8, _step8, item, _txtQty, _txtSize, _txtComments;
 
     return regeneratorRuntime.wrap(function _callee55$(_context55) {
       while (1) {
@@ -3896,21 +4080,20 @@ function () {
             total_price = 0;
             _txt = 'Seguem os detalhes do seu pedido:\n\n';
             _txt = _txt + '𝗣𝗲𝗱𝗶𝗱𝗼: ' + po.order.id + '\n';
-            _iteratorNormalCompletion6 = true;
-            _didIteratorError6 = false;
-            _iteratorError6 = undefined;
+            _iteratorNormalCompletion8 = true;
+            _didIteratorError8 = false;
+            _iteratorError8 = undefined;
             _context55.prev = 9;
 
-            for (_iterator6 = po.items[Symbol.iterator](); !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-              item = _step6.value;
+            for (_iterator8 = po.items[Symbol.iterator](); !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+              item = _step8.value;
 
               if (item.flavorId) {
                 _txtQty = item.split > 1 ? item.qty + '/' + item.split : item.qty;
                 _txtSize = item.sizeId ? item.size : '';
                 _txt = _txt + "_".concat(item.category, "_: ").concat(_txtQty, " ").concat(item.flavor, "  ").concat(_txtSize, "\n");
+                total_price += item.price;
               }
-
-              total_price += item.price;
             }
 
             _context55.next = 17;
@@ -3919,26 +4102,26 @@ function () {
           case 13:
             _context55.prev = 13;
             _context55.t0 = _context55["catch"](9);
-            _didIteratorError6 = true;
-            _iteratorError6 = _context55.t0;
+            _didIteratorError8 = true;
+            _iteratorError8 = _context55.t0;
 
           case 17:
             _context55.prev = 17;
             _context55.prev = 18;
 
-            if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
-              _iterator6.return();
+            if (!_iteratorNormalCompletion8 && _iterator8.return != null) {
+              _iterator8.return();
             }
 
           case 20:
             _context55.prev = 20;
 
-            if (!_didIteratorError6) {
+            if (!_didIteratorError8) {
               _context55.next = 23;
               break;
             }
 
-            throw _iteratorError6;
+            throw _iteratorError8;
 
           case 23:
             return _context55.finish(20);
@@ -3947,16 +4130,36 @@ function () {
             return _context55.finish(17);
 
           case 25:
-            if (po.order.deliver_type && po.order.deliver_type === 'pickup') _txt += 'Cliente vem retirar.\n';else _txt = _txt + '𝗘𝗻𝗱𝗲𝗿𝗲𝗰̧𝗼 𝗱𝗲 𝗘𝗻𝘁𝗿𝗲𝗴𝗮: ' + po.order.address + '\n';
+            if (po.order.deliver_type && po.order.deliver_type === 'pickup') {
+              _txt += 'Cliente retira.\n';
+              if (po.order.store_address) _txt += '📌 Nosso endereço: ' + po.order.store_address + '\n';
+            } else {
+              _txt += '𝗘𝗻𝗱𝗲𝗿𝗲𝗰̧𝗼 𝗱𝗲 𝗘𝗻𝘁𝗿𝗲𝗴𝗮: ' + po.order.address + '\n';
+
+              if (po.order.delivery_fee > 0) {
+                _txt += "\uD835\uDDE7\uD835\uDDEE\uD835\uDE05\uD835\uDDEE \uD835\uDDF1\uD835\uDDF2 \uD835\uDDD8\uD835\uDDFB\uD835\uDE01\uD835\uDDFF\uD835\uDDF2\uD835\uDDF4\uD835\uDDEE: ".concat((0, _util2.formatAsCurrency)(po.order.delivery_fee), "\n");
+                total_price += po.order.delivery_fee;
+              }
+            }
+
             _txt = _txt + '𝗧𝗲𝗹𝗲𝗳𝗼𝗻𝗲: ' + po.order.phone + '\n';
-            _txt = _txt + '𝗧𝗼𝘁𝗮𝗹: ' + (0, _util2.formatAsCurrency)(total_price) + '\n';
-            _txtPaymentType = po.order.payment_type === 'payment_card' ? 'Cartão' : 'Dinheiro';
-            _txt = _txt + '𝗙𝗼𝗿𝗺𝗮 𝗱𝗲 𝗣𝗮𝗴𝗮𝗺𝗲𝗻𝘁𝗼: ' + _txtPaymentType + '\n';
+            _txt = _txt + '𝗙𝗼𝗿𝗺𝗮 𝗱𝗲 𝗣𝗮𝗴𝗮𝗺𝗲𝗻𝘁𝗼: ' + po.order.payment_type + '\n';
 
             if (po.payment_change === 'payment_change_yes') {
               _txt = _txt + '𝗟𝗲𝘃𝗮𝗿 𝗧𝗿𝗼𝗰𝗼? Sim \n';
             }
 
+            if (po.order.surcharge_percent > 0) {
+              _txt += "\uD835\uDDE7\uD835\uDDEE\uD835\uDE05\uD835\uDDEE \uD835\uDDF1\uD835\uDDF2 ".concat(po.order.payment_type, ": ").concat(po.order.surcharge_percent * 100, "%\n");
+              total_price += total_price * po.order.surcharge_percent;
+            }
+
+            if (po.order.surcharge_amount > 0) {
+              _txt += "\uD835\uDDE7\uD835\uDDEE\uD835\uDE05\uD835\uDDEE \uD835\uDDF1\uD835\uDDF2 ".concat(po.order.payment_type, ": ").concat((0, _util2.formatAsCurrency)(po.order.surcharge_amount), "\n");
+              total_price += po.order.surcharge_amount;
+            }
+
+            _txt = _txt + '𝗧𝗼𝘁𝗮𝗹: ' + (0, _util2.formatAsCurrency)(total_price) + '\n';
             _txtComments = po.order.comments || 'Sem observações';
             _txt = _txt + '𝗢𝗯𝘀𝗲𝗿𝘃𝗮𝗰̧𝗼̃𝗲𝘀: ' + _txtComments + '\n';
             return _context55.abrupt("return", {
@@ -3988,7 +4191,7 @@ function () {
 
             });
 
-          case 34:
+          case 35:
           case "end":
             return _context55.stop();
         }
@@ -3996,7 +4199,7 @@ function () {
     }, _callee55, null, [[9, 13, 17, 25], [18,, 20, 24]]);
   }));
 
-  return function showFullOrder(_x145, _x146) {
+  return function showFullOrder(_x146, _x147) {
     return _ref56.apply(this, arguments);
   };
 }();
@@ -4042,7 +4245,7 @@ function () {
     }, _callee56);
   }));
 
-  return function showPaymentTypeAskForComments(_x147, _x148, _x149) {
+  return function showPaymentTypeAskForComments(_x148, _x149, _x150) {
     return _ref57.apply(this, arguments);
   };
 }();
@@ -4097,7 +4300,7 @@ function () {
     }, _callee57);
   }));
 
-  return function showFullOrderConfirmOrder(_x150, _x151, _x152) {
+  return function showFullOrderConfirmOrder(_x151, _x152, _x153) {
     return _ref58.apply(this, arguments);
   };
 }();
@@ -4136,7 +4339,7 @@ function () {
     }, _callee58);
   }));
 
-  return function confirmOrder(_x153, _x154) {
+  return function confirmOrder(_x154, _x155) {
     return _ref59.apply(this, arguments);
   };
 }();
@@ -4228,7 +4431,7 @@ function () {
     }, _callee59);
   }));
 
-  return function askForChangeOrder(_x155, _x156, _x157) {
+  return function askForChangeOrder(_x156, _x157, _x158) {
     return _ref60.apply(this, arguments);
   };
 }();
@@ -4248,31 +4451,18 @@ function () {
         switch (_context60.prev = _context60.next) {
           case 0:
             _context60.prev = 0;
-
-            if (!(item && item.beverageId)) {
-              _context60.next = 7;
-              break;
-            }
-
-            _context60.next = 4;
-            return askForBeverages(pageId, userId, 1);
-
-          case 4:
-            return _context60.abrupt("return", _context60.sent);
-
-          case 7:
-            _txt = 'Ok, o que você gostaria de alterar?';
+            _txt = 'Ok, o que você gostaria de fazer?';
             _options = [];
 
             _options.push({
-              text: 'Tamanho/Sabor',
-              data: item.itemId,
+              text: 'Mandar observação para esse item',
+              data: item,
               event: 'ORDER_CHANGE_ITEM'
             });
 
             _options.push({
               text: 'Cancelar/Remover',
-              data: item.itemId,
+              data: item,
               event: 'ORDER_CANCEL_ITEM'
             });
 
@@ -4282,27 +4472,23 @@ function () {
               options: _options
             });
 
-          case 12:
-            _context60.next = 18;
-            break;
-
-          case 14:
-            _context60.prev = 14;
+          case 8:
+            _context60.prev = 8;
             _context60.t0 = _context60["catch"](0);
             console.error({
               askForOptionsToChangeErr: _context60.t0
             });
             throw _context60.t0;
 
-          case 18:
+          case 12:
           case "end":
             return _context60.stop();
         }
       }
-    }, _callee60, null, [[0, 14]]);
+    }, _callee60, null, [[0, 8]]);
   }));
 
-  return function askForOptionsToChange(_x158, _x159, _x160) {
+  return function askForOptionsToChange(_x159, _x160, _x161) {
     return _ref61.apply(this, arguments);
   };
 }();
@@ -4314,8 +4500,8 @@ var askForSpecificItem =
 function () {
   var _ref62 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee61(pageId, userId) {
-    var pendingOrder, _txt, _options, _itemId, _iteratorNormalCompletion7, _didIteratorError7, _iteratorError7, _iterator7, _step7, item, _txt2, _sizeSplit;
+  regeneratorRuntime.mark(function _callee61(pageId, userId, data) {
+    var pendingOrder, _options, _itemId, _iteratorNormalCompletion9, _didIteratorError9, _iteratorError9, _iterator9, _step9, item, _txt, _sizeSplit, _txtHead;
 
     return regeneratorRuntime.wrap(function _callee61$(_context61) {
       while (1) {
@@ -4332,23 +4518,22 @@ function () {
             pendingOrder = _context61.sent;
 
             if (!(pendingOrder.items && pendingOrder.items.length > 1)) {
-              _context61.next = 29;
+              _context61.next = 30;
               break;
             }
 
-            _txt = 'Escolha qual dos itens deseja alterar/remover:';
             _options = [];
             _itemId = 0;
-            _iteratorNormalCompletion7 = true;
-            _didIteratorError7 = false;
-            _iteratorError7 = undefined;
-            _context61.prev = 10;
+            _iteratorNormalCompletion9 = true;
+            _didIteratorError9 = false;
+            _iteratorError9 = undefined;
+            _context61.prev = 9;
 
-            for (_iterator7 = pendingOrder.items[Symbol.iterator](); !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-              item = _step7.value;
+            for (_iterator9 = pendingOrder.items[Symbol.iterator](); !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+              item = _step9.value;
 
               if (item.itemId !== _itemId) {
-                _txt2 = void 0;
+                _txt = void 0;
 
                 if (item.size && item.flavor) {
                   _sizeSplit = "".concat(item.size);
@@ -4358,87 +4543,97 @@ function () {
                     _sizeSplit = _sizeSplit + " ".concat(item.split, " Sabores");
                   } else _sizeSplit = item.flavor + ' ' + _sizeSplit;
 
-                  _txt2 = "".concat(_sizeSplit);
+                  _txt = "".concat(_sizeSplit);
                 } else {
-                  _txt2 = item.flavor;
+                  _txt = item.flavor;
                 }
 
-                if (_txt2) {
-                  _options.push({
-                    text: _txt2,
-                    data: item,
-                    event: 'ORDER_CANCEL_ITEM'
-                  });
+                if (_txt) {
+                  if (data && data.option === 'change_item') {
+                    _options.push({
+                      text: _txt,
+                      data: item,
+                      event: 'ORDER_CHANGE_ITEM'
+                    });
+                  } else {
+                    _options.push({
+                      text: _txt,
+                      data: item,
+                      event: 'ORDER_CANCEL_ITEM'
+                    });
+                  }
                 }
 
                 _itemId = item.itemId;
               }
             }
 
-            _context61.next = 18;
+            _context61.next = 17;
             break;
 
-          case 14:
-            _context61.prev = 14;
-            _context61.t0 = _context61["catch"](10);
-            _didIteratorError7 = true;
-            _iteratorError7 = _context61.t0;
+          case 13:
+            _context61.prev = 13;
+            _context61.t0 = _context61["catch"](9);
+            _didIteratorError9 = true;
+            _iteratorError9 = _context61.t0;
 
-          case 18:
+          case 17:
+            _context61.prev = 17;
             _context61.prev = 18;
-            _context61.prev = 19;
 
-            if (!_iteratorNormalCompletion7 && _iterator7.return != null) {
-              _iterator7.return();
+            if (!_iteratorNormalCompletion9 && _iterator9.return != null) {
+              _iterator9.return();
             }
 
-          case 21:
-            _context61.prev = 21;
+          case 20:
+            _context61.prev = 20;
 
-            if (!_didIteratorError7) {
-              _context61.next = 24;
+            if (!_didIteratorError9) {
+              _context61.next = 23;
               break;
             }
 
-            throw _iteratorError7;
+            throw _iteratorError9;
+
+          case 23:
+            return _context61.finish(20);
 
           case 24:
-            return _context61.finish(21);
+            return _context61.finish(17);
 
           case 25:
-            return _context61.finish(18);
-
-          case 26:
+            _txtHead = 'Escolha qual dos itens deseja ';
+            if (data && data.option === 'change_item') _txtHead = _txtHead + 'alterar:';else _txtHead = _txtHead + 'remover:';
             return _context61.abrupt("return", {
               type: 'replies',
-              text: _txt,
+              text: _txtHead,
               options: _options
             });
 
-          case 29:
-            _context61.next = 31;
+          case 30:
+            _context61.next = 32;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
               completeItem: false
             });
 
-          case 31:
-            _context61.next = 33;
+          case 32:
+            _context61.next = 34;
             return askForOptionsToChange(pageId, userId, pendingOrder.items[0]);
 
-          case 33:
+          case 34:
             return _context61.abrupt("return", _context61.sent);
 
-          case 34:
+          case 35:
           case "end":
             return _context61.stop();
         }
       }
-    }, _callee61, null, [[10, 14, 18, 26], [19,, 21, 25]]);
+    }, _callee61, null, [[9, 13, 17, 25], [18,, 20, 24]]);
   }));
 
-  return function askForSpecificItem(_x161, _x162) {
+  return function askForSpecificItem(_x162, _x163, _x164) {
     return _ref62.apply(this, arguments);
   };
 }();
@@ -4516,7 +4711,7 @@ function () {
     }, _callee62);
   }));
 
-  return function askForWantBeverage(_x163, _x164) {
+  return function askForWantBeverage(_x165, _x166) {
     return _ref63.apply(this, arguments);
   };
 }();
@@ -4635,7 +4830,7 @@ function () {
     }, _callee63);
   }));
 
-  return function askForBeverages(_x165, _x166, _x167) {
+  return function askForBeverages(_x167, _x168, _x169) {
     return _ref64.apply(this, arguments);
   };
 }();
@@ -4681,7 +4876,7 @@ function () {
     }, _callee64);
   }));
 
-  return function showNoBeverage(_x168, _x169, _x170) {
+  return function showNoBeverage(_x170, _x171, _x172) {
     return _ref65.apply(this, arguments);
   };
 }();
@@ -4731,7 +4926,7 @@ function () {
     }, _callee65);
   }));
 
-  return function showBeverage(_x171, _x172, _x173) {
+  return function showBeverage(_x173, _x174, _x175) {
     return _ref66.apply(this, arguments);
   };
 }();
@@ -4777,7 +4972,7 @@ function () {
     }, _callee66);
   }));
 
-  return function showBeverageAskForPaymentType(_x174, _x175, _x176) {
+  return function showBeverageAskForPaymentType(_x176, _x177, _x178) {
     return _ref67.apply(this, arguments);
   };
 }();
@@ -4823,7 +5018,7 @@ function () {
     }, _callee67);
   }));
 
-  return function showNoBeverageAskForPaymentType(_x177, _x178, _x179) {
+  return function showNoBeverageAskForPaymentType(_x179, _x180, _x181) {
     return _ref68.apply(this, arguments);
   };
 }();
@@ -4842,64 +5037,14 @@ var changeItem =
 function () {
   var _ref69 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee68(pageId, userId, itemId) {
-    var po, result1, newItemsNumber, _currentItem, _qty;
-
+  regeneratorRuntime.mark(function _callee68(pageId, userId, item) {
     return regeneratorRuntime.wrap(function _callee68$(_context68) {
       while (1) {
         switch (_context68.prev = _context68.next) {
           case 0:
-            _context68.next = 2;
-            return (0, _ordersController.getOrderPending)({
-              pageId: pageId,
-              userId: userId,
-              isComplete: false
-            });
+            return _context68.abrupt("return", askToTypeComments(pageId, userId, item));
 
-          case 2:
-            po = _context68.sent;
-            _context68.next = 5;
-            return (0, _itemsController.deleteItem)(pageId, po.order.id, itemId);
-
-          case 5:
-            result1 = _context68.sent;
-
-            if (!result1) {
-              _context68.next = 18;
-              break;
-            }
-
-            _context68.next = 9;
-            return (0, _itemsController.reorderItems)(pageId, po.order.id);
-
-          case 9:
-            newItemsNumber = _context68.sent;
-
-            if (!newItemsNumber) {
-              _context68.next = 18;
-              break;
-            }
-
-            _currentItem = newItemsNumber;
-            _qty = newItemsNumber;
-            _context68.next = 15;
-            return (0, _ordersController.updateOrder)({
-              pageId: pageId,
-              userId: userId,
-              waitingFor: 'size',
-              qty: _qty,
-              currentItem: _currentItem,
-              eraseSplit: true
-            });
-
-          case 15:
-            _context68.next = 17;
-            return askForSize(pageId, userId);
-
-          case 17:
-            return _context68.abrupt("return", _context68.sent);
-
-          case 18:
+          case 1:
           case "end":
             return _context68.stop();
         }
@@ -4907,20 +5052,20 @@ function () {
     }, _callee68);
   }));
 
-  return function changeItem(_x180, _x181, _x182) {
+  return function changeItem(_x182, _x183, _x184) {
     return _ref69.apply(this, arguments);
   };
 }();
 
 exports.changeItem = changeItem;
 
-var cancelItem =
+var showCommentsItem =
 /*#__PURE__*/
 function () {
   var _ref70 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee69(pageId, userId, item) {
-    var po, result1;
+  regeneratorRuntime.mark(function _callee69(pageId, userId, data) {
+    var po;
     return regeneratorRuntime.wrap(function _callee69$(_context69) {
       while (1) {
         switch (_context69.prev = _context69.next) {
@@ -4934,32 +5079,19 @@ function () {
 
           case 2:
             po = _context69.sent;
-            _context69.next = 5;
-            return (0, _itemsController.deleteItem)(pageId, po.order.id, item.itemId);
 
-          case 5:
-            result1 = _context69.sent;
-            console.info('cancelItem:', result1); // if (result1) {
-
-            if (!(po.order.backToConfirmation === 'full_confirmation')) {
-              _context69.next = 13;
-              break;
+            if (po && po.order && po.order.waitingFor === 'typed_comments_item') {
+              // without await to run later.
+              (0, _itemsController.updateItemDirect)(pageId, po.order.id, po.order.waitingForData, data);
             }
 
-            _context69.next = 10;
-            return showFullOrder(pageId, userId);
-
-          case 10:
-            return _context69.abrupt("return", _context69.sent);
-
-          case 13:
-            _context69.next = 15;
+            _context69.next = 6;
             return showPartialOrder(pageId, userId);
 
-          case 15:
+          case 6:
             return _context69.abrupt("return", _context69.sent);
 
-          case 16:
+          case 7:
           case "end":
             return _context69.stop();
         }
@@ -4967,8 +5099,68 @@ function () {
     }, _callee69);
   }));
 
-  return function cancelItem(_x183, _x184, _x185) {
+  return function showCommentsItem(_x185, _x186, _x187) {
     return _ref70.apply(this, arguments);
+  };
+}();
+
+exports.showCommentsItem = showCommentsItem;
+
+var cancelItem =
+/*#__PURE__*/
+function () {
+  var _ref71 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee70(pageId, userId, item) {
+    var po, result1;
+    return regeneratorRuntime.wrap(function _callee70$(_context70) {
+      while (1) {
+        switch (_context70.prev = _context70.next) {
+          case 0:
+            _context70.next = 2;
+            return (0, _ordersController.getOrderPending)({
+              pageId: pageId,
+              userId: userId,
+              isComplete: false
+            });
+
+          case 2:
+            po = _context70.sent;
+            _context70.next = 5;
+            return (0, _itemsController.deleteItem)(pageId, po.order.id, item.itemId);
+
+          case 5:
+            result1 = _context70.sent;
+            console.info('cancelItem:', result1); // if (result1) {
+
+            if (!(po.order.backToConfirmation === 'full_confirmation')) {
+              _context70.next = 13;
+              break;
+            }
+
+            _context70.next = 10;
+            return showFullOrder(pageId, userId);
+
+          case 10:
+            return _context70.abrupt("return", _context70.sent);
+
+          case 13:
+            _context70.next = 15;
+            return showPartialOrder(pageId, userId);
+
+          case 15:
+            return _context70.abrupt("return", _context70.sent);
+
+          case 16:
+          case "end":
+            return _context70.stop();
+        }
+      }
+    }, _callee70);
+  }));
+
+  return function cancelItem(_x188, _x189, _x190) {
+    return _ref71.apply(this, arguments);
   };
 }();
 
@@ -4977,29 +5169,29 @@ exports.cancelItem = cancelItem;
 var updateItemAskOptions =
 /*#__PURE__*/
 function () {
-  var _ref71 = _asyncToGenerator(
+  var _ref72 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee70(pageId, userId, item) {
-    return regeneratorRuntime.wrap(function _callee70$(_context70) {
+  regeneratorRuntime.mark(function _callee71(pageId, userId, item) {
+    return regeneratorRuntime.wrap(function _callee71$(_context71) {
       while (1) {
-        switch (_context70.prev = _context70.next) {
+        switch (_context71.prev = _context71.next) {
           case 0:
-            _context70.next = 2;
+            _context71.next = 2;
             return askForOptionsToChange(pageId, userId, item);
 
           case 2:
-            return _context70.abrupt("return", _context70.sent);
+            return _context71.abrupt("return", _context71.sent);
 
           case 3:
           case "end":
-            return _context70.stop();
+            return _context71.stop();
         }
       }
-    }, _callee70);
+    }, _callee71);
   }));
 
-  return function updateItemAskOptions(_x186, _x187, _x188) {
-    return _ref71.apply(this, arguments);
+  return function updateItemAskOptions(_x191, _x192, _x193) {
+    return _ref72.apply(this, arguments);
   };
 }();
 
@@ -5008,51 +5200,10 @@ exports.updateItemAskOptions = updateItemAskOptions;
 var sendShippingNotification =
 /*#__PURE__*/
 function () {
-  var _ref72 = _asyncToGenerator(
+  var _ref73 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee71(pageId, userId, orderId) {
-    var _ref73, accessToken, _txt, out;
-
-    return regeneratorRuntime.wrap(function _callee71$(_context71) {
-      while (1) {
-        switch (_context71.prev = _context71.next) {
-          case 0:
-            _context71.next = 2;
-            return (0, _pagesController.getOnePageToken)(pageId);
-
-          case 2:
-            _ref73 = _context71.sent;
-            accessToken = _ref73.accessToken;
-            _txt = 'O seu pedido número ' + orderId + ' acabou de sair para entrega. Bom apetite!';
-            out = new _facebookMessengerBot.Elements();
-            out.add({
-              text: _txt
-            });
-            _context71.next = 9;
-            return _facebookMessengerBot.Bot.send_message_tag(accessToken, userId, out);
-
-          case 9:
-          case "end":
-            return _context71.stop();
-        }
-      }
-    }, _callee71);
-  }));
-
-  return function sendShippingNotification(_x189, _x190, _x191) {
-    return _ref72.apply(this, arguments);
-  };
-}();
-
-exports.sendShippingNotification = sendShippingNotification;
-
-var sendRejectionNotification =
-/*#__PURE__*/
-function () {
-  var _ref74 = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee72(pageId, userId, orderId, rejectionExplanation) {
-    var _ref75, accessToken, _txt, out;
+  regeneratorRuntime.mark(function _callee72(pageId, userId, orderId) {
+    var _ref74, accessToken, _txt, out;
 
     return regeneratorRuntime.wrap(function _callee72$(_context72) {
       while (1) {
@@ -5062,9 +5213,9 @@ function () {
             return (0, _pagesController.getOnePageToken)(pageId);
 
           case 2:
-            _ref75 = _context72.sent;
-            accessToken = _ref75.accessToken;
-            _txt = 'Infelizmente não poderemos atender o seu pedido número ' + orderId + '. Segue o motivo: ' + rejectionExplanation;
+            _ref74 = _context72.sent;
+            accessToken = _ref74.accessToken;
+            _txt = 'O seu pedido número ' + orderId + ' acabou de sair para entrega. Bom apetite!';
             out = new _facebookMessengerBot.Elements();
             out.add({
               text: _txt
@@ -5080,8 +5231,49 @@ function () {
     }, _callee72);
   }));
 
-  return function sendRejectionNotification(_x192, _x193, _x194, _x195) {
-    return _ref74.apply(this, arguments);
+  return function sendShippingNotification(_x194, _x195, _x196) {
+    return _ref73.apply(this, arguments);
+  };
+}();
+
+exports.sendShippingNotification = sendShippingNotification;
+
+var sendRejectionNotification =
+/*#__PURE__*/
+function () {
+  var _ref75 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee73(pageId, userId, orderId, rejectionExplanation) {
+    var _ref76, accessToken, _txt, out;
+
+    return regeneratorRuntime.wrap(function _callee73$(_context73) {
+      while (1) {
+        switch (_context73.prev = _context73.next) {
+          case 0:
+            _context73.next = 2;
+            return (0, _pagesController.getOnePageToken)(pageId);
+
+          case 2:
+            _ref76 = _context73.sent;
+            accessToken = _ref76.accessToken;
+            _txt = 'Infelizmente não poderemos atender o seu pedido número ' + orderId + '. Segue o motivo: ' + rejectionExplanation;
+            out = new _facebookMessengerBot.Elements();
+            out.add({
+              text: _txt
+            });
+            _context73.next = 9;
+            return _facebookMessengerBot.Bot.send_message_tag(accessToken, userId, out);
+
+          case 9:
+          case "end":
+            return _context73.stop();
+        }
+      }
+    }, _callee73);
+  }));
+
+  return function sendRejectionNotification(_x197, _x198, _x199, _x200) {
+    return _ref75.apply(this, arguments);
   };
 }();
 /**
@@ -5096,39 +5288,39 @@ exports.sendRejectionNotification = sendRejectionNotification;
 var cancelPendingOrder =
 /*#__PURE__*/
 function () {
-  var _ref76 = _asyncToGenerator(
+  var _ref77 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee73(pageId, userId) {
+  regeneratorRuntime.mark(function _callee74(pageId, userId) {
     var out;
-    return regeneratorRuntime.wrap(function _callee73$(_context73) {
+    return regeneratorRuntime.wrap(function _callee74$(_context74) {
       while (1) {
-        switch (_context73.prev = _context73.next) {
+        switch (_context74.prev = _context74.next) {
           case 0:
-            _context73.next = 2;
+            _context74.next = 2;
             return (0, _ordersController.cancelOrder)({
               pageId: pageId,
               userId: userId
             });
 
           case 2:
-            _context73.next = 4;
+            _context74.next = 4;
             return sendMainMenu();
 
           case 4:
-            out = _context73.sent;
+            out = _context74.sent;
             out.text = '❌ Pedido Cancelado!' + '\n\n' + out.text;
-            return _context73.abrupt("return", out);
+            return _context74.abrupt("return", out);
 
           case 7:
           case "end":
-            return _context73.stop();
+            return _context74.stop();
         }
       }
-    }, _callee73);
+    }, _callee74);
   }));
 
-  return function cancelPendingOrder(_x196, _x197) {
-    return _ref76.apply(this, arguments);
+  return function cancelPendingOrder(_x201, _x202) {
+    return _ref77.apply(this, arguments);
   };
 }();
 
@@ -5137,55 +5329,16 @@ exports.cancelPendingOrder = cancelPendingOrder;
 var showDeliverAskForCategory =
 /*#__PURE__*/
 function () {
-  var _ref77 = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee74(pageId, userId, data, user, source) {
-    var prevAnswer, nextQuestion;
-    return regeneratorRuntime.wrap(function _callee74$(_context74) {
-      while (1) {
-        switch (_context74.prev = _context74.next) {
-          case 0:
-            _context74.next = 2;
-            return showDeliver(pageId, userId, data, user, source);
-
-          case 2:
-            prevAnswer = _context74.sent;
-            _context74.next = 5;
-            return askForCategory(pageId, userId);
-
-          case 5:
-            nextQuestion = _context74.sent;
-            nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
-            return _context74.abrupt("return", nextQuestion);
-
-          case 8:
-          case "end":
-            return _context74.stop();
-        }
-      }
-    }, _callee74);
-  }));
-
-  return function showDeliverAskForCategory(_x198, _x199, _x200, _x201, _x202) {
-    return _ref77.apply(this, arguments);
-  };
-}();
-
-exports.showDeliverAskForCategory = showDeliverAskForCategory;
-
-var showAddressAskForCategory =
-/*#__PURE__*/
-function () {
   var _ref78 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee75(pageId, userId, addrData, source) {
+  regeneratorRuntime.mark(function _callee75(pageId, userId, data, user, source) {
     var prevAnswer, nextQuestion;
     return regeneratorRuntime.wrap(function _callee75$(_context75) {
       while (1) {
         switch (_context75.prev = _context75.next) {
           case 0:
             _context75.next = 2;
-            return showAddress(pageId, userId, addrData, source);
+            return showDeliver(pageId, userId, data, user, source);
 
           case 2:
             prevAnswer = _context75.sent;
@@ -5205,8 +5358,47 @@ function () {
     }, _callee75);
   }));
 
-  return function showAddressAskForCategory(_x203, _x204, _x205, _x206) {
+  return function showDeliverAskForCategory(_x203, _x204, _x205, _x206, _x207) {
     return _ref78.apply(this, arguments);
+  };
+}();
+
+exports.showDeliverAskForCategory = showDeliverAskForCategory;
+
+var showAddressAskForCategory =
+/*#__PURE__*/
+function () {
+  var _ref79 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee76(pageId, userId, addrData, source) {
+    var prevAnswer, nextQuestion;
+    return regeneratorRuntime.wrap(function _callee76$(_context76) {
+      while (1) {
+        switch (_context76.prev = _context76.next) {
+          case 0:
+            _context76.next = 2;
+            return showAddress(pageId, userId, addrData, source);
+
+          case 2:
+            prevAnswer = _context76.sent;
+            _context76.next = 5;
+            return askForCategory(pageId, userId);
+
+          case 5:
+            nextQuestion = _context76.sent;
+            nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
+            return _context76.abrupt("return", nextQuestion);
+
+          case 8:
+          case "end":
+            return _context76.stop();
+        }
+      }
+    }, _callee76);
+  }));
+
+  return function showAddressAskForCategory(_x208, _x209, _x210, _x211) {
+    return _ref79.apply(this, arguments);
   };
 }();
 /**
@@ -5223,16 +5415,16 @@ exports.showAddressAskForCategory = showAddressAskForCategory;
 var askForCategory =
 /*#__PURE__*/
 function () {
-  var _ref79 = _asyncToGenerator(
+  var _ref80 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee76(pageId, userId, split) {
-    var categories, _txt, _options, _iteratorNormalCompletion8, _didIteratorError8, _iteratorError8, _iterator8, _step8, item, _data, _buttons4, buttons;
+  regeneratorRuntime.mark(function _callee77(pageId, userId, split) {
+    var categories, _txt, _options, _iteratorNormalCompletion10, _didIteratorError10, _iteratorError10, _iterator10, _step10, item, _data, _buttons4, buttons;
 
-    return regeneratorRuntime.wrap(function _callee76$(_context76) {
+    return regeneratorRuntime.wrap(function _callee77$(_context77) {
       while (1) {
-        switch (_context76.prev = _context76.next) {
+        switch (_context77.prev = _context77.next) {
           case 0:
-            _context76.next = 2;
+            _context77.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -5241,11 +5433,11 @@ function () {
             });
 
           case 2:
-            _context76.next = 4;
+            _context77.next = 4;
             return (0, _categoriesController.getCategories)(pageId);
 
           case 4:
-            categories = _context76.sent;
+            categories = _context77.sent;
             _txt = '';
 
             if (split) {
@@ -5255,26 +5447,26 @@ function () {
             }
 
             _options = [];
-            _iteratorNormalCompletion8 = true;
-            _didIteratorError8 = false;
-            _iteratorError8 = undefined;
-            _context76.prev = 11;
-            _iterator8 = categories[Symbol.iterator]();
+            _iteratorNormalCompletion10 = true;
+            _didIteratorError10 = false;
+            _iteratorError10 = undefined;
+            _context77.prev = 11;
+            _iterator10 = categories[Symbol.iterator]();
 
           case 13:
-            if (_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done) {
-              _context76.next = 23;
+            if (_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done) {
+              _context77.next = 23;
               break;
             }
 
-            item = _step8.value;
+            item = _step10.value;
 
             if (!(split && !item.is_pizza)) {
-              _context76.next = 17;
+              _context77.next = 17;
               break;
             }
 
-            return _context76.abrupt("continue", 20);
+            return _context77.abrupt("continue", 20);
 
           case 17:
             _data = {
@@ -5294,43 +5486,43 @@ function () {
             });
 
           case 20:
-            _iteratorNormalCompletion8 = true;
-            _context76.next = 13;
+            _iteratorNormalCompletion10 = true;
+            _context77.next = 13;
             break;
 
           case 23:
-            _context76.next = 29;
+            _context77.next = 29;
             break;
 
           case 25:
-            _context76.prev = 25;
-            _context76.t0 = _context76["catch"](11);
-            _didIteratorError8 = true;
-            _iteratorError8 = _context76.t0;
+            _context77.prev = 25;
+            _context77.t0 = _context77["catch"](11);
+            _didIteratorError10 = true;
+            _iteratorError10 = _context77.t0;
 
           case 29:
-            _context76.prev = 29;
-            _context76.prev = 30;
+            _context77.prev = 29;
+            _context77.prev = 30;
 
-            if (!_iteratorNormalCompletion8 && _iterator8.return != null) {
-              _iterator8.return();
+            if (!_iteratorNormalCompletion10 && _iterator10.return != null) {
+              _iterator10.return();
             }
 
           case 32:
-            _context76.prev = 32;
+            _context77.prev = 32;
 
-            if (!_didIteratorError8) {
-              _context76.next = 35;
+            if (!_didIteratorError10) {
+              _context77.next = 35;
               break;
             }
 
-            throw _iteratorError8;
+            throw _iteratorError10;
 
           case 35:
-            return _context76.finish(32);
+            return _context77.finish(32);
 
           case 36:
-            return _context76.finish(29);
+            return _context77.finish(29);
 
           case 37:
             buttons = {
@@ -5345,7 +5537,7 @@ function () {
               buttons: buttons
             });
 
-            return _context76.abrupt("return", {
+            return _context77.abrupt("return", {
               type: 'list',
               text: _txt,
               options: _options
@@ -5353,14 +5545,14 @@ function () {
 
           case 40:
           case "end":
-            return _context76.stop();
+            return _context77.stop();
         }
       }
-    }, _callee76, null, [[11, 25, 29, 37], [30,, 32, 36]]);
+    }, _callee77, null, [[11, 25, 29, 37], [30,, 32, 36]]);
   }));
 
-  return function askForCategory(_x207, _x208, _x209) {
-    return _ref79.apply(this, arguments);
+  return function askForCategory(_x212, _x213, _x214) {
+    return _ref80.apply(this, arguments);
   };
 }();
 
@@ -5369,14 +5561,14 @@ exports.askForCategory = askForCategory;
 var showCategory =
 /*#__PURE__*/
 function () {
-  var _ref80 = _asyncToGenerator(
+  var _ref81 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee77(pageId, userId, data) {
-    return regeneratorRuntime.wrap(function _callee77$(_context77) {
+  regeneratorRuntime.mark(function _callee78(pageId, userId, data) {
+    return regeneratorRuntime.wrap(function _callee78$(_context78) {
       while (1) {
-        switch (_context77.prev = _context77.next) {
+        switch (_context78.prev = _context78.next) {
           case 0:
-            _context77.next = 2;
+            _context78.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -5385,21 +5577,21 @@ function () {
             });
 
           case 2:
-            return _context77.abrupt("return", {
+            return _context78.abrupt("return", {
               type: 'text',
               text: '✅ ' + 'Categoria: ' + data.name
             });
 
           case 3:
           case "end":
-            return _context77.stop();
+            return _context78.stop();
         }
       }
-    }, _callee77);
+    }, _callee78);
   }));
 
-  return function showCategory(_x210, _x211, _x212) {
-    return _ref80.apply(this, arguments);
+  return function showCategory(_x215, _x216, _x217) {
+    return _ref81.apply(this, arguments);
   };
 }();
 
@@ -5408,37 +5600,37 @@ exports.showCategory = showCategory;
 var showCategoryAskForSize =
 /*#__PURE__*/
 function () {
-  var _ref81 = _asyncToGenerator(
+  var _ref82 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee78(pageId, userId, data) {
+  regeneratorRuntime.mark(function _callee79(pageId, userId, data) {
     var prevAnswer, nextQuestion;
-    return regeneratorRuntime.wrap(function _callee78$(_context78) {
+    return regeneratorRuntime.wrap(function _callee79$(_context79) {
       while (1) {
-        switch (_context78.prev = _context78.next) {
+        switch (_context79.prev = _context79.next) {
           case 0:
-            _context78.next = 2;
+            _context79.next = 2;
             return showCategory(pageId, userId, data);
 
           case 2:
-            prevAnswer = _context78.sent;
-            _context78.next = 5;
+            prevAnswer = _context79.sent;
+            _context79.next = 5;
             return askForSizeCat(pageId, userId, data.id);
 
           case 5:
-            nextQuestion = _context78.sent;
+            nextQuestion = _context79.sent;
             nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
-            return _context78.abrupt("return", nextQuestion);
+            return _context79.abrupt("return", nextQuestion);
 
           case 8:
           case "end":
-            return _context78.stop();
+            return _context79.stop();
         }
       }
-    }, _callee78);
+    }, _callee79);
   }));
 
-  return function showCategoryAskForSize(_x213, _x214, _x215) {
-    return _ref81.apply(this, arguments);
+  return function showCategoryAskForSize(_x218, _x219, _x220) {
+    return _ref82.apply(this, arguments);
   };
 }();
 
@@ -5447,16 +5639,16 @@ exports.showCategoryAskForSize = showCategoryAskForSize;
 var askForSizeCat =
 /*#__PURE__*/
 function () {
-  var _ref82 = _asyncToGenerator(
+  var _ref83 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee79(pageId, userId, categoryId) {
+  regeneratorRuntime.mark(function _callee80(pageId, userId, categoryId) {
     var po, category, _text, _options, sizesWithPricing, sizes, i, _data;
 
-    return regeneratorRuntime.wrap(function _callee79$(_context79) {
+    return regeneratorRuntime.wrap(function _callee80$(_context80) {
       while (1) {
-        switch (_context79.prev = _context79.next) {
+        switch (_context80.prev = _context80.next) {
           case 0:
-            _context79.next = 2;
+            _context80.next = 2;
             return (0, _ordersController.getOrderPending)({
               pageId: pageId,
               userId: userId,
@@ -5464,25 +5656,25 @@ function () {
             });
 
           case 2:
-            po = _context79.sent;
+            po = _context80.sent;
             if (!categoryId) categoryId = po.order.currentItemCategory; // User is spliting the pizza into more than one category
 
             if (!(po.order.originalSplit > 1 && po.order.currentItemSplit <= po.order.originalSplit)) {
-              _context79.next = 8;
+              _context80.next = 8;
               break;
             }
 
-            return _context79.abrupt("return", askForFlavor(pageId, userId, 1, po));
+            return _context80.abrupt("return", askForFlavor(pageId, userId, 1, po));
 
           case 8:
-            _context79.next = 10;
+            _context80.next = 10;
             return (0, _categoriesController.getCategory)(pageId, categoryId);
 
           case 10:
-            category = _context79.sent;
+            category = _context80.sent;
 
             if (!category.price_by_size) {
-              _context79.next = 25;
+              _context80.next = 25;
               break;
             }
 
@@ -5494,16 +5686,16 @@ function () {
             });
             _text = 'Selecione o tamanho:';
             _options = [];
-            _context79.next = 17;
+            _context80.next = 17;
             return (0, _pricingsController.getPricingSizing)(pageId, categoryId);
 
           case 17:
-            sizesWithPricing = _context79.sent;
-            _context79.next = 20;
+            sizesWithPricing = _context80.sent;
+            _context80.next = 20;
             return (0, _sizesController.getSizes)(pageId, sizesWithPricing);
 
           case 20:
-            sizes = _context79.sent;
+            sizes = _context80.sent;
 
             for (i = 0; i < sizes.length; i++) {
               _data = {
@@ -5519,29 +5711,29 @@ function () {
               });
             }
 
-            return _context79.abrupt("return", {
+            return _context80.abrupt("return", {
               type: 'replies',
               text: _text,
               options: _options
             });
 
           case 25:
-            _context79.next = 27;
+            _context80.next = 27;
             return askForFlavor(pageId, userId, 1);
 
           case 27:
-            return _context79.abrupt("return", _context79.sent);
+            return _context80.abrupt("return", _context80.sent);
 
           case 28:
           case "end":
-            return _context79.stop();
+            return _context80.stop();
         }
       }
-    }, _callee79);
+    }, _callee80);
   }));
 
-  return function askForSizeCat(_x216, _x217, _x218) {
-    return _ref82.apply(this, arguments);
+  return function askForSizeCat(_x221, _x222, _x223) {
+    return _ref83.apply(this, arguments);
   };
 }();
 

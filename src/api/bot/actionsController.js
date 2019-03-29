@@ -299,16 +299,15 @@ export const mapEventsActions = async ({ event, data, bot, sender, pageID, text 
                 break;
             case 'ORDER_PAYMENT_TYPE':
                 await sendActions({ action: 'SHOW_PAYMENT_TYPE', bot, sender, pageID, data })
-
-                switch (data) {
-                    case 'payment_money':
-                        await sendActions({ action: 'ASK_FOR_PAYMENT_CHANGE', bot, sender, pageID })
-                        break;
-                    case 'payment_card':
-                        await sendActions({ action: 'ASK_FOR_COMMENTS', bot, sender, pageID })
-                        // await sendActions({ action: 'SHOW_FULL_ORDER', bot, sender, pageID })
-                        break;
-                }
+                // switch (data) {
+                //     case 'payment_money':
+                //         await sendActions({ action: 'ASK_FOR_PAYMENT_CHANGE', bot, sender, pageID })
+                //         break;
+                //     case 'payment_card':
+                await sendActions({ action: 'ASK_FOR_COMMENTS', bot, sender, pageID })
+                // await sendActions({ action: 'SHOW_FULL_ORDER', bot, sender, pageID })
+                //         break;
+                // }
                 break;
             case 'ORDER_PAYMENT_CHANGE':
                 await sendActions({ action: 'SHOW_PAYMENT_CHANGE', bot, sender, pageID, data })

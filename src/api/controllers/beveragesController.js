@@ -133,7 +133,7 @@ export const beverage_delete = (req, res) => {
 
 /**
  * Delete all records from a pageID
- * @param {*} pageID 
+ * @param {*} pageID
  */
 export const deleteManyBeverages = async (pageID) => {
     return await Beverage.deleteMany({ pageId: pageID }).exec();

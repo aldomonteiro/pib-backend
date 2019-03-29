@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const schema = new mongoose.Schema({
     id: { type: String, required: true },
@@ -13,11 +13,11 @@ const schema = new mongoose.Schema({
     initialSetupSizes: { type: Number },
     initialSetupPricings: { type: Number },
     initialSetupStores: { type: Number },
-    initialSetupBeverages: { type: Number },
+    initialSetupCategories: { type: Number },
     initialSetupToppings: { type: Number },
     marketing: { type: Boolean, default: false },
 }, { timestamps: true });
 
-//TODO: store access_token expiring date
+// TODO: store access_token expiring date
 
-export default mongoose.model("pages", schema);
+export default mongoose.model('pages', schema);

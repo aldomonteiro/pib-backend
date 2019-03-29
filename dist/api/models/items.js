@@ -61,6 +61,9 @@ var schema = new Schema({
   },
   status: {
     type: Number
+  },
+  comments: {
+    type: String
   }
 }, {
   timestamps: true

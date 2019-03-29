@@ -125,6 +125,25 @@ var schema = new Schema({
   },
   source: {
     type: String
+  },
+  distance_from_store: {
+    type: Number,
+    default: 0
+  },
+  delivery_fee: {
+    type: Number,
+    default: 0
+  },
+  surcharge_percent: {
+    type: Number,
+    default: 0
+  },
+  surcharge_amount: {
+    type: Number,
+    default: 0
+  },
+  store_address: {
+    type: String
   }
 }, {
   timestamps: true

@@ -211,7 +211,7 @@ function () {
             event = _ref3.event, data = _ref3.data, bot = _ref3.bot, sender = _ref3.sender, pageID = _ref3.pageID, text = _ref3.text;
             _context2.prev = 1;
             _context2.t0 = event;
-            _context2.next = _context2.t0 === 'ORDER_CONTINUE_ORDER' ? 5 : _context2.t0 === 'STOP_ORDER_OPTIONS' ? 15 : _context2.t0 === 'MAIN-MENU' ? 25 : _context2.t0 === 'ORDER_WANT_ORDER' ? 42 : _context2.t0 === 'ORDER_DELIVER' ? 54 : _context2.t0 === 'CORRECT_SAVED_ADDRESS' ? 66 : _context2.t0 === 'WRONG_SAVED_ADDRESS' ? 71 : _context2.t0 === 'LOCATION_ADDRESS' ? 74 : _context2.t0 === 'PHONE_CONFIRMED' ? 86 : _context2.t0 === 'ORDER_QTY' ? 98 : _context2.t0 === 'ORDER_SIZE' ? 113 : _context2.t0 === 'ORDER_SPLIT' ? 118 : _context2.t0 === 'ORDER_FLAVOR' ? 123 : _context2.t0 === 'ORDER_PIZZA_CONFIRMATION' ? 135 : _context2.t0 === 'ORDER_WANT_CHANGE' ? 145 : _context2.t0 === 'ORDER_CHANGE' ? 148 : _context2.t0 === 'ORDER_CHANGE_ITEM' ? 165 : _context2.t0 === 'ORDER_CANCEL_ITEM' ? 168 : _context2.t0 === 'ORDER_CONFIRM_BEVERAGE' ? 171 : _context2.t0 === 'ORDER_BEVERAGE' ? 183 : _context2.t0 === 'ORDER_PAYMENT_TYPE' ? 200 : _context2.t0 === 'ORDER_PAYMENT_CHANGE' ? 212 : _context2.t0 === 'ORDER_COMMENTS' ? 217 : _context2.t0 === 'ORDER_CONFIRMATION' ? 227 : _context2.t0 === 'ORDER_CHANGE_SELECT_ITEM' ? 240 : 243;
+            _context2.next = _context2.t0 === 'ORDER_CONTINUE_ORDER' ? 5 : _context2.t0 === 'STOP_ORDER_OPTIONS' ? 15 : _context2.t0 === 'MAIN-MENU' ? 25 : _context2.t0 === 'ORDER_WANT_ORDER' ? 42 : _context2.t0 === 'ORDER_DELIVER' ? 54 : _context2.t0 === 'CORRECT_SAVED_ADDRESS' ? 66 : _context2.t0 === 'WRONG_SAVED_ADDRESS' ? 71 : _context2.t0 === 'LOCATION_ADDRESS' ? 74 : _context2.t0 === 'PHONE_CONFIRMED' ? 86 : _context2.t0 === 'ORDER_QTY' ? 98 : _context2.t0 === 'ORDER_SIZE' ? 113 : _context2.t0 === 'ORDER_SPLIT' ? 118 : _context2.t0 === 'ORDER_FLAVOR' ? 123 : _context2.t0 === 'ORDER_PIZZA_CONFIRMATION' ? 135 : _context2.t0 === 'ORDER_WANT_CHANGE' ? 145 : _context2.t0 === 'ORDER_CHANGE' ? 148 : _context2.t0 === 'ORDER_CHANGE_ITEM' ? 165 : _context2.t0 === 'ORDER_CANCEL_ITEM' ? 168 : _context2.t0 === 'ORDER_CONFIRM_BEVERAGE' ? 171 : _context2.t0 === 'ORDER_BEVERAGE' ? 183 : _context2.t0 === 'ORDER_PAYMENT_TYPE' ? 200 : _context2.t0 === 'ORDER_PAYMENT_CHANGE' ? 205 : _context2.t0 === 'ORDER_COMMENTS' ? 210 : _context2.t0 === 'ORDER_CONFIRMATION' ? 220 : _context2.t0 === 'ORDER_CHANGE_SELECT_ITEM' ? 233 : 236;
             break;
 
           case 5:
@@ -244,7 +244,7 @@ function () {
             return _context2.abrupt("break", 14);
 
           case 14:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 15:
             _context2.t2 = data;
@@ -276,7 +276,7 @@ function () {
             return _context2.abrupt("break", 24);
 
           case 24:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 25:
             _context2.t3 = data;
@@ -333,7 +333,7 @@ function () {
             return _context2.abrupt("break", 41);
 
           case 41:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 42:
             _context2.t4 = data;
@@ -375,7 +375,7 @@ function () {
             return _context2.abrupt("break", 53);
 
           case 53:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 54:
             _context2.next = 56;
@@ -417,7 +417,7 @@ function () {
             return _context2.abrupt("break", 65);
 
           case 65:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 66:
             _context2.next = 68;
@@ -439,7 +439,7 @@ function () {
             });
 
           case 70:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 71:
             _context2.next = 73;
@@ -452,7 +452,7 @@ function () {
             });
 
           case 73:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 74:
             _context2.t6 = data;
@@ -494,7 +494,7 @@ function () {
             return _context2.abrupt("break", 85);
 
           case 85:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 86:
             _context2.t7 = data;
@@ -536,7 +536,7 @@ function () {
             return _context2.abrupt("break", 97);
 
           case 97:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 98:
             _context2.t8 = data;
@@ -590,7 +590,7 @@ function () {
             return _context2.abrupt("break", 112);
 
           case 112:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 113:
             _context2.next = 115;
@@ -613,7 +613,7 @@ function () {
             });
 
           case 117:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 118:
             _context2.next = 120;
@@ -636,7 +636,7 @@ function () {
             });
 
           case 122:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 123:
             _context2.t9 = data.option;
@@ -679,7 +679,7 @@ function () {
             return _context2.abrupt("break", 134);
 
           case 134:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 135:
             _context2.t10 = data.type;
@@ -712,7 +712,7 @@ function () {
             return _context2.abrupt("break", 144);
 
           case 144:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 145:
             _context2.next = 147;
@@ -724,7 +724,7 @@ function () {
             });
 
           case 147:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 148:
             _context2.t11 = data;
@@ -784,7 +784,7 @@ function () {
             return _context2.abrupt("break", 164);
 
           case 164:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 165:
             _context2.next = 167;
@@ -797,7 +797,7 @@ function () {
             });
 
           case 167:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 168:
             _context2.next = 170;
@@ -810,7 +810,7 @@ function () {
             });
 
           case 170:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 171:
             _context2.t12 = data;
@@ -852,7 +852,7 @@ function () {
             return _context2.abrupt("break", 182);
 
           case 182:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 183:
             _context2.t13 = data.option;
@@ -916,7 +916,7 @@ function () {
             return _context2.abrupt("break", 199);
 
           case 199:
-            return _context2.abrupt("break", 243);
+            return _context2.abrupt("break", 236);
 
           case 200:
             _context2.next = 202;
@@ -929,24 +929,7 @@ function () {
             });
 
           case 202:
-            _context2.t14 = data;
-            _context2.next = _context2.t14 === 'payment_money' ? 205 : _context2.t14 === 'payment_card' ? 208 : 211;
-            break;
-
-          case 205:
-            _context2.next = 207;
-            return sendActions({
-              action: 'ASK_FOR_PAYMENT_CHANGE',
-              bot: bot,
-              sender: sender,
-              pageID: pageID
-            });
-
-          case 207:
-            return _context2.abrupt("break", 211);
-
-          case 208:
-            _context2.next = 210;
+            _context2.next = 204;
             return sendActions({
               action: 'ASK_FOR_COMMENTS',
               bot: bot,
@@ -954,14 +937,11 @@ function () {
               pageID: pageID
             });
 
-          case 210:
-            return _context2.abrupt("break", 211);
+          case 204:
+            return _context2.abrupt("break", 236);
 
-          case 211:
-            return _context2.abrupt("break", 243);
-
-          case 212:
-            _context2.next = 214;
+          case 205:
+            _context2.next = 207;
             return sendActions({
               action: 'SHOW_PAYMENT_CHANGE',
               bot: bot,
@@ -970,8 +950,8 @@ function () {
               data: data
             });
 
-          case 214:
-            _context2.next = 216;
+          case 207:
+            _context2.next = 209;
             return sendActions({
               action: 'ASK_FOR_COMMENTS',
               bot: bot,
@@ -979,16 +959,16 @@ function () {
               pageID: pageID
             });
 
-          case 216:
-            return _context2.abrupt("break", 243);
+          case 209:
+            return _context2.abrupt("break", 236);
 
-          case 217:
-            _context2.t15 = data;
-            _context2.next = _context2.t15 === 'comments_yes' ? 220 : 223;
+          case 210:
+            _context2.t14 = data;
+            _context2.next = _context2.t14 === 'comments_yes' ? 213 : 216;
             break;
 
-          case 220:
-            _context2.next = 222;
+          case 213:
+            _context2.next = 215;
             return sendActions({
               action: 'ASK_FOR_TYPE_COMMENTS',
               bot: bot,
@@ -996,11 +976,11 @@ function () {
               pageID: pageID
             });
 
-          case 222:
-            return _context2.abrupt("break", 226);
+          case 215:
+            return _context2.abrupt("break", 219);
 
-          case 223:
-            _context2.next = 225;
+          case 216:
+            _context2.next = 218;
             return sendActions({
               action: 'SHOW_FULL_ORDER',
               bot: bot,
@@ -1008,19 +988,19 @@ function () {
               pageID: pageID
             });
 
-          case 225:
-            return _context2.abrupt("break", 226);
+          case 218:
+            return _context2.abrupt("break", 219);
 
-          case 226:
-            return _context2.abrupt("break", 243);
+          case 219:
+            return _context2.abrupt("break", 236);
 
-          case 227:
-            _context2.t16 = data.type;
-            _context2.next = _context2.t16 === 'confirmation_yes' ? 230 : 236;
+          case 220:
+            _context2.t15 = data.type;
+            _context2.next = _context2.t15 === 'confirmation_yes' ? 223 : 229;
             break;
 
-          case 230:
-            _context2.next = 232;
+          case 223:
+            _context2.next = 225;
             return sendActions({
               action: 'CONFIRM_ORDER',
               bot: bot,
@@ -1028,13 +1008,13 @@ function () {
               pageID: pageID
             });
 
-          case 232:
+          case 225:
             if (!bot.marketing) {
-              _context2.next = 235;
+              _context2.next = 228;
               break;
             }
 
-            _context2.next = 235;
+            _context2.next = 228;
             return sendActions({
               action: 'PIZZAIBOT_MARKETING',
               bot: bot,
@@ -1043,11 +1023,11 @@ function () {
               data: 'confirmation_yes'
             });
 
-          case 235:
-            return _context2.abrupt("break", 239);
+          case 228:
+            return _context2.abrupt("break", 232);
 
-          case 236:
-            _context2.next = 238;
+          case 229:
+            _context2.next = 231;
             return sendActions({
               action: 'ASK_FOR_CHANGE_ORDER',
               bot: bot,
@@ -1055,14 +1035,14 @@ function () {
               pageID: pageID
             });
 
-          case 238:
-            return _context2.abrupt("break", 239);
+          case 231:
+            return _context2.abrupt("break", 232);
 
-          case 239:
-            return _context2.abrupt("break", 243);
+          case 232:
+            return _context2.abrupt("break", 236);
 
-          case 240:
-            _context2.next = 242;
+          case 233:
+            _context2.next = 235;
             return sendActions({
               action: 'UPDATE_ITEM',
               bot: bot,
@@ -1071,30 +1051,30 @@ function () {
               data: data
             });
 
-          case 242:
-            return _context2.abrupt("break", 243);
+          case 235:
+            return _context2.abrupt("break", 236);
 
-          case 243:
-            _context2.next = 248;
+          case 236:
+            _context2.next = 241;
             break;
 
-          case 245:
-            _context2.prev = 245;
-            _context2.t17 = _context2["catch"](1);
+          case 238:
+            _context2.prev = 238;
+            _context2.t16 = _context2["catch"](1);
             console.error({
               event: event
             }, {
-              mapEventsActionsErr: _context2.t17
+              mapEventsActionsErr: _context2.t16
             }, {
               data: data
             });
 
-          case 248:
+          case 241:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, null, [[1, 245]]);
+    }, _callee2, null, [[1, 238]]);
   }));
 
   return function mapEventsActions(_x2) {

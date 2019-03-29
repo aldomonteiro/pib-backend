@@ -307,6 +307,9 @@ function () {
                             payment_type: order.payment_type,
                             payment_change: order.payment_change,
                             comments: order.comments,
+                            delivery_fee: order.delivery_fee,
+                            surcharge_percent: order.surcharge_percent,
+                            surcharge_amount: order.surcharge_amount,
                             asideTotalAmount: asideTotalAmount,
                             asideTotalItems: asideTotalItems
                           };
@@ -711,7 +714,10 @@ function () {
               deliverd_at: order.delivered_at,
               payment_type: order.payment_type,
               payment_change: order.payment_change,
-              comments: order.comments
+              comments: order.comments,
+              delivery_fee: order.delivery_fee,
+              surcharge_percent: order.surcharge_percent,
+              surcharge_amount: order.surcharge_amount
             };
             return _context6.abrupt("return", jsonOrder);
 
@@ -744,14 +750,14 @@ function () {
   var _ref7 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee7(orderData) {
-    var pageId, userId, source, deliverType, deliverTime, qty, qty_total, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, waitingFor, waitingForData, undo, currentItem, sizeId, calcTotal, originalSplit, split, currentItemSplit, eraseSplit, noBeverage, paymentType, paymentChange, backToConfirmation, comments, categoryId, eraseSize, customerID, customerData, first_name, last_name, profile_pic, order, _updateOrder, total, resultLastId, orderId, record;
+    var pageId, userId, source, deliverType, deliverTime, qty, qty_total, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, waitingFor, waitingForData, undo, currentItem, sizeId, calcTotal, originalSplit, split, currentItemSplit, eraseSplit, noBeverage, paymentType, paymentChange, backToConfirmation, comments, categoryId, surcharge_percent, surcharge_amount, storeAddress, customerID, customerData, first_name, last_name, profile_pic, order, _updateOrder, calcDistance, storeData, distanceFromStore, total, resultLastId, orderId, record;
 
     return regeneratorRuntime.wrap(function _callee7$(_context7) {
       while (1) {
         switch (_context7.prev = _context7.next) {
           case 0:
             _context7.prev = 0;
-            pageId = orderData.pageId, userId = orderData.userId, source = orderData.source, deliverType = orderData.deliverType, deliverTime = orderData.deliverTime, qty = orderData.qty, qty_total = orderData.qty_total, location = orderData.location, user = orderData.user, phone = orderData.phone, addrData = orderData.addrData, completeItem = orderData.completeItem, confirmOrder = orderData.confirmOrder, waitingForAddress = orderData.waitingForAddress, waitingFor = orderData.waitingFor, waitingForData = orderData.waitingForData, undo = orderData.undo, currentItem = orderData.currentItem, sizeId = orderData.sizeId, calcTotal = orderData.calcTotal, originalSplit = orderData.originalSplit, split = orderData.split, currentItemSplit = orderData.currentItemSplit, eraseSplit = orderData.eraseSplit, noBeverage = orderData.noBeverage, paymentType = orderData.paymentType, paymentChange = orderData.paymentChange, backToConfirmation = orderData.backToConfirmation, comments = orderData.comments, categoryId = orderData.categoryId, eraseSize = orderData.eraseSize;
+            pageId = orderData.pageId, userId = orderData.userId, source = orderData.source, deliverType = orderData.deliverType, deliverTime = orderData.deliverTime, qty = orderData.qty, qty_total = orderData.qty_total, location = orderData.location, user = orderData.user, phone = orderData.phone, addrData = orderData.addrData, completeItem = orderData.completeItem, confirmOrder = orderData.confirmOrder, waitingForAddress = orderData.waitingForAddress, waitingFor = orderData.waitingFor, waitingForData = orderData.waitingForData, undo = orderData.undo, currentItem = orderData.currentItem, sizeId = orderData.sizeId, calcTotal = orderData.calcTotal, originalSplit = orderData.originalSplit, split = orderData.split, currentItemSplit = orderData.currentItemSplit, eraseSplit = orderData.eraseSplit, noBeverage = orderData.noBeverage, paymentType = orderData.paymentType, paymentChange = orderData.paymentChange, backToConfirmation = orderData.backToConfirmation, comments = orderData.comments, categoryId = orderData.categoryId, surcharge_percent = orderData.surcharge_percent, surcharge_amount = orderData.surcharge_amount, storeAddress = orderData.storeAddress;
             customerID = 0;
             customerData = {};
             customerData.pageId = pageId;
@@ -783,20 +789,60 @@ function () {
             order = _context7.sent;
 
             if (!order) {
-              _context7.next = 58;
+              _context7.next = 70;
               break;
             }
 
             orderData.orderId = order.id;
             _updateOrder = false;
+            calcDistance = {
+              calc: false,
+              lat: 0,
+              long: 0
+            };
 
             if (location) {
               order.location_lat = location.lat;
               order.location_long = location.long;
               order.location_url = location.url;
               _updateOrder = true;
+              calcDistance.calc = true;
+              calcDistance.lat = location.lat;
+              calcDistance.long = location.long;
             }
 
+            if (addrData) {
+              order.address = addrData.formattedAddress;
+
+              if (addrData.location_lat && addrData.location_long) {
+                order.location_lat = addrData.location_lat;
+                order.location_long = addrData.location_long;
+                calcDistance.calc = true;
+                calcDistance.lat = addrData.location_lat;
+                calcDistance.long = addrData.location_long;
+              }
+
+              _updateOrder = true;
+            }
+
+            if (!calcDistance.calc) {
+              _context7.next = 27;
+              break;
+            }
+
+            _context7.next = 25;
+            return (0, _storesController.getStoreData)(pageId);
+
+          case 25:
+            storeData = _context7.sent;
+
+            if (storeData.location_lat && storeData.location_long) {
+              distanceFromStore = (0, _util2.distanceBetweenCoordinates)(storeData.location_lat, storeData.location_long, calcDistance.lat, calcDistance.long);
+              order.distance_from_store = distanceFromStore;
+              order.delivery_fee = (0, _storesController.calcDeliveryFee)(storeData.delivery_fees, distanceFromStore);
+            }
+
+          case 27:
             if (currentItem) {
               order.currentItem = currentItem;
               _updateOrder = true;
@@ -875,19 +921,23 @@ function () {
               _updateOrder = true;
             }
 
-            if (addrData) {
-              order.address = addrData.formattedAddress;
-
-              if (addrData.location_lat && addrData.location_long) {
-                order.location_lat = addrData.location_lat;
-                order.location_long = addrData.location_long;
-              }
-
+            if (sizeId) {
+              order.currentItemSize = sizeId;
               _updateOrder = true;
             }
 
-            if (sizeId) {
-              order.currentItemSize = sizeId;
+            if (surcharge_percent) {
+              order.surcharge_percent = surcharge_percent / 100;
+              _updateOrder = true;
+            }
+
+            if (surcharge_amount) {
+              order.surcharge_amount = surcharge_amount;
+              _updateOrder = true;
+            }
+
+            if (storeAddress) {
+              order.store_address = storeAddress;
               _updateOrder = true;
             }
             /** EraseSize only in the item, because, user can navigate through categories
@@ -949,25 +999,28 @@ function () {
             }
 
             if (!(typeof calcTotal === 'boolean')) {
-              _context7.next = 47;
+              _context7.next = 59;
               break;
             }
 
-            _context7.next = 45;
+            _context7.next = 54;
             return (0, _itemsController.getItemsTotal)({
               orderId: order.id,
               pageId: order.pageId
             });
 
-          case 45:
+          case 54:
             total = _context7.sent;
+            if (order.delivery_fee > 0) total += order.delivery_fee;
+            if (order.surcharge_percent > 0) total += total * order.surcharge_percent;
+            if (order.surcharge_amount > 0) total += order.surcharge_amount;
 
             if (total > 0 && total !== order.total) {
               order.total = total;
               _updateOrder = true;
             }
 
-          case 47:
+          case 59:
             if (typeof noBeverage === 'boolean') {
               order.no_beverage = noBeverage;
               _updateOrder = true;
@@ -989,28 +1042,28 @@ function () {
             }
 
             if (!_updateOrder) {
-              _context7.next = 54;
+              _context7.next = 66;
               break;
             }
 
-            _context7.next = 54;
+            _context7.next = 66;
             return order.save();
 
-          case 54:
-            _context7.next = 56;
+          case 66:
+            _context7.next = 68;
             return (0, _itemsController.updateItem)(orderData);
 
-          case 56:
-            _context7.next = 69;
+          case 68:
+            _context7.next = 81;
             break;
 
-          case 58:
-            _context7.next = 60;
+          case 70:
+            _context7.next = 72;
             return _orders.default.find({
               pageId: pageId
             }).select('id').sort('-id').limit(1).exec();
 
-          case 60:
+          case 72:
             resultLastId = _context7.sent;
             orderId = 1;
             if (resultLastId && resultLastId.length) orderId = resultLastId[0].id + 1;
@@ -1026,32 +1079,32 @@ function () {
               deliver_type: deliverType,
               status: ORDERSTATUS_PENDING
             });
-            _context7.next = 66;
+            _context7.next = 78;
             return record.save();
 
-          case 66:
+          case 78:
             orderData.orderId = record.id;
-            _context7.next = 69;
+            _context7.next = 81;
             return (0, _itemsController.updateItem)(orderData);
 
-          case 69:
-            _context7.next = 75;
+          case 81:
+            _context7.next = 87;
             break;
 
-          case 71:
-            _context7.prev = 71;
+          case 83:
+            _context7.prev = 83;
             _context7.t0 = _context7["catch"](0);
             console.error({
               updateOrderError: _context7.t0
             });
             throw _context7.t0;
 
-          case 75:
+          case 87:
           case "end":
             return _context7.stop();
         }
       }
-    }, _callee7, null, [[0, 71]]);
+    }, _callee7, null, [[0, 83]]);
   }));
 
   return function updateOrder(_x12) {

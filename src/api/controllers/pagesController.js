@@ -6,7 +6,7 @@ import util from 'util';
 import { configSortQuery, configRangeQuery, configFilterQueryMultiple } from '../util/util';
 import { initialSetup } from './systemController';
 import { deleteManyFlavors } from './flavorsController';
-import { deleteManyBeverages } from './beveragesController';
+import { deleteManyCategories } from './categoriesController';
 import { deleteManyCustomers } from './customersController';
 import { deleteManyExtras } from './extrasController';
 import { deleteManyItems } from './itemsController';
@@ -98,16 +98,16 @@ export const page_resources_delete = async (req, res) => {
 
         lastResult = await deleteFacebookFields(pageID, accessToken);
 
-        lastResult = await deleteManyBeverages(pageID);
+        lastResult = await deleteManyItems(pageID);
+        lastResult = await deleteManyOrders(pageID);
         lastResult = await deleteManyCustomers(pageID);
         lastResult = await deleteManyExtras(pageID);
         lastResult = await deleteManyFlavors(pageID);
-        lastResult = await deleteManyItems(pageID);
-        lastResult = await deleteManyOrders(pageID);
         lastResult = await deleteManyPricings(pageID);
         lastResult = await deleteManySizes(pageID);
         lastResult = await deleteManyStores(pageID);
         lastResult = await deleteManyToppings(pageID);
+        lastResult = await deleteManyCategories(pageID);
 
         lastResult = await unsubscribedApps(pageID, accessToken);
         lastResult = await removeUserActivePage(req.currentUser.userID);

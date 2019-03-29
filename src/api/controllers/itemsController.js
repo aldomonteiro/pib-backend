@@ -147,7 +147,7 @@ export const deleteManyItems = async (pageID) => {
 export const updateItem = async orderData => {
     const { orderId, currentItem, userId, pageId,
         qty, sizeId, flavorId, categoryId,
-        price, completeItem, split, eraseSize } = orderData;
+        price, completeItem, split, eraseSize, commentsItem } = orderData;
 
     if (sizeId || flavorId || categoryId || typeof completeItem === 'boolean' || eraseSize) {
 
@@ -167,6 +167,7 @@ export const updateItem = async orderData => {
             if (price) item.price = price;
             if (currentItem) item.itemId = currentItem;
             if (split) item.split = split;
+            if (commentsItem) item.comments = commentsItem;
             if (typeof completeItem === 'boolean')
                 item.status = completeItem === true ? ITEMSTATUS_COMPLETED : ITEMSTATUS_PENDING;
 
@@ -349,6 +350,25 @@ export const updateItemStatus = async (pageID, orderID, itemID) => {
         return null;
     }
 }
+
+/**
+ * @param {*} pageID
+ * @param {*} orderID
+ * @param {*} itemID
+ */
+export const updateItemDirect = async (pageID, orderID, itemID, data) => {
+    try {
+        const result = await Items.updateOne(
+            { pageId: pageID, orderId: orderID, id: itemID },
+            { $set: { comments: data } }).exec();
+        console.info(result);
+        return result;
+    } catch (err) {
+        console.error(err);
+        return null;
+    }
+}
+
 
 /**
  * Calculate total price of an orderId+pageId

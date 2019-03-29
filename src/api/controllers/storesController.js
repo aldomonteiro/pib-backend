@@ -28,7 +28,7 @@ export const store_get_all = (req, res) => {
         if (err) {
             res.status(500).json({ message: err.errmsg });
         } else {
-            res.setHeader('Content-Range', util.format("stores %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
+            res.setHeader('Content-Range', util.format('stores %d-%d/%d', rangeObj['offset'], rangeObj['limit'], result.total));
             res.status(200).json(result.docs);
         }
     });
@@ -43,8 +43,7 @@ export const store_get_one = (req, res) => {
         Store.findOne({ pageId: pageId, id: req.params.id }, (err, doc) => {
             if (err) {
                 res.status(500).json({ message: err.errmsg });
-            }
-            else {
+            } else {
                 res.status(200).json(doc);
             }
         });
@@ -92,6 +91,9 @@ export const store_create = (req, res) => {
             hol_is_open: req.body.hol_is_open,
             hol_open: req.body.hol_open,
             hol_close: req.body.hol_close,
+            catalog_url1: req.body.catalog_url1,
+            catalog_url2: req.body.catalog_url2,
+
         });
 
         newRecord.save()
@@ -140,6 +142,7 @@ export const store_update = (req, res) => {
                     doc.state = req.body.state;
                     doc.phone = req.body.phone;
                     doc.delivery_fee = req.body.delivery_fee;
+                    doc.delivery_fees = req.body.delivery_fees;
                     doc.location_lat = req.body.location_lat;
                     doc.location_long = req.body.location_long;
                     // Opening times
@@ -167,7 +170,12 @@ export const store_update = (req, res) => {
                     doc.hol_is_open = req.body.hol_is_open;
                     doc.hol_open = req.body.hol_open;
                     doc.hol_close = req.body.hol_close;
+
+                    // Customizing
                     doc.printer = req.body.printer;
+                    doc.catalog_url1 = req.body.catalog_url1;
+                    doc.catalog_url2 = req.body.catalog_url2;
+                    doc.payment_types = req.body.payment_types;
 
                     doc.save((err, result) => {
                         if (err) {
@@ -308,4 +316,14 @@ export const getTodayOpeningTime = async pageID => {
     const _closeAtHoursTom = new Date(tomorrowCloseAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false })
 
     return { todayIsOpen, todayOpenAt: _openAtHours, todayCloseAt: _closeAtHours, tomorrowIsOpen, tomorrowOpenAt: _openAtHoursTom, tomorrowCloseAt: _closeAtHoursTom };
+}
+
+export const calcDeliveryFee = (deliveryFees, distanceFromStore) => {
+    if (deliveryFees && deliveryFees.length > 0) {
+        for (let delivFee of deliveryFees) {
+            if (delivFee.from <= distanceFromStore && delivFee.to > distanceFromStore) {
+                return delivFee.fee;
+            }
+        }
+    } else return 0;
 }

@@ -19,7 +19,7 @@ var _systemController = require("./systemController");
 
 var _flavorsController = require("./flavorsController");
 
-var _beveragesController = require("./beveragesController");
+var _categoriesController = require("./categoriesController");
 
 var _customersController = require("./customersController");
 
@@ -180,52 +180,52 @@ function () {
           case 9:
             lastResult = _context2.sent;
             _context2.next = 12;
-            return (0, _beveragesController.deleteManyBeverages)(pageID);
+            return (0, _itemsController.deleteManyItems)(pageID);
 
           case 12:
             lastResult = _context2.sent;
             _context2.next = 15;
-            return (0, _customersController.deleteManyCustomers)(pageID);
+            return (0, _ordersController.deleteManyOrders)(pageID);
 
           case 15:
             lastResult = _context2.sent;
             _context2.next = 18;
-            return (0, _extrasController.deleteManyExtras)(pageID);
+            return (0, _customersController.deleteManyCustomers)(pageID);
 
           case 18:
             lastResult = _context2.sent;
             _context2.next = 21;
-            return (0, _flavorsController.deleteManyFlavors)(pageID);
+            return (0, _extrasController.deleteManyExtras)(pageID);
 
           case 21:
             lastResult = _context2.sent;
             _context2.next = 24;
-            return (0, _itemsController.deleteManyItems)(pageID);
+            return (0, _flavorsController.deleteManyFlavors)(pageID);
 
           case 24:
             lastResult = _context2.sent;
             _context2.next = 27;
-            return (0, _ordersController.deleteManyOrders)(pageID);
+            return (0, _pricingsController.deleteManyPricings)(pageID);
 
           case 27:
             lastResult = _context2.sent;
             _context2.next = 30;
-            return (0, _pricingsController.deleteManyPricings)(pageID);
+            return (0, _sizesController.deleteManySizes)(pageID);
 
           case 30:
             lastResult = _context2.sent;
             _context2.next = 33;
-            return (0, _sizesController.deleteManySizes)(pageID);
+            return (0, _storesController.deleteManyStores)(pageID);
 
           case 33:
             lastResult = _context2.sent;
             _context2.next = 36;
-            return (0, _storesController.deleteManyStores)(pageID);
+            return (0, _toppingsController.deleteManyToppings)(pageID);
 
           case 36:
             lastResult = _context2.sent;
             _context2.next = 39;
-            return (0, _toppingsController.deleteManyToppings)(pageID);
+            return (0, _categoriesController.deleteManyCategories)(pageID);
 
           case 39:
             lastResult = _context2.sent;

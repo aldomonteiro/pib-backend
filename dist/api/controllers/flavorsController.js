@@ -310,34 +310,37 @@ function () {
   var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee4(req, res) {
-    var pageId, _req$body2, id, flavor, categoryId, price, toppings, price_by_size, category;
+    var pageId, id, _req$body2, flavor, categoryId, price, toppings, price_by_size, category;
 
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            if (!(req.body && req.body.id)) {
-              _context4.next = 10;
+            console.info('flavor_update:', req.params.id, req.body);
+
+            if (!(req.body && req.params.id)) {
+              _context4.next = 12;
               break;
             }
 
             pageId = req.currentUser.activePage;
-            _req$body2 = req.body, id = _req$body2.id, flavor = _req$body2.flavor, categoryId = _req$body2.categoryId, price = _req$body2.price, toppings = _req$body2.toppings;
+            id = req.params.id;
+            _req$body2 = req.body, flavor = _req$body2.flavor, categoryId = _req$body2.categoryId, price = _req$body2.price, toppings = _req$body2.toppings;
             price_by_size = false;
 
             if (!categoryId) {
-              _context4.next = 9;
+              _context4.next = 11;
               break;
             }
 
-            _context4.next = 7;
+            _context4.next = 9;
             return (0, _categoriesController.getCategory)(pageId, categoryId);
 
-          case 7:
+          case 9:
             category = _context4.sent;
             if (category) price_by_size = category.price_by_size;
 
-          case 9:
+          case 11:
             if (price_by_size && price > 0) {
               res.status(500).json({
                 message: 'pos.flavors.messages.priceNotAllowed'
@@ -348,11 +351,11 @@ function () {
                 id: id
               }, function (err, doc) {
                 if (!err) {
-                  doc.flavor = (0, _stringCapitalizeName.default)(flavor);
-                  doc.categoryId = categoryId;
-                  doc.toppings = toppings;
-                  doc.price = price;
-                  doc.price_by_size = price_by_size;
+                  if (flavor) doc.flavor = (0, _stringCapitalizeName.default)(flavor);
+                  if (categoryId) doc.categoryId = categoryId;
+                  if (toppings) doc.toppings = toppings;
+                  if (price) doc.price = price;
+                  if (price_by_size) doc.price_by_size = price_by_size;
                   doc.save(function (err, result) {
                     if (err) {
                       res.status(500).json({
@@ -370,7 +373,7 @@ function () {
               });
             }
 
-          case 10:
+          case 12:
           case "end":
             return _context4.stop();
         }
@@ -457,7 +460,7 @@ function () {
             if (categoryId) query['categoryId'] = categoryId;
             queryFlavor = _flavors.default.find(query);
             if (!sort) queryFlavor.sort('flavor');else queryFlavor.sort(sort);
-            queryFlavor.select('id flavor categoryId toppings price');
+            queryFlavor.select('id pageId flavor categoryId toppings price price_by_size');
             _context6.next = 8;
             return queryFlavor.exec();
 

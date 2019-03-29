@@ -65,7 +65,7 @@ function () {
             store = _context.sent;
 
             if (!store) {
-              _context.next = 83;
+              _context.next = 89;
               break;
             }
 
@@ -73,7 +73,7 @@ function () {
             pageId = store.pageId; // Welcome Message
 
             if (match) {
-              _context.next = 73;
+              _context.next = 79;
               break;
             }
 
@@ -87,7 +87,7 @@ function () {
             pendingOrder = _context.sent;
 
             if (!(pendingOrder && pendingOrder.order)) {
-              _context.next = 62;
+              _context.next = 68;
               break;
             }
 
@@ -151,7 +151,7 @@ function () {
 
           case 35:
             result = _context.sent;
-            _context.next = 59;
+            _context.next = 65;
             break;
 
           case 38:
@@ -170,21 +170,40 @@ function () {
 
           case 41:
             result = _context.sent;
-            _context.next = 59;
+            _context.next = 65;
             break;
 
           case 44:
+            if (!(pendingOrder.order.waitingFor === 'typed_comments_item')) {
+              _context.next = 50;
+              break;
+            }
+
+            _context.next = 47;
+            return sendActions({
+              action: 'SHOW_COMMENTS_ITEM',
+              pageID: pageId,
+              userID: userId,
+              data: message
+            });
+
+          case 47:
+            result = _context.sent;
+            _context.next = 65;
+            break;
+
+          case 50:
             if (!(pendingOrder.order.waitingFor === 'location')) {
-              _context.next = 56;
+              _context.next = 62;
               break;
             }
 
             if (!location) {
-              _context.next = 51;
+              _context.next = 57;
               break;
             }
 
-            _context.next = 48;
+            _context.next = 54;
             return sendActions({
               action: 'LOCATION_CONFIRM_ADDRESS',
               pageID: pageId,
@@ -192,28 +211,28 @@ function () {
               location: location
             });
 
-          case 48:
+          case 54:
             result = _context.sent;
-            _context.next = 54;
+            _context.next = 60;
             break;
 
-          case 51:
-            _context.next = 53;
+          case 57:
+            _context.next = 59;
             return sendActions({
               action: 'ASK_TO_TYPE_ADDRESS',
               pageID: pageId,
               userID: userId
             });
 
-          case 53:
+          case 59:
             result = _context.sent;
 
-          case 54:
-            _context.next = 59;
+          case 60:
+            _context.next = 65;
             break;
 
-          case 56:
-            _context.next = 58;
+          case 62:
+            _context.next = 64;
             return sendActions({
               action: 'ASK_FOR_CONTINUE',
               pageID: pageId,
@@ -221,39 +240,39 @@ function () {
               user: user
             });
 
-          case 58:
+          case 64:
             result = _context.sent;
 
-          case 59:
+          case 65:
             return _context.abrupt("return", result);
 
-          case 62:
-            _context.next = 64;
+          case 68:
+            _context.next = 70;
             return getText(_botController.sendWelcomeMessage, [pageId, contactName]);
 
-          case 64:
+          case 70:
             replyText = _context.sent;
             replyText = replyText + '\n';
-            _context.next = 68;
+            _context.next = 74;
             return (0, _botController.sendMainMenu)();
 
-          case 68:
+          case 74:
             dataMenu = _context.sent;
             dataMenu.text = replyText + dataMenu.text;
             return _context.abrupt("return", dataMenu);
 
-          case 71:
-            _context.next = 81;
+          case 77:
+            _context.next = 87;
             break;
 
-          case 73:
+          case 79:
             if (match.hasOwnProperty('event')) objectWithEvent = match;else if (match.hasOwnProperty('buttons')) {
               if (match.buttons.hasOwnProperty('event')) objectWithEvent = match.buttons;
             }
             _objectWithEvent = objectWithEvent, event = _objectWithEvent.event, data = _objectWithEvent.data;
             multiple = data ? data.multiple ? data.multiple : 1 : 1;
             action = mapEventsActions(event, data);
-            _context.next = 79;
+            _context.next = 85;
             return sendActions({
               action: action,
               pageID: pageId,
@@ -264,18 +283,18 @@ function () {
               user: user
             });
 
-          case 79:
+          case 85:
             _result = _context.sent;
             return _context.abrupt("return", _result);
 
-          case 81:
-            _context.next = 84;
+          case 87:
+            _context.next = 90;
             break;
 
-          case 83:
+          case 89:
             console.info("### w_controller ### did not find store for myId: ".concat(myId));
 
-          case 84:
+          case 90:
           case "end":
             return _context.stop();
         }
@@ -530,15 +549,13 @@ var mapEventsActions = function mapEventsActions(event, data) {
       }
 
     case 'ORDER_PAYMENT_TYPE':
-      switch (data) {
-        case 'payment_money':
-          return 'SHOW_PAYMENT_TYPE_ASK_FOR_PAYMENT_CHANGE';
-
-        case 'payment_card':
-          return 'SHOW_PAYMENT_TYPE_ASK_FOR_COMMENTS';
-      }
-
-      break;
+      // switch (data) {
+      //     case 'payment_money':
+      //         return 'SHOW_PAYMENT_TYPE_ASK_FOR_PAYMENT_CHANGE';
+      //     case 'payment_card':
+      return 'SHOW_PAYMENT_TYPE_ASK_FOR_COMMENTS';
+    // }
+    // break;
 
     case 'ORDER_PAYMENT_CHANGE':
       return 'SHOW_PAYMENT_CHANGE_ASK_FOR_COMMENTS';
@@ -592,7 +609,7 @@ function () {
             action = _ref3.action, pageID = _ref3.pageID, userID = _ref3.userID, multiple = _ref3.multiple, data = _ref3.data, payload = _ref3.payload, location = _ref3.location, text = _ref3.text, addrData = _ref3.addrData, user = _ref3.user;
             _context3.prev = 1;
             _context3.t0 = action;
-            _context3.next = _context3.t0 === 'BASIC_REPLY' ? 5 : _context3.t0 === 'CHECK_TYPED_TEXT' ? 9 : _context3.t0 === 'ASK_FOR_CONTINUE' ? 13 : _context3.t0 === 'CHECK_LAST_ACTION' ? 17 : _context3.t0 === 'CONTINUE_ORDER_NO' ? 21 : _context3.t0 === 'PASS_THREAD_CONTROL' ? 25 : _context3.t0 === 'SEND_WELCOME' ? 29 : _context3.t0 === 'SEND_MAIN_MENU' ? 33 : _context3.t0 === 'SEND_CARDAPIO' ? 37 : _context3.t0 === 'SEND_HORARIO' ? 41 : _context3.t0 === 'ASK_FOR_DELIVER' ? 45 : _context3.t0 === 'SHOW_DELIVER_CHECK_ADDRESS' ? 49 : _context3.t0 === 'CHECK_ADDRESS' ? 53 : _context3.t0 === 'CONFIRM_ADDRESS' ? 57 : _context3.t0 === 'ASK_FOR_ORDER' ? 61 : _context3.t0 === 'LOCATION_CONFIRM_ADDRESS' ? 65 : _context3.t0 === 'SHOW_ADDRESS_ASK_FOR_CATEGORY' ? 69 : _context3.t0 === 'ASK_FOR_LOCATION' ? 73 : _context3.t0 === 'ASK_TO_TYPE_ADDRESS' ? 77 : _context3.t0 === 'SHOW_DELIVER_ASK_FOR_CATEGORY' ? 81 : _context3.t0 === 'ASK_FOR_QUANTITY' ? 85 : _context3.t0 === 'ASK_FOR_QUANTITY_MORE' ? 89 : _context3.t0 === 'SHOW_QUANTITY_ASK_FOR_SIZE' ? 93 : _context3.t0 === 'ASK_FOR_SIZE' ? 97 : _context3.t0 === 'SHOW_SIZE_CHECK_SPLIT' ? 101 : _context3.t0 === 'SHOW_SPLIT_CHECK_FLAVOR' ? 105 : _context3.t0 === 'ASK_FOR_FLAVOR' ? 109 : _context3.t0 === 'SHOW_FLAVOR' ? 113 : _context3.t0 === 'CHECK_ITEM' ? 117 : _context3.t0 === 'SHOW_FLAVOR_CHECK_ITEM' ? 121 : _context3.t0 === 'ASK_FOR_WANT_BEVERAGE' ? 125 : _context3.t0 === 'SHOW_NO_BEVERAGE_ASK_FOR_PAYMENT_TYPE' ? 129 : _context3.t0 === 'ASK_FOR_BEVERAGE_OPTIONS' ? 133 : _context3.t0 === 'SHOW_BEVERAGE_ASK_FOR_PAYMENT_TYPE' ? 137 : _context3.t0 === 'ASK_FOR_PAYMENT_TYPE' ? 141 : _context3.t0 === 'SHOW_PAYMENT_TYPE_ASK_FOR_COMMENTS' ? 145 : _context3.t0 === 'SHOW_PAYMENT_TYPE_ASK_FOR_PAYMENT_CHANGE' ? 149 : _context3.t0 === 'SHOW_PAYMENT_CHANGE_ASK_FOR_COMMENTS' ? 153 : _context3.t0 === 'ASK_FOR_COMMENTS' ? 157 : _context3.t0 === 'ASK_FOR_TYPE_COMMENTS' ? 161 : _context3.t0 === 'SHOW_FULL_ORDER_CONFIRM_ORDER' ? 165 : _context3.t0 === 'ASK_FOR_CHANGE_ORDER' ? 169 : _context3.t0 === 'ASK_FOR_SPECIFIC_ITEM' ? 173 : _context3.t0 === 'CHANGE_ITEM' ? 177 : _context3.t0 === 'CANCEL_ITEM' ? 181 : _context3.t0 === 'UPDATE_ITEM' ? 185 : _context3.t0 === 'CONFIRM_ORDER' ? 189 : _context3.t0 === 'CANCEL_PENDING_ORDER' ? 193 : _context3.t0 === 'SHOW_CATEGORY_ASK_FOR_SIZE' ? 197 : _context3.t0 === 'ASK_FOR_CATEGORY' ? 201 : _context3.t0 === 'CANCEL_PENDING_SHOW_PARTIAL_ORDER' ? 205 : _context3.t0 === 'SHOW_FLAVORS_CATEGORY' ? 209 : 213;
+            _context3.next = _context3.t0 === 'BASIC_REPLY' ? 5 : _context3.t0 === 'CHECK_TYPED_TEXT' ? 9 : _context3.t0 === 'ASK_FOR_CONTINUE' ? 13 : _context3.t0 === 'CHECK_LAST_ACTION' ? 17 : _context3.t0 === 'CONTINUE_ORDER_NO' ? 21 : _context3.t0 === 'PASS_THREAD_CONTROL' ? 25 : _context3.t0 === 'SEND_WELCOME' ? 29 : _context3.t0 === 'SEND_MAIN_MENU' ? 33 : _context3.t0 === 'SEND_CARDAPIO' ? 37 : _context3.t0 === 'SEND_HORARIO' ? 41 : _context3.t0 === 'ASK_FOR_DELIVER' ? 45 : _context3.t0 === 'SHOW_DELIVER_CHECK_ADDRESS' ? 49 : _context3.t0 === 'CHECK_ADDRESS' ? 53 : _context3.t0 === 'CONFIRM_ADDRESS' ? 57 : _context3.t0 === 'ASK_FOR_ORDER' ? 61 : _context3.t0 === 'LOCATION_CONFIRM_ADDRESS' ? 65 : _context3.t0 === 'SHOW_ADDRESS_ASK_FOR_CATEGORY' ? 69 : _context3.t0 === 'ASK_FOR_LOCATION' ? 73 : _context3.t0 === 'ASK_TO_TYPE_ADDRESS' ? 77 : _context3.t0 === 'SHOW_DELIVER_ASK_FOR_CATEGORY' ? 81 : _context3.t0 === 'ASK_FOR_QUANTITY' ? 85 : _context3.t0 === 'ASK_FOR_QUANTITY_MORE' ? 89 : _context3.t0 === 'SHOW_QUANTITY_ASK_FOR_SIZE' ? 93 : _context3.t0 === 'ASK_FOR_SIZE' ? 97 : _context3.t0 === 'SHOW_SIZE_CHECK_SPLIT' ? 101 : _context3.t0 === 'SHOW_SPLIT_CHECK_FLAVOR' ? 105 : _context3.t0 === 'ASK_FOR_FLAVOR' ? 109 : _context3.t0 === 'SHOW_FLAVOR' ? 113 : _context3.t0 === 'CHECK_ITEM' ? 117 : _context3.t0 === 'SHOW_FLAVOR_CHECK_ITEM' ? 121 : _context3.t0 === 'ASK_FOR_WANT_BEVERAGE' ? 125 : _context3.t0 === 'SHOW_NO_BEVERAGE_ASK_FOR_PAYMENT_TYPE' ? 129 : _context3.t0 === 'ASK_FOR_BEVERAGE_OPTIONS' ? 133 : _context3.t0 === 'SHOW_BEVERAGE_ASK_FOR_PAYMENT_TYPE' ? 137 : _context3.t0 === 'ASK_FOR_PAYMENT_TYPE' ? 141 : _context3.t0 === 'SHOW_PAYMENT_TYPE_ASK_FOR_COMMENTS' ? 145 : _context3.t0 === 'SHOW_PAYMENT_TYPE_ASK_FOR_PAYMENT_CHANGE' ? 149 : _context3.t0 === 'SHOW_PAYMENT_CHANGE_ASK_FOR_COMMENTS' ? 153 : _context3.t0 === 'ASK_FOR_COMMENTS' ? 157 : _context3.t0 === 'ASK_FOR_TYPE_COMMENTS' ? 161 : _context3.t0 === 'SHOW_FULL_ORDER_CONFIRM_ORDER' ? 165 : _context3.t0 === 'ASK_FOR_CHANGE_ORDER' ? 169 : _context3.t0 === 'ASK_FOR_SPECIFIC_ITEM' ? 173 : _context3.t0 === 'CHANGE_ITEM' ? 177 : _context3.t0 === 'SHOW_COMMENTS_ITEM' ? 181 : _context3.t0 === 'CANCEL_ITEM' ? 185 : _context3.t0 === 'UPDATE_ITEM' ? 189 : _context3.t0 === 'CONFIRM_ORDER' ? 193 : _context3.t0 === 'CANCEL_PENDING_ORDER' ? 197 : _context3.t0 === 'SHOW_CATEGORY_ASK_FOR_SIZE' ? 201 : _context3.t0 === 'ASK_FOR_CATEGORY' ? 205 : _context3.t0 === 'CANCEL_PENDING_SHOW_PARTIAL_ORDER' ? 209 : _context3.t0 === 'SHOW_FLAVORS_CATEGORY' ? 213 : 217;
             break;
 
           case 5:
@@ -601,7 +618,7 @@ function () {
 
           case 7:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 9:
             _context3.next = 11;
@@ -609,7 +626,7 @@ function () {
 
           case 11:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 13:
             _context3.next = 15;
@@ -617,7 +634,7 @@ function () {
 
           case 15:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 17:
             _context3.next = 19;
@@ -625,7 +642,7 @@ function () {
 
           case 19:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 21:
             _context3.next = 23;
@@ -633,7 +650,7 @@ function () {
 
           case 23:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 25:
             _context3.next = 27;
@@ -641,7 +658,7 @@ function () {
 
           case 27:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 29:
             _context3.next = 31;
@@ -649,7 +666,7 @@ function () {
 
           case 31:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 33:
             _context3.next = 35;
@@ -657,7 +674,7 @@ function () {
 
           case 35:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 37:
             _context3.next = 39;
@@ -665,7 +682,7 @@ function () {
 
           case 39:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 41:
             _context3.next = 43;
@@ -673,7 +690,7 @@ function () {
 
           case 43:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 45:
             _context3.next = 47;
@@ -681,7 +698,7 @@ function () {
 
           case 47:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 49:
             _context3.next = 51;
@@ -689,7 +706,7 @@ function () {
 
           case 51:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 53:
             _context3.next = 55;
@@ -697,7 +714,7 @@ function () {
 
           case 55:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 57:
             _context3.next = 59;
@@ -705,7 +722,7 @@ function () {
 
           case 59:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 61:
             _context3.next = 63;
@@ -713,7 +730,7 @@ function () {
 
           case 63:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 65:
             _context3.next = 67;
@@ -721,7 +738,7 @@ function () {
 
           case 67:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 69:
             _context3.next = 71;
@@ -729,7 +746,7 @@ function () {
 
           case 71:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 73:
             _context3.next = 75;
@@ -737,7 +754,7 @@ function () {
 
           case 75:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 77:
             _context3.next = 79;
@@ -745,7 +762,7 @@ function () {
 
           case 79:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 81:
             _context3.next = 83;
@@ -753,7 +770,7 @@ function () {
 
           case 83:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 85:
             _context3.next = 87;
@@ -761,7 +778,7 @@ function () {
 
           case 87:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 89:
             _context3.next = 91;
@@ -769,7 +786,7 @@ function () {
 
           case 91:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 93:
             _context3.next = 95;
@@ -777,7 +794,7 @@ function () {
 
           case 95:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 97:
             _context3.next = 99;
@@ -785,7 +802,7 @@ function () {
 
           case 99:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 101:
             _context3.next = 103;
@@ -793,7 +810,7 @@ function () {
 
           case 103:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 105:
             _context3.next = 107;
@@ -801,7 +818,7 @@ function () {
 
           case 107:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 109:
             _context3.next = 111;
@@ -809,7 +826,7 @@ function () {
 
           case 111:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 113:
             _context3.next = 115;
@@ -817,7 +834,7 @@ function () {
 
           case 115:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 117:
             _context3.next = 119;
@@ -825,7 +842,7 @@ function () {
 
           case 119:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 121:
             _context3.next = 123;
@@ -833,7 +850,7 @@ function () {
 
           case 123:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 125:
             _context3.next = 127;
@@ -841,7 +858,7 @@ function () {
 
           case 127:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 129:
             _context3.next = 131;
@@ -849,7 +866,7 @@ function () {
 
           case 131:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 133:
             _context3.next = 135;
@@ -857,7 +874,7 @@ function () {
 
           case 135:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 137:
             _context3.next = 139;
@@ -865,7 +882,7 @@ function () {
 
           case 139:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 141:
             _context3.next = 143;
@@ -873,7 +890,7 @@ function () {
 
           case 143:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 145:
             _context3.next = 147;
@@ -881,7 +898,7 @@ function () {
 
           case 147:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 149:
             _context3.next = 151;
@@ -889,7 +906,7 @@ function () {
 
           case 151:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 153:
             _context3.next = 155;
@@ -897,7 +914,7 @@ function () {
 
           case 155:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 157:
             _context3.next = 159;
@@ -905,7 +922,7 @@ function () {
 
           case 159:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 161:
             _context3.next = 163;
@@ -913,7 +930,7 @@ function () {
 
           case 163:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 165:
             _context3.next = 167;
@@ -921,7 +938,7 @@ function () {
 
           case 167:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 169:
             _context3.next = 171;
@@ -929,15 +946,15 @@ function () {
 
           case 171:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 173:
             _context3.next = 175;
-            return (0, _botController.askForSpecificItem)(pageID, userID);
+            return (0, _botController.askForSpecificItem)(pageID, userID, data);
 
           case 175:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 177:
             _context3.next = 179;
@@ -945,90 +962,98 @@ function () {
 
           case 179:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 181:
             _context3.next = 183;
-            return (0, _botController.cancelItem)(pageID, userID, data);
+            return (0, _botController.showCommentsItem)(pageID, userID, data);
 
           case 183:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 185:
             _context3.next = 187;
-            return (0, _botController.updateItemAskOptions)(pageID, userID, data);
+            return (0, _botController.cancelItem)(pageID, userID, data);
 
           case 187:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 189:
             _context3.next = 191;
-            return (0, _botController.confirmOrder)(pageID, userID);
+            return (0, _botController.updateItemAskOptions)(pageID, userID, data);
 
           case 191:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 193:
             _context3.next = 195;
-            return (0, _botController.cancelPendingOrder)(pageID, userID);
+            return (0, _botController.confirmOrder)(pageID, userID);
 
           case 195:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 197:
             _context3.next = 199;
-            return getElement(_botController.showCategoryAskForSize, [pageID, userID, data]);
+            return (0, _botController.cancelPendingOrder)(pageID, userID);
 
           case 199:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 201:
             _context3.next = 203;
-            return getElement(_botController.askForCategory, [pageID, userID, data]);
+            return getElement(_botController.showCategoryAskForSize, [pageID, userID, data]);
 
           case 203:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 205:
             _context3.next = 207;
-            return getElement(_botController.cancelPendingShowPartialOrder, [pageID, userID]);
+            return getElement(_botController.askForCategory, [pageID, userID, data]);
 
           case 207:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 209:
             _context3.next = 211;
-            return getElement(_botController.sendCardapio, [pageID, data, 'whatsapp']);
+            return getElement(_botController.cancelPendingShowPartialOrder, [pageID, userID]);
 
           case 211:
             out = _context3.sent;
-            return _context3.abrupt("break", 214);
+            return _context3.abrupt("break", 218);
 
           case 213:
-            return _context3.abrupt("break", 214);
+            _context3.next = 215;
+            return getElement(_botController.sendCardapio, [pageID, data, 'whatsapp']);
 
-          case 214:
-            return _context3.abrupt("return", out);
+          case 215:
+            out = _context3.sent;
+            return _context3.abrupt("break", 218);
 
           case 217:
-            _context3.prev = 217;
+            return _context3.abrupt("break", 218);
+
+          case 218:
+            return _context3.abrupt("return", out);
+
+          case 221:
+            _context3.prev = 221;
             _context3.t1 = _context3["catch"](1);
             console.error('action:', action, 'data:', data, 'err:', _context3.t1);
             throw _context3.t1;
 
-          case 221:
+          case 225:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, null, [[1, 217]]);
+    }, _callee3, null, [[1, 221]]);
   }));
 
   return function sendActions(_x4) {

@@ -49,7 +49,7 @@ var schema = new _mongoose.default.Schema({
   initialSetupStores: {
     type: Number
   },
-  initialSetupBeverages: {
+  initialSetupCategories: {
     type: Number
   },
   initialSetupToppings: {
@@ -61,9 +61,9 @@ var schema = new _mongoose.default.Schema({
   }
 }, {
   timestamps: true
-}); //TODO: store access_token expiring date
+}); // TODO: store access_token expiring date
 
-var _default = _mongoose.default.model("pages", schema);
+var _default = _mongoose.default.model('pages', schema);
 
 exports.default = _default;
 //# sourceMappingURL=pages.js.map

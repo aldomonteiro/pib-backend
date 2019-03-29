@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 import paginate from 'mongoose-paginate';
 
 const Schema = mongoose.Schema;
@@ -44,6 +44,10 @@ const schema = new Schema(
         fri_close: { type: String, required: true },
         sat_close: { type: String, required: true },
         printer: { type: String },
+        delivery_fees: [{ from: { type: Number }, to: { type: Number }, fee: { type: Number } }],
+        catalog_url1: { type: String },
+        catalog_url2: { type: String },
+        payment_types: [{ payment_type: { type: String }, surcharge_percent: { type: Number }, surcharge_amount: { type: Number } }],
     }, { timestamps: true },
 );
 
@@ -53,4 +57,4 @@ schema.index({ phone: 1 }, { unique: true });
 schema.plugin(paginate);
 
 
-export default mongoose.model("stores", schema);
+export default mongoose.model('stores', schema);

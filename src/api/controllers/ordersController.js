@@ -2,7 +2,7 @@ import Order from '../models/orders';
 import util from "util";
 import { updateItem, getItems, getItemsTotal, cancelItems } from './itemsController';
 import { updateCustomer, getCustomerById } from './customersController';
-import { getStoreData } from './storesController';
+import { getStoreData, calcDeliveryFee } from './storesController';
 import {
     configSortQuery, configRangeQueryNew,
     configFilterQueryMultiple, distanceBetweenCoordinates,
@@ -147,6 +147,9 @@ export const order_get_all = async (req, res) => {
                             payment_type: order.payment_type,
                             payment_change: order.payment_change,
                             comments: order.comments,
+                            delivery_fee: order.delivery_fee,
+                            surcharge_percent: order.surcharge_percent,
+                            surcharge_amount: order.surcharge_amount,
                             asideTotalAmount: asideTotalAmount,
                             asideTotalItems: asideTotalItems,
                         }
@@ -311,6 +314,9 @@ export const getOrderJson = async (pageId, orderId) => {
             payment_type: order.payment_type,
             payment_change: order.payment_change,
             comments: order.comments,
+            delivery_fee: order.delivery_fee,
+            surcharge_percent: order.surcharge_percent,
+            surcharge_amount: order.surcharge_amount,
         }
         return jsonOrder;
     } catch (getOrderJsonErr) {
@@ -327,7 +333,8 @@ export const updateOrder = async orderData => {
             waitingForAddress, waitingFor, waitingForData, undo, currentItem, sizeId, calcTotal,
             originalSplit, split, currentItemSplit, eraseSplit, noBeverage,
             paymentType, paymentChange, backToConfirmation, comments,
-            categoryId, eraseSize } = orderData;
+            categoryId, surcharge_percent, surcharge_amount,
+            storeAddress } = orderData;
 
         let customerID = 0;
         let customerData = {}
@@ -349,11 +356,44 @@ export const updateOrder = async orderData => {
             orderData.orderId = order.id;
 
             let updateOrder = false;
+
+            let calcDistance = {
+                calc: false,
+                lat: 0,
+                long: 0,
+            }
+
             if (location) {
                 order.location_lat = location.lat;
                 order.location_long = location.long;
                 order.location_url = location.url;
                 updateOrder = true;
+
+                calcDistance.calc = true;
+                calcDistance.lat = location.lat;
+                calcDistance.long = location.long;
+            }
+
+            if (addrData) {
+                order.address = addrData.formattedAddress;
+                if (addrData.location_lat && addrData.location_long) {
+                    order.location_lat = addrData.location_lat;
+                    order.location_long = addrData.location_long;
+
+                    calcDistance.calc = true;
+                    calcDistance.lat = addrData.location_lat;
+                    calcDistance.long = addrData.location_long;
+                }
+                updateOrder = true;
+            }
+
+            if (calcDistance.calc) {
+                const storeData = await getStoreData(pageId);
+                if (storeData.location_lat && storeData.location_long) {
+                    const distanceFromStore = distanceBetweenCoordinates(storeData.location_lat, storeData.location_long, calcDistance.lat, calcDistance.long)
+                    order.distance_from_store = distanceFromStore;
+                    order.delivery_fee = calcDeliveryFee(storeData.delivery_fees, distanceFromStore);
+                }
             }
 
             if (currentItem) {
@@ -434,17 +474,24 @@ export const updateOrder = async orderData => {
                 order.phone = phone;
                 updateOrder = true;
             }
-            if (addrData) {
-                order.address = addrData.formattedAddress;
-                if (addrData.location_lat && addrData.location_long) {
-                    order.location_lat = addrData.location_lat;
-                    order.location_long = addrData.location_long;
-                }
-                updateOrder = true;
-            }
 
             if (sizeId) {
                 order.currentItemSize = sizeId;
+                updateOrder = true;
+            }
+
+            if (surcharge_percent) {
+                order.surcharge_percent = surcharge_percent / 100;
+                updateOrder = true;
+            }
+
+            if (surcharge_amount) {
+                order.surcharge_amount = surcharge_amount;
+                updateOrder = true;
+            }
+
+            if (storeAddress) {
+                order.store_address = storeAddress;
                 updateOrder = true;
             }
 
@@ -510,7 +557,11 @@ export const updateOrder = async orderData => {
 
 
             if (typeof calcTotal === 'boolean') {
-                const total = await getItemsTotal({ orderId: order.id, pageId: order.pageId });
+                let total = await getItemsTotal({ orderId: order.id, pageId: order.pageId });
+                if (order.delivery_fee > 0) total += order.delivery_fee;
+                if (order.surcharge_percent > 0) total += total * order.surcharge_percent;
+                if (order.surcharge_amount > 0) total += order.surcharge_amount;
+
                 if (total > 0 && total !== order.total) {
                     order.total = total;
                     updateOrder = true;

@@ -176,11 +176,14 @@ export const flavor_create = async (req, res) => {
 
 // UPDATE
 export const flavor_update = async (req, res) => {
-    if (req.body && req.body.id) {
+    console.info('flavor_update:', req.params.id, req.body);
+
+    if (req.body && req.params.id) {
 
         const pageId = req.currentUser.activePage;
 
-        const { id, flavor, categoryId, price, toppings } = req.body;
+        const { id } = req.params;
+        const { flavor, categoryId, price, toppings } = req.body;
 
         let price_by_size = false;
         if (categoryId) {
@@ -195,11 +198,16 @@ export const flavor_update = async (req, res) => {
 
             Flavor.findOne({ pageId: pageId, id: id }, (err, doc) => {
                 if (!err) {
-                    doc.flavor = stringCapitalizeName(flavor);
-                    doc.categoryId = categoryId;
-                    doc.toppings = toppings;
-                    doc.price = price;
-                    doc.price_by_size = price_by_size;
+                    if (flavor)
+                        doc.flavor = stringCapitalizeName(flavor);
+                    if (categoryId)
+                        doc.categoryId = categoryId;
+                    if (toppings)
+                        doc.toppings = toppings;
+                    if (price)
+                        doc.price = price;
+                    if (price_by_size)
+                        doc.price_by_size = price_by_size;
                     doc.save((err, result) => {
                         if (err) {
                             res.status(500).json({ message: err.errmsg });
@@ -247,7 +255,7 @@ export const getFlavors = async (pageID, categoryId, sort) => {
     if (!sort)
         queryFlavor.sort('flavor');
     else queryFlavor.sort(sort);
-    queryFlavor.select('id flavor categoryId toppings price');
+    queryFlavor.select('id pageId flavor categoryId toppings price price_by_size');
     return await queryFlavor.exec();
 }
 

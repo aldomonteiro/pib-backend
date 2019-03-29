@@ -1,17 +1,17 @@
 import Flavor from '../models/flavors';
 import Size from '../models/sizes';
-import Beverage from '../models/beverages';
+import Category from '../models/categories';
 import Topping from '../models/toppings';
 import Store from '../models/stores';
 import Pricing from '../models/pricings';
 import { getFlavors } from './flavorsController';
 import { getSizes } from './sizesController';
-import { getBeverages } from './beveragesController';
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 import { getToppingsFull } from './toppingsController';
 import { getPricings } from './pricingsController';
 import { getStores } from './storesController';
 import { getOnePageData } from './pagesController';
+import { getCategories } from './categoriesController';
 
 export const initialSetup = async pageID => {
     try {
@@ -20,7 +20,7 @@ export const initialSetup = async pageID => {
         const env = process.env.NODE_ENV || 'production';
         let basePageID = process.env.DEV_PAGE_BASE_ID; // Página do Aldo
         if (env === 'production')
-            basePageID = process.env.PRD_PAGE_BASE_ID; // Pizzaibot        
+            basePageID = process.env.PRD_PAGE_BASE_ID; // Pizzaibot
 
         const page = await getOnePageData(pageID);
 
@@ -30,6 +30,10 @@ export const initialSetup = async pageID => {
 
             let haveToUpdate = false;
             if (page) {
+                if (!page.initialSetupCategories) {
+                    page.initialSetupCategories = await insertCategories(pageID, basePageID);
+                    haveToUpdate = true;
+                }
                 if (!page.initialSetupFlavors) {
                     page.initialSetupFlavors = await insertFlavors(pageID, basePageID);
                     haveToUpdate = true;
@@ -44,10 +48,6 @@ export const initialSetup = async pageID => {
                 }
                 if (!page.initialSetupPricings) {
                     page.initialSetupPricings = await insertPricings(pageID, basePageID);
-                    haveToUpdate = true;
-                }
-                if (!page.initialSetupBeverages) {
-                    page.initialSetupBeverages = await insertBeverages(pageID, basePageID);
                     haveToUpdate = true;
                 }
                 if (!page.initialSetupToppings) {
@@ -67,7 +67,7 @@ export const initialSetup = async pageID => {
         }
         return page;
     } catch (error) {
-        console.error("Error on initial setup", error);
+        console.error('Error on initial setup', error);
     }
 }
 
@@ -78,22 +78,23 @@ const insertFlavors = async (pageID, basePageID) => {
 
         const _flavors = await getFlavors(basePageID);
 
-        const docs = new Array();
+        const docs = [];
 
         for (const element of _flavors) {
             const newRec = new Flavor({
                 id: element.id,
                 flavor: element.flavor,
-                kind: element.kind,
+                categoryId: element.categoryId,
+                price_by_size: element.price_by_size,
+                price: element.price,
                 toppings: element.toppings,
-                pageId: pageID
+                pageId: pageID,
             });
             docs.push(newRec);
         }
 
         if (docs.length > 0) {
-            const flavorInsertMany = await Flavor.insertMany(docs); //=> {
-            console.info({ flavorInsertMany });
+            await Flavor.insertMany(docs); // => {
             _newRecords = docs.length;
         }
     } catch (insertFlavorsErr) {
@@ -109,20 +110,20 @@ const insertSizes = async (pageID, basePageID) => {
     try {
         const _sizes = await getSizes(basePageID);
 
-        const docs = new Array();
+        const docs = [];
         for (const element of _sizes) {
             const newRec = new Size({
                 id: element.id,
                 size: element.size,
                 slices: element.slices,
                 split: element.split,
-                pageId: pageID
+                pageId: pageID,
             });
             docs.push(newRec);
         }
 
         if (docs.length > 0) {
-            const result = await Size.insertMany(docs);
+            await Size.insertMany(docs);
             _newRecords = docs.length;
         }
     } catch (insertSizesErr) {
@@ -133,25 +134,25 @@ const insertSizes = async (pageID, basePageID) => {
     return _newRecords;
 }
 
-const insertBeverages = async (pageID, basePageID) => {
+const insertCategories = async (pageID, basePageID) => {
     let _newRecords = 0;
     try {
-        const _docs = await getBeverages(basePageID);
+        const _docs = await getCategories(basePageID);
 
-        const docs = new Array();
+        const docs = [];
         for (const element of _docs) {
-            const newRec = new Beverage({
+            const newRec = new Category({
                 id: element.id,
-                kind: element.kind,
                 name: element.name,
-                price: element.price,
-                pageId: pageID
+                price_by_size: element.price_by_size,
+                is_pizza: element.is_pizza,
+                pageId: pageID,
             });
             docs.push(newRec);
         }
 
         if (docs.length > 0) {
-            const result = await Beverage.insertMany(docs);
+            await Category.insertMany(docs);
             _newRecords = docs.length;
         }
     } catch (insertBeveragesErr) {
@@ -168,18 +169,18 @@ const insertToppings = async (pageID, basePageID) => {
     try {
         const _docs = await getToppingsFull(basePageID);
 
-        const docs = new Array();
+        const docs = [];
         for (const element of _docs) {
             const newRec = new Topping({
                 id: element.id,
                 topping: element.topping,
-                pageId: pageID
+                pageId: pageID,
             });
             docs.push(newRec);
         }
 
         if (docs.length > 0) {
-            const result = await Topping.insertMany(docs);
+            await Topping.insertMany(docs);
             _newRecords = docs.length;
         }
     } catch (insertToppingsErr) {
@@ -196,20 +197,20 @@ const insertPricings = async (pageID, basePageID) => {
     try {
         const _pricings = await getPricings(basePageID);
 
-        const docs = new Array();
+        const docs = [];
         for (const element of _pricings) {
             const newRec = new Pricing({
                 id: element.id,
-                kind: element.kind,
+                categoryId: element.categoryId,
                 sizeId: element.sizeId,
                 price: element.price,
-                pageId: pageID
+                pageId: pageID,
             });
             docs.push(newRec);
         }
 
         if (docs.length > 0) {
-            const result = await Pricing.insertMany(docs);
+            await Pricing.insertMany(docs);
             _newRecords = docs.length;
         }
     } catch (insertPricingsErr) {
@@ -224,7 +225,7 @@ const insertStores = async (pageID, pageName, basePageID) => {
     try {
         const _stores = await getStores(basePageID);
 
-        const docs = new Array();
+        const docs = [];
         for (const element of _stores) {
             const newRec = new Store({
                 pageId: pageID,
@@ -254,12 +255,16 @@ const insertStores = async (pageID, pageName, basePageID) => {
                 thu_close: element.thu_close,
                 fri_close: element.fri_close,
                 sat_close: element.sat_close,
+                delivery_fees: element.delivery_fees,
+                catalog_url1: element.catalog_url1,
+                catalog_url2: element.catalog_url2,
+                payment_types: element.payment_types,
             });
             docs.push(newRec);
         }
 
         if (docs.length > 0) {
-            const result = await Store.insertMany(docs);
+            await Store.insertMany(docs);
             _newRecords = docs.length;
         }
     } catch (insertStoresErr) {
