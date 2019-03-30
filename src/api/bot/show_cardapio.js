@@ -106,13 +106,13 @@ export const inputCardapioReplyMsg = async (flavorArray, priceBySize) => {
     let replyMsg = '';
     if (flavorArray) {
         for (const flavor of flavorArray) {
-            replyMsg = replyMsg + flavor.flavor;
+            replyMsg = replyMsg + '*' + flavor.flavor + '*';
             if (!priceBySize)
                 replyMsg = replyMsg + ' - RS ' + flavor.price;
             replyMsg = replyMsg + '\n';
 
             if (flavor.toppingsNames && flavor.toppingsNames.length > 0)
-                replyMsg = replyMsg + '𝐈𝐧𝐠𝐫𝐞𝐝𝐢𝐞𝐧𝐭𝐞𝐬: ' + flavor.toppingsNames.join(', ') + '\n';
+                replyMsg = replyMsg + flavor.toppingsNames.join(', ') + '\n';
         }
     }
     return replyMsg;

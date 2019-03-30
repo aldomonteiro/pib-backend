@@ -537,10 +537,10 @@ function () {
 
             for (_iterator6 = flavorArray[Symbol.iterator](); !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
               flavor = _step6.value;
-              replyMsg = replyMsg + flavor.flavor;
+              replyMsg = replyMsg + '*' + flavor.flavor + '*';
               if (!priceBySize) replyMsg = replyMsg + ' - RS ' + flavor.price;
               replyMsg = replyMsg + '\n';
-              if (flavor.toppingsNames && flavor.toppingsNames.length > 0) replyMsg = replyMsg + '𝐈𝐧𝐠𝐫𝐞𝐝𝐢𝐞𝐧𝐭𝐞𝐬: ' + flavor.toppingsNames.join(', ') + '\n';
+              if (flavor.toppingsNames && flavor.toppingsNames.length > 0) replyMsg = replyMsg + flavor.toppingsNames.join(', ') + '\n';
             }
 
             _context4.next = 14;
