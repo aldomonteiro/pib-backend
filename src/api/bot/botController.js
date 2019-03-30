@@ -892,8 +892,10 @@ export const askForFlavor = async (pageId, userId, multiple, pendingOrder) => {
         _txt = `Escolha o ${currentSplit}o. sabor:`
     }
 
-    let _rangeIni = (multiple - 1) * 4;
-    let _rangeEnd = multiple * 4;
+    const NUMBER_OF_ITEMS = 10;
+
+    let _rangeIni = (multiple - 1) * NUMBER_OF_ITEMS;
+    let _rangeEnd = multiple * NUMBER_OF_ITEMS;
 
     const _options = [];
 

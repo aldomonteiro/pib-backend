@@ -2894,7 +2894,7 @@ function () {
   var _ref41 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee40(pageId, userId, multiple, pendingOrder) {
-    var po, flavorsArray, _splitForTheItem, currentSplit, _txt, _rangeIni, _rangeEnd, _options, i, _fl, _data, _subtext, buttons, _buttons, buttonsOpt, _buttons2;
+    var po, flavorsArray, _splitForTheItem, currentSplit, _txt, NUMBER_OF_ITEMS, _rangeIni, _rangeEnd, _options, i, _fl, _data, _subtext, buttons, _buttons, buttonsOpt, _buttons2;
 
     return regeneratorRuntime.wrap(function _callee40$(_context40) {
       while (1) {
@@ -2950,8 +2950,9 @@ function () {
               _txt = "Escolha o ".concat(currentSplit, "o. sabor:");
             }
 
-            _rangeIni = (multiple - 1) * 4;
-            _rangeEnd = multiple * 4;
+            NUMBER_OF_ITEMS = 10;
+            _rangeIni = (multiple - 1) * NUMBER_OF_ITEMS;
+            _rangeEnd = multiple * NUMBER_OF_ITEMS;
             _options = [];
 
             for (i = 0; i < flavorsArray.length; i++) {
@@ -3045,7 +3046,7 @@ function () {
               options: _options
             });
 
-          case 22:
+          case 23:
           case "end":
             return _context40.stop();
         }
