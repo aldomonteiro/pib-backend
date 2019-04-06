@@ -11,7 +11,7 @@ var _util = _interopRequireDefault(require("util"));
 
 var _util2 = require("../util/util");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -37,18 +37,18 @@ var openingtimes_get_all = function openingtimes_get_all(req, res) {
   var query = {};
 
   if (req.currentUser.activePage) {
-    query = _openingtimes.default.find({
+    query = _openingtimes["default"].find({
       pageId: req.currentUser.activePage
     });
   }
 
-  _openingtimes.default.paginate(query, options, function (err, result) {
+  _openingtimes["default"].paginate(query, options, function (err, result) {
     if (err) {
       res.status(500).json({
         message: err.errmsg
       });
     } else {
-      res.setHeader('Content-Range', _util.default.format("openingtimes %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
+      res.setHeader('Content-Range', _util["default"].format("openingtimes %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
       res.status(200).json(result.docs);
     }
   });
@@ -62,7 +62,7 @@ var openingtimes_get_one = function openingtimes_get_one(req, res) {
     // Filter based on the currentUser
     var pageId = req.currentUser.activePage;
 
-    _openingtimes.default.findOne({
+    _openingtimes["default"].findOne({
       pageId: pageId,
       store_id: req.params.store_id
     }, function (err, doc) {
@@ -83,7 +83,7 @@ exports.openingtimes_get_one = openingtimes_get_one;
 var openingtimes_create = function openingtimes_create(req, res) {
   if (req.body) {
     var pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
-    var newRecord = new _openingtimes.default({
+    var newRecord = new _openingtimes["default"]({
       store_id: req.body.store_id,
       pageId: pageId,
       sun_open: req.body.sun_open,
@@ -107,7 +107,7 @@ var openingtimes_create = function openingtimes_create(req, res) {
     });
     newRecord.save().then(function (result) {
       res.status(200).json(result);
-    }).catch(function (err) {
+    })["catch"](function (err) {
       res.status(500).json({
         message: err.errmsg
       });
@@ -122,7 +122,7 @@ var openingtimes_update = function openingtimes_update(req, res) {
   if (req.body && req.body.id) {
     var pageId = req.currentUser.activePage;
 
-    _openingtimes.default.findOne({
+    _openingtimes["default"].findOne({
       pageId: pageId,
       store_id: req.body.store_id
     }, function (err, doc) {
@@ -169,12 +169,12 @@ exports.openingtimes_update = openingtimes_update;
 var openingtimes_delete = function openingtimes_delete(req, res) {
   var pageId = req.currentUser.activePage;
 
-  _openingtimes.default.findOneAndRemove({
+  _openingtimes["default"].findOneAndRemove({
     pageId: pageId,
     store_id: req.params.store_id
   }).then(function (result) {
     res.status(200).json(result);
-  }).catch(function (err) {
+  })["catch"](function (err) {
     res.status(500).json({
       message: err.errmsg
     });
@@ -195,7 +195,7 @@ function () {
         switch (_context.prev = _context.next) {
           case 0:
             // TODO: if is there more than one Store?
-            query = _openingtimes.default.findOne({
+            query = _openingtimes["default"].findOne({
               pageId: pageID
             });
             _context.next = 3;

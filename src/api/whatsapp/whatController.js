@@ -355,7 +355,7 @@ export const sendActions = async ({
                 out = await getElement(optionsStopOrder);
                 break;
             case 'PASS_THREAD_CONTROL':
-                out = await passThreadControl(pageID, userID, 'whatsapp');
+                out = await passThreadControl(pageID, userID, 'whatsapp', user);
                 break;
             case 'SEND_WELCOME':
                 out = await getElement(sendWelcomeMessage, [pageID, user.first_name]);

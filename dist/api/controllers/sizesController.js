@@ -13,7 +13,7 @@ var _stringCapitalizeName = _interopRequireDefault(require("string-capitalize-na
 
 var _util2 = require("../util/util");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -59,7 +59,7 @@ function () {
               queryObj["pageId"] = req.currentUser.activePage;
             }
 
-            _sizes.default.find(queryObj).sort(sortObj).exec(function (err, result) {
+            _sizes["default"].find(queryObj).sort(sortObj).exec(function (err, result) {
               if (err) {
                 res.status(500).json({
                   message: err.errmsg
@@ -80,7 +80,7 @@ function () {
                   sizesArray.push(result[_i]);
                 }
 
-                res.setHeader('Content-Range', _util.default.format("sizes %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
+                res.setHeader('Content-Range', _util["default"].format("sizes %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
                 res.status(200).json(sizesArray);
               }
             });
@@ -105,7 +105,7 @@ var size_get_one = function size_get_one(req, res) {
   if (req.params && req.params.id) {
     var pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
 
-    _sizes.default.findOne({
+    _sizes["default"].findOne({
       pageId: pageId,
       id: req.params.id
     }, function (err, doc) {
@@ -148,7 +148,7 @@ function () {
             }
 
             _context2.next = 6;
-            return _sizes.default.find({
+            return _sizes["default"].find({
               pageId: pageId
             }).select('id').sort('-id').limit(1).exec();
 
@@ -158,16 +158,16 @@ function () {
             if (lastId && lastId.length) id = lastId[0].id + 1;
 
           case 9:
-            newRecord = new _sizes.default({
+            newRecord = new _sizes["default"]({
               id: id,
-              size: (0, _stringCapitalizeName.default)(req.body.size),
+              size: (0, _stringCapitalizeName["default"])(req.body.size),
               slices: req.body.slices,
               split: req.body.split,
               pageId: pageId
             });
             newRecord.save().then(function (result) {
               res.status(200).json(result);
-            }).catch(function (err) {
+            })["catch"](function (err) {
               if (err.code === 11000) {
                 res.status(500).json({
                   message: 'pos.messages.duplicatedKey'
@@ -199,12 +199,12 @@ var size_update = function size_update(req, res) {
   if (req.body && req.body.id) {
     var pageId = req.currentUser.activePage;
 
-    _sizes.default.findOne({
+    _sizes["default"].findOne({
       pageId: pageId,
       id: req.body.id
     }, function (err, doc) {
       if (!err) {
-        doc.size = (0, _stringCapitalizeName.default)(req.body.size);
+        doc.size = (0, _stringCapitalizeName["default"])(req.body.size);
         doc.split = req.body.split;
         doc.slices = req.body.slices;
         doc.save(function (err, result) {
@@ -231,12 +231,12 @@ exports.size_update = size_update;
 var size_delete = function size_delete(req, res) {
   var pageId = req.currentUser.activePage;
 
-  _sizes.default.findOneAndRemove({
+  _sizes["default"].findOneAndRemove({
     pageId: pageId,
     id: req.params.id
   }).then(function (result) {
     res.status(200).json(result);
-  }).catch(function (err) {
+  })["catch"](function (err) {
     res.status(500).json({
       message: err.errmsg
     });
@@ -261,7 +261,7 @@ function () {
         switch (_context3.prev = _context3.next) {
           case 0:
             _context3.next = 2;
-            return _sizes.default.deleteMany({
+            return _sizes["default"].deleteMany({
               pageId: pageID
             }).exec();
 
@@ -294,7 +294,7 @@ function () {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            query = _sizes.default.findOne({
+            query = _sizes["default"].findOne({
               pageId: pageID,
               id: sizeID
             });
@@ -321,10 +321,10 @@ function () {
 exports.getSize = getSize;
 
 var getSizes = function getSizes(pageID, sizeIdArray) {
-  if (sizeIdArray && sizeIdArray.length > 0) return _sizes.default.find({
+  if (sizeIdArray && sizeIdArray.length > 0) return _sizes["default"].find({
     pageId: pageID,
     id: sizeIdArray
-  }).exec();else return _sizes.default.find({
+  }).exec();else return _sizes["default"].find({
     pageId: pageID
   }).exec();
 };

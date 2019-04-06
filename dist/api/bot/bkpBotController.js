@@ -33,14 +33,14 @@ var _customersController = require("../controllers/customersController");
 
 var _itemsController = require("../controllers/itemsController");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 // TODO: create a debugger with json format
-var log_file = _fs.default.createWriteStream(__dirname + '/debug.log', {
+var log_file = _fs["default"].createWriteStream(__dirname + '/debug.log', {
   flags: 'w'
 });
 
@@ -48,8 +48,8 @@ var log_stdout = process.stdout;
 
 console.log = function (d) {
   //
-  log_file.write(_util.default.format(d) + '\n');
-  log_stdout.write(_util.default.format(d) + '\n');
+  log_file.write(_util["default"].format(d) + '\n');
+  log_stdout.write(_util["default"].format(d) + '\n');
 };
 
 var MSG_GENERAL_ERROR = 'Ops, estamos com um probleminha técnico: '; // // create a custom timestamp format for log statements
@@ -236,7 +236,7 @@ function () {
 
             location = {
               lat: pendingOrder.order.location_lat,
-              long: pendingOrder.order.location_long,
+              "long": pendingOrder.order.location_long,
               url: pendingOrder.order.location_url
             };
             _context4.next = 23;
@@ -623,7 +623,7 @@ function () {
         switch (_context10.prev = _context10.next) {
           case 0:
             _context10.next = 2;
-            return (0, _show_cardapio.default)(pageID);
+            return (0, _show_cardapio["default"])(pageID);
 
           case 2:
             replyMsg = _context10.sent;
@@ -1937,8 +1937,8 @@ function () {
             _context30.prev = 38;
             _context30.prev = 39;
 
-            if (!_iteratorNormalCompletion && _iterator.return != null) {
-              _iterator.return();
+            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+              _iterator["return"]();
             }
 
           case 41:

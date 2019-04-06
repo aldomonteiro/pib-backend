@@ -3,16 +3,16 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
 var _mongoose = _interopRequireDefault(require("mongoose"));
 
 var _jsonwebtoken = _interopRequireDefault(require("jsonwebtoken"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 // import paginate from 'mongoose-paginate';
-var Schema = _mongoose.default.Schema;
+var Schema = _mongoose["default"].Schema;
 var schema = new Schema({
   userID: {
     type: String,
@@ -30,7 +30,7 @@ var schema = new Schema({
   },
   hasLongLivedToken: {
     type: Boolean,
-    default: false
+    "default": false
   },
   accessToken: {
     type: String
@@ -61,7 +61,7 @@ var schema = new Schema({
   },
   role: {
     type: String,
-    default: 'user'
+    "default": 'user'
   }
 }, {
   timestamps: true
@@ -71,7 +71,7 @@ schema.post('save', function (doc) {
 });
 
 schema.methods.generateJWT = function generateJWT() {
-  return _jsonwebtoken.default.sign({
+  return _jsonwebtoken["default"].sign({
     email: this.email,
     role: this.role
   }, process.env.JWT_SECRET);
@@ -88,7 +88,7 @@ schema.methods.toAuthJSON = function toAuthJSON() {
 }; // schema.plugin(paginate);
 
 
-var _default = _mongoose.default.model('users', schema);
+var _default = _mongoose["default"].model('users', schema);
 
-exports.default = _default;
+exports["default"] = _default;
 //# sourceMappingURL=users.js.map

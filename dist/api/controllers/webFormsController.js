@@ -7,7 +7,7 @@ exports.webform_create = void 0;
 
 var _webForms = _interopRequireDefault(require("../models/webForms"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -40,7 +40,7 @@ function () {
             }
 
             _context.next = 6;
-            return _webForms.default.find().select('id').sort('-id').limit(1).exec();
+            return _webForms["default"].find().select('id').sort('-id').limit(1).exec();
 
           case 6:
             lastId = _context.sent;
@@ -48,7 +48,7 @@ function () {
             if (lastId && lastId.length) id = lastId[0].id + 1;
 
           case 9:
-            newRecord = new _webForms.default({
+            newRecord = new _webForms["default"]({
               id: id,
               name: req.body.nome,
               email: req.body.email,
@@ -57,7 +57,7 @@ function () {
             });
             newRecord.save().then(function (result) {
               res.status(200).json(result);
-            }).catch(function (err) {
+            })["catch"](function (err) {
               res.status(500).json({
                 message: err.errmsg
               });

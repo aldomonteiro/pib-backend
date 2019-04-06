@@ -9,7 +9,7 @@ var _mongoose = _interopRequireDefault(require("mongoose"));
 
 var _flow = _interopRequireDefault(require("../models/flow"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -30,7 +30,7 @@ function () {
         switch (_context.prev = _context.next) {
           case 0:
             _context.next = 2;
-            return _flow.default.deleteMany({
+            return _flow["default"].deleteMany({
               pageId: pageID
             }).exec();
 
@@ -65,7 +65,7 @@ function () {
           case 0:
             orderId = orderData.orderId, userId = orderData.userId, pageId = orderData.pageId, step = orderData.step;
             _context2.next = 3;
-            return _flow.default.find({
+            return _flow["default"].find({
               pageId: pageId,
               orderId: orderId
             }).select('id').sort('-id').limit(1).exec();
@@ -74,7 +74,7 @@ function () {
             resultLastId = _context2.sent;
             itemId = 1;
             if (resultLastId && resultLastId.length) itemId = resultLastId[0].id + 1;
-            record = new _flow.default({
+            record = new _flow["default"]({
               id: itemId,
               orderId: orderId,
               userId: userId,

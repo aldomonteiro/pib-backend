@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.formatAddrData = exports.updateCustomer = exports.getAddressLocation = exports.getCustomerAddress = exports.getCustomerById = exports.checkCustomerAddress = exports.deleteManyCustomers = exports.customer_update = exports.customer_get_one = exports.customer_get_all = void 0;
+exports.notifyUserStopAuto = exports.formatAddrData = exports.updateCustomer = exports.getAddressLocation = exports.getCustomerAddress = exports.getCustomerById = exports.checkCustomerAddress = exports.deleteManyCustomers = exports.customer_update = exports.customer_get_one = exports.customer_get_all = void 0;
 
 var _customers = _interopRequireDefault(require("../models/customers"));
 
@@ -17,7 +17,9 @@ var _util2 = require("../util/util");
 
 var _ordersController = require("./ordersController");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _redisController = require("./redisController");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -63,7 +65,7 @@ function () {
                 queryObj["pageId"] = req.currentUser.activePage;
               }
 
-              _customers.default.find(queryObj).sort(sortObj).exec(function (err, result) {
+              _customers["default"].find(queryObj).sort(sortObj).exec(function (err, result) {
                 if (err) {
                   res.status(500).json({
                     message: err.errmsg
@@ -84,7 +86,7 @@ function () {
                     resultArray.push(result[_i]);
                   }
 
-                  res.setHeader('Content-Range', _util.default.format("customers %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
+                  res.setHeader('Content-Range', _util["default"].format("customers %d-%d/%d", _rangeIni, _rangeEnd, _totalCount));
                   res.status(200).json(resultArray);
                 }
               });
@@ -141,7 +143,7 @@ function () {
             }
 
             _context2.next = 9;
-            return _customers.default.findOne(queryParams).exec();
+            return _customers["default"].findOne(queryParams).exec();
 
           case 9:
             customer = _context2.sent;
@@ -219,14 +221,14 @@ var customer_update = function customer_update(req, res) {
   if (req.body && req.body.id) {
     var pageId = req.currentUser.activePage;
 
-    _customers.default.findOne({
+    _customers["default"].findOne({
       pageId: pageId,
       id: req.body.id
     }, function (err, doc) {
       if (!err) {
-        doc.first_name = (0, _stringCapitalizeName.default)(req.body.first_name);
-        doc.last_name = (0, _stringCapitalizeName.default)(req.body.last_name);
-        doc.addr_city = (0, _stringCapitalizeName.default)(req.body.city);
+        doc.first_name = (0, _stringCapitalizeName["default"])(req.body.first_name);
+        doc.last_name = (0, _stringCapitalizeName["default"])(req.body.last_name);
+        doc.addr_city = (0, _stringCapitalizeName["default"])(req.body.city);
         doc.addr_postalcode = req.body.addr_postalcode;
         doc.save(function (err, result) {
           if (err) {
@@ -264,7 +266,7 @@ function () {
         switch (_context3.prev = _context3.next) {
           case 0:
             _context3.next = 2;
-            return _customers.default.deleteMany({
+            return _customers["default"].deleteMany({
               pageId: pageID
             }).exec();
 
@@ -353,7 +355,7 @@ function () {
         switch (_context5.prev = _context5.next) {
           case 0:
             _context5.next = 2;
-            return _customers.default.findOne({
+            return _customers["default"].findOne({
               pageId: pageID,
               id: id
             }).exec();
@@ -388,7 +390,7 @@ function () {
         switch (_context6.prev = _context6.next) {
           case 0:
             _context6.next = 2;
-            return _customers.default.findOne({
+            return _customers["default"].findOne({
               pageId: pageID,
               userId: userID
             }).exec();
@@ -636,9 +638,9 @@ function () {
           case 0:
             console.info('using:' + API_KEY);
             _context8.next = 3;
-            return _axios.default.get('https://maps.googleapis.com/maps/api/geocode/json', {
+            return _axios["default"].get('https://maps.googleapis.com/maps/api/geocode/json', {
               params: {
-                'latlng': location.lat + ',' + location.long,
+                'latlng': location.lat + ',' + location["long"],
                 'key': API_KEY
               }
             });
@@ -672,7 +674,7 @@ function () {
           case 0:
             customerID = 0;
             _context9.next = 3;
-            return _customers.default.findOne({
+            return _customers["default"].findOne({
               pageId: custData.pageId,
               userId: custData.userId
             }).exec();
@@ -703,7 +705,7 @@ function () {
 
             if (location) {
               customer.location_lat = location.lat;
-              customer.location_long = location.long;
+              customer.location_long = location["long"];
               customer.location_url = location.url;
               updateDb = true;
             }
@@ -734,7 +736,7 @@ function () {
 
           case 17:
             _context9.next = 19;
-            return _customers.default.find({
+            return _customers["default"].find({
               pageId: custData.pageId
             }).select('id').sort('-id').limit(1).exec();
 
@@ -742,7 +744,7 @@ function () {
             resultLastId = _context9.sent;
             lastId = 1;
             if (resultLastId && resultLastId.length) lastId = resultLastId[0].id + 1;
-            newRecord = new _customers.default({
+            newRecord = new _customers["default"]({
               id: lastId,
               userId: custData.userId,
               pageId: custData.pageId,
@@ -759,7 +761,7 @@ function () {
               addr_city: custData.addr ? custData.addr.city : null,
               addr_postalcode: custData.addr ? custData.addr.postal_code : null,
               location_lat: custData.location ? custData.location.lat : null,
-              location_long: custData.location ? custData.location.long : null,
+              location_long: custData.location ? custData.location["long"] : null,
               location_url: custData.location ? custData.location.url : null
             });
             _context9.next = 25;
@@ -831,6 +833,50 @@ function () {
     return _ref11.apply(this, arguments);
   };
 }();
+/**
+ * Using Redis, communicate with server-webapp
+ * @param {*} pageId
+ * @param {*} userId
+ * @param {*} user
+ */
+
 
 exports.formatAddrData = formatAddrData;
+
+var notifyUserStopAuto =
+/*#__PURE__*/
+function () {
+  var _ref12 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee11(pageId, userId, user) {
+    var formattedUserId, data;
+    return regeneratorRuntime.wrap(function _callee11$(_context11) {
+      while (1) {
+        switch (_context11.prev = _context11.next) {
+          case 0:
+            try {
+              formattedUserId = userId.indexOf('@') > -1 ? userId.split('@')[0] : userId;
+              data = {
+                id: formattedUserId,
+                first_name: user.first_name
+              };
+              (0, _redisController.emitEvent)(pageId, 'talk-to-human', data);
+            } catch (error) {
+              console.error(error);
+            }
+
+          case 1:
+          case "end":
+            return _context11.stop();
+        }
+      }
+    }, _callee11);
+  }));
+
+  return function notifyUserStopAuto(_x18, _x19, _x20) {
+    return _ref12.apply(this, arguments);
+  };
+}();
+
+exports.notifyUserStopAuto = notifyUserStopAuto;
 //# sourceMappingURL=customersController.js.map

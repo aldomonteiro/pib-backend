@@ -5,6 +5,7 @@ import stringCapitalizeName from 'string-capitalize-name';
 import { shuffle } from '../util/util';
 import { configSortQuery, configRangeQuery, configFilterQueryMultiple } from '../util/util';
 import { getOrdersCustomerStat } from './ordersController';
+import { emitEvent } from './redisController';
 
 // List all customers
 export const customer_get_all = async (req, res) => {
@@ -324,6 +325,23 @@ export const formatAddrData = async addrData => {
         });
     });
     return formattedAddressData;
+}
+
+/**
+ * Using Redis, communicate with server-webapp
+ * @param {*} pageId
+ * @param {*} userId
+ * @param {*} user
+ */
+export const notifyUserStopAuto = async (pageId, userId, user) => {
+    try {
+        const formattedUserId = userId.indexOf('@') > -1 ? userId.split('@')[0] : userId;
+
+        const data = { id: formattedUserId, first_name: user.first_name }
+        emitEvent(pageId, 'talk-to-human', data);
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 

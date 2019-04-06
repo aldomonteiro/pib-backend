@@ -92,8 +92,8 @@ function () {
             _context.prev = 25;
             _context.prev = 26;
 
-            if (!_iteratorNormalCompletion && _iterator.return != null) {
-              _iterator.return();
+            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+              _iterator["return"]();
             }
 
           case 28:
@@ -241,8 +241,8 @@ function () {
             _context2.prev = 31;
             _context2.prev = 32;
 
-            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-              _iterator2.return();
+            if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+              _iterator2["return"]();
             }
 
           case 34:
@@ -384,8 +384,8 @@ function () {
             _context3.prev = 36;
             _context3.prev = 37;
 
-            if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
-              _iterator5.return();
+            if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
+              _iterator5["return"]();
             }
 
           case 39:
@@ -423,8 +423,8 @@ function () {
             _context3.prev = 53;
             _context3.prev = 54;
 
-            if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-              _iterator4.return();
+            if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+              _iterator4["return"]();
             }
 
           case 56:
@@ -465,8 +465,8 @@ function () {
             _context3.prev = 71;
             _context3.prev = 72;
 
-            if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-              _iterator3.return();
+            if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+              _iterator3["return"]();
             }
 
           case 74:
@@ -556,8 +556,8 @@ function () {
             _context4.prev = 14;
             _context4.prev = 15;
 
-            if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
-              _iterator6.return();
+            if (!_iteratorNormalCompletion6 && _iterator6["return"] != null) {
+              _iterator6["return"]();
             }
 
           case 17:

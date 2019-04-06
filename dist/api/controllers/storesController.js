@@ -11,7 +11,7 @@ var _util = _interopRequireDefault(require("util"));
 
 var _util2 = require("../util/util");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -34,18 +34,18 @@ var store_get_all = function store_get_all(req, res) {
   var query = {};
 
   if (req.currentUser.activePage) {
-    query = _stores.default.find({
+    query = _stores["default"].find({
       pageId: req.currentUser.activePage
     });
   }
 
-  _stores.default.paginate(query, options, function (err, result) {
+  _stores["default"].paginate(query, options, function (err, result) {
     if (err) {
       res.status(500).json({
         message: err.errmsg
       });
     } else {
-      res.setHeader('Content-Range', _util.default.format('stores %d-%d/%d', rangeObj['offset'], rangeObj['limit'], result.total));
+      res.setHeader('Content-Range', _util["default"].format('stores %d-%d/%d', rangeObj['offset'], rangeObj['limit'], result.total));
       res.status(200).json(result.docs);
     }
   });
@@ -59,7 +59,7 @@ var store_get_one = function store_get_one(req, res) {
     // Filter based on the currentUser
     var pageId = req.currentUser.activePage;
 
-    _stores.default.findOne({
+    _stores["default"].findOne({
       pageId: pageId,
       id: req.params.id
     }, function (err, doc) {
@@ -80,7 +80,7 @@ exports.store_get_one = store_get_one;
 var store_create = function store_create(req, res) {
   if (req.body) {
     var pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
-    var newRecord = new _stores.default({
+    var newRecord = new _stores["default"]({
       id: req.body.id,
       pageId: pageId,
       name: req.body.name,
@@ -120,7 +120,7 @@ var store_create = function store_create(req, res) {
     });
     newRecord.save().then(function (result) {
       res.status(200).json(result);
-    }).catch(function (err) {
+    })["catch"](function (err) {
       res.status(500).json({
         message: err.errmsg
       });
@@ -143,7 +143,7 @@ var store_update = function store_update(req, res) {
         pickupTime = _req$body.pickupTime;
 
     if (operation) {
-      _stores.default.findOne({
+      _stores["default"].findOne({
         pageId: pageId,
         id: id
       }, function (err, doc) {
@@ -162,7 +162,7 @@ var store_update = function store_update(req, res) {
         }
       });
     } else {
-      _stores.default.findOne({
+      _stores["default"].findOne({
         pageId: pageId,
         id: id
       }, function (err, doc) {
@@ -243,7 +243,7 @@ function () {
         switch (_context.prev = _context.next) {
           case 0:
             _context.next = 2;
-            return _stores.default.deleteMany({
+            return _stores["default"].deleteMany({
               pageId: pageID
             }).exec();
 
@@ -269,12 +269,12 @@ exports.deleteManyStores = deleteManyStores;
 var store_delete = function store_delete(req, res) {
   var pageId = req.currentUser.activePage;
 
-  _stores.default.findOneAndRemove({
+  _stores["default"].findOneAndRemove({
     pageId: pageId,
     id: req.params.id
   }).then(function (result) {
     res.status(200).json(result);
-  }).catch(function (err) {
+  })["catch"](function (err) {
     res.status(500).json({
       message: err.errmsg
     });
@@ -295,7 +295,7 @@ function () {
         switch (_context2.prev = _context2.next) {
           case 0:
             // TODO: if is there more than one Store?
-            query = _stores.default.find({
+            query = _stores["default"].find({
               pageId: pageID
             });
             _context2.next = 3;
@@ -331,7 +331,7 @@ function () {
         switch (_context3.prev = _context3.next) {
           case 0:
             // TODO: if is there more than one Store?
-            query = _stores.default.findOne({
+            query = _stores["default"].findOne({
               pageId: pageID
             });
             _context3.next = 3;
@@ -371,7 +371,7 @@ function () {
         switch (_context4.prev = _context4.next) {
           case 0:
             _context4.next = 2;
-            return _stores.default.findOne({
+            return _stores["default"].findOne({
               phone: phone
             }).exec();
 
@@ -533,8 +533,8 @@ var calcDeliveryFee = function calcDeliveryFee(deliveryFees, distanceFromStore) 
       _iteratorError = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion && _iterator.return != null) {
-          _iterator.return();
+        if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+          _iterator["return"]();
         }
       } finally {
         if (_didIteratorError) {

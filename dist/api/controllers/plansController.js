@@ -13,7 +13,7 @@ var _stringCapitalizeName = _interopRequireDefault(require("string-capitalize-na
 
 var _util2 = require("../util/util");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -56,7 +56,7 @@ function () {
               }
             }
 
-            _plans.default.find(queryObj).sort(sortObj).exec(function (err, result) {
+            _plans["default"].find(queryObj).sort(sortObj).exec(function (err, result) {
               if (err) {
                 res.status(500).json({
                   message: err.errmsg
@@ -77,7 +77,7 @@ function () {
                   plansArray.push(result[_i]);
                 }
 
-                res.setHeader('Content-Range', _util.default.format('plans %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
+                res.setHeader('Content-Range', _util["default"].format('plans %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
                 res.status(200).json(plansArray);
               }
             });
@@ -100,7 +100,7 @@ exports.topping_get_all = topping_get_all;
 
 var plan_get_one = function plan_get_one(req, res) {
   if (req.params && req.params.id) {
-    _plans.default.findOne({
+    _plans["default"].findOne({
       id: req.params.id
     }, function (err, doc) {
       if (err) {
@@ -119,16 +119,16 @@ exports.plan_get_one = plan_get_one;
 
 var plan_create = function plan_create(req, res) {
   if (req.body) {
-    var newRecord = new _plans.default({
+    var newRecord = new _plans["default"]({
       id: req.body.id,
-      plan: (0, _stringCapitalizeName.default)(req.body.plan),
+      plan: (0, _stringCapitalizeName["default"])(req.body.plan),
       amount: req.body.amount,
       interval: req.body.interval,
       currency: req.body.currency
     });
     newRecord.save().then(function (result) {
       res.status(200).json(result);
-    }).catch(function (err) {
+    })["catch"](function (err) {
       if (err.code === 11000) {
         res.status(500).json({
           message: 'pos.messages.duplicatedKey'
@@ -146,11 +146,11 @@ var plan_create = function plan_create(req, res) {
 exports.plan_create = plan_create;
 
 var plan_update = function plan_update(req, res) {
-  _plans.default.findOne({
+  _plans["default"].findOne({
     id: req.body.id
   }, function (err, result) {
     if (!err) {
-      result.plan = (0, _stringCapitalizeName.default)(req.body.plan);
+      result.plan = (0, _stringCapitalizeName["default"])(req.body.plan);
       result.ammount = req.body.ammount;
       result.interval = req.body.interval;
       result.currency = req.body.currency;
@@ -175,14 +175,14 @@ var plan_update = function plan_update(req, res) {
 exports.plan_update = plan_update;
 
 var plan_delete = function plan_delete(req, res) {
-  _plans.default.findOneAndRemove({
+  _plans["default"].findOneAndRemove({
     id: req.params.id
   }).then(function (result) {
     res.status(200).json({
       id: result.id,
       plan: result.plan
     });
-  }).catch(function (err) {
+  })["catch"](function (err) {
     res.status(500).json({
       message: err.errmsg
     });

@@ -3,13 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
 var _mongoose = _interopRequireDefault(require("mongoose"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var Schema = _mongoose.default.Schema;
+var Schema = _mongoose["default"].Schema;
 var schema = new Schema({
   id: {
     type: Number,
@@ -128,19 +128,19 @@ var schema = new Schema({
   },
   distance_from_store: {
     type: Number,
-    default: 0
+    "default": 0
   },
   delivery_fee: {
     type: Number,
-    default: 0
+    "default": 0
   },
   surcharge_percent: {
     type: Number,
-    default: 0
+    "default": 0
   },
   surcharge_amount: {
     type: Number,
-    default: 0
+    "default": 0
   },
   store_address: {
     type: String
@@ -197,7 +197,7 @@ schema.pre('save', function (next) {
   next();
 });
 
-var _default = _mongoose.default.model("orders", schema);
+var _default = _mongoose["default"].model("orders", schema);
 
-exports.default = _default;
+exports["default"] = _default;
 //# sourceMappingURL=orders.js.map

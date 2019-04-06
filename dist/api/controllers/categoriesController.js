@@ -11,7 +11,7 @@ var _util = _interopRequireDefault(require("util"));
 
 var _util2 = require("../util/util");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -48,7 +48,7 @@ var category_get_all = function category_get_all(req, res) {
     queryObj['pageId'] = req.currentUser.activePage;
   }
 
-  _categories.default.find(queryObj).sort(sortObj).exec(function (err, result) {
+  _categories["default"].find(queryObj).sort(sortObj).exec(function (err, result) {
     if (err) {
       res.status(500).json({
         message: err.errmsg
@@ -69,7 +69,7 @@ var category_get_all = function category_get_all(req, res) {
         responseArr.push(result[_i]);
       }
 
-      res.setHeader('Content-Range', _util.default.format('categories %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
+      res.setHeader('Content-Range', _util["default"].format('categories %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
       res.status(200).json(responseArr);
     }
   });
@@ -83,7 +83,7 @@ var category_get_one = function category_get_one(req, res) {
     // Filter based on the currentUser
     var pageId = req.currentUser.activePage;
 
-    _categories.default.findOne({
+    _categories["default"].findOne({
       pageId: pageId,
       id: req.params.id
     }, function (err, doc) {
@@ -126,7 +126,7 @@ function () {
             }
 
             _context.next = 6;
-            return _categories.default.find({
+            return _categories["default"].find({
               pageId: pageID
             }).select('id').sort('-id').limit(1).exec();
 
@@ -136,7 +136,7 @@ function () {
             if (lastId && lastId.length) id = lastId[0].id + 1;
 
           case 9:
-            newRecord = new _categories.default({
+            newRecord = new _categories["default"]({
               id: id,
               name: req.body.name,
               price_by_size: req.body.price_by_size,
@@ -145,7 +145,7 @@ function () {
             });
             newRecord.save().then(function (result) {
               res.status(200).json(result);
-            }).catch(function (err) {
+            })["catch"](function (err) {
               res.status(500).json({
                 message: err.errmsg
               });
@@ -171,7 +171,7 @@ var category_update = function category_update(req, res) {
   if (req.body && req.body.id) {
     var pageId = req.currentUser.activePage;
 
-    _categories.default.findOne({
+    _categories["default"].findOne({
       pageId: pageId,
       id: req.body.id
     }, function (err, doc) {
@@ -203,12 +203,12 @@ exports.category_update = category_update;
 var category_delete = function category_delete(req, res) {
   var pageId = req.currentUser.activePage;
 
-  _categories.default.findOneAndRemove({
+  _categories["default"].findOneAndRemove({
     pageId: pageId,
     id: req.params.id
   }).then(function (result) {
     res.status(200).json(result);
-  }).catch(function (err) {
+  })["catch"](function (err) {
     res.status(500).json({
       message: err.errmsg
     });
@@ -233,7 +233,7 @@ function () {
         switch (_context2.prev = _context2.next) {
           case 0:
             _context2.next = 2;
-            return _categories.default.deleteMany({
+            return _categories["default"].deleteMany({
               pageId: pageID
             }).exec();
 
@@ -266,7 +266,7 @@ function () {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            query = _categories.default.find({
+            query = _categories["default"].find({
               pageId: pageID
             });
             query.sort('id');
@@ -302,7 +302,7 @@ function () {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            query = _categories.default.findOne({
+            query = _categories["default"].findOne({
               pageId: pageID,
               id: categoryID
             });

@@ -33,7 +33,7 @@ var _pagesController = require("./pagesController");
 
 var _categoriesController = require("./categoriesController");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -52,7 +52,7 @@ function () {
           case 0:
             _context.prev = 0;
 
-            _dotenv.default.config();
+            _dotenv["default"].config();
 
             env = process.env.NODE_ENV || 'production';
             basePageID = process.env.DEV_PAGE_BASE_ID; // Página do Aldo
@@ -230,7 +230,7 @@ function () {
 
             for (_iterator = _flavors[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
               element = _step.value;
-              newRec = new _flavors2.default({
+              newRec = new _flavors2["default"]({
                 id: element.id,
                 flavor: element.flavor,
                 categoryId: element.categoryId,
@@ -255,8 +255,8 @@ function () {
             _context2.prev = 17;
             _context2.prev = 18;
 
-            if (!_iteratorNormalCompletion && _iterator.return != null) {
-              _iterator.return();
+            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+              _iterator["return"]();
             }
 
           case 20:
@@ -282,7 +282,7 @@ function () {
             }
 
             _context2.next = 28;
-            return _flavors2.default.insertMany(docs);
+            return _flavors2["default"].insertMany(docs);
 
           case 28:
             // => {
@@ -343,7 +343,7 @@ function () {
 
             for (_iterator2 = _sizes[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
               element = _step2.value;
-              newRec = new _sizes2.default({
+              newRec = new _sizes2["default"]({
                 id: element.id,
                 size: element.size,
                 slices: element.slices,
@@ -366,8 +366,8 @@ function () {
             _context3.prev = 17;
             _context3.prev = 18;
 
-            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-              _iterator2.return();
+            if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+              _iterator2["return"]();
             }
 
           case 20:
@@ -393,7 +393,7 @@ function () {
             }
 
             _context3.next = 28;
-            return _sizes2.default.insertMany(docs);
+            return _sizes2["default"].insertMany(docs);
 
           case 28:
             _newRecords = docs.length;
@@ -453,7 +453,7 @@ function () {
 
             for (_iterator3 = _docs[Symbol.iterator](); !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
               element = _step3.value;
-              newRec = new _categories.default({
+              newRec = new _categories["default"]({
                 id: element.id,
                 name: element.name,
                 price_by_size: element.price_by_size,
@@ -476,8 +476,8 @@ function () {
             _context4.prev = 17;
             _context4.prev = 18;
 
-            if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
-              _iterator3.return();
+            if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+              _iterator3["return"]();
             }
 
           case 20:
@@ -503,7 +503,7 @@ function () {
             }
 
             _context4.next = 28;
-            return _categories.default.insertMany(docs);
+            return _categories["default"].insertMany(docs);
 
           case 28:
             _newRecords = docs.length;
@@ -563,7 +563,7 @@ function () {
 
             for (_iterator4 = _docs[Symbol.iterator](); !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
               element = _step4.value;
-              newRec = new _toppings.default({
+              newRec = new _toppings["default"]({
                 id: element.id,
                 topping: element.topping,
                 pageId: pageID
@@ -584,8 +584,8 @@ function () {
             _context5.prev = 17;
             _context5.prev = 18;
 
-            if (!_iteratorNormalCompletion4 && _iterator4.return != null) {
-              _iterator4.return();
+            if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+              _iterator4["return"]();
             }
 
           case 20:
@@ -611,7 +611,7 @@ function () {
             }
 
             _context5.next = 28;
-            return _toppings.default.insertMany(docs);
+            return _toppings["default"].insertMany(docs);
 
           case 28:
             _newRecords = docs.length;
@@ -671,7 +671,7 @@ function () {
 
             for (_iterator5 = _pricings[Symbol.iterator](); !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
               element = _step5.value;
-              newRec = new _pricings2.default({
+              newRec = new _pricings2["default"]({
                 id: element.id,
                 categoryId: element.categoryId,
                 sizeId: element.sizeId,
@@ -694,8 +694,8 @@ function () {
             _context6.prev = 17;
             _context6.prev = 18;
 
-            if (!_iteratorNormalCompletion5 && _iterator5.return != null) {
-              _iterator5.return();
+            if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
+              _iterator5["return"]();
             }
 
           case 20:
@@ -721,7 +721,7 @@ function () {
             }
 
             _context6.next = 28;
-            return _pricings2.default.insertMany(docs);
+            return _pricings2["default"].insertMany(docs);
 
           case 28:
             _newRecords = docs.length;
@@ -781,7 +781,7 @@ function () {
 
             for (_iterator6 = _stores[Symbol.iterator](); !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
               element = _step6.value;
-              newRec = new _stores2.default({
+              newRec = new _stores2["default"]({
                 pageId: pageID,
                 name: pageName,
                 id: element.id,
@@ -830,8 +830,8 @@ function () {
             _context7.prev = 17;
             _context7.prev = 18;
 
-            if (!_iteratorNormalCompletion6 && _iterator6.return != null) {
-              _iterator6.return();
+            if (!_iteratorNormalCompletion6 && _iterator6["return"] != null) {
+              _iterator6["return"]();
             }
 
           case 20:
@@ -857,7 +857,7 @@ function () {
             }
 
             _context7.next = 28;
-            return _stores2.default.insertMany(docs);
+            return _stores2["default"].insertMany(docs);
 
           case 28:
             _newRecords = docs.length;

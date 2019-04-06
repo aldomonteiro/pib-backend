@@ -19,7 +19,7 @@ var _toppingsController = require("./toppingsController");
 
 var _categoriesController = require("./categoriesController");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -70,7 +70,7 @@ function () {
               queryObj['pageId'] = req.currentUser.activePage;
             }
 
-            _flavors.default.find(queryObj).sort(sortObj).exec(
+            _flavors["default"].find(queryObj).sort(sortObj).exec(
             /*#__PURE__*/
             function () {
               var _ref2 = _asyncToGenerator(
@@ -114,7 +114,7 @@ function () {
                             flavorsArray.push(flavor);
                           }
 
-                          res.setHeader('Content-Range', _util.default.format('flavors %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
+                          res.setHeader('Content-Range', _util["default"].format('flavors %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
                           res.status(200).json(flavorsArray);
                         }
 
@@ -181,7 +181,7 @@ var flavor_get_one = function flavor_get_one(req, res) {
   if (req.params && req.params.id) {
     var pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
 
-    _flavors.default.findOne({
+    _flavors["default"].findOne({
       pageId: pageId,
       id: req.params.id
     }, function (err, doc) {
@@ -253,7 +253,7 @@ function () {
             }
 
             _context3.next = 17;
-            return _flavors.default.find({
+            return _flavors["default"].find({
               pageId: pageId
             }).select('id').sort('-id').limit(1).exec();
 
@@ -263,9 +263,9 @@ function () {
             if (lastId && lastId.length) id = lastId[0].id + 1;
 
           case 20:
-            newRecord = new _flavors.default({
+            newRecord = new _flavors["default"]({
               id: id,
-              flavor: (0, _stringCapitalizeName.default)(req.body.flavor),
+              flavor: (0, _stringCapitalizeName["default"])(req.body.flavor),
               categoryId: req.body.categoryId,
               pageId: pageId,
               toppings: req.body.toppings,
@@ -274,7 +274,7 @@ function () {
             });
             newRecord.save().then(function (result) {
               res.status(200).json(result);
-            }).catch(function (err) {
+            })["catch"](function (err) {
               console.error(err);
 
               if (err.code === 11000) {
@@ -346,13 +346,13 @@ function () {
                 message: 'pos.flavors.messages.priceNotAllowed'
               });
             } else {
-              _flavors.default.findOne({
+              _flavors["default"].findOne({
                 pageId: pageId,
                 id: id
               }, function (err, doc) {
                 if (!err) {
                   if (flavor) {
-                    var _flavor = (0, _util2.fixNonCapitalizeWords)((0, _stringCapitalizeName.default)(flavor));
+                    var _flavor = (0, _util2.fixNonCapitalizeWords)((0, _stringCapitalizeName["default"])(flavor));
 
                     doc.flavor = _flavor;
                   }
@@ -397,12 +397,12 @@ exports.flavor_update = flavor_update;
 var flavor_delete = function flavor_delete(req, res) {
   var pageId = req.currentUser.activePage;
 
-  _flavors.default.findOneAndRemove({
+  _flavors["default"].findOneAndRemove({
     pageId: pageId,
     id: req.params.id
   }).then(function (result) {
     res.status(200).json(result);
-  }).catch(function (err) {
+  })["catch"](function (err) {
     res.status(500).json({
       message: err.errmsg
     });
@@ -427,7 +427,7 @@ function () {
         switch (_context5.prev = _context5.next) {
           case 0:
             _context5.next = 2;
-            return _flavors.default.deleteMany({
+            return _flavors["default"].deleteMany({
               pageId: pageID
             }).exec();
 
@@ -463,7 +463,7 @@ function () {
             query = {};
             query['pageId'] = pageID;
             if (categoryId) query['categoryId'] = categoryId;
-            queryFlavor = _flavors.default.find(query);
+            queryFlavor = _flavors["default"].find(query);
             if (!sort) queryFlavor.sort('flavor');else queryFlavor.sort(sort);
             queryFlavor.select('id pageId flavor categoryId toppings price price_by_size');
             _context6.next = 8;
@@ -498,7 +498,7 @@ function () {
       while (1) {
         switch (_context7.prev = _context7.next) {
           case 0:
-            queryFlavor = _flavors.default.findOne({
+            queryFlavor = _flavors["default"].findOne({
               pageId: pageID,
               id: flavorID
             });
@@ -546,7 +546,7 @@ function () {
               flavorsNames.push(flavors[i].flavor);
             }
 
-            stringResult = _stringSimilarity.default.findBestMatch(flavorName, flavorsNames);
+            stringResult = _stringSimilarity["default"].findBestMatch(flavorName, flavorsNames);
             /* stringSimilarity searching for 'Escarola e bacon', result:
             { ratings:
                 [ { target: 'Quatro queijos', rating: 0.09090909090909091 },

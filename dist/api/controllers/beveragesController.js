@@ -11,7 +11,7 @@ var _util = _interopRequireDefault(require("util"));
 
 var _util2 = require("../util/util");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -48,7 +48,7 @@ var beverage_get_all = function beverage_get_all(req, res) {
     queryObj['pageId'] = req.currentUser.activePage;
   }
 
-  _beverages.default.find(queryObj).sort(sortObj).exec(function (err, result) {
+  _beverages["default"].find(queryObj).sort(sortObj).exec(function (err, result) {
     if (err) {
       res.status(500).json({
         message: err.errmsg
@@ -69,7 +69,7 @@ var beverage_get_all = function beverage_get_all(req, res) {
         responseArr.push(result[_i]);
       }
 
-      res.setHeader('Content-Range', _util.default.format('beverages %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
+      res.setHeader('Content-Range', _util["default"].format('beverages %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
       res.status(200).json(responseArr);
     }
   });
@@ -83,7 +83,7 @@ var beverage_get_one = function beverage_get_one(req, res) {
     // Filter based on the currentUser
     var pageId = req.currentUser.activePage;
 
-    _beverages.default.findOne({
+    _beverages["default"].findOne({
       pageId: pageId,
       id: req.params.id
     }, function (err, doc) {
@@ -104,7 +104,7 @@ exports.beverage_get_one = beverage_get_one;
 var beverage_create = function beverage_create(req, res) {
   if (req.body) {
     var pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
-    var newRecord = new _beverages.default({
+    var newRecord = new _beverages["default"]({
       id: req.body.id,
       kind: req.body.kind,
       name: req.body.name,
@@ -113,7 +113,7 @@ var beverage_create = function beverage_create(req, res) {
     });
     newRecord.save().then(function (result) {
       res.status(200).json(result);
-    }).catch(function (err) {
+    })["catch"](function (err) {
       res.status(500).json({
         message: err.errmsg
       });
@@ -128,7 +128,7 @@ var beverage_update = function beverage_update(req, res) {
   if (req.body && req.body.id) {
     var pageId = req.currentUser.activePage;
 
-    _beverages.default.findOne({
+    _beverages["default"].findOne({
       pageId: pageId,
       id: req.body.id
     }, function (err, doc) {
@@ -160,12 +160,12 @@ exports.beverage_update = beverage_update;
 var beverage_delete = function beverage_delete(req, res) {
   var pageId = req.currentUser.activePage;
 
-  _beverages.default.findOneAndRemove({
+  _beverages["default"].findOneAndRemove({
     pageId: pageId,
     id: req.params.id
   }).then(function (result) {
     res.status(200).json(result);
-  }).catch(function (err) {
+  })["catch"](function (err) {
     res.status(500).json({
       message: err.errmsg
     });
@@ -190,7 +190,7 @@ function () {
         switch (_context.prev = _context.next) {
           case 0:
             _context.next = 2;
-            return _beverages.default.deleteMany({
+            return _beverages["default"].deleteMany({
               pageId: pageID
             }).exec();
 
@@ -223,7 +223,7 @@ function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            query = _beverages.default.find({
+            query = _beverages["default"].find({
               pageId: pageID
             });
             query.sort('name kind');
@@ -259,7 +259,7 @@ function () {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            query = _beverages.default.findOne({
+            query = _beverages["default"].findOne({
               pageId: pageID,
               id: beverageID
             }); // query.select('id name kind price');

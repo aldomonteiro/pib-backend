@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
@@ -29,4 +29,4 @@ const schema = new Schema(
 schema.index({ pageId: 1, id: 1 }, { unique: true });
 schema.index({ userId: 1 });
 
-export default mongoose.model("customers", schema);
+export default mongoose.model('customers', schema);

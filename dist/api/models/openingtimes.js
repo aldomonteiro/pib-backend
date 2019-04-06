@@ -3,13 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
 var _mongoose = _interopRequireDefault(require("mongoose"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var Schema = _mongoose.default.Schema;
+var Schema = _mongoose["default"].Schema;
 var schema = new Schema({
   store: {
     type: Schema.ObjectId,
@@ -25,7 +25,7 @@ var schema = new Schema({
   // Holydays
   hol_is_open: {
     type: Boolean,
-    default: true
+    "default": true
   },
   hol_open: {
     type: String,
@@ -38,31 +38,31 @@ var schema = new Schema({
   // Weekdays
   sun_is_open: {
     type: Boolean,
-    default: true
+    "default": true
   },
   mon_is_open: {
     type: Boolean,
-    default: true
+    "default": true
   },
   tue_is_open: {
     type: Boolean,
-    default: true
+    "default": true
   },
   wed_is_open: {
     type: Boolean,
-    default: true
+    "default": true
   },
   thu_is_open: {
     type: Boolean,
-    default: true
+    "default": true
   },
   fri_is_open: {
     type: Boolean,
-    default: true
+    "default": true
   },
   sat_is_open: {
     type: Boolean,
-    default: true
+    "default": true
   },
   sun_open: {
     type: String,
@@ -128,7 +128,7 @@ schema.index({
   pageId: 1
 });
 
-var _default = _mongoose.default.model("openingtimes", schema);
+var _default = _mongoose["default"].model("openingtimes", schema);
 
-exports.default = _default;
+exports["default"] = _default;
 //# sourceMappingURL=openingtimes.js.map

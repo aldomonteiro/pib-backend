@@ -3,13 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
 var _mongoose = _interopRequireDefault(require("mongoose"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var schema = new _mongoose.default.Schema({
+var schema = new _mongoose["default"].Schema({
   id: {
     type: String,
     required: true
@@ -57,13 +57,13 @@ var schema = new _mongoose.default.Schema({
   },
   marketing: {
     type: Boolean,
-    default: false
+    "default": false
   }
 }, {
   timestamps: true
 }); // TODO: store access_token expiring date
 
-var _default = _mongoose.default.model('pages', schema);
+var _default = _mongoose["default"].model('pages', schema);
 
-exports.default = _default;
+exports["default"] = _default;
 //# sourceMappingURL=pages.js.map

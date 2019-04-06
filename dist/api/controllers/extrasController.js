@@ -11,7 +11,7 @@ var _util = _interopRequireDefault(require("util"));
 
 var _util2 = require("../util/util");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -34,18 +34,18 @@ var extra_get_all = function extra_get_all(req, res) {
   var query = {};
 
   if (req.currentUser.activePage) {
-    query = _extras.default.find({
+    query = _extras["default"].find({
       pageId: req.currentUser.activePage
     });
   }
 
-  _extras.default.paginate(query, options, function (err, result) {
+  _extras["default"].paginate(query, options, function (err, result) {
     if (err) {
       res.status(500).json({
         message: err.errmsg
       });
     } else {
-      res.setHeader('Content-Range', _util.default.format("extras %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
+      res.setHeader('Content-Range', _util["default"].format("extras %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
       res.status(200).json(result.docs);
     }
   });
@@ -59,7 +59,7 @@ var extra_get_one = function extra_get_one(req, res) {
     // Filter based on the currentUser
     var pageId = req.currentUser.activePage;
 
-    _extras.default.findOne({
+    _extras["default"].findOne({
       pageId: pageId,
       id: req.params.id
     }, function (err, doc) {
@@ -80,7 +80,7 @@ exports.extra_get_one = extra_get_one;
 var extra_create = function extra_create(req, res) {
   if (req.body) {
     var pageId = req.currentUser.activePage ? req.currentUser.activePage : null;
-    var newRecord = new _extras.default({
+    var newRecord = new _extras["default"]({
       id: req.body.id,
       kind: req.body.kind,
       name: req.body.name,
@@ -89,7 +89,7 @@ var extra_create = function extra_create(req, res) {
     });
     newRecord.save().then(function (result) {
       res.status(200).json(result);
-    }).catch(function (err) {
+    })["catch"](function (err) {
       res.status(500).json({
         message: err.errmsg
       });
@@ -104,7 +104,7 @@ var extra_update = function extra_update(req, res) {
   if (req.body && req.body.id) {
     var pageId = req.currentUser.activePage;
 
-    _extras.default.findOne({
+    _extras["default"].findOne({
       pageId: pageId,
       id: req.body.id
     }, function (err, doc) {
@@ -136,12 +136,12 @@ exports.extra_update = extra_update;
 var extra_delete = function extra_delete(req, res) {
   var pageId = req.currentUser.activePage;
 
-  _extras.default.findOneAndRemove({
+  _extras["default"].findOneAndRemove({
     pageId: pageId,
     id: req.params.id
   }).then(function (result) {
     res.status(200).json(result);
-  }).catch(function (err) {
+  })["catch"](function (err) {
     res.status(500).json({
       message: err.errmsg
     });
@@ -166,7 +166,7 @@ function () {
         switch (_context.prev = _context.next) {
           case 0:
             _context.next = 2;
-            return _extras.default.deleteMany({
+            return _extras["default"].deleteMany({
               pageId: pageID
             }).exec();
 

@@ -15,7 +15,7 @@ import { getTodayOpeningTime, getStoreData } from '../controllers/storesControll
 import { updateOrder, getOrderPending, cancelOrder } from '../controllers/ordersController';
 import {
     getAddressLocation,
-    getCustomerAddress, formatAddrData,
+    getCustomerAddress, formatAddrData, notifyUserStopAuto,
 } from '../controllers/customersController';
 import {
     updateStatusSpecificItem, deleteItem,
@@ -143,19 +143,19 @@ export const optionsStopOrder = async () => {
     }
 }
 
-export const passThreadControl = async (pageId, userId, source) => {
+export const passThreadControl = async (pageId, userId, source, user) => {
     let _txt = 'Ok, a partir de agora você está nas mãos do nosso atendente.';
     _txt += ' O que você escrever a partir de agora será respondido por uma pessoa,'
     _txt += 'o mais rápido possível!';
 
-    if (source && source === 'whatsapp') {
-        return { type: 'text', text: _txt, hidden: 'stoporder_human' };
-    } else {
-        const result = await sendPassThreadControl(pageId, userId);
-
-        if (result !== 200) {
-            _txt = 'Ops, tivemos um probleminha. Tente novamente';
-        }
+    if (source === 'whatsapp') {
+        notifyUserStopAuto(pageId, userId, user);
+    }
+    try {
+        await sendPassThreadControl(pageId, userId, source);
+        return { type: 'text', text: _txt };
+    } catch (err) {
+        console.error(err);
         return { type: 'text', text: _txt };
     }
 }

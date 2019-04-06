@@ -15,7 +15,7 @@ var _util = _interopRequireDefault(require("util"));
 
 var _util2 = require("../util/util");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -106,7 +106,7 @@ function () {
           case 0:
             lastInterface = '';
 
-            _dotenv.default.config();
+            _dotenv["default"].config();
 
             _context2.prev = 2;
             _code = req.body.code;
@@ -114,7 +114,7 @@ function () {
             console.info({
               _redirect_uri: _redirect_uri
             });
-            userByCode = _users.default.findOne({
+            userByCode = _users["default"].findOne({
               facebookCode: _code
             }).exec();
 
@@ -139,7 +139,7 @@ function () {
             };
             lastInterface = facebookAccessTokenUrl;
             _context2.next = 16;
-            return _axios.default.get(facebookAccessTokenUrl, {
+            return _axios["default"].get(facebookAccessTokenUrl, {
               params: params
             });
 
@@ -266,7 +266,7 @@ function () {
             _context3.prev = 0;
             url = "https://graph.facebook.com/v3.2/me?fields=id,name,email,picture,location&access_token=".concat(accessToken);
             _context3.next = 4;
-            return _axios.default.get(url);
+            return _axios["default"].get(url);
 
           case 4:
             userData = _context3.sent;
@@ -338,7 +338,7 @@ function () {
             _context4.prev = 0;
             userID = userData.userID, name = userData.name, email = userData.email, pictureUrl = userData.pictureUrl, accessToken = userData.accessToken, timeZone = userData.timeZone, locationName = userData.locationName, code = userData.code;
             _context4.next = 4;
-            return _users.default.findOne({
+            return _users["default"].findOne({
               userID: userID
             }).exec();
 
@@ -346,7 +346,7 @@ function () {
             user = _context4.sent;
 
             if (!user) {
-              user = new _users.default({
+              user = new _users["default"]({
                 userID: userID,
                 name: name,
                 email: email,
@@ -411,7 +411,7 @@ function () {
 }();
 
 var users_create = function users_create(req, res) {
-  var queryUser = _users.default.findOne({
+  var queryUser = _users["default"].findOne({
     userID: req.body.userID
   });
 
@@ -422,7 +422,7 @@ var users_create = function users_create(req, res) {
   if (foundUser) {
     users_auth(req, res);
   } else {
-    var newRecord = new _users.default({
+    var newRecord = new _users["default"]({
       userID: req.body.userID,
       name: req.body.name,
       email: req.body.email,
@@ -437,11 +437,11 @@ var users_create = function users_create(req, res) {
         return res.status(200).json({
           user: record.toAuthJSON()
         });
-      }).catch(function (err) {
+      })["catch"](function (err) {
         console.error(err);
         res.status(500).json(err);
       });
-    }).catch(function (err) {
+    })["catch"](function (err) {
       console.error(err);
       res.status(500).json(err);
     });
@@ -466,13 +466,13 @@ var users_get_all = function users_get_all(req, res) {
 
   var query = {}; // User.paginate(query, options, (err, result) => {
 
-  _users.default.find(function (err, result) {
+  _users["default"].find(function (err, result) {
     if (err) {
       res.status(500).json({
         message: err.errmsg
       });
     } else {
-      res.setHeader('Content-Range', _util.default.format("users %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
+      res.setHeader('Content-Range', _util["default"].format("users %d-%d/%d", rangeObj['offset'], rangeObj['limit'], result.total));
       res.status(200).json(result);
     }
   });
@@ -483,7 +483,7 @@ exports.users_get_all = users_get_all;
 
 var users_get_one = function users_get_one(req, res) {
   if (req.params && req.params.id) {
-    _users.default.findOne({
+    _users["default"].findOne({
       userID: req.params.id
     }, function (err, doc) {
       if (err) {
@@ -507,7 +507,7 @@ var users_update = function users_update(req, res) {
     email: req.body.email
   };
 
-  _users.default.findOne({
+  _users["default"].findOne({
     id: req.body.id
   }, function (err, doc) {
     if (!err) {
@@ -534,14 +534,14 @@ var users_update = function users_update(req, res) {
 exports.users_update = users_update;
 
 var users_delete = function users_delete(req, res) {
-  _users.default.findOneAndRemove({
+  _users["default"].findOneAndRemove({
     id: req.params.id
   }).then(function (result) {
     res.json({
       success: true,
       msg: 'It has been deleted.'
     });
-  }).catch(function (err) {
+  })["catch"](function (err) {
     console.log(err);
     res.status(500).json({
       message: err.message
@@ -564,7 +564,7 @@ function () {
           case 0:
             _context5.prev = 0;
 
-            _dotenv.default.config();
+            _dotenv["default"].config();
 
             env = process.env.NODE_ENV || 'production';
             facebook_secret_key = '';
@@ -585,7 +585,7 @@ function () {
               fb_exchange_token: accessToken
             };
             _context5.next = 9;
-            return _axios.default.get(facebookAccessTokenUrl, {
+            return _axios["default"].get(facebookAccessTokenUrl, {
               params: params
             });
 
@@ -628,7 +628,7 @@ function () {
           case 0:
             _context6.prev = 0;
             _context6.next = 3;
-            return _users.default.findOne({
+            return _users["default"].findOne({
               userID: userID
             }).exec();
 

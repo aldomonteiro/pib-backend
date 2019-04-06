@@ -3,15 +3,15 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
 var _mongoose = _interopRequireDefault(require("mongoose"));
 
 var _mongoosePaginate = _interopRequireDefault(require("mongoose-paginate"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var Schema = _mongoose.default.Schema;
+var Schema = _mongoose["default"].Schema;
 var schema = new Schema({
   id: {
     type: Number,
@@ -47,9 +47,9 @@ schema.index({
 // // Setter
 // schema.path('price').set((num) => num * 100);
 
-schema.plugin(_mongoosePaginate.default);
+schema.plugin(_mongoosePaginate["default"]);
 
-var _default = _mongoose.default.model('pricings', schema);
+var _default = _mongoose["default"].model('pricings', schema);
 
-exports.default = _default;
+exports["default"] = _default;
 //# sourceMappingURL=pricings.js.map

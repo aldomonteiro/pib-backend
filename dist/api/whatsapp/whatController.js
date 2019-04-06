@@ -15,7 +15,7 @@ var _ordersController = require("../controllers/ordersController");
 
 var _show_cardapio = require("../bot/show_cardapio");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
@@ -654,7 +654,7 @@ function () {
 
           case 25:
             _context3.next = 27;
-            return (0, _botController.passThreadControl)(pageID, userID, 'whatsapp');
+            return (0, _botController.passThreadControl)(pageID, userID, 'whatsapp', user);
 
           case 27:
             out = _context3.sent;
@@ -1137,7 +1137,7 @@ function () {
             console.info('**** Ready to send: ****');
             console.info(waboxApp);
             _context5.next = 9;
-            return _axios.default.get(waboxApp);
+            return _axios["default"].get(waboxApp);
 
           case 9:
             return _context5.abrupt("return", _context5.sent);

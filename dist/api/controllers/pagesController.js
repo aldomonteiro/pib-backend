@@ -39,7 +39,7 @@ var _storesController = require("./storesController");
 
 var _usersController = require("./usersController");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -87,7 +87,7 @@ function () {
               if (req.currentUser.role !== 'admin') queryObj['id'] = req.currentUser.activePage;
             }
 
-            _pages.default.find(queryObj).sort(sortObj).exec(function (err, result) {
+            _pages["default"].find(queryObj).sort(sortObj).exec(function (err, result) {
               if (err) {
                 res.status(500).json({
                   message: err.errmsg
@@ -108,7 +108,7 @@ function () {
                   resultArray.push(result[_i]);
                 }
 
-                res.setHeader('Content-Range', _util.default.format('pages %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
+                res.setHeader('Content-Range', _util["default"].format('pages %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
                 res.status(200).json(resultArray);
               }
             });
@@ -131,7 +131,7 @@ exports.page_resources_get_all = page_resources_get_all;
 
 var page_resources_get_one = function page_resources_get_one(req, res) {
   if (req.params && req.params.id) {
-    _pages.default.findOne({
+    _pages["default"].findOne({
       id: req.params.id
     }, function (err, doc) {
       if (err) {
@@ -245,7 +245,7 @@ function () {
             }
 
             _context2.next = 49;
-            return _pages.default.findOneAndDelete({
+            return _pages["default"].findOneAndDelete({
               id: pageID
             }).exec();
 
@@ -297,7 +297,7 @@ function () {
             _req$body = req.body, operation = _req$body.operation, picture = _req$body.picture;
             pictureUrl = picture ? picture.pictureUrl : null;
             _context3.next = 6;
-            return _pages.default.findOne({
+            return _pages["default"].findOne({
               id: pageID
             }).exec();
 
@@ -353,7 +353,7 @@ function () {
             isNew = false;
 
             if (!page) {
-              page = new _pages.default({
+              page = new _pages["default"]({
                 id: pageID,
                 name: req.body.name,
                 userID: req.currentUser.userID,
@@ -375,7 +375,7 @@ function () {
 
             page.userID = req.currentUser.userID;
             _context3.next = 39;
-            return _users.default.findOne({
+            return _users["default"].findOne({
               userID: req.currentUser.userID
             }).exec();
 
@@ -453,7 +453,7 @@ function () {
             // https://graph.facebook.com/v3.1/{page-id}/subscribed_apps?access_token={}
             facebookUrl = "https://graph.facebook.com/v3.1/".concat(pageId, "/subscribed_apps?access_token=").concat(accessToken);
             _context4.next = 3;
-            return _axios.default.post(facebookUrl);
+            return _axios["default"].post(facebookUrl);
 
           case 3:
             return _context4.abrupt("return", _context4.sent);
@@ -492,7 +492,7 @@ function () {
           case 0:
             facebookUrl = "https://graph.facebook.com/v3.1/".concat(pageId, "/subscribed_apps?access_token=").concat(accessToken);
             _context5.next = 3;
-            return _axios.default.get(facebookUrl);
+            return _axios["default"].get(facebookUrl);
 
           case 3:
             result = _context5.sent;
@@ -504,7 +504,7 @@ function () {
 
             console.info('unsubscribedApps found app:', result);
             _context5.next = 8;
-            return _axios.default.delete(facebookUrl);
+            return _axios["default"]["delete"](facebookUrl);
 
           case 8:
             result1 = _context5.sent;
@@ -542,7 +542,7 @@ function () {
           case 0:
             facebookUrl = "https://graph.facebook.com/v3.1/debug_token?input_token=".concat(accessToken);
             _context6.next = 3;
-            return _axios.default.get(facebookUrl);
+            return _axios["default"].get(facebookUrl);
 
           case 3:
             return _context6.abrupt("return", _context6.sent);
@@ -575,7 +575,7 @@ function () {
         switch (_context7.prev = _context7.next) {
           case 0:
             _context7.next = 2;
-            return _pages.default.findOne({
+            return _pages["default"].findOne({
               id: pageID
             }).exec();
 
@@ -628,7 +628,7 @@ function () {
         switch (_context8.prev = _context8.next) {
           case 0:
             _context8.next = 2;
-            return _pages.default.findOne({
+            return _pages["default"].findOne({
               id: pageID
             }).exec();
 
@@ -663,7 +663,7 @@ function () {
           case 0:
             pageArray = [];
             _context9.next = 3;
-            return _pages.default.find({}, function (err, result) {
+            return _pages["default"].find({}, function (err, result) {
               pageArray = result.map(function (doc) {
                 return {
                   'pageID': doc.id,
@@ -705,7 +705,7 @@ function () {
           case 0:
             facebookUrl = "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=".concat(accessToken);
             _context10.next = 3;
-            return _axios.default.post(facebookUrl, {
+            return _axios["default"].post(facebookUrl, {
               headers: {
                 'Content-Type': 'application/json'
               },
@@ -788,7 +788,7 @@ function () {
           case 0:
             facebookUrl = "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=".concat(accessToken);
             _context11.next = 3;
-            return _axios.default.get(facebookUrl, {
+            return _axios["default"].get(facebookUrl, {
               headers: {
                 'Content-Type': 'application/json'
               },
@@ -805,7 +805,7 @@ function () {
 
             console.info('deleteFacebookFields found fields:', result);
             _context11.next = 8;
-            return _axios.default.delete(facebookUrl, {
+            return _axios["default"]["delete"](facebookUrl, {
               headers: {
                 'Content-Type': 'application/json'
               },
@@ -841,52 +841,61 @@ var sendPassThreadControl =
 function () {
   var _ref13 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee12(pageID, recipientId) {
+  regeneratorRuntime.mark(function _callee12(pageID, userID, source) {
     var page, facebookUrl, result;
     return regeneratorRuntime.wrap(function _callee12$(_context12) {
       while (1) {
         switch (_context12.prev = _context12.next) {
           case 0:
-            _context12.next = 2;
+            if (!(source === 'whatsapp')) {
+              _context12.next = 3;
+              break;
+            }
+
+            _context12.next = 18;
+            break;
+
+          case 3:
+            _context12.next = 5;
             return getOnePageData(pageID);
 
-          case 2:
+          case 5:
             page = _context12.sent;
             facebookUrl = "https://graph.facebook.com/v2.6/me/pass_thread_control?access_token=".concat(page.accessToken);
-            _context12.prev = 4;
-            _context12.next = 7;
-            return _axios.default.post(facebookUrl, {
+            _context12.prev = 7;
+            _context12.next = 10;
+            return _axios["default"].post(facebookUrl, {
               headers: {
                 'Content-Type': 'application/json'
               },
               recipient: {
-                id: recipientId
+                id: userID
               },
               target_app_id: '263902037430900',
               metadata: 'pass thread control to inbox'
             });
 
-          case 7:
+          case 10:
             result = _context12.sent;
             return _context12.abrupt("return", result.status);
 
-          case 11:
-            _context12.prev = 11;
-            _context12.t0 = _context12["catch"](4);
+          case 14:
+            _context12.prev = 14;
+            _context12.t0 = _context12["catch"](7);
             console.error({
               passThreadError: _context12.t0
             });
             return _context12.abrupt("return", null);
 
-          case 15:
+          case 18:
           case "end":
             return _context12.stop();
         }
       }
-    }, _callee12, null, [[4, 11]]);
+    }, _callee12, null, [[7, 14]]);
   }));
 
-  return function sendPassThreadControl(_x19, _x20) {
+  return function sendPassThreadControl(_x19, _x20, _x21) {
     return _ref13.apply(this, arguments);
   };
 }(); // export const page_update = async (req, res) => {

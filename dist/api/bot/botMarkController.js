@@ -916,7 +916,7 @@ function () {
               pageID: pageID,
               userID: userID,
               last_answer: data,
-              final: true
+              "final": true
             });
 
           case 2:
@@ -1083,7 +1083,7 @@ function () {
               userID: userID,
               contact_form: type,
               last_answer: data,
-              final: true
+              "final": true
             });
 
           case 4:
@@ -1284,7 +1284,7 @@ function () {
               userID: userID,
               contact_phone: phone,
               last_answer: data,
-              final: true
+              "final": true
             });
 
           case 2:
@@ -1328,7 +1328,7 @@ function () {
               userID: userID,
               contact_mail: text,
               last_answer: data,
-              final: true
+              "final": true
             });
 
           case 2:
@@ -1371,7 +1371,7 @@ function () {
               pageID: pageID,
               userID: userID,
               last_answer: data,
-              final: false
+              "final": false
             });
 
           case 2:

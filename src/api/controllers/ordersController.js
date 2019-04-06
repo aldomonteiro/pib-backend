@@ -11,6 +11,7 @@ import { DateTime } from 'luxon';
 // import { Bot, Elements } from 'facebook-messenger-bot';
 // import { getOnePageToken } from './pagesController';
 import { sendShippingNotification, sendRejectionNotification } from '../bot/botController';
+import { emitEvent } from './redisController';
 export const ORDERSTATUS_PENDING = 0;
 export const ORDERSTATUS_CONFIRMED = 1;
 export const ORDERSTATUS_VIEWED = 2;
@@ -592,6 +593,11 @@ export const updateOrder = async orderData => {
                 await order.save();
 
             await updateItem(orderData);
+
+            if (confirmOrder) {
+                emitEvent(pageId, 'new-order', { id: order.id, confirmed_at: order.confirmed_at });
+            }
+
         } else {
             // const count = await Order.find({ pageId: pageId }).count().exec();
             // let orderId = 1;

@@ -328,22 +328,26 @@ const deleteFacebookFields = async (pageId, accessToken) => {
     }
 }
 
-export const sendPassThreadControl = async (pageID, recipientId) => {
-    const page = await getOnePageData(pageID);
+export const sendPassThreadControl = async (pageID, userID, source) => {
+    if (source === 'whatsapp') {
 
-    const facebookUrl = `https://graph.facebook.com/v2.6/me/pass_thread_control?access_token=${page.accessToken}`;
+    } else { // facebook messenger
+        const page = await getOnePageData(pageID);
 
-    try {
-        const result = await axios.post(facebookUrl, {
-            headers: { 'Content-Type': 'application/json' },
-            recipient: { id: recipientId },
-            target_app_id: '263902037430900',
-            metadata: 'pass thread control to inbox',
-        });
-        return result.status;
-    } catch (passThreadError) {
-        console.error({ passThreadError });
-        return null;
+        const facebookUrl = `https://graph.facebook.com/v2.6/me/pass_thread_control?access_token=${page.accessToken}`;
+
+        try {
+            const result = await axios.post(facebookUrl, {
+                headers: { 'Content-Type': 'application/json' },
+                recipient: { id: userID },
+                target_app_id: '263902037430900',
+                metadata: 'pass thread control to inbox',
+            });
+            return result.status;
+        } catch (passThreadError) {
+            console.error({ passThreadError });
+            return null;
+        }
     }
 }
 

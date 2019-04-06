@@ -21,7 +21,9 @@ var _luxon = require("luxon");
 
 var _botController = require("../bot/botController");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _redisController = require("./redisController");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -155,7 +157,7 @@ function () {
                 }
               }
 
-              _orders.default.find(queryParam).sort(sortObj).exec(
+              _orders["default"].find(queryParam).sort(sortObj).exec(
               /*#__PURE__*/
               function () {
                 var _ref2 = _asyncToGenerator(
@@ -226,8 +228,8 @@ function () {
                           _context.prev = 24;
                           _context.prev = 25;
 
-                          if (!_iteratorNormalCompletion && _iterator.return != null) {
-                            _iterator.return();
+                          if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+                            _iterator["return"]();
                           }
 
                         case 27:
@@ -321,7 +323,7 @@ function () {
                           break;
 
                         case 50:
-                          res.setHeader('Content-Range', _util.default.format('orders %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
+                          res.setHeader('Content-Range', _util["default"].format('orders %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
                           res.status(200).json(ordersArray);
 
                         case 52:
@@ -435,7 +437,7 @@ function () {
             _req$body = req.body, id = _req$body.id, operation = _req$body.operation;
             pageId = req.currentUser.activePage;
             _context4.next = 6;
-            return _orders.default.findOne({
+            return _orders["default"].findOne({
               pageId: pageId,
               id: id
             });
@@ -602,7 +604,7 @@ function () {
         switch (_context5.prev = _context5.next) {
           case 0:
             _context5.next = 2;
-            return _orders.default.deleteMany({
+            return _orders["default"].deleteMany({
               pageId: pageID
             }).exec();
 
@@ -645,7 +647,7 @@ function () {
           case 0:
             _context6.prev = 0;
             _context6.next = 3;
-            return _orders.default.findOne({
+            return _orders["default"].findOne({
               pageId: pageId,
               id: orderId
             });
@@ -779,7 +781,7 @@ function () {
           case 12:
             customerID = _context7.sent;
             _context7.next = 15;
-            return _orders.default.findOne({
+            return _orders["default"].findOne({
               pageId: pageId,
               userId: userId,
               status: ORDERSTATUS_PENDING
@@ -789,7 +791,7 @@ function () {
             order = _context7.sent;
 
             if (!order) {
-              _context7.next = 70;
+              _context7.next = 71;
               break;
             }
 
@@ -798,17 +800,17 @@ function () {
             calcDistance = {
               calc: false,
               lat: 0,
-              long: 0
+              "long": 0
             };
 
             if (location) {
               order.location_lat = location.lat;
-              order.location_long = location.long;
+              order.location_long = location["long"];
               order.location_url = location.url;
               _updateOrder = true;
               calcDistance.calc = true;
               calcDistance.lat = location.lat;
-              calcDistance.long = location.long;
+              calcDistance["long"] = location["long"];
             }
 
             if (addrData) {
@@ -819,7 +821,7 @@ function () {
                 order.location_long = addrData.location_long;
                 calcDistance.calc = true;
                 calcDistance.lat = addrData.location_lat;
-                calcDistance.long = addrData.location_long;
+                calcDistance["long"] = addrData.location_long;
               }
 
               _updateOrder = true;
@@ -837,7 +839,7 @@ function () {
             storeData = _context7.sent;
 
             if (storeData.location_lat && storeData.location_long) {
-              distanceFromStore = (0, _util2.distanceBetweenCoordinates)(storeData.location_lat, storeData.location_long, calcDistance.lat, calcDistance.long);
+              distanceFromStore = (0, _util2.distanceBetweenCoordinates)(storeData.location_lat, storeData.location_long, calcDistance.lat, calcDistance["long"]);
               order.distance_from_store = distanceFromStore;
               order.delivery_fee = (0, _storesController.calcDeliveryFee)(storeData.delivery_fees, distanceFromStore);
             }
@@ -1054,57 +1056,64 @@ function () {
             return (0, _itemsController.updateItem)(orderData);
 
           case 68:
-            _context7.next = 81;
+            if (confirmOrder) {
+              (0, _redisController.emitEvent)(pageId, 'new-order', {
+                id: order.id,
+                confirmed_at: order.confirmed_at
+              });
+            }
+
+            _context7.next = 82;
             break;
 
-          case 70:
-            _context7.next = 72;
-            return _orders.default.find({
+          case 71:
+            _context7.next = 73;
+            return _orders["default"].find({
               pageId: pageId
             }).select('id').sort('-id').limit(1).exec();
 
-          case 72:
+          case 73:
             resultLastId = _context7.sent;
             orderId = 1;
             if (resultLastId && resultLastId.length) orderId = resultLastId[0].id + 1;
-            record = new _orders.default({
+            record = new _orders["default"]({
               id: orderId,
               pageId: pageId,
               userId: userId,
               qty_total: qty || 0,
               location_lat: location ? location.lat : null,
-              location_long: location ? location.long : null,
+              location_long: location ? location["long"] : null,
               location_url: location ? location.url : null,
               waitingForAddress: typeof waitingForAddress === 'boolean' ? waitingForAddress : false,
               deliver_type: deliverType,
               status: ORDERSTATUS_PENDING
             });
-            _context7.next = 78;
+            _context7.next = 79;
             return record.save();
 
-          case 78:
+          case 79:
             orderData.orderId = record.id;
-            _context7.next = 81;
+            _context7.next = 82;
             return (0, _itemsController.updateItem)(orderData);
 
-          case 81:
-            _context7.next = 87;
+          case 82:
+            _context7.next = 88;
             break;
 
-          case 83:
-            _context7.prev = 83;
+          case 84:
+            _context7.prev = 84;
             _context7.t0 = _context7["catch"](0);
             console.error({
               updateOrderError: _context7.t0
             });
             throw _context7.t0;
 
-          case 87:
+          case 88:
           case "end":
             return _context7.stop();
         }
       }
-    }, _callee7, null, [[0, 83]]);
+    }, _callee7, null, [[0, 84]]);
   }));
 
   return function updateOrder(_x12) {
@@ -1128,7 +1137,7 @@ function () {
           case 0:
             userId = orderData.userId, pageId = orderData.pageId, isComplete = orderData.isComplete;
             _context8.next = 3;
-            return _orders.default.findOne({
+            return _orders["default"].findOne({
               userId: userId,
               pageId: pageId,
               status: ORDERSTATUS_PENDING
@@ -1202,7 +1211,7 @@ function () {
         switch (_context9.prev = _context9.next) {
           case 0:
             _context9.next = 2;
-            return _orders.default.find({
+            return _orders["default"].find({
               pageId: pageID,
               status: {
                 $gte: ORDERSTATUS_CONFIRMED
@@ -1249,7 +1258,7 @@ function () {
         switch (_context10.prev = _context10.next) {
           case 0:
             _context10.next = 2;
-            return _orders.default.find({
+            return _orders["default"].find({
               pageId: pageID,
               status: ORDERSTATUS_CONFIRMED
             }).select('id confirmed_at').sort('-confirmed_at').exec();
@@ -1296,7 +1305,7 @@ function () {
           case 0:
             pageId = orderData.pageId, customerId = orderData.customerId;
             _context11.next = 3;
-            return _orders.default.find({
+            return _orders["default"].find({
               pageId: pageId,
               customerId: customerId
             }).select('createdAt total').sort('createdAt').exec();
@@ -1339,8 +1348,8 @@ function () {
             _context11.prev = 19;
             _context11.prev = 20;
 
-            if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
-              _iterator2.return();
+            if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+              _iterator2["return"]();
             }
 
           case 22:
@@ -1395,7 +1404,7 @@ function () {
           case 0:
             pageId = orderData.pageId, userId = orderData.userId;
             _context13.next = 3;
-            return _orders.default.findOneAndRemove({
+            return _orders["default"].findOneAndRemove({
               pageId: pageId,
               userId: userId,
               status: ORDERSTATUS_PENDING

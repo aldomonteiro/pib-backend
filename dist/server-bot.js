@@ -30,16 +30,16 @@ var _botMarkController = require("./api/bot/botMarkController");
 
 var _whatController = require("./api/whatsapp/whatController");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-_dotenv.default.config();
+_dotenv["default"].config();
 
 var env = process.env.NODE_ENV || 'production';
-var debug = (0, _debug.default)('server-bot'); // --- START MongoDB connection -----------------------------
+var debug = (0, _debug["default"])('server-bot'); // --- START MongoDB connection -----------------------------
 
 var mongo_url = process.env.DEV_MONGODB_URL;
 if (env === 'production') mongo_url = process.env.PRD_MONGODB_URL;
@@ -54,24 +54,24 @@ var options = {
 var isConnectedBefore = false;
 
 var connect = function connect() {
-  return _mongoose.default.connect(mongo_url, options).catch(function (err) {
+  return _mongoose["default"].connect(mongo_url, options)["catch"](function (err) {
     return console.error('Mongoose connect(...) failed with err: ', err);
   });
 };
 
 connect();
 
-_mongoose.default.set('useCreateIndex', true);
+_mongoose["default"].set('useCreateIndex', true);
 
-_mongoose.default.set('useFindAndModify', false);
+_mongoose["default"].set('useFindAndModify', false);
 
-_mongoose.default.Promise = Promise;
+_mongoose["default"].Promise = Promise;
 
-_mongoose.default.connection.on('error', function () {
+_mongoose["default"].connection.on('error', function () {
   console.error('Could not connect to MongoDB');
 });
 
-_mongoose.default.connection.on('disconnected', function () {
+_mongoose["default"].connection.on('disconnected', function () {
   console.error('Lost MongoDB connection...');
 
   if (!isConnectedBefore) {
@@ -81,18 +81,18 @@ _mongoose.default.connection.on('disconnected', function () {
   }
 });
 
-_mongoose.default.connection.on('connected', function () {
+_mongoose["default"].connection.on('connected', function () {
   isConnectedBefore = true;
   console.info('Connection established to MongoDB');
 });
 
-_mongoose.default.connection.on('reconnected', function () {
+_mongoose["default"].connection.on('reconnected', function () {
   console.info('Reconnected to MongoDB');
 }); // Close the Mongoose connection, when receiving SIGINT
 
 
 process.on('SIGINT', function () {
-  _mongoose.default.connection.close(function () {
+  _mongoose["default"].connection.close(function () {
     console.warn('Force to close the MongoDB connection after SIGINT');
     process.exit(0);
   });
@@ -100,26 +100,26 @@ process.on('SIGINT', function () {
 
 global.pagesKeyID = {};
 global.pagesMarketing = {};
-var app = (0, _express.default)();
+var app = (0, _express["default"])();
 var bot = new _facebookMessengerBot.Bot(process.env.FB_VERIFY_TOKEN, true); // Beggining - That is all to log in the local timezone
 // eslint-disable-next-line max-len
 // https://medium.com/front-end-hacking/node-js-logs-in-local-timezone-on-morgan-and-winston-9e98b2b9ca45
 // [Node.js] Logs in Local Timezone on Morgan
 
-_morgan.default.token('date', function (req, res, tz) {
-  return (0, _momentTimezone.default)().tz(tz).format();
+_morgan["default"].token('date', function (req, res, tz) {
+  return (0, _momentTimezone["default"])().tz(tz).format();
 }); // eslint-disable-next-line max-len
 
 
-_morgan.default.format('myformat', '[:date[America/Sao_Paulo]] ":method :url" :status :res[content-length] - :response-time ms');
+_morgan["default"].format('myformat', '[:date[America/Sao_Paulo]] ":method :url" :status :res[content-length] - :response-time ms');
 
-app.use((0, _morgan.default)('myformat')); // End - That is all to log in the right timezone
+app.use((0, _morgan["default"])('myformat')); // End - That is all to log in the right timezone
 
 app.set('json spaces', 2);
-app.use(_bodyParser.default.urlencoded({
+app.use(_bodyParser["default"].urlencoded({
   extended: true
 }));
-app.use(_bodyParser.default.json());
+app.use(_bodyParser["default"].json());
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Credentials', true);
@@ -582,7 +582,7 @@ function () {
             _data = 'open_question';
             eAgradecimento = false;
 
-            if (!(mktContact.final === true)) {
+            if (!(mktContact["final"] === true)) {
               _context5.next = 38;
               break;
             }

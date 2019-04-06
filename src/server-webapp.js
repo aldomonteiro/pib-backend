@@ -9,7 +9,6 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import Promise from 'bluebird';
 import moment from 'moment-timezone';
-import socketIo from 'socket.io';
 
 import users from './api/routes/users';
 import flavors from './api/routes/flavors';
@@ -27,8 +26,7 @@ import customers from './api/routes/customers';
 import accounts from './api/routes/accounts';
 import categories from './api/routes/categories';
 import webForms from './api/routes/webForms';
-import { getLastPendingOrders } from './api/controllers/ordersController';
-
+import { setupSocketIo } from './api/controllers/socketController';
 
 const app = express();
 
@@ -173,38 +171,4 @@ if (env === 'production') {
         .listen(8080, () => console.log(env + ' Server listening on port 8080'));
 }
 
-
-const io = socketIo(server);
-
-io.origins((origin, callback) => {
-    if (allowedOrigins.indexOf(origin) > -1)
-        callback(null, true);
-    else
-        return callback('Socket.io: origin not allowed', false);
-
-});
-
-let interval;
-io.on('connection', socket => {
-    console.info('New client connected');
-    if (interval) {
-        clearInterval(interval);
-    }
-    interval = setInterval(() => getApiAndEmit(socket), 30000);
-    socket.on('disconnect', () => {
-        console.info('Client disconnected');
-    });
-});
-
-const getApiAndEmit = async socket => {
-    try {
-        let pageID = socket.handshake.query.pageID;
-        // const lastOrderID = await getLastOrder(pageID);
-        const lastOrders = await getLastPendingOrders(pageID);
-        socket.emit('LastOrders', lastOrders);
-    } catch (error) {
-        console.error(`Error: ${error.code}`);
-    }
-};
-
-
+setupSocketIo(server, allowedOrigins);

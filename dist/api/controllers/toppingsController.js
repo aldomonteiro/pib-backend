@@ -13,7 +13,7 @@ var _stringCapitalizeName = _interopRequireDefault(require("string-capitalize-na
 
 var _util2 = require("../util/util");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -60,7 +60,7 @@ function () {
               queryObj['pageId'] = req.currentUser.activePage;
             }
 
-            _toppings.default.find(queryObj).sort(sortObj).exec(function (err, result) {
+            _toppings["default"].find(queryObj).sort(sortObj).exec(function (err, result) {
               if (err) {
                 res.status(500).json({
                   message: err.errmsg
@@ -81,7 +81,7 @@ function () {
                   toppingsArray.push(result[_i]);
                 }
 
-                res.setHeader('Content-Range', _util.default.format('toppings %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
+                res.setHeader('Content-Range', _util["default"].format('toppings %d-%d/%d', _rangeIni, _rangeEnd, _totalCount));
                 res.status(200).json(toppingsArray);
               }
             });
@@ -106,7 +106,7 @@ var topping_get_one = function topping_get_one(req, res) {
   if (req.params && req.params.id) {
     var pageID = req.currentUser.activePage ? req.currentUser.activePage : null;
 
-    _toppings.default.findOne({
+    _toppings["default"].findOne({
       pageId: pageID,
       id: req.params.id
     }, function (err, doc) {
@@ -152,7 +152,7 @@ function () {
             }
 
             _context2.next = 6;
-            return _toppings.default.find({
+            return _toppings["default"].find({
               pageId: pageID
             }).select('id').sort('-id').limit(1).exec();
 
@@ -162,14 +162,14 @@ function () {
             if (lastId && lastId.length) id = lastId[0].id + 1;
 
           case 9:
-            newRecord = new _toppings.default({
+            newRecord = new _toppings["default"]({
               id: id,
-              topping: (0, _stringCapitalizeName.default)(req.body.topping),
+              topping: (0, _stringCapitalizeName["default"])(req.body.topping),
               pageId: pageID
             });
             newRecord.save().then(function (result) {
               res.status(200).json(result);
-            }).catch(function (err) {
+            })["catch"](function (err) {
               if (err.code === 11000) {
                 res.status(500).json({
                   message: 'pos.messages.duplicatedKey'
@@ -200,12 +200,12 @@ exports.topping_create = topping_create;
 var topping_update = function topping_update(req, res) {
   var pageID = req.currentUser.activePage;
 
-  _toppings.default.findOne({
+  _toppings["default"].findOne({
     pageId: pageID,
     id: req.body.id
   }, function (err, doc) {
     if (!err) {
-      doc.topping = (0, _stringCapitalizeName.default)(req.body.topping);
+      doc.topping = (0, _stringCapitalizeName["default"])(req.body.topping);
       doc.save(function (err, doc) {
         if (err) {
           res.status(500).json({
@@ -232,7 +232,7 @@ exports.topping_update = topping_update;
 var topping_delete = function topping_delete(req, res) {
   var pageID = req.currentUser.activePage;
 
-  _toppings.default.findOneAndRemove({
+  _toppings["default"].findOneAndRemove({
     pageId: pageID,
     id: req.params.id
   }).then(function (result) {
@@ -240,7 +240,7 @@ var topping_delete = function topping_delete(req, res) {
       id: result.id,
       topping: result.topping
     });
-  }).catch(function (err) {
+  })["catch"](function (err) {
     res.status(500).json({
       message: err.errmsg
     });
@@ -260,7 +260,7 @@ function () {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            queryTopping = _toppings.default.find({
+            queryTopping = _toppings["default"].find({
               pageId: pageID,
               id: {
                 $in: toppingsArray
@@ -330,8 +330,8 @@ function () {
             _context4.prev = 15;
             _context4.prev = 16;
 
-            if (!_iteratorNormalCompletion && _iterator.return != null) {
-              _iterator.return();
+            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+              _iterator["return"]();
             }
 
           case 18:
@@ -379,7 +379,7 @@ function () {
       while (1) {
         switch (_context5.prev = _context5.next) {
           case 0:
-            query = _toppings.default.find({
+            query = _toppings["default"].find({
               pageId: pageID
             });
             query.sort('topping');
@@ -420,7 +420,7 @@ function () {
         switch (_context6.prev = _context6.next) {
           case 0:
             _context6.next = 2;
-            return _toppings.default.deleteMany({
+            return _toppings["default"].deleteMany({
               pageId: pageID
             }).exec();
 

@@ -3,13 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports["default"] = void 0;
 
 var _mongoose = _interopRequireDefault(require("mongoose"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var Schema = _mongoose.default.Schema;
+var Schema = _mongoose["default"].Schema;
 var schema = new Schema({
   consultaApiCalendario: {
     type: Date
@@ -23,7 +23,7 @@ var schema = new Schema({
 });
 schema.plugin(paginate);
 
-var _default = _mongoose.default.model("config", schema);
+var _default = _mongoose["default"].model("config", schema);
 
-exports.default = _default;
+exports["default"] = _default;
 //# sourceMappingURL=config.js.map

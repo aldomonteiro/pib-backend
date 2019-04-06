@@ -7,7 +7,7 @@ exports.getMktContact = exports.updateMktContact = void 0;
 
 var _mkt_contact = _interopRequireDefault(require("../models/mkt_contact"));
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -19,15 +19,16 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(mktData) {
-    var pageID, userID, last_answer, how_know_company, restaurant_related, restaurant_owner, restaurant_employee, started_test, saw_how_it_works, contact_form, contact_phone, contact_mail, text, final, mktContact;
+    var pageID, userID, last_answer, how_know_company, restaurant_related, restaurant_owner, restaurant_employee, started_test, saw_how_it_works, contact_form, contact_phone, contact_mail, text, _final, mktContact;
+
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             _context.prev = 0;
-            pageID = mktData.pageID, userID = mktData.userID, last_answer = mktData.last_answer, how_know_company = mktData.how_know_company, restaurant_related = mktData.restaurant_related, restaurant_owner = mktData.restaurant_owner, restaurant_employee = mktData.restaurant_employee, started_test = mktData.started_test, saw_how_it_works = mktData.saw_how_it_works, contact_form = mktData.contact_form, contact_phone = mktData.contact_phone, contact_mail = mktData.contact_mail, text = mktData.text, final = mktData.final;
+            pageID = mktData.pageID, userID = mktData.userID, last_answer = mktData.last_answer, how_know_company = mktData.how_know_company, restaurant_related = mktData.restaurant_related, restaurant_owner = mktData.restaurant_owner, restaurant_employee = mktData.restaurant_employee, started_test = mktData.started_test, saw_how_it_works = mktData.saw_how_it_works, contact_form = mktData.contact_form, contact_phone = mktData.contact_phone, contact_mail = mktData.contact_mail, text = mktData.text, _final = mktData["final"];
             _context.next = 4;
-            return _mkt_contact.default.findOne({
+            return _mkt_contact["default"].findOne({
               pageId: pageID,
               userId: userID
             }).exec();
@@ -47,9 +48,9 @@ function () {
               if (contact_phone) mktContact.contact_phone = contact_phone;
               if (contact_mail) mktContact.contact_mail = contact_mail;
               if (text) mktContact.free_msg = text;
-              if (typeof final === 'boolean') mktContact.final = final;
+              if (typeof _final === 'boolean') mktContact["final"] = _final;
             } else {
-              mktContact = new _mkt_contact.default({
+              mktContact = new _mkt_contact["default"]({
                 pageId: pageID,
                 userId: userID,
                 last_answer: last_answer,
@@ -60,7 +61,7 @@ function () {
                 contact_phone: contact_phone,
                 contact_mail: contact_mail,
                 free_msg: text,
-                final: final
+                "final": _final
               });
             }
 
@@ -106,7 +107,7 @@ function () {
           case 0:
             pageID = mktData.pageID, userID = mktData.userID;
             _context2.next = 3;
-            return _mkt_contact.default.findOne({
+            return _mkt_contact["default"].findOne({
               userId: userID,
               pageId: pageID
             }).exec();
