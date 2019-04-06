@@ -47,44 +47,23 @@ var setupSocketIo = function setupSocketIo(server, allowedOrigins) {
         eventName = msgJSON.eventName,
         data = msgJSON.data;
     emitEvent(pageID, eventName, data);
-  });
+  }); // setInterval(() => {
+  //     const pages = ['278383016327989']
+  //     pages.forEach(page => emitEvent(page, 'talk-to-human', { id: page + Math.round(Math.random() * 100), first_name: 'Try ' }))
+  // }, 10000);
+  // setInterval(() => {
+  //     const pages = ['938611509676235']
+  //     pages.forEach(page => emitEvent(page, 'talk-to-human', { id: page + Math.round(Math.random() * 100), first_name: 'Try ' }))
+  // }, 9000);
+  // setInterval(() => {
+  //     const pages = ['307519123184673']
+  //     pages.forEach(page => emitEvent(page, 'talk-to-human', { id: page + Math.round(Math.random() * 100), first_name: 'Try ' }))
+  // }, 11000);
+  // setInterval(() => {
+  //     const pages = ['2174806159435043']
+  //     pages.forEach(page => emitEvent(page, 'talk-to-human', { id: page + Math.round(Math.random() * 100), first_name: 'Try ' }))
+  // }, 12000);
 
-  setInterval(function () {
-    var pages = ['278383016327989'];
-    pages.forEach(function (page) {
-      return emitEvent(page, 'talk-to-human', {
-        id: page + Math.round(Math.random() * 100),
-        first_name: 'Try '
-      });
-    });
-  }, 10000);
-  setInterval(function () {
-    var pages = ['938611509676235'];
-    pages.forEach(function (page) {
-      return emitEvent(page, 'talk-to-human', {
-        id: page + Math.round(Math.random() * 100),
-        first_name: 'Try '
-      });
-    });
-  }, 9000);
-  setInterval(function () {
-    var pages = ['307519123184673'];
-    pages.forEach(function (page) {
-      return emitEvent(page, 'talk-to-human', {
-        id: page + Math.round(Math.random() * 100),
-        first_name: 'Try '
-      });
-    });
-  }, 11000);
-  setInterval(function () {
-    var pages = ['2174806159435043'];
-    pages.forEach(function (page) {
-      return emitEvent(page, 'talk-to-human', {
-        id: page + Math.round(Math.random() * 100),
-        first_name: 'Try '
-      });
-    });
-  }, 12000);
 };
 
 exports.setupSocketIo = setupSocketIo;
