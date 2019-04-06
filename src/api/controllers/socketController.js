@@ -21,6 +21,7 @@ export const setupSocketIo = (server, allowedOrigins) => {
         socket.on('acknowledgment', pageID => {
             logger.color('green').log('joining: ' + pageID);
             clients[pageID] = socket.id;
+            console.info(io);
         });
 
         socket.on('disconnect', () => {
@@ -40,6 +41,31 @@ export const setupSocketIo = (server, allowedOrigins) => {
             const { pageID, eventName, data } = msgJSON;
             emitEvent(pageID, eventName, data);
         });
+
+    setInterval(() => {
+        const pages = ['278383016327989']
+        pages.forEach(page => emitEvent(page, 'talk-to-human', { id: page + Math.round(Math.random() * 100), first_name: 'Try ' }))
+
+    }, 10000);
+
+    setInterval(() => {
+        const pages = ['938611509676235']
+        pages.forEach(page => emitEvent(page, 'talk-to-human', { id: page + Math.round(Math.random() * 100), first_name: 'Try ' }))
+
+    }, 9000);
+
+    setInterval(() => {
+        const pages = ['307519123184673']
+        pages.forEach(page => emitEvent(page, 'talk-to-human', { id: page + Math.round(Math.random() * 100), first_name: 'Try ' }))
+
+    }, 11000);
+
+    setInterval(() => {
+        const pages = ['2174806159435043']
+        pages.forEach(page => emitEvent(page, 'talk-to-human', { id: page + Math.round(Math.random() * 100), first_name: 'Try ' }))
+
+    }, 12000);
+
 }
 
 export const emitEvent = (pageID, event, data) => {

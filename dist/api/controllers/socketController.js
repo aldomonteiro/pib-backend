@@ -26,6 +26,7 @@ var setupSocketIo = function setupSocketIo(server, allowedOrigins) {
       _nodeColorLog["default"].color('green').log('joining: ' + pageID);
 
       clients[pageID] = socket.id;
+      console.info(io);
     });
     socket.on('disconnect', function () {
       for (var id in clients) {
@@ -47,6 +48,43 @@ var setupSocketIo = function setupSocketIo(server, allowedOrigins) {
         data = msgJSON.data;
     emitEvent(pageID, eventName, data);
   });
+
+  setInterval(function () {
+    var pages = ['278383016327989'];
+    pages.forEach(function (page) {
+      return emitEvent(page, 'talk-to-human', {
+        id: page + Math.round(Math.random() * 100),
+        first_name: 'Try '
+      });
+    });
+  }, 10000);
+  setInterval(function () {
+    var pages = ['938611509676235'];
+    pages.forEach(function (page) {
+      return emitEvent(page, 'talk-to-human', {
+        id: page + Math.round(Math.random() * 100),
+        first_name: 'Try '
+      });
+    });
+  }, 9000);
+  setInterval(function () {
+    var pages = ['307519123184673'];
+    pages.forEach(function (page) {
+      return emitEvent(page, 'talk-to-human', {
+        id: page + Math.round(Math.random() * 100),
+        first_name: 'Try '
+      });
+    });
+  }, 11000);
+  setInterval(function () {
+    var pages = ['2174806159435043'];
+    pages.forEach(function (page) {
+      return emitEvent(page, 'talk-to-human', {
+        id: page + Math.round(Math.random() * 100),
+        first_name: 'Try '
+      });
+    });
+  }, 12000);
 };
 
 exports.setupSocketIo = setupSocketIo;
