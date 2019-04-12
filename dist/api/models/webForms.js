@@ -27,6 +27,9 @@ var schema = new Schema({
   },
   obs: {
     type: String
+  },
+  origin: {
+    type: String
   }
 }, {
   timestamps: true

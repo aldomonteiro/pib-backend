@@ -9,6 +9,7 @@ const schema = new Schema(
         email: { type: String },
         phone: { type: String },
         obs: { type: String },
+        origin: { type: String },
     }, { timestamps: true },
 );
 

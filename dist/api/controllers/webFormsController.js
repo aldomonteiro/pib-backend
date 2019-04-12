@@ -53,7 +53,8 @@ function () {
               name: req.body.nome,
               email: req.body.email,
               phone: req.body.whatsapp,
-              obs: req.body.obs
+              obs: req.body.obs,
+              origin: req.body.origin
             });
             newRecord.save().then(function (result) {
               res.status(200).json(result);
