@@ -180,7 +180,16 @@ var schema = new Schema({
     surcharge_amount: {
       type: Number
     }
-  }]
+  }],
+  missing_address_notification: {
+    type: String
+  },
+  accept_notification: {
+    type: String
+  },
+  deliver_notification: {
+    type: String
+  }
 }, {
   timestamps: true
 });

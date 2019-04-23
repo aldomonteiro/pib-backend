@@ -116,7 +116,10 @@ var store_create = function store_create(req, res) {
       hol_open: req.body.hol_open,
       hol_close: req.body.hol_close,
       catalog_url1: req.body.catalog_url1,
-      catalog_url2: req.body.catalog_url2
+      catalog_url2: req.body.catalog_url2,
+      missing_address_notification: req.body.missing_address_notification,
+      accept_notification: req.body.accept_notification,
+      deliver_notification: req.body.deliver_notification
     });
     newRecord.save().then(function (result) {
       res.status(200).json(result);
@@ -206,6 +209,9 @@ var store_update = function store_update(req, res) {
           doc.catalog_url1 = req.body.catalog_url1;
           doc.catalog_url2 = req.body.catalog_url2;
           doc.payment_types = req.body.payment_types;
+          doc.missing_address_notification = req.body.missing_address_notification;
+          doc.accept_notification = req.body.accept_notification;
+          doc.deliver_notification = req.body.deliver_notification;
           doc.save(function (err, result) {
             if (err) {
               res.status(500).json({

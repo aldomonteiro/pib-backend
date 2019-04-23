@@ -28,7 +28,7 @@ var _mkt_contact_controller = require("./api/controllers/mkt_contact_controller"
 
 var _botMarkController = require("./api/bot/botMarkController");
 
-var _whatController = require("./api/whatsapp/whatController");
+var _whatSimpleController = require("./api/whatsapp/whatSimpleController");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -258,12 +258,12 @@ function () {
             }
 
             _context2.next = 11;
-            return (0, _whatController.w_sendMainMenu)();
+            return (0, _whatSimpleController.w_sendMainMenu)();
 
           case 11:
             text = _context2.sent;
             _context2.next = 14;
-            return (0, _whatController.waboxapp_sendMessage)(sender, text);
+            return (0, _whatSimpleController.waboxapp_sendMessage)(sender, text);
 
           case 14:
             response = _context2.sent;
@@ -296,11 +296,11 @@ function () {
             }
 
             _context2.next = 29;
-            return (0, _whatController.w_controller)(args);
+            return (0, _whatSimpleController.w_controller)(args);
 
           case 29:
             replyData = _context2.sent;
-            res.json({
+            if (replyData) res.json({
               message: replyData
             });
 

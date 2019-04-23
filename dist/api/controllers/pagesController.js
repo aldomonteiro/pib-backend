@@ -323,7 +323,7 @@ function () {
 
           case 15:
             res.status(200).json(page);
-            _context3.next = 50;
+            _context3.next = 51;
             break;
 
           case 18:
@@ -346,7 +346,7 @@ function () {
 
           case 26:
             res.status(200).json(page);
-            _context3.next = 50;
+            _context3.next = 51;
             break;
 
           case 29:
@@ -366,50 +366,51 @@ function () {
             if (req.body.access_token) page.accessToken = req.body.access_token;
             if (req.body.greetingText) page.greetingText = req.body.greetingText;
             if (req.body.firstResponseText) page.firstResponseText = req.body.firstResponseText;
+            if (req.body.orderExample) page.orderExample = req.body.orderExample;
             if (pictureUrl) page.pictureUrl = pictureUrl; // update ActivePage for the current user
 
             if (!req.currentUser) {
-              _context3.next = 44;
+              _context3.next = 45;
               break;
             }
 
             page.userID = req.currentUser.userID;
-            _context3.next = 39;
+            _context3.next = 40;
             return _users["default"].findOne({
               userID: req.currentUser.userID
             }).exec();
 
-          case 39:
+          case 40:
             user = _context3.sent;
 
             if (!user) {
-              _context3.next = 44;
+              _context3.next = 45;
               break;
             }
 
             user.activePage = pageID;
-            _context3.next = 44;
+            _context3.next = 45;
             return user.save();
 
-          case 44:
-            _context3.next = 46;
+          case 45:
+            _context3.next = 47;
             return page.save();
 
-          case 46:
-            _context3.next = 48;
+          case 47:
+            _context3.next = 49;
             return (0, _systemController.initialSetup)(pageID);
 
-          case 48:
+          case 49:
             page = _context3.sent;
             // }
             res.status(200).json(page);
 
-          case 50:
-            _context3.next = 56;
+          case 51:
+            _context3.next = 57;
             break;
 
-          case 52:
-            _context3.prev = 52;
+          case 53:
+            _context3.prev = 53;
             _context3.t0 = _context3["catch"](0);
             console.error({
               pageUpdateError: _context3.t0
@@ -418,12 +419,12 @@ function () {
               message: _context3.t0.message
             });
 
-          case 56:
+          case 57:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, null, [[0, 52]]);
+    }, _callee3, null, [[0, 53]]);
   }));
 
   return function page_update(_x5, _x6) {

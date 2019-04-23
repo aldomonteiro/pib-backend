@@ -37,6 +37,9 @@ var schema = new _mongoose["default"].Schema({
   firstResponseText: {
     type: String
   },
+  orderExample: {
+    type: String
+  },
   initialSetupFlavors: {
     type: Number
   },

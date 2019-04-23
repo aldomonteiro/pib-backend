@@ -26,6 +26,12 @@ var schema = new Schema({
   customerId: {
     type: Number
   },
+  phone: {
+    type: String
+  },
+  details: {
+    type: String
+  },
   status: {
     type: Number
   },
@@ -35,115 +41,20 @@ var schema = new Schema({
   status3: {
     type: String
   },
-  location_lat: {
-    type: Number
-  },
-  location_long: {
-    type: Number
-  },
-  location_url: {
-    type: String
-  },
-  phone: {
-    type: String
-  },
   address: {
-    type: String
-  },
-  qty: {
-    type: Number
-  },
-  qty_total: {
-    type: Number
-  },
-  item_complete: {
-    type: Number
-  },
-  currentItem: {
-    type: Number
-  },
-  currentItemSize: {
-    type: Number
-  },
-  currentItemCategory: {
-    type: Number
-  },
-  currentItemSplit: {
-    type: Number
-  },
-  originalSplit: {
-    type: Number
-  },
-  waitingForAddress: {
-    type: Boolean
-  },
-  waitingFor: {
-    type: String
-  },
-  waitingForData: Schema.Types.Mixed,
-  undo: {
     type: String
   },
   total: {
     type: Number
   },
-  sent_shipping_notification: {
+  confirmedAt: {
     type: Date
   },
-  sent_reject_notification: {
+  deliveredAt: {
     type: Date
   },
-  no_beverage: {
-    type: Boolean
-  },
-  payment_type: {
-    type: String
-  },
-  payment_change: {
-    type: String
-  },
-  confirmed_at: {
-    type: Date
-  },
-  delivered_at: {
-    type: Date
-  },
-  comments: {
-    type: String
-  },
-  rejection_reason: {
-    type: String
-  },
-  backToConfirmation: {
-    type: String
-  },
-  deliver_type: {
-    type: String
-  },
-  deliver_time: {
+  deliverTime: {
     type: Number
-  },
-  source: {
-    type: String
-  },
-  distance_from_store: {
-    type: Number,
-    "default": 0
-  },
-  delivery_fee: {
-    type: Number,
-    "default": 0
-  },
-  surcharge_percent: {
-    type: Number,
-    "default": 0
-  },
-  surcharge_amount: {
-    type: Number,
-    "default": 0
-  },
-  store_address: {
-    type: String
   }
 }, {
   timestamps: true
@@ -197,7 +108,7 @@ schema.pre('save', function (next) {
   next();
 });
 
-var _default = _mongoose["default"].model("orders", schema);
+var _default = _mongoose["default"].model('text_orders', schema);
 
 exports["default"] = _default;
-//# sourceMappingURL=orders.js.map
+//# sourceMappingURL=texto_orders.js.map
