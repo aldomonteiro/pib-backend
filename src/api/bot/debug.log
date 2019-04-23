@@ -1,13 +1,10 @@
-dev Server listening on port 8080
-connected to new channels, number is- 
+Bot server listening on port 4000
+>> Found lastOrder:
+nnels, number is- 
 [32mjoining from whatsapp: 554499485760[0m
 [34memitted for 554499485760 with data:undefined sadkasl[0m
-user has been saved: userID:1858850134137175, name:Aldo Monteiro, hasLong:true
+[31mno socket for 938611509676235[0m
 ret from fullOrderGetAll:
-ret from fullOrderGetAll:
-[34memitted for 554499485760 with data:554184163676@c.us undefined[0m
-ret from fullOrderGetAll:
-ret from fullOrderGetAll:
-ret from fullOrderGetAll:
+[34memitted for 554499485760 with data:554184163676@c.us Os dados do pedido estão ok, vamos iniciar o preparo. Obrigado pela preferência.[0m
 [34memitted for 554499485760 with data:554184163676@c.us O seu pedido saiu para entrega. Bom apetite![0m
 [31mdisconnecting from whatsapp 554499485760[0m

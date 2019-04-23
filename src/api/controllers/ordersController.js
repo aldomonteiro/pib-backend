@@ -784,7 +784,7 @@ export const getLastUserOrder = async orderData => {
     const resultLast = await Order.find({
         pageId: pageId,
         userId: userId,
-        status: { $gte: ORDERSTATUS_CONFIRMED },
+        status: { $gte: ORDERSTATUS_DELIVERED },
     }).sort('-updatedAt').limit(1).exec();
     if (resultLast && resultLast.length)
         return resultLast[0];

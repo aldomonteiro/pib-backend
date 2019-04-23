@@ -56,17 +56,17 @@ export const sendErrorMsg = async (_errorMsg) => {
  * @param {*} userId
  * @param {*} replyText
  */
-export const basicReply = async (pageId, userId, replyText, user) => {
-    await updateOrder({ pageId, userId, waitingFor: 'typed_comments', user: user });
+export const basicReply = async (pageId, userId, replyText, user, data) => {
+    await updateOrder({ pageId, userId, waitingFor: 'typed_comments', user: user, comments: data });
 
     return { type: 'text', text: replyText };
 }
 
-export const basicOption = async (pageId, userId, text, optionText, user) => {
+export const basicOption = async (pageId, userId, text, optionText, data, user) => {
     await updateOrder({ pageId, userId, waitingFor: 'typed_comments', user: user });
 
     const _options = [];
-    _options.push({ text: optionText, hidden: true });
+    _options.push({ text: optionText, subText: data, hidden: true });
 
     return {
         type: 'list',

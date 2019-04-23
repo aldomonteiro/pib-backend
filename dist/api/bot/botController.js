@@ -110,7 +110,7 @@ var basicReply =
 function () {
   var _ref2 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee2(pageId, userId, replyText, user) {
+  regeneratorRuntime.mark(function _callee2(pageId, userId, replyText, user, data) {
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -120,7 +120,8 @@ function () {
               pageId: pageId,
               userId: userId,
               waitingFor: 'typed_comments',
-              user: user
+              user: user,
+              comments: data
             });
 
           case 2:
@@ -137,7 +138,7 @@ function () {
     }, _callee2);
   }));
 
-  return function basicReply(_x2, _x3, _x4, _x5) {
+  return function basicReply(_x2, _x3, _x4, _x5, _x6) {
     return _ref2.apply(this, arguments);
   };
 }();
@@ -149,7 +150,7 @@ var basicOption =
 function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee3(pageId, userId, text, optionText, user) {
+  regeneratorRuntime.mark(function _callee3(pageId, userId, text, optionText, data, user) {
     var _options;
 
     return regeneratorRuntime.wrap(function _callee3$(_context3) {
@@ -169,6 +170,7 @@ function () {
 
             _options.push({
               text: optionText,
+              subText: data,
               hidden: true
             });
 
@@ -186,7 +188,7 @@ function () {
     }, _callee3);
   }));
 
-  return function basicOption(_x6, _x7, _x8, _x9, _x10) {
+  return function basicOption(_x7, _x8, _x9, _x10, _x11, _x12) {
     return _ref3.apply(this, arguments);
   };
 }();
@@ -230,7 +232,7 @@ function () {
     }, _callee4);
   }));
 
-  return function basicComments(_x11, _x12, _x13, _x14) {
+  return function basicComments(_x13, _x14, _x15, _x16) {
     return _ref4.apply(this, arguments);
   };
 }();
@@ -557,7 +559,7 @@ function () {
     }, _callee6);
   }));
 
-  return function checkLastAction(_x15, _x16) {
+  return function checkLastAction(_x17, _x18) {
     return _ref6.apply(this, arguments);
   };
 }();
@@ -650,7 +652,7 @@ function () {
     }, _callee8, null, [[4, 10]]);
   }));
 
-  return function passThreadControl(_x17, _x18, _x19, _x20) {
+  return function passThreadControl(_x19, _x20, _x21, _x22) {
     return _ref8.apply(this, arguments);
   };
 }();
@@ -713,7 +715,7 @@ function () {
     }, _callee9);
   }));
 
-  return function sendWelcomeMessage(_x21, _x22) {
+  return function sendWelcomeMessage(_x23, _x24) {
     return _ref9.apply(this, arguments);
   };
 }();
@@ -822,7 +824,7 @@ function () {
     }, _callee11);
   }));
 
-  return function sendHorario(_x23, _x24) {
+  return function sendHorario(_x25, _x26) {
     return _ref11.apply(this, arguments);
   };
 }();
@@ -878,7 +880,7 @@ function () {
     }, _callee12);
   }));
 
-  return function sendCardapio(_x25, _x26, _x27) {
+  return function sendCardapio(_x27, _x28, _x29) {
     return _ref13.apply(this, arguments);
   };
 }();
@@ -1170,7 +1172,7 @@ function () {
     }, _callee13, null, [[0, 113], [14, 98, 102, 110], [23, 35, 39, 47], [40,, 42, 46], [52, 80, 84, 92], [59, 63, 67, 75], [68,, 70, 74], [85,, 87, 91], [103,, 105, 109]]);
   }));
 
-  return function getFlavorsAndToppings(_x28, _x29, _x30) {
+  return function getFlavorsAndToppings(_x30, _x31, _x32) {
     return _ref14.apply(this, arguments);
   };
 }();
@@ -1338,7 +1340,7 @@ function () {
     }, _callee15, null, [[12, 16, 20, 28], [21,, 23, 27]]);
   }));
 
-  return function askForDeliver(_x31, _x32) {
+  return function askForDeliver(_x33, _x34) {
     return _ref16.apply(this, arguments);
   };
 }();
@@ -1393,7 +1395,7 @@ function () {
     }, _callee16);
   }));
 
-  return function showDeliver(_x33, _x34, _x35, _x36, _x37) {
+  return function showDeliver(_x35, _x36, _x37, _x38, _x39) {
     return _ref17.apply(this, arguments);
   };
 }();
@@ -1432,7 +1434,7 @@ function () {
     }, _callee17);
   }));
 
-  return function showDeliverCheckAddress(_x38, _x39, _x40, _x41, _x42) {
+  return function showDeliverCheckAddress(_x40, _x41, _x42, _x43, _x44) {
     return _ref18.apply(this, arguments);
   };
 }();
@@ -1513,7 +1515,7 @@ function () {
     }, _callee18);
   }));
 
-  return function askForLocation(_x43, _x44, _x45, _x46) {
+  return function askForLocation(_x45, _x46, _x47, _x48) {
     return _ref19.apply(this, arguments);
   };
 }();
@@ -1642,7 +1644,7 @@ function () {
     }, _callee19);
   }));
 
-  return function confirmLocationAddress(_x47, _x48, _x49, _x50) {
+  return function confirmLocationAddress(_x49, _x50, _x51, _x52) {
     return _ref20.apply(this, arguments);
   };
 }();
@@ -1688,7 +1690,7 @@ function () {
     }, _callee20);
   }));
 
-  return function confirmAddressOrAskLocation(_x51, _x52, _x53, _x54) {
+  return function confirmAddressOrAskLocation(_x53, _x54, _x55, _x56) {
     return _ref21.apply(this, arguments);
   };
 }();
@@ -1727,7 +1729,7 @@ function () {
     }, _callee21);
   }));
 
-  return function askToTypeAddress(_x55, _x56) {
+  return function askToTypeAddress(_x57, _x58) {
     return _ref22.apply(this, arguments);
   };
 }();
@@ -1806,7 +1808,7 @@ function () {
     }, _callee22);
   }));
 
-  return function confirmAddress(_x57, _x58, _x59, _x60, _x61) {
+  return function confirmAddress(_x59, _x60, _x61, _x62, _x63) {
     return _ref23.apply(this, arguments);
   };
 }();
@@ -1876,7 +1878,7 @@ function () {
     }, _callee23);
   }));
 
-  return function showAddress(_x62, _x63, _x64, _x65) {
+  return function showAddress(_x64, _x65, _x66, _x67) {
     return _ref24.apply(this, arguments);
   };
 }();
@@ -1930,7 +1932,7 @@ function () {
     }, _callee24);
   }));
 
-  return function showOrderOrAskForPhone(_x66, _x67) {
+  return function showOrderOrAskForPhone(_x68, _x69) {
     return _ref25.apply(this, arguments);
   };
 }();
@@ -1987,7 +1989,7 @@ function () {
     }, _callee25);
   }));
 
-  return function askForPhone(_x68, _x69) {
+  return function askForPhone(_x70, _x71) {
     return _ref26.apply(this, arguments);
   };
 }();
@@ -2027,7 +2029,7 @@ function () {
     }, _callee26);
   }));
 
-  return function askToTypePhone(_x70, _x71) {
+  return function askToTypePhone(_x72, _x73) {
     return _ref27.apply(this, arguments);
   };
 }();
@@ -2081,7 +2083,7 @@ function () {
     }, _callee27);
   }));
 
-  return function confirmTypedPhone(_x72, _x73, _x74) {
+  return function confirmTypedPhone(_x74, _x75, _x76) {
     return _ref28.apply(this, arguments);
   };
 }();
@@ -2122,7 +2124,7 @@ function () {
     }, _callee28);
   }));
 
-  return function showPhone(_x75, _x76, _x77) {
+  return function showPhone(_x77, _x78, _x79) {
     return _ref29.apply(this, arguments);
   };
 }();
@@ -2161,7 +2163,7 @@ function () {
     }, _callee29);
   }));
 
-  return function showDeliverAskForQuantity(_x78, _x79, _x80, _x81, _x82) {
+  return function showDeliverAskForQuantity(_x80, _x81, _x82, _x83, _x84) {
     return _ref30.apply(this, arguments);
   };
 }();
@@ -2265,7 +2267,7 @@ function () {
     }, _callee30);
   }));
 
-  return function showAddressAskForQuantity(_x83, _x84, _x85, _x86) {
+  return function showAddressAskForQuantity(_x85, _x86, _x87, _x88) {
     return _ref31.apply(this, arguments);
   };
 }();
@@ -2323,7 +2325,7 @@ function () {
     }, _callee31);
   }));
 
-  return function askForQuantity(_x87, _x88) {
+  return function askForQuantity(_x89, _x90) {
     return _ref32.apply(this, arguments);
   };
 }();
@@ -2381,7 +2383,7 @@ function () {
     }, _callee32);
   }));
 
-  return function askForQuantityMore(_x89, _x90) {
+  return function askForQuantityMore(_x91, _x92) {
     return _ref33.apply(this, arguments);
   };
 }();
@@ -2435,7 +2437,7 @@ function () {
     }, _callee33);
   }));
 
-  return function showQuantity(_x91, _x92, _x93) {
+  return function showQuantity(_x93, _x94, _x95) {
     return _ref34.apply(this, arguments);
   };
 }();
@@ -2555,7 +2557,7 @@ function () {
     }, _callee34);
   }));
 
-  return function askForSize(_x94, _x95) {
+  return function askForSize(_x96, _x97) {
     return _ref35.apply(this, arguments);
   };
 }();
@@ -2602,7 +2604,7 @@ function () {
     }, _callee35);
   }));
 
-  return function showQuantityAskForSize(_x96, _x97, _x98) {
+  return function showQuantityAskForSize(_x98, _x99, _x100) {
     return _ref36.apply(this, arguments);
   };
 }();
@@ -2662,7 +2664,7 @@ function () {
     }, _callee36);
   }));
 
-  return function showSize(_x99, _x100, _x101) {
+  return function showSize(_x101, _x102, _x103) {
     return _ref37.apply(this, arguments);
   };
 }();
@@ -2749,7 +2751,7 @@ function () {
     }, _callee37);
   }));
 
-  return function checkSplit(_x102, _x103, _x104) {
+  return function checkSplit(_x104, _x105, _x106) {
     return _ref38.apply(this, arguments);
   };
 }();
@@ -2788,7 +2790,7 @@ function () {
     }, _callee38);
   }));
 
-  return function showSizeCheckSplit(_x105, _x106, _x107, _x108) {
+  return function showSizeCheckSplit(_x107, _x108, _x109, _x110) {
     return _ref39.apply(this, arguments);
   };
 }();
@@ -2838,7 +2840,7 @@ function () {
     }, _callee39);
   }));
 
-  return function showSplit(_x109, _x110, _x111) {
+  return function showSplit(_x111, _x112, _x113) {
     return _ref40.apply(this, arguments);
   };
 }();
@@ -2931,7 +2933,7 @@ function () {
     }, _callee40);
   }));
 
-  return function askForFlavorOrConfirm(_x112, _x113, _x114) {
+  return function askForFlavorOrConfirm(_x114, _x115, _x116) {
     return _ref41.apply(this, arguments);
   };
 }();
@@ -2970,7 +2972,7 @@ function () {
     }, _callee41);
   }));
 
-  return function showSplitCheckFlavor(_x115, _x116, _x117) {
+  return function showSplitCheckFlavor(_x117, _x118, _x119) {
     return _ref42.apply(this, arguments);
   };
 }();
@@ -3150,7 +3152,7 @@ function () {
     }, _callee42);
   }));
 
-  return function askForFlavor(_x118, _x119, _x120, _x121) {
+  return function askForFlavor(_x120, _x121, _x122, _x123) {
     return _ref43.apply(this, arguments);
   };
 }();
@@ -3236,7 +3238,7 @@ function () {
     }, _callee43);
   }));
 
-  return function showFlavor(_x122, _x123, _x124) {
+  return function showFlavor(_x124, _x125, _x126) {
     return _ref44.apply(this, arguments);
   };
 }();
@@ -3290,7 +3292,7 @@ function () {
     }, _callee44);
   }));
 
-  return function showOrderOrNextItem(_x125, _x126) {
+  return function showOrderOrNextItem(_x127, _x128) {
     return _ref45.apply(this, arguments);
   };
 }();
@@ -3348,7 +3350,7 @@ function () {
     }, _callee45);
   }));
 
-  return function cancelPendingShowPartialOrder(_x127, _x128) {
+  return function cancelPendingShowPartialOrder(_x129, _x130) {
     return _ref46.apply(this, arguments);
   };
 }();
@@ -3527,7 +3529,7 @@ function () {
     }, _callee46, null, [[13, 17, 21, 29], [22,, 24, 28]]);
   }));
 
-  return function showPartialOrder(_x129, _x130, _x131) {
+  return function showPartialOrder(_x131, _x132, _x133) {
     return _ref47.apply(this, arguments);
   };
 }(); // export const showOrderOrNextItem = async (pageId, userId) => {
@@ -3627,7 +3629,7 @@ function () {
     }, _callee47);
   }));
 
-  return function showFlavorCheckItem(_x132, _x133, _x134) {
+  return function showFlavorCheckItem(_x134, _x135, _x136) {
     return _ref48.apply(this, arguments);
   };
 }();
@@ -3765,7 +3767,7 @@ function () {
     }, _callee48, null, [[8, 12, 16, 24], [17,, 19, 23]]);
   }));
 
-  return function askForPaymentType(_x135, _x136) {
+  return function askForPaymentType(_x137, _x138) {
     return _ref49.apply(this, arguments);
   };
 }();
@@ -3808,7 +3810,7 @@ function () {
     }, _callee49);
   }));
 
-  return function showPaymentType(_x137, _x138, _x139) {
+  return function showPaymentType(_x139, _x140, _x141) {
     return _ref50.apply(this, arguments);
   };
 }();
@@ -3863,7 +3865,7 @@ function () {
     }, _callee50);
   }));
 
-  return function askForPaymentChange(_x140, _x141) {
+  return function askForPaymentChange(_x142, _x143) {
     return _ref51.apply(this, arguments);
   };
 }();
@@ -3909,7 +3911,7 @@ function () {
     }, _callee51);
   }));
 
-  return function showPaymentTypeAskForPaymentChange(_x142, _x143, _x144) {
+  return function showPaymentTypeAskForPaymentChange(_x144, _x145, _x146) {
     return _ref52.apply(this, arguments);
   };
 }();
@@ -3950,7 +3952,7 @@ function () {
     }, _callee52);
   }));
 
-  return function showPaymentChange(_x145, _x146, _x147) {
+  return function showPaymentChange(_x147, _x148, _x149) {
     return _ref53.apply(this, arguments);
   };
 }();
@@ -4005,7 +4007,7 @@ function () {
     }, _callee53);
   }));
 
-  return function askForComments(_x148, _x149) {
+  return function askForComments(_x150, _x151) {
     return _ref54.apply(this, arguments);
   };
 }();
@@ -4044,7 +4046,7 @@ function () {
     }, _callee54);
   }));
 
-  return function showPaymentChangeAskForComments(_x150, _x151, _x152) {
+  return function showPaymentChangeAskForComments(_x152, _x153, _x154) {
     return _ref55.apply(this, arguments);
   };
 }();
@@ -4106,7 +4108,7 @@ function () {
     }, _callee55);
   }));
 
-  return function askToTypeComments(_x153, _x154, _x155) {
+  return function askToTypeComments(_x155, _x156, _x157) {
     return _ref56.apply(this, arguments);
   };
 }();
@@ -4148,7 +4150,7 @@ function () {
     }, _callee56);
   }));
 
-  return function showComments(_x156, _x157, _x158) {
+  return function showComments(_x158, _x159, _x160) {
     return _ref57.apply(this, arguments);
   };
 }();
@@ -4299,7 +4301,7 @@ function () {
     }, _callee57, null, [[9, 13, 17, 25], [18,, 20, 24]]);
   }));
 
-  return function showFullOrder(_x159, _x160) {
+  return function showFullOrder(_x161, _x162) {
     return _ref58.apply(this, arguments);
   };
 }();
@@ -4345,7 +4347,7 @@ function () {
     }, _callee58);
   }));
 
-  return function showPaymentTypeAskForComments(_x161, _x162, _x163) {
+  return function showPaymentTypeAskForComments(_x163, _x164, _x165) {
     return _ref59.apply(this, arguments);
   };
 }();
@@ -4400,7 +4402,7 @@ function () {
     }, _callee59);
   }));
 
-  return function showFullOrderConfirmOrder(_x164, _x165, _x166) {
+  return function showFullOrderConfirmOrder(_x166, _x167, _x168) {
     return _ref60.apply(this, arguments);
   };
 }();
@@ -4439,7 +4441,7 @@ function () {
     }, _callee60);
   }));
 
-  return function confirmOrder(_x167, _x168) {
+  return function confirmOrder(_x169, _x170) {
     return _ref61.apply(this, arguments);
   };
 }();
@@ -4531,7 +4533,7 @@ function () {
     }, _callee61);
   }));
 
-  return function askForChangeOrder(_x169, _x170, _x171) {
+  return function askForChangeOrder(_x171, _x172, _x173) {
     return _ref62.apply(this, arguments);
   };
 }();
@@ -4588,7 +4590,7 @@ function () {
     }, _callee62, null, [[0, 8]]);
   }));
 
-  return function askForOptionsToChange(_x172, _x173, _x174) {
+  return function askForOptionsToChange(_x174, _x175, _x176) {
     return _ref63.apply(this, arguments);
   };
 }();
@@ -4733,7 +4735,7 @@ function () {
     }, _callee63, null, [[9, 13, 17, 25], [18,, 20, 24]]);
   }));
 
-  return function askForSpecificItem(_x175, _x176, _x177) {
+  return function askForSpecificItem(_x177, _x178, _x179) {
     return _ref64.apply(this, arguments);
   };
 }();
@@ -4811,7 +4813,7 @@ function () {
     }, _callee64);
   }));
 
-  return function askForWantBeverage(_x178, _x179) {
+  return function askForWantBeverage(_x180, _x181) {
     return _ref65.apply(this, arguments);
   };
 }();
@@ -4930,7 +4932,7 @@ function () {
     }, _callee65);
   }));
 
-  return function askForBeverages(_x180, _x181, _x182) {
+  return function askForBeverages(_x182, _x183, _x184) {
     return _ref66.apply(this, arguments);
   };
 }();
@@ -4976,7 +4978,7 @@ function () {
     }, _callee66);
   }));
 
-  return function showNoBeverage(_x183, _x184, _x185) {
+  return function showNoBeverage(_x185, _x186, _x187) {
     return _ref67.apply(this, arguments);
   };
 }();
@@ -5026,7 +5028,7 @@ function () {
     }, _callee67);
   }));
 
-  return function showBeverage(_x186, _x187, _x188) {
+  return function showBeverage(_x188, _x189, _x190) {
     return _ref68.apply(this, arguments);
   };
 }();
@@ -5072,7 +5074,7 @@ function () {
     }, _callee68);
   }));
 
-  return function showBeverageAskForPaymentType(_x189, _x190, _x191) {
+  return function showBeverageAskForPaymentType(_x191, _x192, _x193) {
     return _ref69.apply(this, arguments);
   };
 }();
@@ -5118,7 +5120,7 @@ function () {
     }, _callee69);
   }));
 
-  return function showNoBeverageAskForPaymentType(_x192, _x193, _x194) {
+  return function showNoBeverageAskForPaymentType(_x194, _x195, _x196) {
     return _ref70.apply(this, arguments);
   };
 }();
@@ -5152,7 +5154,7 @@ function () {
     }, _callee70);
   }));
 
-  return function changeItem(_x195, _x196, _x197) {
+  return function changeItem(_x197, _x198, _x199) {
     return _ref71.apply(this, arguments);
   };
 }();
@@ -5199,7 +5201,7 @@ function () {
     }, _callee71);
   }));
 
-  return function showCommentsItem(_x198, _x199, _x200) {
+  return function showCommentsItem(_x200, _x201, _x202) {
     return _ref72.apply(this, arguments);
   };
 }();
@@ -5259,7 +5261,7 @@ function () {
     }, _callee72);
   }));
 
-  return function cancelItem(_x201, _x202, _x203) {
+  return function cancelItem(_x203, _x204, _x205) {
     return _ref73.apply(this, arguments);
   };
 }();
@@ -5290,7 +5292,7 @@ function () {
     }, _callee73);
   }));
 
-  return function updateItemAskOptions(_x204, _x205, _x206) {
+  return function updateItemAskOptions(_x206, _x207, _x208) {
     return _ref74.apply(this, arguments);
   };
 }();
@@ -5331,7 +5333,7 @@ function () {
     }, _callee74);
   }));
 
-  return function sendShippingNotification(_x207, _x208, _x209) {
+  return function sendShippingNotification(_x209, _x210, _x211) {
     return _ref75.apply(this, arguments);
   };
 }();
@@ -5372,7 +5374,7 @@ function () {
     }, _callee75);
   }));
 
-  return function sendRejectionNotification(_x210, _x211, _x212, _x213) {
+  return function sendRejectionNotification(_x212, _x213, _x214, _x215) {
     return _ref77.apply(this, arguments);
   };
 }();
@@ -5419,7 +5421,7 @@ function () {
     }, _callee76);
   }));
 
-  return function cancelPendingOrder(_x214, _x215) {
+  return function cancelPendingOrder(_x216, _x217) {
     return _ref79.apply(this, arguments);
   };
 }();
@@ -5458,7 +5460,7 @@ function () {
     }, _callee77);
   }));
 
-  return function showDeliverAskForCategory(_x216, _x217, _x218, _x219, _x220) {
+  return function showDeliverAskForCategory(_x218, _x219, _x220, _x221, _x222) {
     return _ref80.apply(this, arguments);
   };
 }();
@@ -5497,7 +5499,7 @@ function () {
     }, _callee78);
   }));
 
-  return function showAddressAskForCategory(_x221, _x222, _x223, _x224) {
+  return function showAddressAskForCategory(_x223, _x224, _x225, _x226) {
     return _ref81.apply(this, arguments);
   };
 }();
@@ -5651,7 +5653,7 @@ function () {
     }, _callee79, null, [[11, 25, 29, 37], [30,, 32, 36]]);
   }));
 
-  return function askForCategory(_x225, _x226, _x227) {
+  return function askForCategory(_x227, _x228, _x229) {
     return _ref82.apply(this, arguments);
   };
 }();
@@ -5690,7 +5692,7 @@ function () {
     }, _callee80);
   }));
 
-  return function showCategory(_x228, _x229, _x230) {
+  return function showCategory(_x230, _x231, _x232) {
     return _ref83.apply(this, arguments);
   };
 }();
@@ -5729,7 +5731,7 @@ function () {
     }, _callee81);
   }));
 
-  return function showCategoryAskForSize(_x231, _x232, _x233) {
+  return function showCategoryAskForSize(_x233, _x234, _x235) {
     return _ref84.apply(this, arguments);
   };
 }();
@@ -5855,7 +5857,7 @@ function () {
     }, _callee82);
   }));
 
-  return function askForSizeCat(_x234, _x235, _x236) {
+  return function askForSizeCat(_x236, _x237, _x238) {
     return _ref85.apply(this, arguments);
   };
 }();

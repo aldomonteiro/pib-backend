@@ -57,7 +57,7 @@ function () {
             store = _context.sent;
 
             if (!store) {
-              _context.next = 76;
+              _context.next = 84;
               break;
             }
 
@@ -65,7 +65,7 @@ function () {
             pageId = store.pageId;
 
             if (match) {
-              _context.next = 66;
+              _context.next = 67;
               break;
             }
 
@@ -150,37 +150,39 @@ function () {
 
           case 44:
             lastOrder = _context.sent;
+            console.log('>> Found lastOrder:', lastOrder.id);
             tempoEntregar = _store.delivery_time ? "(+ ou - ".concat(_store.delivery_time, " min.)") : '';
             tempoRetirar = _store.pickup_time ? "(+ ou - ".concat(_store.pickup_time, " min.)") : '';
             replyText = page.firstResponseText.replace('$NAME', contactName);
             replyText = replyText + '\n\n';
 
             if (!(lastOrder && lastOrder.comments)) {
-              _context.next = 58;
+              _context.next = 59;
               break;
             }
 
             replyText = replyText + 'Seu último pedido:\n';
             replyText = replyText + lastOrder.comments + '\n';
             replyText = replyText + 'Envie *REPETIR* para fazer o mesmo pedido OU envie os dados do pedido:\n';
-            _context.next = 55;
+            _context.next = 56;
             return sendActions({
               action: 'BASIC_OPTION',
               pageID: pageId,
               userID: userId,
               text: replyText,
+              payload: lastOrder.comments,
               data: 'REPETIR',
               user: user
             });
 
-          case 55:
+          case 56:
             return _context.abrupt("return", _context.sent);
 
-          case 58:
+          case 59:
             replyText = replyText + page.orderExample + '\n';
             replyText = replyText.replace('$TEMPOENTREGAR', tempoEntregar);
             replyText = replyText.replace('$TEMPORETIRAR', tempoRetirar);
-            _context.next = 63;
+            _context.next = 64;
             return sendActions({
               action: 'BASIC_REPLY',
               pageID: pageId,
@@ -189,21 +191,27 @@ function () {
               user: user
             });
 
-          case 63:
+          case 64:
             return _context.abrupt("return", _context.sent);
 
-          case 64:
-            _context.next = 74;
+          case 65:
+            _context.next = 82;
             break;
 
-          case 66:
+          case 67:
             if (match.hasOwnProperty('event')) objectWithEvent = match;else if (match.hasOwnProperty('buttons')) {
               if (match.buttons.hasOwnProperty('event')) objectWithEvent = match.buttons;
             }
+
+            if (!objectWithEvent) {
+              _context.next = 78;
+              break;
+            }
+
             _objectWithEvent = objectWithEvent, event = _objectWithEvent.event, data = _objectWithEvent.data;
             multiple = data ? data.multiple ? data.multiple : 1 : 1;
             action = mapEventsActions(event, data);
-            _context.next = 72;
+            _context.next = 74;
             return sendActions({
               action: action,
               pageID: pageId,
@@ -214,18 +222,37 @@ function () {
               user: user
             });
 
-          case 72:
+          case 74:
             _result = _context.sent;
             return _context.abrupt("return", _result);
 
-          case 74:
-            _context.next = 77;
+          case 78:
+            if (!(match.hasOwnProperty('text') && match.text === 'REPETIR')) {
+              _context.next = 82;
+              break;
+            }
+
+            _context.next = 81;
+            return sendActions({
+              action: 'BASIC_REPLY',
+              pageID: pageId,
+              userID: userId,
+              text: 'Ok, vamos repetir o pedido.',
+              user: user,
+              data: match.subText
+            });
+
+          case 81:
+            return _context.abrupt("return", _context.sent);
+
+          case 82:
+            _context.next = 85;
             break;
 
-          case 76:
+          case 84:
             console.info("### w_controller ### did not find store for myId: ".concat(myId));
 
-          case 77:
+          case 85:
           case "end":
             return _context.stop();
         }
@@ -484,7 +511,7 @@ function () {
 
           case 5:
             _context2.next = 7;
-            return (0, _botController.basicReply)(pageID, userID, text, user);
+            return (0, _botController.basicReply)(pageID, userID, text, user, data);
 
           case 7:
             out = _context2.sent;
@@ -492,7 +519,7 @@ function () {
 
           case 9:
             _context2.next = 11;
-            return (0, _botController.basicOption)(pageID, userID, text, data, user);
+            return (0, _botController.basicOption)(pageID, userID, text, data, payload, user);
 
           case 11:
             out = _context2.sent;

@@ -67,6 +67,7 @@ export const w_controller = async (args) => {
                 const store = await getStoreData(pageId);
                 // Get the last order from this customer.
                 const lastOrder = await getLastUserOrder({ pageId, userId });
+                console.log('>> Found lastOrder:', lastOrder.id);
 
                 const tempoEntregar = store.delivery_time ? `(+ ou - ${store.delivery_time} min.)` : '';
                 const tempoRetirar = store.pickup_time ? `(+ ou - ${store.pickup_time} min.)` : '';
@@ -84,13 +85,12 @@ export const w_controller = async (args) => {
                         pageID: pageId,
                         userID: userId,
                         text: replyText,
+                        payload: lastOrder.comments,
                         data: 'REPETIR',
                         user: user,
                     });
                 } else {
                     replyText = replyText + page.orderExample + '\n';
-
-
                     replyText = replyText.replace('$TEMPOENTREGAR', tempoEntregar);
                     replyText = replyText.replace('$TEMPORETIRAR', tempoRetirar);
 
@@ -113,14 +113,27 @@ export const w_controller = async (args) => {
                     objectWithEvent = match.buttons;
             }
 
-            const { event, data } = objectWithEvent;
-            const multiple = data ? (data.multiple ? data.multiple : 1) : 1;
-            const action = mapEventsActions(event, data);
-            const result = await sendActions({
-                action, pageID: pageId,
-                userID: userId, data, location, multiple, user,
-            });
-            return result;
+            if (objectWithEvent) {
+                const { event, data } = objectWithEvent;
+                const multiple = data ? (data.multiple ? data.multiple : 1) : 1;
+                const action = mapEventsActions(event, data);
+                const result = await sendActions({
+                    action, pageID: pageId,
+                    userID: userId, data, location, multiple, user,
+                });
+                return result;
+            } else {
+                if (match.hasOwnProperty('text') && match.text === 'REPETIR') {
+                    return await sendActions({
+                        action: 'BASIC_REPLY',
+                        pageID: pageId,
+                        userID: userId,
+                        text: 'Ok, vamos repetir o pedido.',
+                        user: user,
+                        data: match.subText,
+                    });
+                }
+            }
         }
     } else {
         console.info(`### w_controller ### did not find store for myId: ${myId}`);
@@ -302,10 +315,10 @@ export const sendActions = async ({
         let out;
         switch (action) {
             case 'BASIC_REPLY':
-                out = await basicReply(pageID, userID, text, user);
+                out = await basicReply(pageID, userID, text, user, data);
                 break;
             case 'BASIC_OPTION':
-                out = await basicOption(pageID, userID, text, data, user);
+                out = await basicOption(pageID, userID, text, data, payload, user);
                 break;
             case 'BASIC_UPDATE_COMMENTS':
                 out = await basicComments(pageID, userID, text, user);

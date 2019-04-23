@@ -1499,7 +1499,7 @@ function () {
               pageId: pageId,
               userId: userId,
               status: {
-                $gte: ORDERSTATUS_CONFIRMED
+                $gte: ORDERSTATUS_DELIVERED
               }
             }).sort('-updatedAt').limit(1).exec();
 
