@@ -1501,7 +1501,7 @@ function () {
               status: {
                 $gte: ORDERSTATUS_CONFIRMED
               }
-            }).sort('-confirmed_at').limit(1).exec();
+            }).sort('-updatedAt').limit(1).exec();
 
           case 3:
             resultLast = _context11.sent;
