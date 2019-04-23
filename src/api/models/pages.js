@@ -9,6 +9,7 @@ const schema = new mongoose.Schema({
     activeBot: { type: Boolean },
     greetingText: { type: String },
     firstResponseText: { type: String },
+    orderExample: { type: String },
     initialSetupFlavors: { type: Number },
     initialSetupSizes: { type: Number },
     initialSetupPricings: { type: Number },

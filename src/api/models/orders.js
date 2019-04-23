@@ -4,9 +4,9 @@ const Schema = mongoose.Schema;
 
 const schema = new Schema({
     id: { type: Number, required: true },
-    customerId: { type: Number },
     userId: { type: String, required: true },
     pageId: { type: String, required: true },
+    customerId: { type: Number },
     status: { type: Number },
     status2: { type: String },
     status3: { type: String },

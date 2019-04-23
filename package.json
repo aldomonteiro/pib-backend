@@ -53,8 +53,8 @@
     },
     "scripts": {
         "dev-redis": "nodemon src/redis-client.js",
-        "dev-bot": "NODE_ENV=dev nodemon --inspect=9230 --exec babel-node -- src/server-bot.js",
-        "dev-webapp": "NODE_ENV=dev nodemon --inspect --exec babel-node -- src/server-webapp.js",
+        "dev-bot": "NODE_ENV=dev nodemon --inspect --exec babel-node -- src/server-bot.js",
+        "dev-webapp": "NODE_ENV=dev nodemon --inspect=9230 --exec babel-node -- src/server-webapp.js",
         "dev": "yarn run dev-redis & yarn run dev-bot & yarn run dev-webapp",
         "build-babel": "babel -d ./dist ./src -s",
         "build-bot": "babel -d ./dist ./src/server-bot.js -s",

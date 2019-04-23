@@ -4,7 +4,8 @@ import logger from 'node-color-log';
 import messenger from '../../messenger';
 
 var io;
-var clients = {};
+var clientsWeb = {};
+var clientsWhats = {};
 
 export const setupSocketIo = (server, allowedOrigins) => {
     io = socketIo(server);
@@ -12,23 +13,38 @@ export const setupSocketIo = (server, allowedOrigins) => {
     io.origins((origin, callback) => {
         if (allowedOrigins.indexOf(origin) > -1)
             callback(null, true);
-        else
+        else {
+            console.log('>>> SOCKETCONTROLLER trying connect from ', origin);
             return callback('Socket.io: origin not allowed', false);
+        }
 
     });
 
     io.on('connection', socket => {
-        socket.on('acknowledgment', pageID => {
-            logger.color('green').log('joining: ' + pageID);
-            clients[pageID] = socket.id;
-            console.info(io);
+        socket.on('acknowledgment', originID => {
+            if (originID.hasOwnProperty('origin') && originID.origin === 'whatsapp') {
+                clientsWhats[originID.user] = socket.id;
+                logger.color('green').log('joining from whatsapp: ' + originID.user);
+                emitEventWhats(originID.user, 'notify', { user: originID.user, message: 'sadkasl' })
+            } else {
+                // this identifier is from a pageID
+                clientsWeb[originID] = socket.id;
+                logger.color('green').log('joining from web: ' + originID);
+            }
         });
 
         socket.on('disconnect', () => {
-            for (const id in clients) {
-                if (clients[id] === socket.id) {
-                    delete clients[id];
-                    logger.color('red').log('disconnecting ' + id);
+            for (const id in clientsWeb) {
+                if (clientsWeb[id] === socket.id) {
+                    delete clientsWeb[id];
+                    logger.color('red').log('disconnecting from web ' + id);
+                    break;
+                }
+            }
+            for (const id in clientsWhats) {
+                if (clientsWhats[id] === socket.id) {
+                    delete clientsWhats[id];
+                    logger.color('red').log('disconnecting from whatsapp ' + id);
                     break;
                 }
             }
@@ -88,7 +104,7 @@ export const emitEvent = (pageID, event, data) => {
         // Here I am storing the socketId for each pageID, but, it seems
         // the connected socket used on connect is not working to emit events
         // after awhile.
-        const socketID = clients[pageID];
+        const socketID = clientsWeb[pageID];
         if (socketID) {
             const socket = io.sockets.connected[socketID];
             if (socket) {
@@ -105,3 +121,26 @@ export const emitEvent = (pageID, event, data) => {
         console.error(`Error: ${error.message}`);
     }
 };
+
+export const emitEventWhats = (userID, event, data) => {
+    try {
+        // Here I am storing the socketId for each pageID, but, it seems
+        // the connected socket used on connect is not working to emit events
+        // after awhile.
+        const socketID = clientsWhats[userID];
+        if (socketID) {
+            const socket = io.sockets.connected[socketID];
+            if (socket) {
+                socket.emit(event, data);
+                logger.color('blue').log('emitted for ' + userID + ' with data:' + data.userId + ' ' + data.message)
+            } else {
+                logger.color('red').log('no socket for ' + userID)
+            }
+        } else {
+            logger.color('red').log('no socket for ' + userID)
+        }
+    } catch (error) {
+        console.error(`Error: ${error.message}`);
+    }
+};
+

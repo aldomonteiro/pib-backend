@@ -48,6 +48,9 @@ const schema = new Schema(
         catalog_url1: { type: String },
         catalog_url2: { type: String },
         payment_types: [{ payment_type: { type: String }, surcharge_percent: { type: Number }, surcharge_amount: { type: Number } }],
+        missing_address_notification: { type: String },
+        accept_notification: { type: String },
+        deliver_notification: { type: String },
     }, { timestamps: true },
 );
 

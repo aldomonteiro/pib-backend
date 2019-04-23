@@ -164,6 +164,8 @@ export const page_update = async (req, res) => {
                 page.greetingText = req.body.greetingText;
             if (req.body.firstResponseText)
                 page.firstResponseText = req.body.firstResponseText;
+            if (req.body.orderExample)
+                page.orderExample = req.body.orderExample;
             if (pictureUrl)
                 page.pictureUrl = pictureUrl;
             // update ActivePage for the current user

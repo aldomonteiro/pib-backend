@@ -1,5 +1,5 @@
 import Order from '../models/orders';
-import util from "util";
+import util from 'util';
 import { updateItem, getItems, getItemsTotal, cancelItems } from './itemsController';
 import { updateCustomer, getCustomerById } from './customersController';
 import { getStoreData, calcDeliveryFee } from './storesController';
@@ -12,6 +12,7 @@ import { DateTime } from 'luxon';
 // import { getOnePageToken } from './pagesController';
 import { sendShippingNotification, sendRejectionNotification } from '../bot/botController';
 import { emitEvent } from './redisController';
+import { emitEventWhats } from './socketController';
 export const ORDERSTATUS_PENDING = 0;
 export const ORDERSTATUS_CONFIRMED = 1;
 export const ORDERSTATUS_VIEWED = 2;
@@ -34,7 +35,8 @@ export const order_get_all = async (req, res) => {
             queryParam['pageId'] = req.currentUser.activePage;
         }
 
-        queryParam['status'] = { $gte: ORDERSTATUS_CONFIRMED };
+        // simple orders are querying all orders, even the ones not confirmed.
+        // queryParam['status'] = { $gte: ORDERSTATUS_CONFIRMED };
 
         if (!sortObj) {
             sortObj['createdAt'] = 'DESC';
@@ -76,7 +78,6 @@ export const order_get_all = async (req, res) => {
                             const rezonedIni = date.set({ hour: 0, minute: 0, second: 0 }).setZone('UTC');
                             const rezonedEnd = rezonedIni.plus({ days: 1 });
                             queryParam[filter] = { $gte: rezonedIni.toISO(), $lt: rezonedEnd.toISO() };
-
                         }
                     } else
                         queryParam[filter] = value;
@@ -84,85 +85,18 @@ export const order_get_all = async (req, res) => {
             }
         }
 
-        Order.find(queryParam).sort(sortObj).exec(async (findError, result) => {
-            if (findError) {
-                console.error({ findError });
-                res.status(500).json({ message: findError.message });
-            } else {
-                let _rangeIni = 0;
-                let _rangeEnd = result.length;
-                if (rangeObj) {
-                    _rangeIni = rangeObj.offset <= result.length ? rangeObj.offset : result.length;
-                    _rangeEnd = (rangeObj.offset + rangeObj.limit) <= result.length ? rangeObj.offset + rangeObj.limit : result.length;
-                }
-                let _totalCount = result.length;
-                let ordersArray = [];
-                if (result && result.length && result.length > 0) {
+        let ret;
+        if (req.body.simpleOrder)
+            ret = await simpleOrderGetAll(queryParam, sortObj, rangeObj);
+        else ret = await fullOrderGetAll(queryParam, sortObj, rangeObj);
 
-                    // workaround to show totalamount and totalitems in the frontend, because
-                    // I am only sending part of the list (pagination)
-                    let asideTotalAmount = 0;
-                    let asideTotalItems = result.length;
-                    for (const order of result) {
-                        asideTotalAmount = asideTotalAmount + order.total;
-                    }
-                    // workaround end: all orders will receive these values.
+        console.log('ret from fullOrderGetAll:', ret);
 
-                    const store = await getStoreData(result[0].pageId);
-                    for (let i = _rangeIni; i < _rangeEnd; i++) {
-                        const order = result[i];
-                        const items = await getItems({ orderId: order.id, pageId: order.pageId, completeItems: false });
-                        const distanceFromStore = distanceBetweenCoordinates(store.location_lat, store.location_long, order.location_lat, order.location_long);
-                        let formattedDistance;
-                        if (distanceFromStore < 1) {
-                            formattedDistance = (distanceFromStore * 100).toFixed(2) + ' m';
-                        } else {
-                            formattedDistance = distanceFromStore.toFixed(2) + ' km';
-                        }
-                        const deliverAt = order.deliver_time
-                            ? DateTime.fromJSDate(order.confirmed_at).plus({ minutes: order.deliver_time })
-                            : order.confirmed_at;
+        res.setHeader('Content-Range',
+            util.format('orders %d-%d/%d',
+                ret.rangeIni, ret.rangeEnd, ret.totalCount));
+        res.status(200).json(ret.ordersArray);
 
-                        let jsonOrder = {
-                            id: order.id,
-                            pageId: order.pageId,
-                            customerId: order.customerId,
-                            userId: order.userId,
-                            phone: order.phone,
-                            deliverAt: deliverAt,
-                            deliver_type: order.deliver_type,
-                            deliver_time: order.deliver_time,
-                            address: order.address,
-                            status: order.status,
-                            status2: order.status2,
-                            status3: order.status3,
-                            qty_total: order.qty_total,
-                            total: order.total,
-                            createdAt: order.createdAt,
-                            items: items,
-                            distanceFromStore: formattedDistance,
-                            location_lat: order.location_lat,
-                            location_long: order.location_long,
-                            confirmed_at: order.confirmed_at,
-                            deliverd_at: order.delivered_at,
-                            payment_type: order.payment_type,
-                            payment_change: order.payment_change,
-                            comments: order.comments,
-                            delivery_fee: order.delivery_fee,
-                            surcharge_percent: order.surcharge_percent,
-                            surcharge_amount: order.surcharge_amount,
-                            asideTotalAmount: asideTotalAmount,
-                            asideTotalItems: asideTotalItems,
-                        }
-                        ordersArray.push(jsonOrder);
-                    }
-                }
-                res.setHeader('Content-Range',
-                    util.format('orders %d-%d/%d',
-                        _rangeIni, _rangeEnd, _totalCount));
-                res.status(200).json(ordersArray);
-            }
-        });
     } catch (orderGetAllErr) {
         console.error({ orderGetAllErr })
         res.status(500).json({ message: orderGetAllErr.message });
@@ -191,6 +125,8 @@ export const order_update = async (req, res) => {
             const pageId = req.currentUser.activePage;
             const doc = await Order.findOne({ pageId: pageId, id: id });
 
+            let updateOrder = true;
+
             if (operation === 'REJECT') {
                 const { rejectionExplanation } = req.body;
 
@@ -203,18 +139,24 @@ export const order_update = async (req, res) => {
                 // sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
             } else if (operation === 'ACCEPT') {
                 doc.status = ORDERSTATUS_ACCEPTED;
-                // sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
+                const store = await getStoreData(doc.pageId);
+                sendNotification(store.phone, doc.userId, store.accept_notification);
             } else if (operation === 'PRINT') {
                 doc.status = ORDERSTATUS_PRINTED;
                 // sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
             } else if (operation === 'DELIVER') {
                 doc.status = ORDERSTATUS_DELIVERED;
-                if (doc.source !== 'whatsapp') {
-                    if (!doc.sent_shipping_notification) {
-                        await sendShippingNotification(doc.pageId, doc.userId, doc.id);
-                        doc.sent_shipping_notification = DateTime.local();
-                    }
-                }
+                const store = await getStoreData(doc.pageId);
+                sendNotification(store.phone, doc.userId, store.deliver_notification);
+            } else if (operation === 'MISSING_ADDRESS') {
+                updateOrder = false;
+                const store = await getStoreData(doc.pageId);
+                sendNotification(store.phone, doc.userId, store.missing_address_notification);
+            } else if (operation === 'OPEN_QUESTION') {
+                const { question } = req.body;
+                doc.comments = doc.comments + '\n' + question;
+                const store = await getStoreData(doc.pageId);
+                sendNotification(store.phone, doc.userId, question);
             } else {
                 if (req.body.status2 === 'ordered') {
                     doc.status = ORDERSTATUS_CONFIRMED;
@@ -224,22 +166,21 @@ export const order_update = async (req, res) => {
                 } else if (req.body.status2 === 'cancelled') {
                     doc.status = ORDERSTATUS_DELIVERED;
                 }
-
                 if (doc.status === ORDERSTATUS_DELIVERED) {
                     if (doc.source !== 'whatsapp') {
                         if (!doc.sent_shipping_notification) {
-                            console.info("I am going to send to " + doc.userId + ", about the order number:" + doc.id + " a shipping notification");
+                            console.info('I am going to send to ' + doc.userId + ', about the order number:' + doc.id + ' a shipping notification');
                             await sendShippingNotification(doc.pageId, doc.userId, doc.id);
                             doc.sent_shipping_notification = DateTime.local();
                         }
                     }
                 }
             }
-            await doc.save();
+            if (updateOrder)
+                await doc.save();
             const jsonOrder = await getOrderJson(pageId, doc.id);
             res.status(200).json(jsonOrder);
-        }
-        catch (orderUpdateErr) {
+        } catch (orderUpdateErr) {
             console.error(orderUpdateErr);
             res.status(500).json({ message: orderUpdateErr.message });
         }
@@ -248,7 +189,7 @@ export const order_update = async (req, res) => {
 
 /**
  * Delete all records from a pageID
- * @param {*} pageID 
+ * @param {*} pageID
  */
 export const deleteManyOrders = async (pageID) => {
     return await Order.deleteMany({ pageId: pageID }).exec();
@@ -274,29 +215,34 @@ export const getOrderJson = async (pageId, orderId) => {
         const distanceFromStore = distanceBetweenCoordinates(store.location_lat, store.location_long, order.location_lat, order.location_long);
         const deliverAt = order.deliver_time
             ? DateTime.fromJSDate(order.confirmed_at).plus({ minutes: order.deliver_time })
-            : order.confirmed_at;
+            : order.updatedAt;
         let jsonItems = [];
-        items.forEach(item => {
-            let jsonItem = {
-                id: item.id,
-                flavorId: item.flavorId,
-                sizeId: item.sizeId,
-                beverageId: item.beverageId,
-                beverage: item.beverage,
-                price: item.price,
-                qty: item.qty,
-                split: item.split,
-                flavor: item.flavor,
-                size: item.size,
-            }
-            jsonItems.push(jsonItem);
-        });
+        if (items && items.length > 0) {
+            items.forEach(item => {
+                let jsonItem = {
+                    id: item.id,
+                    flavorId: item.flavorId,
+                    sizeId: item.sizeId,
+                    beverageId: item.beverageId,
+                    beverage: item.beverage,
+                    price: item.price,
+                    qty: item.qty,
+                    split: item.split,
+                    flavor: item.flavor,
+                    size: item.size,
+                }
+                jsonItems.push(jsonItem);
+            });
+        }
         let jsonOrder = {
             id: order.id,
             customerId: order.customerId,
             customerName: customer.first_name + ' ' + customer.last_name,
             createdAt: order.createdAt,
+            updatedAt: order.updatedAt,
             deliverAt: deliverAt,
+            confirmed_at: order.confirmed_at,
+            delivered_at: order.delivered_at,
             deliver_type: order.deliver_type,
             deliver_time: order.deliver_time,
             qty_total: order.qty_total,
@@ -310,8 +256,6 @@ export const getOrderJson = async (pageId, orderId) => {
             distanceFromStore: distanceFromStore,
             location_lat: order.location_lat,
             location_long: order.location_long,
-            confirmed_at: order.confirmed_at,
-            deliverd_at: order.delivered_at,
             payment_type: order.payment_type,
             payment_change: order.payment_change,
             comments: order.comments,
@@ -554,8 +498,8 @@ export const updateOrder = async orderData => {
             if (comments) {
                 order.comments = comments;
                 updateOrder = true;
+                emitEvent(pageId, 'new-comment', { id: order.id, updatedAt: Date.now() });
             }
-
 
             if (typeof calcTotal === 'boolean') {
                 let total = await getItemsTotal({ orderId: order.id, pageId: order.pageId });
@@ -616,6 +560,8 @@ export const updateOrder = async orderData => {
                 location_long: location ? location.long : null,
                 location_url: location ? location.url : null,
                 waitingForAddress: typeof waitingForAddress === 'boolean' ? waitingForAddress : false,
+                waitingFor: waitingFor,
+                comments: comments,
                 deliver_type: deliverType,
                 status: ORDERSTATUS_PENDING,
             });
@@ -629,12 +575,189 @@ export const updateOrder = async orderData => {
     }
 }
 
+const fullOrderGetAll = async (queryObj, sortObj, rangeObj) => {
+    try {
+
+        const ret = {
+            rangeIni: 0,
+            rangeEnd: 0,
+            totalCount: 0,
+            ordersArray: [],
+        }
+
+        const result = await Order.find(queryObj).sort(sortObj).exec();
+
+        ret.rangeIni = 0;
+        ret.rangeEnd = result.length;
+        if (rangeObj) {
+            ret.rangeIni = rangeObj.offset <= result.length ? rangeObj.offset : result.length;
+            ret.rangeEnd = (rangeObj.offset + rangeObj.limit) <= result.length ? rangeObj.offset + rangeObj.limit : result.length;
+        }
+        ret.totalCount = result.length;
+        ret.ordersArray = [];
+        if (result && result.length && result.length > 0) {
+
+            // workaround to show totalamount and totalitems in the frontend, because
+            // I am only sending part of the list (pagination)
+            let asideTotalAmount = 0;
+            let asideTotalItems = result.length;
+            for (const order of result) {
+                asideTotalAmount = asideTotalAmount + order.total;
+            }
+            // workaround end: all orders will receive these values.
+
+            const store = await getStoreData(result[0].pageId);
+            for (let i = ret.rangeIni; i < ret.rangeEnd; i++) {
+                const order = result[i];
+                const items = await getItems({ orderId: order.id, pageId: order.pageId, completeItems: false });
+                const distanceFromStore = distanceBetweenCoordinates(store.location_lat, store.location_long, order.location_lat, order.location_long);
+                let formattedDistance;
+                if (distanceFromStore < 1) {
+                    formattedDistance = (distanceFromStore * 100).toFixed(2) + ' m';
+                } else {
+                    formattedDistance = distanceFromStore.toFixed(2) + ' km';
+                }
+
+                const refDate = order.confirmed_at || order.createdAt;
+
+                const deliverAt = order.deliver_time
+                    ? DateTime.fromJSDate(refDate).plus({ minutes: order.deliver_time })
+                    : refDate;
+
+                let jsonOrder = {
+                    id: order.id,
+                    pageId: order.pageId,
+                    customerId: order.customerId,
+                    userId: order.userId,
+                    phone: order.phone,
+                    deliverAt: deliverAt,
+                    deliver_type: order.deliver_type,
+                    deliver_time: order.deliver_time,
+                    address: order.address,
+                    status: order.status,
+                    status2: order.status2,
+                    status3: order.status3,
+                    qty_total: order.qty_total,
+                    total: order.total,
+                    createdAt: order.createdAt,
+                    updatedAt: order.updatedAt,
+                    items: items,
+                    distanceFromStore: formattedDistance,
+                    location_lat: order.location_lat,
+                    location_long: order.location_long,
+                    confirmed_at: order.confirmed_at,
+                    deliverd_at: order.delivered_at,
+                    payment_type: order.payment_type,
+                    payment_change: order.payment_change,
+                    comments: order.comments,
+                    delivery_fee: order.delivery_fee,
+                    surcharge_percent: order.surcharge_percent,
+                    surcharge_amount: order.surcharge_amount,
+                    asideTotalAmount: asideTotalAmount,
+                    asideTotalItems: asideTotalItems,
+                }
+                ret.ordersArray.push(jsonOrder);
+            }
+        }
+        return ret;
+    } catch (error) {
+
+    }
+}
+
+const simpleOrderGetAll = async (query, sort, rangeObj) => {
+    let ret = {
+        rangeIni: 0,
+        rangeEnd: 0,
+        totalCount: 0,
+        ordersArray: [],
+    }
+
+    Order.find(query).sort(sort).exec(async (findError, result) => {
+        if (findError) {
+            console.error({ findError });
+            throw new Error(findError.message);
+        } else {
+            ret.rangeIni = 0;
+            ret.rangeEnd = result.length;
+            if (rangeObj) {
+                ret.rangeIni = rangeObj.offset <= result.length ? rangeObj.offset : result.length;
+                ret.rangeEnd = (rangeObj.offset + rangeObj.limit) <= result.length ? rangeObj.offset + rangeObj.limit : result.length;
+            }
+            ret.totalCount = result.length;
+            ret.ordersArray = [];
+            if (result && result.length && result.length > 0) {
+
+                // workaround to show totalamount and totalitems in the frontend, because
+                // I am only sending part of the list (pagination)
+                let asideTotalAmount = 0;
+                let asideTotalItems = result.length;
+                for (const order of result) {
+                    asideTotalAmount = asideTotalAmount + order.total;
+                }
+                // workaround end: all orders will receive these values.
+
+                const store = await getStoreData(result[0].pageId);
+                for (let i = ret.rangeIni; i < ret.rangeEnd; i++) {
+                    const order = result[i];
+                    const items = await getItems({ orderId: order.id, pageId: order.pageId, completeItems: false });
+                    const distanceFromStore = distanceBetweenCoordinates(store.location_lat, store.location_long, order.location_lat, order.location_long);
+                    let formattedDistance;
+                    if (distanceFromStore < 1) {
+                        formattedDistance = (distanceFromStore * 100).toFixed(2) + ' m';
+                    } else {
+                        formattedDistance = distanceFromStore.toFixed(2) + ' km';
+                    }
+                    const deliverAt = order.deliver_time
+                        ? DateTime.fromJSDate(order.confirmed_at).plus({ minutes: order.deliver_time })
+                        : order.confirmed_at;
+
+                    let jsonOrder = {
+                        id: order.id,
+                        pageId: order.pageId,
+                        customerId: order.customerId,
+                        userId: order.userId,
+                        phone: order.phone,
+                        deliverAt: deliverAt,
+                        deliver_type: order.deliver_type,
+                        deliver_time: order.deliver_time,
+                        address: order.address,
+                        status: order.status,
+                        status2: order.status2,
+                        status3: order.status3,
+                        qty_total: order.qty_total,
+                        total: order.total,
+                        createdAt: order.createdAt,
+                        items: items,
+                        distanceFromStore: formattedDistance,
+                        location_lat: order.location_lat,
+                        location_long: order.location_long,
+                        confirmed_at: order.confirmed_at,
+                        deliverd_at: order.delivered_at,
+                        payment_type: order.payment_type,
+                        payment_change: order.payment_change,
+                        comments: order.comments,
+                        delivery_fee: order.delivery_fee,
+                        surcharge_percent: order.surcharge_percent,
+                        surcharge_amount: order.surcharge_amount,
+                        asideTotalAmount: asideTotalAmount,
+                        asideTotalItems: asideTotalItems,
+                    }
+                    ret.ordersArray.push(jsonOrder);
+                }
+            }
+        }
+    });
+
+    return ret;
+}
+
 export const getOrderPending = async orderData => {
     const { userId, pageId, isComplete } = orderData;
 
     const _order = await Order.findOne({
         userId: userId, pageId: pageId,
-        status: ORDERSTATUS_PENDING,
+        status: { $lt: ORDERSTATUS_DELIVERED },
     }).exec();
     if (_order) {
         if (isComplete && isComplete === true) {
@@ -653,6 +776,19 @@ export const getOrderPending = async orderData => {
             return headerOrder;
         }
     } else return null;
+}
+
+export const getLastUserOrder = async orderData => {
+    const { userId, pageId } = orderData;
+
+    const resultLast = await Order.find({
+        pageId: pageId,
+        userId: userId,
+        status: { $gte: ORDERSTATUS_CONFIRMED },
+    }).sort('-confirmed_at').limit(1).exec();
+    if (resultLast && resultLast.length)
+        return resultLast[0];
+    else return null;
 }
 
 export const getLastOrder = async pageID => {
@@ -716,6 +852,9 @@ export const cancelOrder = async orderData => {
         });
 }
 
+const sendNotification = (whatsAppId, userId, message) => {
+    emitEventWhats(whatsAppId, 'notify', { userId: userId, message: message })
+}
 
 /**
  * Trying to reduce the number of calls to getFlavors and getSizes.

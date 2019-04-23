@@ -93,7 +93,9 @@ export const store_create = (req, res) => {
             hol_close: req.body.hol_close,
             catalog_url1: req.body.catalog_url1,
             catalog_url2: req.body.catalog_url2,
-
+            missing_address_notification: req.body.missing_address_notification,
+            accept_notification: req.body.accept_notification,
+            deliver_notification: req.body.deliver_notification,
         });
 
         newRecord.save()
@@ -176,6 +178,9 @@ export const store_update = (req, res) => {
                     doc.catalog_url1 = req.body.catalog_url1;
                     doc.catalog_url2 = req.body.catalog_url2;
                     doc.payment_types = req.body.payment_types;
+                    doc.missing_address_notification = req.body.missing_address_notification;
+                    doc.accept_notification = req.body.accept_notification;
+                    doc.deliver_notification = req.body.deliver_notification;
 
                     doc.save((err, result) => {
                         if (err) {

@@ -21,7 +21,7 @@ import { m_checkLastQuestion } from './api/bot/botMarkController';
 import {
     w_sendMainMenu, waboxapp_sendMessage,
     w_controller,
-} from './api/whatsapp/whatController';
+} from './api/whatsapp/whatSimpleController';
 
 dotenv.config();
 const env = process.env.NODE_ENV || 'production';
@@ -198,7 +198,8 @@ app.use('/buckets/whatsapp', async (req, res, next) => {
 
             if (args) {
                 const replyData = await w_controller(args);
-                res.json({ message: replyData });
+                if (replyData)
+                    res.json({ message: replyData });
             }
         }
     } else {

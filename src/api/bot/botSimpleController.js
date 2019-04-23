@@ -50,42 +50,16 @@ export const sendErrorMsg = async (_errorMsg) => {
     return out;
 }
 
-/**
- * Used in whatSimpleController
- * @param {*} pageId
- * @param {*} userId
- * @param {*} replyText
- */
-export const basicReply = async (pageId, userId, replyText, user) => {
-    await updateOrder({ pageId, userId, waitingFor: 'typed_comments', user: user });
+// export const updateOrderFlow = async (pageID, userID) => {
 
+// }
+
+export const basicReply = async (replyText) => {
+    if (!replyText) {
+        replyText = 'Hi, how are you doing?';
+    }
     return { type: 'text', text: replyText };
 }
-
-export const basicOption = async (pageId, userId, text, optionText, user) => {
-    await updateOrder({ pageId, userId, waitingFor: 'typed_comments', user: user });
-
-    const _options = [];
-    _options.push({ text: optionText, hidden: true });
-
-    return {
-        type: 'list',
-        text: text,
-        options: _options,
-    };
-}
-
-/**
- * Just update the comments, do not return nothing.
- * @param {*} pageId
- * @param {*} userId
- * @param {*} text
- */
-export const basicComments = async (pageId, userId, text, user) => {
-    await updateOrder({ pageId, userId, waitingFor: 'typed_comments', comments: text, user: user });
-    return true;
-}
-
 
 /**
  * Send Yes or No to the user asking if he wants to place an order right now.
@@ -192,6 +166,9 @@ export const passThreadControl = async (pageId, userId, source, user) => {
  * @param {*} pageID
  */
 export const sendWelcomeMessage = async (pageID, sender) => {
+
+    console.info('sendWelcomeMessage', typeof sender);
+
     let _nameToReplace = '';
     if (sender && typeof sender !== 'string') {
         // This only works on Facebook

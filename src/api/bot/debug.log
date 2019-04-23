@@ -1,7 +1,13 @@
 dev Server listening on port 8080
 connected to new channels, number is- 
-{ email: 'aldomonteiro@gmail.com',
-  nome: 'Aldo',
-  whatsapp: '(41) 9 8416-3676',
-  obs: '22:21',
-  origin: 'delivery' }
+[32mjoining from whatsapp: 554499485760[0m
+[34memitted for 554499485760 with data:undefined sadkasl[0m
+user has been saved: userID:1858850134137175, name:Aldo Monteiro, hasLong:true
+ret from fullOrderGetAll:
+ret from fullOrderGetAll:
+[34memitted for 554499485760 with data:554184163676@c.us undefined[0m
+ret from fullOrderGetAll:
+ret from fullOrderGetAll:
+ret from fullOrderGetAll:
+[34memitted for 554499485760 with data:554184163676@c.us O seu pedido saiu para entrega. Bom apetite![0m
+[31mdisconnecting from whatsapp 554499485760[0m
