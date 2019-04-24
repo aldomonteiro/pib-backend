@@ -27,6 +27,8 @@ var setupSocketIo = function setupSocketIo(server, allowedOrigins) {
   });
   io.on('connection', function (socket) {
     socket.on('acknowledgment', function (originID) {
+      _nodeColorLog["default"].color('green').log('aknowledment: ' + (originID.user || originID));
+
       if (originID.hasOwnProperty('origin') && originID.origin === 'whatsapp') {
         clientsWhats[originID.user] = socket.id;
 

@@ -7,6 +7,8 @@ exports.waboxapp_sendMessage = exports.sendActions = exports.w_controller = void
 
 var _axios = _interopRequireDefault(require("axios"));
 
+var _luxon = require("luxon");
+
 var _botController = require("../bot/botController");
 
 var _storesController = require("../controllers/storesController");
@@ -32,7 +34,7 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(args) {
-    var myId, message, userId, match, location, contactName, profileImg, names, first_name, last_name, _profile_pic, user, store, pageId, pendingOrder, result, addrData, oldComments, updatedComents, page, _store, lastOrder, tempoEntregar, tempoRetirar, replyText, objectWithEvent, _objectWithEvent, event, data, multiple, action, _result;
+    var myId, message, userId, match, location, contactName, profileImg, names, first_name, last_name, _profile_pic, user, store, pageId, pendingOrder, result, addrData, oldComments, updatedComents, page, _store, lastOrder, orderDay, today, tempoEntregar, tempoRetirar, replyText;
 
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -57,7 +59,7 @@ function () {
             store = _context.sent;
 
             if (!store) {
-              _context.next = 84;
+              _context.next = 79;
               break;
             }
 
@@ -65,7 +67,7 @@ function () {
             pageId = store.pageId;
 
             if (match) {
-              _context.next = 67;
+              _context.next = 73;
               break;
             }
 
@@ -122,7 +124,8 @@ function () {
               action: 'BASIC_UPDATE_COMMENTS',
               pageID: pageId,
               userID: userId,
-              text: updatedComents
+              text: updatedComents,
+              user: user
             });
 
           case 32:
@@ -150,21 +153,39 @@ function () {
 
           case 44:
             lastOrder = _context.sent;
+
+            if (!lastOrder) {
+              _context.next = 52;
+              break;
+            }
+
             console.log('>> Found lastOrder:', lastOrder.id);
+            orderDay = _luxon.DateTime.fromJSDate(lastOrder.confirmed_at).get('day');
+            today = _luxon.DateTime.local().get('day');
+
+            if (!(orderDay === today)) {
+              _context.next = 52;
+              break;
+            }
+
+            console.log(' from today...');
+            return _context.abrupt("return");
+
+          case 52:
             tempoEntregar = _store.delivery_time ? "(+ ou - ".concat(_store.delivery_time, " min.)") : '';
             tempoRetirar = _store.pickup_time ? "(+ ou - ".concat(_store.pickup_time, " min.)") : '';
             replyText = page.firstResponseText.replace('$NAME', contactName);
             replyText = replyText + '\n\n';
 
             if (!(lastOrder && lastOrder.comments)) {
-              _context.next = 59;
+              _context.next = 65;
               break;
             }
 
             replyText = replyText + 'Seu último pedido:\n';
             replyText = replyText + lastOrder.comments + '\n';
             replyText = replyText + 'Envie *REPETIR* para fazer o mesmo pedido OU envie os dados do pedido:\n';
-            _context.next = 56;
+            _context.next = 62;
             return sendActions({
               action: 'BASIC_OPTION',
               pageID: pageId,
@@ -175,14 +196,14 @@ function () {
               user: user
             });
 
-          case 56:
+          case 62:
             return _context.abrupt("return", _context.sent);
 
-          case 59:
+          case 65:
             replyText = replyText + page.orderExample + '\n';
             replyText = replyText.replace('$TEMPOENTREGAR', tempoEntregar);
             replyText = replyText.replace('$TEMPORETIRAR', tempoRetirar);
-            _context.next = 64;
+            _context.next = 70;
             return sendActions({
               action: 'BASIC_REPLY',
               pageID: pageId,
@@ -191,48 +212,20 @@ function () {
               user: user
             });
 
-          case 64:
+          case 70:
             return _context.abrupt("return", _context.sent);
 
-          case 65:
-            _context.next = 82;
+          case 71:
+            _context.next = 77;
             break;
 
-          case 67:
-            if (match.hasOwnProperty('event')) objectWithEvent = match;else if (match.hasOwnProperty('buttons')) {
-              if (match.buttons.hasOwnProperty('event')) objectWithEvent = match.buttons;
-            }
-
-            if (!objectWithEvent) {
-              _context.next = 78;
-              break;
-            }
-
-            _objectWithEvent = objectWithEvent, event = _objectWithEvent.event, data = _objectWithEvent.data;
-            multiple = data ? data.multiple ? data.multiple : 1 : 1;
-            action = mapEventsActions(event, data);
-            _context.next = 74;
-            return sendActions({
-              action: action,
-              pageID: pageId,
-              userID: userId,
-              data: data,
-              location: location,
-              multiple: multiple,
-              user: user
-            });
-
-          case 74:
-            _result = _context.sent;
-            return _context.abrupt("return", _result);
-
-          case 78:
+          case 73:
             if (!(match.hasOwnProperty('text') && match.text === 'REPETIR')) {
-              _context.next = 82;
+              _context.next = 77;
               break;
             }
 
-            _context.next = 81;
+            _context.next = 76;
             return sendActions({
               action: 'BASIC_REPLY',
               pageID: pageId,
@@ -242,17 +235,17 @@ function () {
               data: match.subText
             });
 
-          case 81:
+          case 76:
             return _context.abrupt("return", _context.sent);
 
-          case 82:
-            _context.next = 85;
+          case 77:
+            _context.next = 80;
             break;
 
-          case 84:
+          case 79:
             console.info("### w_controller ### did not find store for myId: ".concat(myId));
 
-          case 85:
+          case 80:
           case "end":
             return _context.stop();
         }
@@ -266,231 +259,6 @@ function () {
 }();
 
 exports.w_controller = w_controller;
-
-var mapEventsActions = function mapEventsActions(event, data) {
-  switch (event) {
-    case 'MAIN_MENU':
-      return 'SEND_MAIN_MENU';
-
-    case 'ORDER_CONTINUE_ORDER':
-      switch (data) {
-        case 'continueorder_yes':
-          return 'CHECK_LAST_ACTION';
-
-        case 'continueorder_no':
-          return 'CONTINUE_ORDER_NO';
-      }
-
-      break;
-
-    case 'STOP_ORDER_OPTIONS':
-      switch (data) {
-        case 'stoporder_init':
-          return 'CANCEL_PENDING_ORDER';
-
-        case 'stoporder_human':
-          return 'PASS_THREAD_CONTROL';
-      }
-
-      break;
-
-    case 'MAIN-MENU':
-      switch (data) {
-        case 'CARDAPIO_PAYLOAD':
-          return 'SEND_CARDAPIO';
-
-        case 'PEDIDO_PAYLOAD':
-          return 'ASK_FOR_DELIVER';
-
-        case 'HORARIO_PAYLOAD':
-          return 'SEND_HORARIO';
-
-        case 'stoporder_human':
-          return 'PASS_THREAD_CONTROL';
-      }
-
-      break;
-
-    case 'ORDER_WANT_ORDER':
-      switch (data) {
-        case 'wantorder_yes':
-          return 'ASK_FOR_DELIVER';
-
-        case 'wantorder_no':
-          return 'SEND_MAIN_MENU';
-      }
-
-      break;
-
-    case 'ORDER_DELIVER':
-      switch (data.type) {
-        case 'delivery':
-          return 'SHOW_DELIVER_CHECK_ADDRESS';
-
-        case 'pickup':
-          return 'SHOW_DELIVER_ASK_FOR_CATEGORY';
-      }
-
-      break;
-
-    case 'CORRECT_SAVED_ADDRESS':
-      return 'SHOW_ADDRESS_ASK_FOR_CATEGORY';
-
-    case 'WRONG_SAVED_ADDRESS':
-      return 'ASK_FOR_LOCATION';
-
-    case 'LOCATION':
-      switch (data) {
-        case 'location_location':
-          return 'LOCATION_CONFIRM_ADDRESS';
-      }
-
-      break;
-
-    case 'LOCATION_ADDRESS':
-      switch (data) {
-        case 'incorrect_address':
-          return 'ASK_TO_TYPE_ADDRESS';
-
-        default:
-          return 'SHOW_ADDRESS_ASK_FOR_CATEGORY';
-      }
-
-    case 'ORDER_QTY':
-      switch (data) {
-        case 'qty_more':
-          return 'ASK_FOR_QUANTITY_MORE';
-
-        case 'qty_less':
-          return 'ASK_FOR_QUANTITY';
-
-        default:
-          return 'SHOW_QUANTITY_ASK_FOR_SIZE';
-      }
-
-    case 'ORDER_SIZE':
-      return 'SHOW_SIZE_CHECK_SPLIT';
-
-    case 'ORDER_SPLIT':
-      return 'SHOW_SPLIT_CHECK_FLAVOR';
-
-    case 'ORDER_FLAVOR':
-      switch (data.option) {
-        case 'flavors_more':
-          return 'ASK_FOR_FLAVOR';
-
-        default:
-          return 'SHOW_FLAVOR_CHECK_ITEM';
-      }
-
-    case 'ORDER_PIZZA_CONFIRMATION':
-      switch (data.type) {
-        case 'confirmation_yes':
-          return 'ASK_FOR_PAYMENT_TYPE';
-
-        default:
-          return 'ASK_FOR_CHANGE_ORDER';
-      }
-
-    case 'ORDER_WANT_CHANGE':
-      return 'ASK_FOR_SPECIFIC_ITEM';
-
-    case 'ORDER_CHANGE':
-      switch (data) {
-        case 'change_quantity':
-          return 'ASK_FOR_QUANTITY';
-
-        case 'change_size':
-          return 'ASK_FOR_SIZE';
-
-        case 'change_flavor':
-          return 'ASK_FOR_FLAVOR';
-
-        case 'change_address':
-          return 'ASK_FOR_LOCATION';
-
-        case 'change_item':
-          return 'CHANGE_ITEM';
-
-        case 'cancel_item':
-          return 'CANCEL_ITEM';
-      }
-
-      break;
-
-    case 'ORDER_CHANGE_ITEM':
-      return 'CHANGE_ITEM';
-
-    case 'ORDER_CANCEL_ITEM':
-      return 'CANCEL_ITEM';
-
-    case 'ORDER_CONFIRM_BEVERAGE':
-      switch (data) {
-        case 'beverage_yes':
-          return 'ASK_FOR_BEVERAGE_OPTIONS';
-
-        default:
-          return 'SHOW_NO_BEVERAGE_ASK_FOR_PAYMENT_TYPE';
-      }
-
-    case 'ORDER_BEVERAGE':
-      switch (data.option) {
-        case 'beverages_more':
-          return 'ASK_FOR_BEVERAGE_OPTIONS';
-
-        case 'beverages_cancel':
-          return 'SHOW_NO_BEVERAGE_ASK_FOR_PAYMENT_TYPE';
-
-        default:
-          return 'SHOW_BEVERAGE_ASK_FOR_PAYMENT_TYPE';
-      }
-
-    case 'ORDER_PAYMENT_TYPE':
-      // switch (data) {
-      //     case 'payment_money':
-      //         return 'SHOW_PAYMENT_TYPE_ASK_FOR_PAYMENT_CHANGE';
-      //     case 'payment_card':
-      return 'SHOW_PAYMENT_TYPE_ASK_FOR_COMMENTS';
-    // }
-    // break;
-
-    case 'ORDER_PAYMENT_CHANGE':
-      return 'SHOW_PAYMENT_CHANGE_ASK_FOR_COMMENTS';
-
-    case 'ORDER_COMMENTS':
-      switch (data) {
-        case 'comments_yes':
-          return 'ASK_FOR_TYPE_COMMENTS';
-
-        default:
-          return 'SHOW_FULL_ORDER_CONFIRM_ORDER';
-      }
-
-    case 'ORDER_CONFIRMATION':
-      switch (data.type) {
-        case 'confirmation_yes':
-          return 'CONFIRM_ORDER';
-
-        default:
-          return 'ASK_FOR_CHANGE_ORDER';
-      }
-
-    case 'ORDER_CHANGE_SELECT_ITEM':
-      return 'UPDATE_ITEM';
-
-    case 'ORDER_PARTIAL_CONFIRMATION':
-      return 'CANCEL_PENDING_SHOW_PARTIAL_ORDER';
-
-    case 'ORDER_CATEGORY':
-      return 'SHOW_CATEGORY_ASK_FOR_SIZE';
-
-    case 'ORDER_ASK_CATEGORY':
-      return 'ASK_FOR_CATEGORY';
-
-    case 'ORDER_CATEGORY_CARDAPIO':
-      return 'SHOW_FLAVORS_CATEGORY';
-  }
-};
 
 var sendActions =
 /*#__PURE__*/

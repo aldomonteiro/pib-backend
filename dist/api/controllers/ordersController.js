@@ -71,8 +71,11 @@ function () {
             if (req.currentUser.activePage) {
               queryParam['pageId'] = req.currentUser.activePage;
             } // simple orders are querying all orders, even the ones not confirmed.
-            // queryParam['status'] = { $gte: ORDERSTATUS_CONFIRMED };
 
+
+            queryParam['status'] = {
+              $gte: ORDERSTATUS_CONFIRMED
+            };
 
             if (!sortObj) {
               sortObj['createdAt'] = 'DESC';
@@ -158,34 +161,34 @@ function () {
             }
 
             if (!req.body.simpleOrder) {
-              _context.next = 14;
+              _context.next = 15;
               break;
             }
 
-            _context.next = 11;
+            _context.next = 12;
             return simpleOrderGetAll(queryParam, sortObj, rangeObj);
 
-          case 11:
+          case 12:
             ret = _context.sent;
-            _context.next = 17;
+            _context.next = 18;
             break;
 
-          case 14:
-            _context.next = 16;
+          case 15:
+            _context.next = 17;
             return fullOrderGetAll(queryParam, sortObj, rangeObj);
 
-          case 16:
+          case 17:
             ret = _context.sent;
 
-          case 17:
+          case 18:
             console.log('ret from fullOrderGetAll:', ret);
             res.setHeader('Content-Range', _util["default"].format('orders %d-%d/%d', ret.rangeIni, ret.rangeEnd, ret.totalCount));
             res.status(200).json(ret.ordersArray);
-            _context.next = 26;
+            _context.next = 27;
             break;
 
-          case 22:
-            _context.prev = 22;
+          case 23:
+            _context.prev = 23;
             _context.t0 = _context["catch"](0);
             console.error({
               orderGetAllErr: _context.t0
@@ -194,12 +197,12 @@ function () {
               message: _context.t0.message
             });
 
-          case 26:
+          case 27:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 22]]);
+    }, _callee, null, [[0, 23]]);
   }));
 
   return function order_get_all(_x, _x2) {
@@ -636,7 +639,7 @@ function () {
   var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee6(orderData) {
-    var pageId, userId, source, deliverType, deliverTime, qty, qty_total, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, waitingFor, waitingForData, undo, currentItem, sizeId, calcTotal, originalSplit, split, currentItemSplit, eraseSplit, noBeverage, paymentType, paymentChange, backToConfirmation, comments, categoryId, surcharge_percent, surcharge_amount, storeAddress, customerID, customerData, first_name, last_name, profile_pic, order, _updateOrder2, calcDistance, storeData, distanceFromStore, total, resultLastId, orderId, record;
+    var pageId, userId, source, deliverType, deliverTime, qty, qty_total, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, waitingFor, waitingForData, undo, currentItem, sizeId, calcTotal, originalSplit, split, currentItemSplit, eraseSplit, noBeverage, paymentType, paymentChange, backToConfirmation, comments, categoryId, surcharge_percent, surcharge_amount, storeAddress, customerID, customerData, first_name, last_name, profile_pic, order, currentStatus, _updateOrder2, calcDistance, storeData, distanceFromStore, total, resultLastId, orderId, record;
 
     return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
@@ -668,17 +671,20 @@ function () {
             return _orders["default"].findOne({
               pageId: pageId,
               userId: userId,
-              status: ORDERSTATUS_PENDING
+              status: {
+                $lt: ORDERSTATUS_REJECTED
+              }
             }).exec();
 
           case 15:
             order = _context6.sent;
 
             if (!order) {
-              _context6.next = 71;
+              _context6.next = 72;
               break;
             }
 
+            currentStatus = order.status;
             orderData.orderId = order.id;
             _updateOrder2 = false;
             calcDistance = {
@@ -712,14 +718,14 @@ function () {
             }
 
             if (!calcDistance.calc) {
-              _context6.next = 27;
+              _context6.next = 28;
               break;
             }
 
-            _context6.next = 25;
+            _context6.next = 26;
             return (0, _storesController.getStoreData)(pageId);
 
-          case 25:
+          case 26:
             storeData = _context6.sent;
 
             if (storeData.location_lat && storeData.location_long) {
@@ -728,7 +734,7 @@ function () {
               order.delivery_fee = (0, _storesController.calcDeliveryFee)(storeData.delivery_fees, distanceFromStore);
             }
 
-          case 27:
+          case 28:
             if (currentItem) {
               order.currentItem = currentItem;
               _updateOrder2 = true;
@@ -882,24 +888,20 @@ function () {
             if (comments) {
               order.comments = comments;
               _updateOrder2 = true;
-              (0, _redisController.emitEvent)(pageId, 'new-comment', {
-                id: order.id,
-                updatedAt: Date.now()
-              });
             }
 
             if (!(typeof calcTotal === 'boolean')) {
-              _context6.next = 59;
+              _context6.next = 60;
               break;
             }
 
-            _context6.next = 54;
+            _context6.next = 55;
             return (0, _itemsController.getItemsTotal)({
               orderId: order.id,
               pageId: order.pageId
             });
 
-          case 54:
+          case 55:
             total = _context6.sent;
             if (order.delivery_fee > 0) total += order.delivery_fee;
             if (order.surcharge_percent > 0) total += total * order.surcharge_percent;
@@ -910,7 +912,7 @@ function () {
               _updateOrder2 = true;
             }
 
-          case 59:
+          case 60:
             if (typeof noBeverage === 'boolean') {
               order.no_beverage = noBeverage;
               _updateOrder2 = true;
@@ -932,35 +934,40 @@ function () {
             }
 
             if (!_updateOrder2) {
-              _context6.next = 66;
+              _context6.next = 67;
               break;
             }
 
-            _context6.next = 66;
+            _context6.next = 67;
             return order.save();
 
-          case 66:
-            _context6.next = 68;
+          case 67:
+            _context6.next = 69;
             return (0, _itemsController.updateItem)(orderData);
 
-          case 68:
-            if (confirmOrder) {
-              (0, _redisController.emitEvent)(pageId, 'new-order', {
+          case 69:
+            if (confirmOrder || comments) {
+              // every time new comments are stores I am passing the confirmOrder parameter. So,
+              // here I check if this order was not already confirmed.
+              if (confirmOrder && currentStatus !== ORDERSTATUS_CONFIRMED) (0, _redisController.emitEvent)(pageId, 'new-order', {
                 id: order.id,
                 confirmed_at: order.confirmed_at
+              });else if (comments) (0, _redisController.emitEvent)(pageId, 'new-comment', {
+                id: order.id,
+                updatedAt: Date.now()
               });
             }
 
-            _context6.next = 82;
+            _context6.next = 83;
             break;
 
-          case 71:
-            _context6.next = 73;
+          case 72:
+            _context6.next = 74;
             return _orders["default"].find({
               pageId: pageId
             }).select('id').sort('-id').limit(1).exec();
 
-          case 73:
+          case 74:
             resultLastId = _context6.sent;
             orderId = 1;
             if (resultLastId && resultLastId.length) orderId = resultLastId[0].id + 1;
@@ -978,32 +985,32 @@ function () {
               deliver_type: deliverType,
               status: ORDERSTATUS_PENDING
             });
-            _context6.next = 79;
+            _context6.next = 80;
             return record.save();
 
-          case 79:
+          case 80:
             orderData.orderId = record.id;
-            _context6.next = 82;
+            _context6.next = 83;
             return (0, _itemsController.updateItem)(orderData);
 
-          case 82:
-            _context6.next = 88;
+          case 83:
+            _context6.next = 89;
             break;
 
-          case 84:
-            _context6.prev = 84;
+          case 85:
+            _context6.prev = 85;
             _context6.t0 = _context6["catch"](0);
             console.error({
               updateOrderError: _context6.t0
             });
             throw _context6.t0;
 
-          case 88:
+          case 89:
           case "end":
             return _context6.stop();
         }
       }
-    }, _callee6, null, [[0, 84]]);
+    }, _callee6, null, [[0, 85]]);
   }));
 
   return function updateOrder(_x10) {
@@ -1498,10 +1505,8 @@ function () {
             return _orders["default"].find({
               pageId: pageId,
               userId: userId,
-              status: {
-                $gte: ORDERSTATUS_DELIVERED
-              }
-            }).sort('-updatedAt').limit(1).exec();
+              status: ORDERSTATUS_DELIVERED
+            }).sort('-id').limit(1).exec();
 
           case 3:
             resultLast = _context11.sent;

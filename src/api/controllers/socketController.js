@@ -22,6 +22,7 @@ export const setupSocketIo = (server, allowedOrigins) => {
 
     io.on('connection', socket => {
         socket.on('acknowledgment', originID => {
+            logger.color('green').log('aknowledment: ' + (originID.user || originID));
             if (originID.hasOwnProperty('origin') && originID.origin === 'whatsapp') {
                 clientsWhats[originID.user] = socket.id;
                 logger.color('green').log('joining from whatsapp: ' + originID.user);

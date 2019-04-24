@@ -111,26 +111,29 @@ function () {
   var _ref2 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(pageId, userId, replyText, user, data) {
+    var confirm;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.next = 2;
+            confirm = !!data;
+            _context2.next = 3;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
               waitingFor: 'typed_comments',
               user: user,
-              comments: data
+              comments: data,
+              confirmOrder: confirm
             });
 
-          case 2:
+          case 3:
             return _context2.abrupt("return", {
               type: 'text',
               text: replyText
             });
 
-          case 3:
+          case 4:
           case "end":
             return _context2.stop();
         }
@@ -218,7 +221,8 @@ function () {
               userId: userId,
               waitingFor: 'typed_comments',
               comments: text,
-              user: user
+              user: user,
+              confirmOrder: true
             });
 
           case 2:

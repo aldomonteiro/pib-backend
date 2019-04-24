@@ -12,7 +12,7 @@ import { getCardapio } from './show_cardapio';
 import { getSizes, getSize } from '../controllers/sizesController';
 import { getBeverages } from '../controllers/beveragesController';
 import { getTodayOpeningTime, getStoreData } from '../controllers/storesController';
-import { updateOrder, getOrderPending, cancelOrder } from '../controllers/ordersController';
+import { updateOrder, getOrderPending, cancelOrder, ORDERSTATUS_PENDING, ORDERSTATUS_CONFIRMED } from '../controllers/ordersController';
 import {
     getAddressLocation,
     getCustomerAddress, formatAddrData, notifyUserStopAuto,
@@ -57,8 +57,8 @@ export const sendErrorMsg = async (_errorMsg) => {
  * @param {*} replyText
  */
 export const basicReply = async (pageId, userId, replyText, user, data) => {
-    await updateOrder({ pageId, userId, waitingFor: 'typed_comments', user: user, comments: data });
-
+    const confirm = !!data;
+    await updateOrder({ pageId, userId, waitingFor: 'typed_comments', user: user, comments: data, confirmOrder: confirm });
     return { type: 'text', text: replyText };
 }
 
@@ -82,7 +82,7 @@ export const basicOption = async (pageId, userId, text, optionText, data, user) 
  * @param {*} text
  */
 export const basicComments = async (pageId, userId, text, user) => {
-    await updateOrder({ pageId, userId, waitingFor: 'typed_comments', comments: text, user: user });
+    await updateOrder({ pageId, userId, waitingFor: 'typed_comments', comments: text, user: user, confirmOrder: true });
     return true;
 }
 

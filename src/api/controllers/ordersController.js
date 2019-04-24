@@ -36,7 +36,7 @@ export const order_get_all = async (req, res) => {
         }
 
         // simple orders are querying all orders, even the ones not confirmed.
-        // queryParam['status'] = { $gte: ORDERSTATUS_CONFIRMED };
+        queryParam['status'] = { $gte: ORDERSTATUS_CONFIRMED };
 
         if (!sortObj) {
             sortObj['createdAt'] = 'DESC';
@@ -295,9 +295,11 @@ export const updateOrder = async orderData => {
         customerData.location = location;
         customerData.addrData = addrData;
         customerID = await updateCustomer(customerData);
-        const order = await Order.findOne({ pageId: pageId, userId: userId, status: ORDERSTATUS_PENDING }).exec();
+        const order = await Order.findOne({ pageId: pageId, userId: userId, status: { $lt: ORDERSTATUS_REJECTED } }).exec();
 
         if (order) {
+            const currentStatus = order.status;
+
             orderData.orderId = order.id;
 
             let updateOrder = false;
@@ -498,7 +500,6 @@ export const updateOrder = async orderData => {
             if (comments) {
                 order.comments = comments;
                 updateOrder = true;
-                emitEvent(pageId, 'new-comment', { id: order.id, updatedAt: Date.now() });
             }
 
             if (typeof calcTotal === 'boolean') {
@@ -538,8 +539,13 @@ export const updateOrder = async orderData => {
 
             await updateItem(orderData);
 
-            if (confirmOrder) {
-                emitEvent(pageId, 'new-order', { id: order.id, confirmed_at: order.confirmed_at });
+            if (confirmOrder || comments) {
+                // every time new comments are stores I am passing the confirmOrder parameter. So,
+                // here I check if this order was not already confirmed.
+                if (confirmOrder && currentStatus !== ORDERSTATUS_CONFIRMED)
+                    emitEvent(pageId, 'new-order', { id: order.id, confirmed_at: order.confirmed_at });
+                else if (comments)
+                    emitEvent(pageId, 'new-comment', { id: order.id, updatedAt: Date.now() });
             }
 
         } else {
@@ -784,8 +790,8 @@ export const getLastUserOrder = async orderData => {
     const resultLast = await Order.find({
         pageId: pageId,
         userId: userId,
-        status: { $gte: ORDERSTATUS_DELIVERED },
-    }).sort('-updatedAt').limit(1).exec();
+        status: ORDERSTATUS_DELIVERED,
+    }).sort('-id').limit(1).exec();
     if (resultLast && resultLast.length)
         return resultLast[0];
     else return null;
