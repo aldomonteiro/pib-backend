@@ -4,9 +4,10 @@ import {
     basicReply,
     basicOption,
     basicComments,
+    basicPostComments,
 } from '../bot/botController';
 import { getStoreByPhone, getStoreData } from '../controllers/storesController';
-import { getOrderPending, getLastUserOrder } from '../controllers/ordersController';
+import { getOrderPending, getLastUserOrder, ORDERSTATUS_ACCEPTED, ORDERSTATUS_FINISHED } from '../controllers/ordersController';
 import { getOnePageData } from '../controllers/pagesController';
 
 /**
@@ -17,7 +18,7 @@ import { getOnePageData } from '../controllers/pagesController';
 export const w_controller = async (args) => {
     console.info('###### w_controller SIMPLE ######');
     console.info(args);
-    const { myId, message, userId, match, location, contactName, profileImg } = args;
+    const { myId, message, userId, match, contactName, profileImg } = args;
 
     const names = contactName.split(' ');
     const first_name = names.shift();
@@ -54,16 +55,28 @@ export const w_controller = async (args) => {
                 } else if (pendingOrder.order.waitingFor === 'typed_comments') {
                     const oldComments = pendingOrder.order.comments;
 
-                    // concat old comments and the new comments
-                    let updatedComents = oldComments ? oldComments + '\n' + message : message;
+                    if (pendingOrder.order.status >= ORDERSTATUS_ACCEPTED) {
+                        result = await sendActions({
+                            action: 'BASIC_UPDATE_POSTCOMMENTS',
+                            pageID: pageId,
+                            userID: userId,
+                            text: message,
+                            user: user,
+                        });
 
-                    result = await sendActions({
-                        action: 'BASIC_UPDATE_COMMENTS',
-                        pageID: pageId,
-                        userID: userId,
-                        text: updatedComents,
-                        user: user,
-                    });
+                    } else {
+
+                        // concat old comments and the new comments
+                        let updatedComents = oldComments ? oldComments + '\n' + message : message;
+
+                        result = await sendActions({
+                            action: 'BASIC_UPDATE_COMMENTS',
+                            pageID: pageId,
+                            userID: userId,
+                            text: updatedComents,
+                            user: user,
+                        });
+                    }
                 }
                 return result;
             } else {
@@ -75,10 +88,10 @@ export const w_controller = async (args) => {
                 if (lastOrder) {
                     console.log('>> Found lastOrder:', lastOrder.id);
 
-                    const orderDay = DateTime.fromJSDate(lastOrder.confirmed_at).get('day');
+                    const orderDay = DateTime.fromJSDate(lastOrder.createdAt).get('day');
                     const today = DateTime.local().get('day');
 
-                    if (orderDay === today) {
+                    if (orderDay === today && lastOrder.status < ORDERSTATUS_FINISHED) {
                         console.log(' from today...');
                         return;
                     }
@@ -149,6 +162,9 @@ export const sendActions = async ({
                 break;
             case 'BASIC_UPDATE_COMMENTS':
                 out = await basicComments(pageID, userID, text, user);
+                break;
+            case 'BASIC_UPDATE_POSTCOMMENTS':
+                out = await basicPostComments(pageID, userID, text, user);
                 break;
             default:
                 break;

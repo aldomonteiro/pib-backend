@@ -36,6 +36,7 @@ const schema = new Schema({
     confirmed_at: { type: Date },
     delivered_at: { type: Date },
     comments: { type: String },
+    postComments: { type: String },
     rejection_reason: { type: String },
     backToConfirmation: { type: String },
     deliver_type: { type: String },
@@ -56,6 +57,7 @@ schema.pre('save', function (next) {
         case 3: this.status2 = 'accepted'; this.status3 = 'pending'; break;
         case 4: this.status2 = 'printed'; this.status3 = 'pending'; break;
         case 5: this.status2 = 'delivered'; this.status3 = 'delivered'; break;
+        case 7: this.status2 = 'finished'; this.status3 = 'finished'; break;
         case 8: this.status2 = 'rejected'; this.status3 = 'cancelled'; break;
         case 9: this.status2 = 'cancelled'; this.status3 = 'cancelled'; break;
         default:
@@ -64,4 +66,4 @@ schema.pre('save', function (next) {
     next();
 });
 
-export default mongoose.model("orders", schema);
+export default mongoose.model('orders', schema);

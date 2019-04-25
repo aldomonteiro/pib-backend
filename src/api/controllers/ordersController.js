@@ -19,6 +19,7 @@ export const ORDERSTATUS_VIEWED = 2;
 export const ORDERSTATUS_ACCEPTED = 3;
 export const ORDERSTATUS_PRINTED = 4;
 export const ORDERSTATUS_DELIVERED = 5;
+export const ORDERSTATUS_FINISHED = 7;
 export const ORDERSTATUS_REJECTED = 8;
 export const ORDERSTATUS_CANCELLED = 9;
 
@@ -35,11 +36,10 @@ export const order_get_all = async (req, res) => {
             queryParam['pageId'] = req.currentUser.activePage;
         }
 
-        // simple orders are querying all orders, even the ones not confirmed.
         queryParam['status'] = { $gte: ORDERSTATUS_CONFIRMED };
 
         if (!sortObj) {
-            sortObj['createdAt'] = 'DESC';
+            sortObj['status'] = 'ASC';
         }
 
         if (filterObj && filterObj.filterField && filterObj.filterField.length) {
@@ -121,6 +121,7 @@ export const order_get_one = async (req, res) => {
 export const order_update = async (req, res) => {
     if (req.body && req.body.id) {
         try {
+            console.dir(req.body);
             const { id, operation } = req.body;
             const pageId = req.currentUser.activePage;
             const doc = await Order.findOne({ pageId: pageId, id: id });
@@ -157,6 +158,28 @@ export const order_update = async (req, res) => {
                 doc.comments = doc.comments + '\n' + question;
                 const store = await getStoreData(doc.pageId);
                 sendNotification(store.phone, doc.userId, question);
+            } else if (operation === 'UPDATE_ORDER_DATA') {
+                const { newAddress, newTotal, updatePostComments, closeOrder } = req.body;
+                if (newAddress)
+                    doc.address = newAddress;
+                else if (newTotal) {
+                    const formatted = newTotal.replace(',', '.')
+                    if (!isNaN(Number(formatted)))
+                        doc.total = Number(formatted);
+                    else {
+                        res.status(500).json({ message: 'pos.orders.messages.invalidTotal' });
+                        return
+                    }
+                } else if (updatePostComments) {
+                    if (updatePostComments === 'MERGE') {
+                        doc.comments = doc.comments + '\n' + doc.postComments;
+                        doc.postComments = null;
+                    } else if (updatePostComments === 'DELETE') {
+                        doc.postComments = null;
+                    }
+                } else if (closeOrder) {
+                    doc.status = ORDERSTATUS_FINISHED;
+                }
             } else {
                 if (req.body.status2 === 'ordered') {
                     doc.status = ORDERSTATUS_CONFIRMED;
@@ -259,6 +282,7 @@ export const getOrderJson = async (pageId, orderId) => {
             payment_type: order.payment_type,
             payment_change: order.payment_change,
             comments: order.comments,
+            postComments: order.postComments,
             delivery_fee: order.delivery_fee,
             surcharge_percent: order.surcharge_percent,
             surcharge_amount: order.surcharge_amount,
@@ -277,7 +301,7 @@ export const updateOrder = async orderData => {
             phone, addrData, completeItem, confirmOrder,
             waitingForAddress, waitingFor, waitingForData, undo, currentItem, sizeId, calcTotal,
             originalSplit, split, currentItemSplit, eraseSplit, noBeverage,
-            paymentType, paymentChange, backToConfirmation, comments,
+            paymentType, paymentChange, backToConfirmation, comments, postComments,
             categoryId, surcharge_percent, surcharge_amount,
             storeAddress } = orderData;
 
@@ -295,7 +319,7 @@ export const updateOrder = async orderData => {
         customerData.location = location;
         customerData.addrData = addrData;
         customerID = await updateCustomer(customerData);
-        const order = await Order.findOne({ pageId: pageId, userId: userId, status: { $lt: ORDERSTATUS_REJECTED } }).exec();
+        const order = await Order.findOne({ pageId: pageId, userId: userId, status: { $lt: ORDERSTATUS_DELIVERED } }).exec();
 
         if (order) {
             const currentStatus = order.status;
@@ -456,9 +480,11 @@ export const updateOrder = async orderData => {
             }
 
             if (confirmOrder) {
-                order.status = ORDERSTATUS_CONFIRMED;
-                order.confirmed_at = DateTime.local();
-                updateOrder = true;
+                if (order.status < ORDERSTATUS_CONFIRMED) {
+                    order.status = ORDERSTATUS_CONFIRMED;
+                    order.confirmed_at = DateTime.local();
+                    updateOrder = true;
+                }
             } else {
                 // when updateorder with flavor, I dont have neither split nor originalSplit
                 // but, if the order has an originalSplit, I am going to send it to the item.
@@ -502,6 +528,11 @@ export const updateOrder = async orderData => {
                 updateOrder = true;
             }
 
+            if (postComments) {
+                order.postComments = postComments;
+                updateOrder = true;
+            }
+
             if (typeof calcTotal === 'boolean') {
                 let total = await getItemsTotal({ orderId: order.id, pageId: order.pageId });
                 if (order.delivery_fee > 0) total += order.delivery_fee;
@@ -539,13 +570,13 @@ export const updateOrder = async orderData => {
 
             await updateItem(orderData);
 
-            if (confirmOrder || comments) {
+            if (confirmOrder || comments || postComments) {
                 // every time new comments are stores I am passing the confirmOrder parameter. So,
                 // here I check if this order was not already confirmed.
-                if (confirmOrder && currentStatus !== ORDERSTATUS_CONFIRMED)
+                if (confirmOrder && currentStatus < ORDERSTATUS_CONFIRMED)
                     emitEvent(pageId, 'new-order', { id: order.id, confirmed_at: order.confirmed_at });
-                else if (comments)
-                    emitEvent(pageId, 'new-comment', { id: order.id, updatedAt: Date.now() });
+                else if (comments || postComments)
+                    emitEvent(pageId, 'new-comment', { id: order.id, updatedAt: DateTime.local() });
             }
 
         } else {
@@ -561,14 +592,8 @@ export const updateOrder = async orderData => {
                 id: orderId,
                 pageId: pageId,
                 userId: userId,
-                qty_total: qty || 0,
-                location_lat: location ? location.lat : null,
-                location_long: location ? location.long : null,
-                location_url: location ? location.url : null,
-                waitingForAddress: typeof waitingForAddress === 'boolean' ? waitingForAddress : false,
                 waitingFor: waitingFor,
                 comments: comments,
-                deliver_type: deliverType,
                 status: ORDERSTATUS_PENDING,
             });
             await record.save();
@@ -656,6 +681,7 @@ const fullOrderGetAll = async (queryObj, sortObj, rangeObj) => {
                     payment_type: order.payment_type,
                     payment_change: order.payment_change,
                     comments: order.comments,
+                    postComments: order.postComments,
                     delivery_fee: order.delivery_fee,
                     surcharge_percent: order.surcharge_percent,
                     surcharge_amount: order.surcharge_amount,
@@ -790,7 +816,7 @@ export const getLastUserOrder = async orderData => {
     const resultLast = await Order.find({
         pageId: pageId,
         userId: userId,
-        status: ORDERSTATUS_DELIVERED,
+        status: { $lt: ORDERSTATUS_REJECTED },
     }).sort('-id').limit(1).exec();
     if (resultLast && resultLast.length)
         return resultLast[0];

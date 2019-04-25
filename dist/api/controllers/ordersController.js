@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.cancelOrder = exports.getOrdersCustomerStat = exports.getLastPendingOrders = exports.getLastOrder = exports.getLastUserOrder = exports.getOrderPending = exports.updateOrder = exports.getOrderJson = exports.deleteManyOrders = exports.order_update = exports.order_get_one = exports.order_get_all = exports.ORDERSTATUS_CANCELLED = exports.ORDERSTATUS_REJECTED = exports.ORDERSTATUS_DELIVERED = exports.ORDERSTATUS_PRINTED = exports.ORDERSTATUS_ACCEPTED = exports.ORDERSTATUS_VIEWED = exports.ORDERSTATUS_CONFIRMED = exports.ORDERSTATUS_PENDING = void 0;
+exports.cancelOrder = exports.getOrdersCustomerStat = exports.getLastPendingOrders = exports.getLastOrder = exports.getLastUserOrder = exports.getOrderPending = exports.updateOrder = exports.getOrderJson = exports.deleteManyOrders = exports.order_update = exports.order_get_one = exports.order_get_all = exports.ORDERSTATUS_CANCELLED = exports.ORDERSTATUS_REJECTED = exports.ORDERSTATUS_FINISHED = exports.ORDERSTATUS_DELIVERED = exports.ORDERSTATUS_PRINTED = exports.ORDERSTATUS_ACCEPTED = exports.ORDERSTATUS_VIEWED = exports.ORDERSTATUS_CONFIRMED = exports.ORDERSTATUS_PENDING = void 0;
 
 var _orders = _interopRequireDefault(require("../models/orders"));
 
@@ -43,6 +43,8 @@ var ORDERSTATUS_PRINTED = 4;
 exports.ORDERSTATUS_PRINTED = ORDERSTATUS_PRINTED;
 var ORDERSTATUS_DELIVERED = 5;
 exports.ORDERSTATUS_DELIVERED = ORDERSTATUS_DELIVERED;
+var ORDERSTATUS_FINISHED = 7;
+exports.ORDERSTATUS_FINISHED = ORDERSTATUS_FINISHED;
 var ORDERSTATUS_REJECTED = 8;
 exports.ORDERSTATUS_REJECTED = ORDERSTATUS_REJECTED;
 var ORDERSTATUS_CANCELLED = 9; // List all orders
@@ -70,15 +72,14 @@ function () {
 
             if (req.currentUser.activePage) {
               queryParam['pageId'] = req.currentUser.activePage;
-            } // simple orders are querying all orders, even the ones not confirmed.
-
+            }
 
             queryParam['status'] = {
               $gte: ORDERSTATUS_CONFIRMED
             };
 
             if (!sortObj) {
-              sortObj['createdAt'] = 'DESC';
+              sortObj['status'] = 'ASC';
             }
 
             if (filterObj && filterObj.filterField && filterObj.filterField.length) {
@@ -272,32 +273,33 @@ function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee3(req, res) {
-    var _req$body, id, operation, pageId, doc, _updateOrder, rejectionExplanation, store, _store, _store2, question, _store3, jsonOrder;
+    var _req$body, id, operation, pageId, doc, _updateOrder, rejectionExplanation, store, _store, _store2, question, _store3, _req$body2, newAddress, newTotal, updatePostComments, closeOrder, formatted, jsonOrder;
 
     return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
             if (!(req.body && req.body.id)) {
-              _context3.next = 78;
+              _context3.next = 98;
               break;
             }
 
             _context3.prev = 1;
+            console.dir(req.body);
             _req$body = req.body, id = _req$body.id, operation = _req$body.operation;
             pageId = req.currentUser.activePage;
-            _context3.next = 6;
+            _context3.next = 7;
             return _orders["default"].findOne({
               pageId: pageId,
               id: id
             });
 
-          case 6:
+          case 7:
             doc = _context3.sent;
             _updateOrder = true;
 
             if (!(operation === 'REJECT')) {
-              _context3.next = 16;
+              _context3.next = 17;
               break;
             }
 
@@ -306,97 +308,157 @@ function () {
             doc.sent_reject_notification = _luxon.DateTime.local();
             doc.rejection_reason = rejectionExplanation;
             (0, _botController.sendRejectionNotification)(doc.pageId, doc.userId, doc.id, rejectionExplanation);
-            _context3.next = 65;
+            _context3.next = 85;
             break;
 
-          case 16:
+          case 17:
             if (!(operation === 'VIEW')) {
-              _context3.next = 20;
+              _context3.next = 21;
               break;
             }
 
             doc.status = ORDERSTATUS_VIEWED; // sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
 
-            _context3.next = 65;
+            _context3.next = 85;
             break;
 
-          case 20:
+          case 21:
             if (!(operation === 'ACCEPT')) {
-              _context3.next = 28;
+              _context3.next = 29;
               break;
             }
 
             doc.status = ORDERSTATUS_ACCEPTED;
-            _context3.next = 24;
+            _context3.next = 25;
             return (0, _storesController.getStoreData)(doc.pageId);
 
-          case 24:
+          case 25:
             store = _context3.sent;
             sendNotification(store.phone, doc.userId, store.accept_notification);
-            _context3.next = 65;
+            _context3.next = 85;
             break;
 
-          case 28:
+          case 29:
             if (!(operation === 'PRINT')) {
-              _context3.next = 32;
+              _context3.next = 33;
               break;
             }
 
             doc.status = ORDERSTATUS_PRINTED; // sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
 
-            _context3.next = 65;
+            _context3.next = 85;
             break;
 
-          case 32:
+          case 33:
             if (!(operation === 'DELIVER')) {
-              _context3.next = 40;
+              _context3.next = 41;
               break;
             }
 
             doc.status = ORDERSTATUS_DELIVERED;
-            _context3.next = 36;
+            _context3.next = 37;
             return (0, _storesController.getStoreData)(doc.pageId);
 
-          case 36:
+          case 37:
             _store = _context3.sent;
             sendNotification(_store.phone, doc.userId, _store.deliver_notification);
-            _context3.next = 65;
+            _context3.next = 85;
             break;
 
-          case 40:
+          case 41:
             if (!(operation === 'MISSING_ADDRESS')) {
-              _context3.next = 48;
+              _context3.next = 49;
               break;
             }
 
             _updateOrder = false;
-            _context3.next = 44;
+            _context3.next = 45;
             return (0, _storesController.getStoreData)(doc.pageId);
 
-          case 44:
+          case 45:
             _store2 = _context3.sent;
             sendNotification(_store2.phone, doc.userId, _store2.missing_address_notification);
-            _context3.next = 65;
+            _context3.next = 85;
             break;
 
-          case 48:
+          case 49:
             if (!(operation === 'OPEN_QUESTION')) {
-              _context3.next = 57;
+              _context3.next = 58;
               break;
             }
 
             question = req.body.question;
             doc.comments = doc.comments + '\n' + question;
-            _context3.next = 53;
+            _context3.next = 54;
             return (0, _storesController.getStoreData)(doc.pageId);
 
-          case 53:
+          case 54:
             _store3 = _context3.sent;
             sendNotification(_store3.phone, doc.userId, question);
-            _context3.next = 65;
+            _context3.next = 85;
             break;
 
-          case 57:
+          case 58:
+            if (!(operation === 'UPDATE_ORDER_DATA')) {
+              _context3.next = 77;
+              break;
+            }
+
+            _req$body2 = req.body, newAddress = _req$body2.newAddress, newTotal = _req$body2.newTotal, updatePostComments = _req$body2.updatePostComments, closeOrder = _req$body2.closeOrder;
+
+            if (!newAddress) {
+              _context3.next = 64;
+              break;
+            }
+
+            doc.address = newAddress;
+            _context3.next = 75;
+            break;
+
+          case 64:
+            if (!newTotal) {
+              _context3.next = 74;
+              break;
+            }
+
+            formatted = newTotal.replace(',', '.');
+
+            if (isNaN(Number(formatted))) {
+              _context3.next = 70;
+              break;
+            }
+
+            doc.total = Number(formatted);
+            _context3.next = 72;
+            break;
+
+          case 70:
+            res.status(500).json({
+              message: 'pos.orders.messages.invalidTotal'
+            });
+            return _context3.abrupt("return");
+
+          case 72:
+            _context3.next = 75;
+            break;
+
+          case 74:
+            if (updatePostComments) {
+              if (updatePostComments === 'MERGE') {
+                doc.comments = doc.comments + '\n' + doc.postComments;
+                doc.postComments = null;
+              } else if (updatePostComments === 'DELETE') {
+                doc.postComments = null;
+              }
+            } else if (closeOrder) {
+              doc.status = ORDERSTATUS_FINISHED;
+            }
+
+          case 75:
+            _context3.next = 85;
+            break;
+
+          case 77:
             if (req.body.status2 === 'ordered') {
               doc.status = ORDERSTATUS_CONFIRMED;
             } else if (req.body.status2 === 'delivered') {
@@ -407,60 +469,60 @@ function () {
             }
 
             if (!(doc.status === ORDERSTATUS_DELIVERED)) {
-              _context3.next = 65;
+              _context3.next = 85;
               break;
             }
 
             if (!(doc.source !== 'whatsapp')) {
-              _context3.next = 65;
+              _context3.next = 85;
               break;
             }
 
             if (doc.sent_shipping_notification) {
-              _context3.next = 65;
+              _context3.next = 85;
               break;
             }
 
             console.info('I am going to send to ' + doc.userId + ', about the order number:' + doc.id + ' a shipping notification');
-            _context3.next = 64;
+            _context3.next = 84;
             return (0, _botController.sendShippingNotification)(doc.pageId, doc.userId, doc.id);
 
-          case 64:
+          case 84:
             doc.sent_shipping_notification = _luxon.DateTime.local();
 
-          case 65:
+          case 85:
             if (!_updateOrder) {
-              _context3.next = 68;
+              _context3.next = 88;
               break;
             }
 
-            _context3.next = 68;
+            _context3.next = 88;
             return doc.save();
 
-          case 68:
-            _context3.next = 70;
+          case 88:
+            _context3.next = 90;
             return getOrderJson(pageId, doc.id);
 
-          case 70:
+          case 90:
             jsonOrder = _context3.sent;
             res.status(200).json(jsonOrder);
-            _context3.next = 78;
+            _context3.next = 98;
             break;
 
-          case 74:
-            _context3.prev = 74;
+          case 94:
+            _context3.prev = 94;
             _context3.t0 = _context3["catch"](1);
             console.error(_context3.t0);
             res.status(500).json({
               message: _context3.t0.message
             });
 
-          case 78:
+          case 98:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, null, [[1, 74]]);
+    }, _callee3, null, [[1, 94]]);
   }));
 
   return function order_update(_x5, _x6) {
@@ -604,6 +666,7 @@ function () {
               payment_type: order.payment_type,
               payment_change: order.payment_change,
               comments: order.comments,
+              postComments: order.postComments,
               delivery_fee: order.delivery_fee,
               surcharge_percent: order.surcharge_percent,
               surcharge_amount: order.surcharge_amount
@@ -639,14 +702,14 @@ function () {
   var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee6(orderData) {
-    var pageId, userId, source, deliverType, deliverTime, qty, qty_total, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, waitingFor, waitingForData, undo, currentItem, sizeId, calcTotal, originalSplit, split, currentItemSplit, eraseSplit, noBeverage, paymentType, paymentChange, backToConfirmation, comments, categoryId, surcharge_percent, surcharge_amount, storeAddress, customerID, customerData, first_name, last_name, profile_pic, order, currentStatus, _updateOrder2, calcDistance, storeData, distanceFromStore, total, resultLastId, orderId, record;
+    var pageId, userId, source, deliverType, deliverTime, qty, qty_total, location, user, phone, addrData, completeItem, confirmOrder, waitingForAddress, waitingFor, waitingForData, undo, currentItem, sizeId, calcTotal, originalSplit, split, currentItemSplit, eraseSplit, noBeverage, paymentType, paymentChange, backToConfirmation, comments, postComments, categoryId, surcharge_percent, surcharge_amount, storeAddress, customerID, customerData, first_name, last_name, profile_pic, order, currentStatus, _updateOrder2, calcDistance, storeData, distanceFromStore, total, resultLastId, orderId, record;
 
     return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
             _context6.prev = 0;
-            pageId = orderData.pageId, userId = orderData.userId, source = orderData.source, deliverType = orderData.deliverType, deliverTime = orderData.deliverTime, qty = orderData.qty, qty_total = orderData.qty_total, location = orderData.location, user = orderData.user, phone = orderData.phone, addrData = orderData.addrData, completeItem = orderData.completeItem, confirmOrder = orderData.confirmOrder, waitingForAddress = orderData.waitingForAddress, waitingFor = orderData.waitingFor, waitingForData = orderData.waitingForData, undo = orderData.undo, currentItem = orderData.currentItem, sizeId = orderData.sizeId, calcTotal = orderData.calcTotal, originalSplit = orderData.originalSplit, split = orderData.split, currentItemSplit = orderData.currentItemSplit, eraseSplit = orderData.eraseSplit, noBeverage = orderData.noBeverage, paymentType = orderData.paymentType, paymentChange = orderData.paymentChange, backToConfirmation = orderData.backToConfirmation, comments = orderData.comments, categoryId = orderData.categoryId, surcharge_percent = orderData.surcharge_percent, surcharge_amount = orderData.surcharge_amount, storeAddress = orderData.storeAddress;
+            pageId = orderData.pageId, userId = orderData.userId, source = orderData.source, deliverType = orderData.deliverType, deliverTime = orderData.deliverTime, qty = orderData.qty, qty_total = orderData.qty_total, location = orderData.location, user = orderData.user, phone = orderData.phone, addrData = orderData.addrData, completeItem = orderData.completeItem, confirmOrder = orderData.confirmOrder, waitingForAddress = orderData.waitingForAddress, waitingFor = orderData.waitingFor, waitingForData = orderData.waitingForData, undo = orderData.undo, currentItem = orderData.currentItem, sizeId = orderData.sizeId, calcTotal = orderData.calcTotal, originalSplit = orderData.originalSplit, split = orderData.split, currentItemSplit = orderData.currentItemSplit, eraseSplit = orderData.eraseSplit, noBeverage = orderData.noBeverage, paymentType = orderData.paymentType, paymentChange = orderData.paymentChange, backToConfirmation = orderData.backToConfirmation, comments = orderData.comments, postComments = orderData.postComments, categoryId = orderData.categoryId, surcharge_percent = orderData.surcharge_percent, surcharge_amount = orderData.surcharge_amount, storeAddress = orderData.storeAddress;
             customerID = 0;
             customerData = {};
             customerData.pageId = pageId;
@@ -672,7 +735,7 @@ function () {
               pageId: pageId,
               userId: userId,
               status: {
-                $lt: ORDERSTATUS_REJECTED
+                $lt: ORDERSTATUS_DELIVERED
               }
             }).exec();
 
@@ -680,7 +743,7 @@ function () {
             order = _context6.sent;
 
             if (!order) {
-              _context6.next = 72;
+              _context6.next = 73;
               break;
             }
 
@@ -846,9 +909,11 @@ function () {
             }
 
             if (confirmOrder) {
-              order.status = ORDERSTATUS_CONFIRMED;
-              order.confirmed_at = _luxon.DateTime.local();
-              _updateOrder2 = true;
+              if (order.status < ORDERSTATUS_CONFIRMED) {
+                order.status = ORDERSTATUS_CONFIRMED;
+                order.confirmed_at = _luxon.DateTime.local();
+                _updateOrder2 = true;
+              }
             } else {
               // when updateorder with flavor, I dont have neither split nor originalSplit
               // but, if the order has an originalSplit, I am going to send it to the item.
@@ -890,18 +955,23 @@ function () {
               _updateOrder2 = true;
             }
 
+            if (postComments) {
+              order.postComments = postComments;
+              _updateOrder2 = true;
+            }
+
             if (!(typeof calcTotal === 'boolean')) {
-              _context6.next = 60;
+              _context6.next = 61;
               break;
             }
 
-            _context6.next = 55;
+            _context6.next = 56;
             return (0, _itemsController.getItemsTotal)({
               orderId: order.id,
               pageId: order.pageId
             });
 
-          case 55:
+          case 56:
             total = _context6.sent;
             if (order.delivery_fee > 0) total += order.delivery_fee;
             if (order.surcharge_percent > 0) total += total * order.surcharge_percent;
@@ -912,7 +982,7 @@ function () {
               _updateOrder2 = true;
             }
 
-          case 60:
+          case 61:
             if (typeof noBeverage === 'boolean') {
               order.no_beverage = noBeverage;
               _updateOrder2 = true;
@@ -934,40 +1004,40 @@ function () {
             }
 
             if (!_updateOrder2) {
-              _context6.next = 67;
+              _context6.next = 68;
               break;
             }
 
-            _context6.next = 67;
+            _context6.next = 68;
             return order.save();
 
-          case 67:
-            _context6.next = 69;
+          case 68:
+            _context6.next = 70;
             return (0, _itemsController.updateItem)(orderData);
 
-          case 69:
-            if (confirmOrder || comments) {
+          case 70:
+            if (confirmOrder || comments || postComments) {
               // every time new comments are stores I am passing the confirmOrder parameter. So,
               // here I check if this order was not already confirmed.
-              if (confirmOrder && currentStatus !== ORDERSTATUS_CONFIRMED) (0, _redisController.emitEvent)(pageId, 'new-order', {
+              if (confirmOrder && currentStatus < ORDERSTATUS_CONFIRMED) (0, _redisController.emitEvent)(pageId, 'new-order', {
                 id: order.id,
                 confirmed_at: order.confirmed_at
-              });else if (comments) (0, _redisController.emitEvent)(pageId, 'new-comment', {
+              });else if (comments || postComments) (0, _redisController.emitEvent)(pageId, 'new-comment', {
                 id: order.id,
-                updatedAt: Date.now()
+                updatedAt: _luxon.DateTime.local()
               });
             }
 
-            _context6.next = 83;
+            _context6.next = 84;
             break;
 
-          case 72:
-            _context6.next = 74;
+          case 73:
+            _context6.next = 75;
             return _orders["default"].find({
               pageId: pageId
             }).select('id').sort('-id').limit(1).exec();
 
-          case 74:
+          case 75:
             resultLastId = _context6.sent;
             orderId = 1;
             if (resultLastId && resultLastId.length) orderId = resultLastId[0].id + 1;
@@ -975,42 +1045,36 @@ function () {
               id: orderId,
               pageId: pageId,
               userId: userId,
-              qty_total: qty || 0,
-              location_lat: location ? location.lat : null,
-              location_long: location ? location["long"] : null,
-              location_url: location ? location.url : null,
-              waitingForAddress: typeof waitingForAddress === 'boolean' ? waitingForAddress : false,
               waitingFor: waitingFor,
               comments: comments,
-              deliver_type: deliverType,
               status: ORDERSTATUS_PENDING
             });
-            _context6.next = 80;
+            _context6.next = 81;
             return record.save();
 
-          case 80:
+          case 81:
             orderData.orderId = record.id;
-            _context6.next = 83;
+            _context6.next = 84;
             return (0, _itemsController.updateItem)(orderData);
 
-          case 83:
-            _context6.next = 89;
+          case 84:
+            _context6.next = 90;
             break;
 
-          case 85:
-            _context6.prev = 85;
+          case 86:
+            _context6.prev = 86;
             _context6.t0 = _context6["catch"](0);
             console.error({
               updateOrderError: _context6.t0
             });
             throw _context6.t0;
 
-          case 89:
+          case 90:
           case "end":
             return _context6.stop();
         }
       }
-    }, _callee6, null, [[0, 85]]);
+    }, _callee6, null, [[0, 86]]);
   }));
 
   return function updateOrder(_x10) {
@@ -1171,6 +1235,7 @@ function () {
               payment_type: order.payment_type,
               payment_change: order.payment_change,
               comments: order.comments,
+              postComments: order.postComments,
               delivery_fee: order.delivery_fee,
               surcharge_percent: order.surcharge_percent,
               surcharge_amount: order.surcharge_amount,
@@ -1505,7 +1570,9 @@ function () {
             return _orders["default"].find({
               pageId: pageId,
               userId: userId,
-              status: ORDERSTATUS_DELIVERED
+              status: {
+                $lt: ORDERSTATUS_REJECTED
+              }
             }).sort('-id').limit(1).exec();
 
           case 3:

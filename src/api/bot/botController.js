@@ -86,6 +86,17 @@ export const basicComments = async (pageId, userId, text, user) => {
     return true;
 }
 
+/**
+ * Just update the comments, do not return nothing.
+ * @param {*} pageId
+ * @param {*} userId
+ * @param {*} text
+ */
+export const basicPostComments = async (pageId, userId, text, user) => {
+    await updateOrder({ pageId, userId, waitingFor: 'typed_comments', postComments: text, user: user });
+    return true;
+}
+
 
 /**
  * Send Yes or No to the user asking if he wants to place an order right now.

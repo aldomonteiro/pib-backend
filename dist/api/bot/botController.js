@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.askForSizeCat = exports.showCategoryAskForSize = exports.showCategory = exports.askForCategory = exports.showAddressAskForCategory = exports.showDeliverAskForCategory = exports.cancelPendingOrder = exports.sendRejectionNotification = exports.sendShippingNotification = exports.updateItemAskOptions = exports.cancelItem = exports.showCommentsItem = exports.changeItem = exports.showNoBeverageAskForPaymentType = exports.showBeverageAskForPaymentType = exports.showBeverage = exports.showNoBeverage = exports.askForBeverages = exports.askForWantBeverage = exports.askForSpecificItem = exports.askForOptionsToChange = exports.askForChangeOrder = exports.confirmOrder = exports.showFullOrderConfirmOrder = exports.showPaymentTypeAskForComments = exports.showFullOrder = exports.showComments = exports.askToTypeComments = exports.showPaymentChangeAskForComments = exports.askForComments = exports.showPaymentChange = exports.showPaymentTypeAskForPaymentChange = exports.askForPaymentChange = exports.showPaymentType = exports.askForPaymentType = exports.showFlavorCheckItem = exports.showPartialOrder = exports.cancelPendingShowPartialOrder = exports.showOrderOrNextItem = exports.showFlavor = exports.askForFlavor = exports.showSplitCheckFlavor = exports.askForFlavorOrConfirm = exports.showSplit = exports.showSizeCheckSplit = exports.checkSplit = exports.showSize = exports.showQuantityAskForSize = exports.askForSize = exports.showQuantity = exports.askForQuantityMore = exports.askForQuantity = exports.showAddressAskForQuantity = exports.showDeliverAskForQuantity = exports.showPhone = exports.confirmTypedPhone = exports.askToTypePhone = exports.askForPhone = exports.showOrderOrAskForPhone = exports.showAddress = exports.confirmAddress = exports.askToTypeAddress = exports.confirmAddressOrAskLocation = exports.confirmLocationAddress = exports.askForLocation = exports.showDeliverCheckAddress = exports.showDeliver = exports.askForDeliver = exports.askForWantOrder = exports.getFlavorsAndToppings = exports.sendCardapio = exports.sendHorario = exports.sendMainMenu = exports.sendWelcomeMessage = exports.passThreadControl = exports.optionsStopOrder = exports.checkLastAction = exports.askForContinue = exports.basicComments = exports.basicOption = exports.basicReply = exports.sendErrorMsg = void 0;
+exports.askForSizeCat = exports.showCategoryAskForSize = exports.showCategory = exports.askForCategory = exports.showAddressAskForCategory = exports.showDeliverAskForCategory = exports.cancelPendingOrder = exports.sendRejectionNotification = exports.sendShippingNotification = exports.updateItemAskOptions = exports.cancelItem = exports.showCommentsItem = exports.changeItem = exports.showNoBeverageAskForPaymentType = exports.showBeverageAskForPaymentType = exports.showBeverage = exports.showNoBeverage = exports.askForBeverages = exports.askForWantBeverage = exports.askForSpecificItem = exports.askForOptionsToChange = exports.askForChangeOrder = exports.confirmOrder = exports.showFullOrderConfirmOrder = exports.showPaymentTypeAskForComments = exports.showFullOrder = exports.showComments = exports.askToTypeComments = exports.showPaymentChangeAskForComments = exports.askForComments = exports.showPaymentChange = exports.showPaymentTypeAskForPaymentChange = exports.askForPaymentChange = exports.showPaymentType = exports.askForPaymentType = exports.showFlavorCheckItem = exports.showPartialOrder = exports.cancelPendingShowPartialOrder = exports.showOrderOrNextItem = exports.showFlavor = exports.askForFlavor = exports.showSplitCheckFlavor = exports.askForFlavorOrConfirm = exports.showSplit = exports.showSizeCheckSplit = exports.checkSplit = exports.showSize = exports.showQuantityAskForSize = exports.askForSize = exports.showQuantity = exports.askForQuantityMore = exports.askForQuantity = exports.showAddressAskForQuantity = exports.showDeliverAskForQuantity = exports.showPhone = exports.confirmTypedPhone = exports.askToTypePhone = exports.askForPhone = exports.showOrderOrAskForPhone = exports.showAddress = exports.confirmAddress = exports.askToTypeAddress = exports.confirmAddressOrAskLocation = exports.confirmLocationAddress = exports.askForLocation = exports.showDeliverCheckAddress = exports.showDeliver = exports.askForDeliver = exports.askForWantOrder = exports.getFlavorsAndToppings = exports.sendCardapio = exports.sendHorario = exports.sendMainMenu = exports.sendWelcomeMessage = exports.passThreadControl = exports.optionsStopOrder = exports.checkLastAction = exports.askForContinue = exports.basicPostComments = exports.basicComments = exports.basicOption = exports.basicReply = exports.sendErrorMsg = void 0;
 
 var _util = _interopRequireDefault(require("util"));
 
@@ -241,25 +241,69 @@ function () {
   };
 }();
 /**
+ * Just update the comments, do not return nothing.
+ * @param {*} pageId
+ * @param {*} userId
+ * @param {*} text
+ */
+
+
+exports.basicComments = basicComments;
+
+var basicPostComments =
+/*#__PURE__*/
+function () {
+  var _ref5 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee5(pageId, userId, text, user) {
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            _context5.next = 2;
+            return (0, _ordersController.updateOrder)({
+              pageId: pageId,
+              userId: userId,
+              waitingFor: 'typed_comments',
+              postComments: text,
+              user: user
+            });
+
+          case 2:
+            return _context5.abrupt("return", true);
+
+          case 3:
+          case "end":
+            return _context5.stop();
+        }
+      }
+    }, _callee5);
+  }));
+
+  return function basicPostComments(_x17, _x18, _x19, _x20) {
+    return _ref5.apply(this, arguments);
+  };
+}();
+/**
  * Send Yes or No to the user asking if he wants to place an order right now.
  * @param {*} pageId
  * @param {*} userId
  */
 
 
-exports.basicComments = basicComments;
+exports.basicPostComments = basicPostComments;
 
 var askForContinue =
 /*#__PURE__*/
 function () {
-  var _ref5 = _asyncToGenerator(
+  var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee5() {
-    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+  regeneratorRuntime.mark(function _callee6() {
+    return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
-            return _context5.abrupt("return", {
+            return _context6.abrupt("return", {
               type: 'replies',
               text: 'Não entendi o que você quis dizer. 😞.\n Vamos continuar com o pedido?',
               options: [{
@@ -275,14 +319,14 @@ function () {
 
           case 1:
           case "end":
-            return _context5.stop();
+            return _context6.stop();
         }
       }
-    }, _callee5);
+    }, _callee6);
   }));
 
   return function askForContinue() {
-    return _ref5.apply(this, arguments);
+    return _ref6.apply(this, arguments);
   };
 }();
 
@@ -291,25 +335,25 @@ exports.askForContinue = askForContinue;
 var checkLastAction =
 /*#__PURE__*/
 function () {
-  var _ref6 = _asyncToGenerator(
+  var _ref7 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee6(pageId, userId) {
+  regeneratorRuntime.mark(function _callee7(pageId, userId) {
     var pendingOrder, wf, wfd, addrData, location;
-    return regeneratorRuntime.wrap(function _callee6$(_context6) {
+    return regeneratorRuntime.wrap(function _callee7$(_context7) {
       while (1) {
-        switch (_context6.prev = _context6.next) {
+        switch (_context7.prev = _context7.next) {
           case 0:
-            _context6.next = 2;
+            _context7.next = 2;
             return (0, _ordersController.getOrderPending)({
               pageId: pageId,
               userId: userId
             });
 
           case 2:
-            pendingOrder = _context6.sent;
+            pendingOrder = _context7.sent;
 
             if (!pendingOrder.order) {
-              _context6.next = 121;
+              _context7.next = 121;
               break;
             }
 
@@ -317,36 +361,36 @@ function () {
             wfd = pendingOrder.order.waitingForData;
 
             if (!(wf === 'confirm_address')) {
-              _context6.next = 15;
+              _context7.next = 15;
               break;
             }
 
-            _context6.next = 9;
+            _context7.next = 9;
             return (0, _customersController.getCustomerAddress)(pageId, userId);
 
           case 9:
-            addrData = _context6.sent;
-            _context6.next = 12;
+            addrData = _context7.sent;
+            _context7.next = 12;
             return confirmAddress(pageId, userId, addrData);
 
           case 12:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 15:
             if (!(wf === 'location')) {
-              _context6.next = 21;
+              _context7.next = 21;
               break;
             }
 
-            _context6.next = 18;
+            _context7.next = 18;
             return askForLocation(pageId, userId);
 
           case 18:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 21:
             if (!(wf === 'location_address')) {
-              _context6.next = 28;
+              _context7.next = 28;
               break;
             }
 
@@ -355,216 +399,216 @@ function () {
               "long": pendingOrder.order.location_long,
               url: pendingOrder.order.location_url
             };
-            _context6.next = 25;
+            _context7.next = 25;
             return confirmLocationAddress(pageId, userId, location);
 
           case 25:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 28:
             if (!(wf === 'size')) {
-              _context6.next = 34;
+              _context7.next = 34;
               break;
             }
 
-            _context6.next = 31;
+            _context7.next = 31;
             return askForSizeCat(pageId, userId);
 
           case 31:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 34:
             if (!(wf === 'deliver')) {
-              _context6.next = 40;
+              _context7.next = 40;
               break;
             }
 
-            _context6.next = 37;
+            _context7.next = 37;
             return askForDeliver(pageId, userId);
 
           case 37:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 40:
             if (!(wf === 'category')) {
-              _context6.next = 46;
+              _context7.next = 46;
               break;
             }
 
-            _context6.next = 43;
+            _context7.next = 43;
             return askForCategory(pageId, userId, wfd);
 
           case 43:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 46:
             if (!(wf === 'quantity')) {
-              _context6.next = 52;
+              _context7.next = 52;
               break;
             }
 
-            _context6.next = 49;
+            _context7.next = 49;
             return askForQuantity(pageId, userId);
 
           case 49:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 52:
             if (!(wf === 'split')) {
-              _context6.next = 56;
+              _context7.next = 56;
               break;
             }
 
-            return _context6.abrupt("return", checkSplit(pageId, userId, 1));
+            return _context7.abrupt("return", checkSplit(pageId, userId, 1));
 
           case 56:
             if (!(wf === 'flavor')) {
-              _context6.next = 62;
+              _context7.next = 62;
               break;
             }
 
-            _context6.next = 59;
+            _context7.next = 59;
             return askForFlavor(pageId, userId, 1);
 
           case 59:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 62:
             if (!(wf === 'change_order')) {
-              _context6.next = 68;
+              _context7.next = 68;
               break;
             }
 
-            _context6.next = 65;
+            _context7.next = 65;
             return askForChangeOrder(pageId, userId);
 
           case 65:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 68:
             if (!(wf === 'partial_confirmation')) {
-              _context6.next = 74;
+              _context7.next = 74;
               break;
             }
 
-            _context6.next = 71;
+            _context7.next = 71;
             return showPartialOrder(pageId, userId);
 
           case 71:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 74:
             if (!(wf === 'want_beverage')) {
-              _context6.next = 80;
+              _context7.next = 80;
               break;
             }
 
-            _context6.next = 77;
+            _context7.next = 77;
             return askForWantBeverage(pageId, userId);
 
           case 77:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 80:
             if (!(wf === 'beverage')) {
-              _context6.next = 86;
+              _context7.next = 86;
               break;
             }
 
-            _context6.next = 83;
+            _context7.next = 83;
             return askForBeverages(pageId, userId, 1);
 
           case 83:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 86:
             if (!(wf === 'payment_type')) {
-              _context6.next = 92;
+              _context7.next = 92;
               break;
             }
 
-            _context6.next = 89;
+            _context7.next = 89;
             return askForPaymentType(pageId, userId);
 
           case 89:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 92:
             if (!(wf === 'payment_change')) {
-              _context6.next = 98;
+              _context7.next = 98;
               break;
             }
 
-            _context6.next = 95;
+            _context7.next = 95;
             return askForPaymentChange(pageId, userId);
 
           case 95:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 98:
             if (!(wf === 'comments')) {
-              _context6.next = 104;
+              _context7.next = 104;
               break;
             }
 
-            _context6.next = 101;
+            _context7.next = 101;
             return askForComments(pageId, userId);
 
           case 101:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 104:
             if (!(wf === 'full_confirmation')) {
-              _context6.next = 110;
+              _context7.next = 110;
               break;
             }
 
-            _context6.next = 107;
+            _context7.next = 107;
             return showFullOrder(pageId, userId);
 
           case 107:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 110:
             if (!(wf === 'nothing')) {
-              _context6.next = 116;
+              _context7.next = 116;
               break;
             }
 
-            _context6.next = 113;
+            _context7.next = 113;
             return showOrderOrNextItem(pageId, userId);
 
           case 113:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 116:
-            _context6.next = 118;
+            _context7.next = 118;
             return sendMainMenu();
 
           case 118:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 119:
-            _context6.next = 124;
+            _context7.next = 124;
             break;
 
           case 121:
-            _context6.next = 123;
+            _context7.next = 123;
             return sendMainMenu();
 
           case 123:
-            return _context6.abrupt("return", _context6.sent);
+            return _context7.abrupt("return", _context7.sent);
 
           case 124:
           case "end":
-            return _context6.stop();
+            return _context7.stop();
         }
       }
-    }, _callee6);
+    }, _callee7);
   }));
 
-  return function checkLastAction(_x17, _x18) {
-    return _ref6.apply(this, arguments);
+  return function checkLastAction(_x21, _x22) {
+    return _ref7.apply(this, arguments);
   };
 }();
 
@@ -573,14 +617,14 @@ exports.checkLastAction = checkLastAction;
 var optionsStopOrder =
 /*#__PURE__*/
 function () {
-  var _ref7 = _asyncToGenerator(
+  var _ref8 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee7() {
-    return regeneratorRuntime.wrap(function _callee7$(_context7) {
+  regeneratorRuntime.mark(function _callee8() {
+    return regeneratorRuntime.wrap(function _callee8$(_context8) {
       while (1) {
-        switch (_context7.prev = _context7.next) {
+        switch (_context8.prev = _context8.next) {
           case 0:
-            return _context7.abrupt("return", {
+            return _context8.abrupt("return", {
               type: 'replies',
               text: 'Muito bem, aqui estão as opções:',
               options: [{
@@ -596,14 +640,14 @@ function () {
 
           case 1:
           case "end":
-            return _context7.stop();
+            return _context8.stop();
         }
       }
-    }, _callee7);
+    }, _callee8);
   }));
 
   return function optionsStopOrder() {
-    return _ref7.apply(this, arguments);
+    return _ref8.apply(this, arguments);
   };
 }();
 
@@ -612,14 +656,14 @@ exports.optionsStopOrder = optionsStopOrder;
 var passThreadControl =
 /*#__PURE__*/
 function () {
-  var _ref8 = _asyncToGenerator(
+  var _ref9 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee8(pageId, userId, source, user) {
+  regeneratorRuntime.mark(function _callee9(pageId, userId, source, user) {
     var _txt;
 
-    return regeneratorRuntime.wrap(function _callee8$(_context8) {
+    return regeneratorRuntime.wrap(function _callee9$(_context9) {
       while (1) {
-        switch (_context8.prev = _context8.next) {
+        switch (_context9.prev = _context9.next) {
           case 0:
             _txt = 'Ok, a partir de agora você está nas mãos do nosso atendente.';
             _txt += ' O que você escrever a partir de agora será respondido por uma pessoa,';
@@ -629,35 +673,35 @@ function () {
               (0, _customersController.notifyUserStopAuto)(pageId, userId, user);
             }
 
-            _context8.prev = 4;
-            _context8.next = 7;
+            _context9.prev = 4;
+            _context9.next = 7;
             return (0, _pagesController.sendPassThreadControl)(pageId, userId, source);
 
           case 7:
-            return _context8.abrupt("return", {
+            return _context9.abrupt("return", {
               type: 'text',
               text: _txt
             });
 
           case 10:
-            _context8.prev = 10;
-            _context8.t0 = _context8["catch"](4);
-            console.error(_context8.t0);
-            return _context8.abrupt("return", {
+            _context9.prev = 10;
+            _context9.t0 = _context9["catch"](4);
+            console.error(_context9.t0);
+            return _context9.abrupt("return", {
               type: 'text',
               text: _txt
             });
 
           case 14:
           case "end":
-            return _context8.stop();
+            return _context9.stop();
         }
       }
-    }, _callee8, null, [[4, 10]]);
+    }, _callee9, null, [[4, 10]]);
   }));
 
-  return function passThreadControl(_x19, _x20, _x21, _x22) {
-    return _ref8.apply(this, arguments);
+  return function passThreadControl(_x23, _x24, _x25, _x26) {
+    return _ref9.apply(this, arguments);
   };
 }();
 /**
@@ -672,55 +716,55 @@ exports.passThreadControl = passThreadControl;
 var sendWelcomeMessage =
 /*#__PURE__*/
 function () {
-  var _ref9 = _asyncToGenerator(
+  var _ref10 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee9(pageID, sender) {
+  regeneratorRuntime.mark(function _callee10(pageID, sender) {
     var _nameToReplace, page, replyMsg;
 
-    return regeneratorRuntime.wrap(function _callee9$(_context9) {
+    return regeneratorRuntime.wrap(function _callee10$(_context10) {
       while (1) {
-        switch (_context9.prev = _context9.next) {
+        switch (_context10.prev = _context10.next) {
           case 0:
             _nameToReplace = '';
 
             if (!(sender && typeof sender !== 'string')) {
-              _context9.next = 7;
+              _context10.next = 7;
               break;
             }
 
-            _context9.next = 4;
+            _context10.next = 4;
             return sender.fetch('first_name');
 
           case 4:
             _nameToReplace = sender.first_name;
-            _context9.next = 8;
+            _context10.next = 8;
             break;
 
           case 7:
             if (sender && typeof sender === 'string') _nameToReplace = sender;
 
           case 8:
-            _context9.next = 10;
+            _context10.next = 10;
             return (0, _pagesController.getOnePageData)(pageID);
 
           case 10:
-            page = _context9.sent;
+            page = _context10.sent;
             replyMsg = page.firstResponseText.replace('$NAME', _nameToReplace);
-            return _context9.abrupt("return", {
+            return _context10.abrupt("return", {
               type: 'text',
               text: replyMsg
             });
 
           case 13:
           case "end":
-            return _context9.stop();
+            return _context10.stop();
         }
       }
-    }, _callee9);
+    }, _callee10);
   }));
 
-  return function sendWelcomeMessage(_x23, _x24) {
-    return _ref9.apply(this, arguments);
+  return function sendWelcomeMessage(_x27, _x28) {
+    return _ref10.apply(this, arguments);
   };
 }();
 
@@ -729,14 +773,14 @@ exports.sendWelcomeMessage = sendWelcomeMessage;
 var sendMainMenu =
 /*#__PURE__*/
 function () {
-  var _ref10 = _asyncToGenerator(
+  var _ref11 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee10() {
-    return regeneratorRuntime.wrap(function _callee10$(_context10) {
+  regeneratorRuntime.mark(function _callee11() {
+    return regeneratorRuntime.wrap(function _callee11$(_context11) {
       while (1) {
-        switch (_context10.prev = _context10.next) {
+        switch (_context11.prev = _context11.next) {
           case 0:
-            return _context10.abrupt("return", {
+            return _context11.abrupt("return", {
               type: 'buttons',
               text: 'Por favor escolha uma das opções',
               options: [{
@@ -760,14 +804,14 @@ function () {
 
           case 1:
           case "end":
-            return _context10.stop();
+            return _context11.stop();
         }
       }
-    }, _callee10);
+    }, _callee11);
   }));
 
   return function sendMainMenu() {
-    return _ref10.apply(this, arguments);
+    return _ref11.apply(this, arguments);
   };
 }();
 
@@ -776,23 +820,23 @@ exports.sendMainMenu = sendMainMenu;
 var sendHorario =
 /*#__PURE__*/
 function () {
-  var _ref11 = _asyncToGenerator(
+  var _ref12 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee11(pageID, source) {
-    var _ref12, todayIsOpen, todayOpenAt, todayCloseAt, replyMsg, reply;
+  regeneratorRuntime.mark(function _callee12(pageID, source) {
+    var _ref13, todayIsOpen, todayOpenAt, todayCloseAt, replyMsg, reply;
 
-    return regeneratorRuntime.wrap(function _callee11$(_context11) {
+    return regeneratorRuntime.wrap(function _callee12$(_context12) {
       while (1) {
-        switch (_context11.prev = _context11.next) {
+        switch (_context12.prev = _context12.next) {
           case 0:
-            _context11.next = 2;
+            _context12.next = 2;
             return (0, _storesController.getTodayOpeningTime)(pageID);
 
           case 2:
-            _ref12 = _context11.sent;
-            todayIsOpen = _ref12.todayIsOpen;
-            todayOpenAt = _ref12.todayOpenAt;
-            todayCloseAt = _ref12.todayCloseAt;
+            _ref13 = _context12.sent;
+            todayIsOpen = _ref13.todayIsOpen;
+            todayOpenAt = _ref13.todayOpenAt;
+            todayCloseAt = _ref13.todayCloseAt;
             replyMsg = '';
 
             if (todayIsOpen === true) {
@@ -802,34 +846,34 @@ function () {
             }
 
             if (!(source && source === 'whatsapp')) {
-              _context11.next = 16;
+              _context12.next = 16;
               break;
             }
 
-            _context11.next = 11;
+            _context12.next = 11;
             return sendMainMenu();
 
           case 11:
-            reply = _context11.sent;
+            reply = _context12.sent;
             reply.text = replyMsg + '\n\n' + reply.text;
-            return _context11.abrupt("return", reply);
+            return _context12.abrupt("return", reply);
 
           case 16:
-            return _context11.abrupt("return", {
+            return _context12.abrupt("return", {
               type: 'text',
               text: replyMsg
             });
 
           case 17:
           case "end":
-            return _context11.stop();
+            return _context12.stop();
         }
       }
-    }, _callee11);
+    }, _callee12);
   }));
 
-  return function sendHorario(_x25, _x26) {
-    return _ref11.apply(this, arguments);
+  return function sendHorario(_x29, _x30) {
+    return _ref12.apply(this, arguments);
   };
 }();
 /**
@@ -843,49 +887,49 @@ exports.sendHorario = sendHorario;
 var sendCardapio =
 /*#__PURE__*/
 function () {
-  var _ref13 = _asyncToGenerator(
+  var _ref14 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee12(pageID, data, source) {
+  regeneratorRuntime.mark(function _callee13(pageID, data, source) {
     var replyMsg, reply;
-    return regeneratorRuntime.wrap(function _callee12$(_context12) {
+    return regeneratorRuntime.wrap(function _callee13$(_context13) {
       while (1) {
-        switch (_context12.prev = _context12.next) {
+        switch (_context13.prev = _context13.next) {
           case 0:
-            _context12.next = 2;
+            _context13.next = 2;
             return (0, _show_cardapio.getCardapio)(pageID, data.id);
 
           case 2:
-            replyMsg = _context12.sent;
+            replyMsg = _context13.sent;
 
             if (!(source && source === 'whatsapp')) {
-              _context12.next = 11;
+              _context13.next = 11;
               break;
             }
 
-            _context12.next = 6;
+            _context13.next = 6;
             return sendMainMenu();
 
           case 6:
-            reply = _context12.sent;
+            reply = _context13.sent;
             reply.text = replyMsg + '\n\n' + reply.text;
-            return _context12.abrupt("return", reply);
+            return _context13.abrupt("return", reply);
 
           case 11:
-            return _context12.abrupt("return", {
+            return _context13.abrupt("return", {
               type: 'text',
               text: replyMsg
             });
 
           case 12:
           case "end":
-            return _context12.stop();
+            return _context13.stop();
         }
       }
-    }, _callee12);
+    }, _callee13);
   }));
 
-  return function sendCardapio(_x27, _x28, _x29) {
-    return _ref13.apply(this, arguments);
+  return function sendCardapio(_x31, _x32, _x33) {
+    return _ref14.apply(this, arguments);
   };
 }();
 /**
@@ -900,120 +944,120 @@ exports.sendCardapio = sendCardapio;
 var getFlavorsAndToppings =
 /*#__PURE__*/
 function () {
-  var _ref14 = _asyncToGenerator(
+  var _ref15 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee13(pageID, categoryID, sizeID) {
+  regeneratorRuntime.mark(function _callee14(pageID, categoryID, sizeID) {
     var flavorArray, allToppings, pricings, flavorsWithPrice, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, flavor, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, price, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, tId, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, topping;
 
-    return regeneratorRuntime.wrap(function _callee13$(_context13) {
+    return regeneratorRuntime.wrap(function _callee14$(_context14) {
       while (1) {
-        switch (_context13.prev = _context13.next) {
+        switch (_context14.prev = _context14.next) {
           case 0:
-            _context13.prev = 0;
-            _context13.next = 3;
+            _context14.prev = 0;
+            _context14.next = 3;
             return (0, _flavorsController.getFlavors)(pageID);
 
           case 3:
-            flavorArray = _context13.sent;
-            _context13.next = 6;
+            flavorArray = _context14.sent;
+            _context14.next = 6;
             return (0, _toppingsController.getToppingsFull)(pageID);
 
           case 6:
-            allToppings = _context13.sent;
-            _context13.next = 9;
+            allToppings = _context14.sent;
+            _context14.next = 9;
             return (0, _pricingsController.getPricings)(pageID);
 
           case 9:
-            pricings = _context13.sent;
+            pricings = _context14.sent;
             flavorsWithPrice = [];
             _iteratorNormalCompletion = true;
             _didIteratorError = false;
             _iteratorError = undefined;
-            _context13.prev = 14;
+            _context14.prev = 14;
             _iterator = flavorArray[Symbol.iterator]();
 
           case 16:
             if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-              _context13.next = 96;
+              _context14.next = 96;
               break;
             }
 
             flavor = _step.value;
 
             if (!(categoryID && flavor.categoryId === categoryID)) {
-              _context13.next = 93;
+              _context14.next = 93;
               break;
             }
 
             if (!sizeID) {
-              _context13.next = 47;
+              _context14.next = 47;
               break;
             }
 
             _iteratorNormalCompletion2 = true;
             _didIteratorError2 = false;
             _iteratorError2 = undefined;
-            _context13.prev = 23;
+            _context14.prev = 23;
             _iterator2 = pricings[Symbol.iterator]();
 
           case 25:
             if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-              _context13.next = 33;
+              _context14.next = 33;
               break;
             }
 
             price = _step2.value;
 
             if (!(price.categoryId === flavor.categoryId && price.sizeId === sizeID)) {
-              _context13.next = 30;
+              _context14.next = 30;
               break;
             }
 
             flavor.price = price.price;
-            return _context13.abrupt("break", 33);
+            return _context14.abrupt("break", 33);
 
           case 30:
             _iteratorNormalCompletion2 = true;
-            _context13.next = 25;
+            _context14.next = 25;
             break;
 
           case 33:
-            _context13.next = 39;
+            _context14.next = 39;
             break;
 
           case 35:
-            _context13.prev = 35;
-            _context13.t0 = _context13["catch"](23);
+            _context14.prev = 35;
+            _context14.t0 = _context14["catch"](23);
             _didIteratorError2 = true;
-            _iteratorError2 = _context13.t0;
+            _iteratorError2 = _context14.t0;
 
           case 39:
-            _context13.prev = 39;
-            _context13.prev = 40;
+            _context14.prev = 39;
+            _context14.prev = 40;
 
             if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
               _iterator2["return"]();
             }
 
           case 42:
-            _context13.prev = 42;
+            _context14.prev = 42;
 
             if (!_didIteratorError2) {
-              _context13.next = 45;
+              _context14.next = 45;
               break;
             }
 
             throw _iteratorError2;
 
           case 45:
-            return _context13.finish(42);
+            return _context14.finish(42);
 
           case 46:
-            return _context13.finish(39);
+            return _context14.finish(39);
 
           case 47:
             if (!flavor.price) {
-              _context13.next = 93;
+              _context14.next = 93;
               break;
             }
 
@@ -1021,12 +1065,12 @@ function () {
             _iteratorNormalCompletion3 = true;
             _didIteratorError3 = false;
             _iteratorError3 = undefined;
-            _context13.prev = 52;
+            _context14.prev = 52;
             _iterator3 = flavor.toppings[Symbol.iterator]();
 
           case 54:
             if (_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done) {
-              _context13.next = 78;
+              _context14.next = 78;
               break;
             }
 
@@ -1034,7 +1078,7 @@ function () {
             _iteratorNormalCompletion4 = true;
             _didIteratorError4 = false;
             _iteratorError4 = undefined;
-            _context13.prev = 59;
+            _context14.prev = 59;
 
             for (_iterator4 = allToppings[Symbol.iterator](); !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
               topping = _step4.value;
@@ -1044,140 +1088,140 @@ function () {
               }
             }
 
-            _context13.next = 67;
+            _context14.next = 67;
             break;
 
           case 63:
-            _context13.prev = 63;
-            _context13.t1 = _context13["catch"](59);
+            _context14.prev = 63;
+            _context14.t1 = _context14["catch"](59);
             _didIteratorError4 = true;
-            _iteratorError4 = _context13.t1;
+            _iteratorError4 = _context14.t1;
 
           case 67:
-            _context13.prev = 67;
-            _context13.prev = 68;
+            _context14.prev = 67;
+            _context14.prev = 68;
 
             if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
               _iterator4["return"]();
             }
 
           case 70:
-            _context13.prev = 70;
+            _context14.prev = 70;
 
             if (!_didIteratorError4) {
-              _context13.next = 73;
+              _context14.next = 73;
               break;
             }
 
             throw _iteratorError4;
 
           case 73:
-            return _context13.finish(70);
+            return _context14.finish(70);
 
           case 74:
-            return _context13.finish(67);
+            return _context14.finish(67);
 
           case 75:
             _iteratorNormalCompletion3 = true;
-            _context13.next = 54;
+            _context14.next = 54;
             break;
 
           case 78:
-            _context13.next = 84;
+            _context14.next = 84;
             break;
 
           case 80:
-            _context13.prev = 80;
-            _context13.t2 = _context13["catch"](52);
+            _context14.prev = 80;
+            _context14.t2 = _context14["catch"](52);
             _didIteratorError3 = true;
-            _iteratorError3 = _context13.t2;
+            _iteratorError3 = _context14.t2;
 
           case 84:
-            _context13.prev = 84;
-            _context13.prev = 85;
+            _context14.prev = 84;
+            _context14.prev = 85;
 
             if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
               _iterator3["return"]();
             }
 
           case 87:
-            _context13.prev = 87;
+            _context14.prev = 87;
 
             if (!_didIteratorError3) {
-              _context13.next = 90;
+              _context14.next = 90;
               break;
             }
 
             throw _iteratorError3;
 
           case 90:
-            return _context13.finish(87);
+            return _context14.finish(87);
 
           case 91:
-            return _context13.finish(84);
+            return _context14.finish(84);
 
           case 92:
             flavorsWithPrice.push(flavor);
 
           case 93:
             _iteratorNormalCompletion = true;
-            _context13.next = 16;
+            _context14.next = 16;
             break;
 
           case 96:
-            _context13.next = 102;
+            _context14.next = 102;
             break;
 
           case 98:
-            _context13.prev = 98;
-            _context13.t3 = _context13["catch"](14);
+            _context14.prev = 98;
+            _context14.t3 = _context14["catch"](14);
             _didIteratorError = true;
-            _iteratorError = _context13.t3;
+            _iteratorError = _context14.t3;
 
           case 102:
-            _context13.prev = 102;
-            _context13.prev = 103;
+            _context14.prev = 102;
+            _context14.prev = 103;
 
             if (!_iteratorNormalCompletion && _iterator["return"] != null) {
               _iterator["return"]();
             }
 
           case 105:
-            _context13.prev = 105;
+            _context14.prev = 105;
 
             if (!_didIteratorError) {
-              _context13.next = 108;
+              _context14.next = 108;
               break;
             }
 
             throw _iteratorError;
 
           case 108:
-            return _context13.finish(105);
+            return _context14.finish(105);
 
           case 109:
-            return _context13.finish(102);
+            return _context14.finish(102);
 
           case 110:
-            return _context13.abrupt("return", flavorsWithPrice);
+            return _context14.abrupt("return", flavorsWithPrice);
 
           case 113:
-            _context13.prev = 113;
-            _context13.t4 = _context13["catch"](0);
+            _context14.prev = 113;
+            _context14.t4 = _context14["catch"](0);
             console.error({
-              flavorsAndToppingsErr: _context13.t4
+              flavorsAndToppingsErr: _context14.t4
             });
 
           case 116:
           case "end":
-            return _context13.stop();
+            return _context14.stop();
         }
       }
-    }, _callee13, null, [[0, 113], [14, 98, 102, 110], [23, 35, 39, 47], [40,, 42, 46], [52, 80, 84, 92], [59, 63, 67, 75], [68,, 70, 74], [85,, 87, 91], [103,, 105, 109]]);
+    }, _callee14, null, [[0, 113], [14, 98, 102, 110], [23, 35, 39, 47], [40,, 42, 46], [52, 80, 84, 92], [59, 63, 67, 75], [68,, 70, 74], [85,, 87, 91], [103,, 105, 109]]);
   }));
 
-  return function getFlavorsAndToppings(_x30, _x31, _x32) {
-    return _ref14.apply(this, arguments);
+  return function getFlavorsAndToppings(_x34, _x35, _x36) {
+    return _ref15.apply(this, arguments);
   };
 }();
 /**
@@ -1190,14 +1234,14 @@ exports.getFlavorsAndToppings = getFlavorsAndToppings;
 var askForWantOrder =
 /*#__PURE__*/
 function () {
-  var _ref15 = _asyncToGenerator(
+  var _ref16 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee14() {
-    return regeneratorRuntime.wrap(function _callee14$(_context14) {
+  regeneratorRuntime.mark(function _callee15() {
+    return regeneratorRuntime.wrap(function _callee15$(_context15) {
       while (1) {
-        switch (_context14.prev = _context14.next) {
+        switch (_context15.prev = _context15.next) {
           case 0:
-            return _context14.abrupt("return", {
+            return _context15.abrupt("return", {
               type: 'replies',
               text: 'Agora que você viu nosso cardápio, você está pronto para fazer o pedido?',
               options: [{
@@ -1213,14 +1257,14 @@ function () {
 
           case 1:
           case "end":
-            return _context14.stop();
+            return _context15.stop();
         }
       }
-    }, _callee14);
+    }, _callee15);
   }));
 
   return function askForWantOrder() {
-    return _ref15.apply(this, arguments);
+    return _ref16.apply(this, arguments);
   };
 }();
 
@@ -1229,16 +1273,16 @@ exports.askForWantOrder = askForWantOrder;
 var askForDeliver =
 /*#__PURE__*/
 function () {
-  var _ref16 = _asyncToGenerator(
+  var _ref17 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee15(pageId, userId) {
+  regeneratorRuntime.mark(function _callee16(pageId, userId) {
     var storeData, _txt, _iteratorNormalCompletion5, _didIteratorError5, _iteratorError5, _iterator5, _step5, delivFee;
 
-    return regeneratorRuntime.wrap(function _callee15$(_context15) {
+    return regeneratorRuntime.wrap(function _callee16$(_context16) {
       while (1) {
-        switch (_context15.prev = _context15.next) {
+        switch (_context16.prev = _context16.next) {
           case 0:
-            _context15.next = 2;
+            _context16.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -1246,11 +1290,11 @@ function () {
             });
 
           case 2:
-            _context15.next = 4;
+            _context16.next = 4;
             return (0, _storesController.getStoreData)(pageId);
 
           case 4:
-            storeData = _context15.sent;
+            storeData = _context16.sent;
             _txt = '';
 
             if (storeData.delivery_time) {
@@ -1258,7 +1302,7 @@ function () {
             }
 
             if (!(storeData.delivery_fees && storeData.delivery_fees.length > 0)) {
-              _context15.next = 29;
+              _context16.next = 29;
               break;
             }
 
@@ -1266,45 +1310,45 @@ function () {
             _iteratorNormalCompletion5 = true;
             _didIteratorError5 = false;
             _iteratorError5 = undefined;
-            _context15.prev = 12;
+            _context16.prev = 12;
 
             for (_iterator5 = storeData.delivery_fees[Symbol.iterator](); !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
               delivFee = _step5.value;
               _txt += "".concat((0, _util2.formatAsCurrency)(delivFee.fee), " (at\xE9 ").concat(delivFee.to, " km) ");
             }
 
-            _context15.next = 20;
+            _context16.next = 20;
             break;
 
           case 16:
-            _context15.prev = 16;
-            _context15.t0 = _context15["catch"](12);
+            _context16.prev = 16;
+            _context16.t0 = _context16["catch"](12);
             _didIteratorError5 = true;
-            _iteratorError5 = _context15.t0;
+            _iteratorError5 = _context16.t0;
 
           case 20:
-            _context15.prev = 20;
-            _context15.prev = 21;
+            _context16.prev = 20;
+            _context16.prev = 21;
 
             if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
               _iterator5["return"]();
             }
 
           case 23:
-            _context15.prev = 23;
+            _context16.prev = 23;
 
             if (!_didIteratorError5) {
-              _context15.next = 26;
+              _context16.next = 26;
               break;
             }
 
             throw _iteratorError5;
 
           case 26:
-            return _context15.finish(23);
+            return _context16.finish(23);
 
           case 27:
-            return _context15.finish(20);
+            return _context16.finish(20);
 
           case 28:
             _txt += '\n';
@@ -1315,7 +1359,7 @@ function () {
             }
 
             _txt += 'O pedido é para entregar ou você vem retirar aqui?';
-            return _context15.abrupt("return", {
+            return _context16.abrupt("return", {
               type: 'replies',
               text: _txt,
               options: [{
@@ -1338,14 +1382,14 @@ function () {
 
           case 32:
           case "end":
-            return _context15.stop();
+            return _context16.stop();
         }
       }
-    }, _callee15, null, [[12, 16, 20, 28], [21,, 23, 27]]);
+    }, _callee16, null, [[12, 16, 20, 28], [21,, 23, 27]]);
   }));
 
-  return function askForDeliver(_x33, _x34) {
-    return _ref16.apply(this, arguments);
+  return function askForDeliver(_x37, _x38) {
+    return _ref17.apply(this, arguments);
   };
 }();
 
@@ -1354,14 +1398,14 @@ exports.askForDeliver = askForDeliver;
 var showDeliver =
 /*#__PURE__*/
 function () {
-  var _ref17 = _asyncToGenerator(
+  var _ref18 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee16(pageId, userId, data, user, source) {
+  regeneratorRuntime.mark(function _callee17(pageId, userId, data, user, source) {
     var _phone, _txtReply;
 
-    return regeneratorRuntime.wrap(function _callee16$(_context16) {
+    return regeneratorRuntime.wrap(function _callee17$(_context17) {
       while (1) {
-        switch (_context16.prev = _context16.next) {
+        switch (_context17.prev = _context17.next) {
           case 0:
             _phone = null;
 
@@ -1369,7 +1413,7 @@ function () {
               _phone = (0, _util2.formatWhatsappNumber)(userId);
             }
 
-            _context16.next = 4;
+            _context17.next = 4;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -1386,21 +1430,21 @@ function () {
               _txtReply = 'Retirar o pedido conosco.\n';
               if (data.address) _txtReply += '📌 Nosso endereço: ' + data.address;
             }
-            return _context16.abrupt("return", {
+            return _context17.abrupt("return", {
               type: 'text',
               text: '✅ ' + _txtReply
             });
 
           case 6:
           case "end":
-            return _context16.stop();
+            return _context17.stop();
         }
       }
-    }, _callee16);
+    }, _callee17);
   }));
 
-  return function showDeliver(_x35, _x36, _x37, _x38, _x39) {
-    return _ref17.apply(this, arguments);
+  return function showDeliver(_x39, _x40, _x41, _x42, _x43) {
+    return _ref18.apply(this, arguments);
   };
 }();
 
@@ -1409,37 +1453,37 @@ exports.showDeliver = showDeliver;
 var showDeliverCheckAddress =
 /*#__PURE__*/
 function () {
-  var _ref18 = _asyncToGenerator(
+  var _ref19 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee17(pageId, userId, data, user, source) {
+  regeneratorRuntime.mark(function _callee18(pageId, userId, data, user, source) {
     var prevAnswer, nextQuestion;
-    return regeneratorRuntime.wrap(function _callee17$(_context17) {
+    return regeneratorRuntime.wrap(function _callee18$(_context18) {
       while (1) {
-        switch (_context17.prev = _context17.next) {
+        switch (_context18.prev = _context18.next) {
           case 0:
-            _context17.next = 2;
+            _context18.next = 2;
             return showDeliver(pageId, userId, data, user, source);
 
           case 2:
-            prevAnswer = _context17.sent;
-            _context17.next = 5;
+            prevAnswer = _context18.sent;
+            _context18.next = 5;
             return confirmAddressOrAskLocation(pageId, userId, user, source);
 
           case 5:
-            nextQuestion = _context17.sent;
+            nextQuestion = _context18.sent;
             nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
-            return _context17.abrupt("return", nextQuestion);
+            return _context18.abrupt("return", nextQuestion);
 
           case 8:
           case "end":
-            return _context17.stop();
+            return _context18.stop();
         }
       }
-    }, _callee17);
+    }, _callee18);
   }));
 
-  return function showDeliverCheckAddress(_x40, _x41, _x42, _x43, _x44) {
-    return _ref18.apply(this, arguments);
+  return function showDeliverCheckAddress(_x44, _x45, _x46, _x47, _x48) {
+    return _ref19.apply(this, arguments);
   };
 }();
 /**
@@ -1453,14 +1497,14 @@ exports.showDeliverCheckAddress = showDeliverCheckAddress;
 var askForLocation =
 /*#__PURE__*/
 function () {
-  var _ref19 = _asyncToGenerator(
+  var _ref20 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee18(pageId, userId, user, source) {
+  regeneratorRuntime.mark(function _callee19(pageId, userId, user, source) {
     var _phone;
 
-    return regeneratorRuntime.wrap(function _callee18$(_context18) {
+    return regeneratorRuntime.wrap(function _callee19$(_context19) {
       while (1) {
-        switch (_context18.prev = _context18.next) {
+        switch (_context19.prev = _context19.next) {
           case 0:
             _phone = null;
 
@@ -1468,7 +1512,7 @@ function () {
               _phone = (0, _util2.formatWhatsappNumber)(userId);
             }
 
-            _context18.next = 4;
+            _context19.next = 4;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -1480,11 +1524,11 @@ function () {
 
           case 4:
             if (!(!source || source === 'messenger')) {
-              _context18.next = 8;
+              _context19.next = 8;
               break;
             }
 
-            return _context18.abrupt("return", {
+            return _context19.abrupt("return", {
               type: 'replies',
               text: 'Para começar, preciso saber aonde você está. Por favor clique no botão abaixo para me mandá-la.',
               options: [{
@@ -1497,11 +1541,11 @@ function () {
 
           case 8:
             if (!(source === 'whatsapp')) {
-              _context18.next = 10;
+              _context19.next = 10;
               break;
             }
 
-            return _context18.abrupt("return", {
+            return _context19.abrupt("return", {
               type: 'text',
               text: 'Para começar, preciso saber aonde você está. Favor enviar a sua localização.',
               options: [{
@@ -1513,14 +1557,14 @@ function () {
 
           case 10:
           case "end":
-            return _context18.stop();
+            return _context19.stop();
         }
       }
-    }, _callee18);
+    }, _callee19);
   }));
 
-  return function askForLocation(_x45, _x46, _x47, _x48) {
-    return _ref19.apply(this, arguments);
+  return function askForLocation(_x49, _x50, _x51, _x52) {
+    return _ref20.apply(this, arguments);
   };
 }();
 
@@ -1529,21 +1573,21 @@ exports.askForLocation = askForLocation;
 var confirmLocationAddress =
 /*#__PURE__*/
 function () {
-  var _ref20 = _asyncToGenerator(
+  var _ref21 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee19(pageId, userId, location, user) {
+  regeneratorRuntime.mark(function _callee20(pageId, userId, location, user) {
     var addresses, foundAnyCompleteAddress, options, i, element, _data, button, addressNumber, buttonsOpt;
 
-    return regeneratorRuntime.wrap(function _callee19$(_context19) {
+    return regeneratorRuntime.wrap(function _callee20$(_context20) {
       while (1) {
-        switch (_context19.prev = _context19.next) {
+        switch (_context20.prev = _context20.next) {
           case 0:
             if (!location) {
-              _context19.next = 26;
+              _context20.next = 26;
               break;
             }
 
-            _context19.next = 3;
+            _context20.next = 3;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -1553,14 +1597,14 @@ function () {
             });
 
           case 3:
-            _context19.next = 5;
+            _context20.next = 5;
             return (0, _customersController.getAddressLocation)(location);
 
           case 5:
-            addresses = _context19.sent;
+            addresses = _context20.sent;
 
             if (!(addresses && addresses.length && addresses.length > 0)) {
-              _context19.next = 21;
+              _context20.next = 21;
               break;
             }
 
@@ -1591,7 +1635,7 @@ function () {
             }
 
             if (!foundAnyCompleteAddress) {
-              _context19.next = 16;
+              _context20.next = 16;
               break;
             }
 
@@ -1605,51 +1649,51 @@ function () {
               buttons: buttonsOpt,
               isOnlyButtons: true
             });
-            return _context19.abrupt("return", {
+            return _context20.abrupt("return", {
               type: 'list',
               text: 'Encontrei esses endereços, selecione o correto:',
               options: options
             });
 
           case 16:
-            _context19.next = 18;
+            _context20.next = 18;
             return askToTypeAddress(pageId, userId);
 
           case 18:
-            return _context19.abrupt("return", _context19.sent);
+            return _context20.abrupt("return", _context20.sent);
 
           case 19:
-            _context19.next = 24;
+            _context20.next = 24;
             break;
 
           case 21:
-            _context19.next = 23;
+            _context20.next = 23;
             return askToTypeAddress(pageId, userId);
 
           case 23:
-            return _context19.abrupt("return", _context19.sent);
+            return _context20.abrupt("return", _context20.sent);
 
           case 24:
-            _context19.next = 29;
+            _context20.next = 29;
             break;
 
           case 26:
-            _context19.next = 28;
+            _context20.next = 28;
             return askToTypeAddress(pageId, userId);
 
           case 28:
-            return _context19.abrupt("return", _context19.sent);
+            return _context20.abrupt("return", _context20.sent);
 
           case 29:
           case "end":
-            return _context19.stop();
+            return _context20.stop();
         }
       }
-    }, _callee19);
+    }, _callee20);
   }));
 
-  return function confirmLocationAddress(_x49, _x50, _x51, _x52) {
-    return _ref20.apply(this, arguments);
+  return function confirmLocationAddress(_x53, _x54, _x55, _x56) {
+    return _ref21.apply(this, arguments);
   };
 }();
 
@@ -1658,44 +1702,44 @@ exports.confirmLocationAddress = confirmLocationAddress;
 var confirmAddressOrAskLocation =
 /*#__PURE__*/
 function () {
-  var _ref21 = _asyncToGenerator(
+  var _ref22 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee20(pageId, userId, user, source) {
+  regeneratorRuntime.mark(function _callee21(pageId, userId, user, source) {
     var addrData;
-    return regeneratorRuntime.wrap(function _callee20$(_context20) {
+    return regeneratorRuntime.wrap(function _callee21$(_context21) {
       while (1) {
-        switch (_context20.prev = _context20.next) {
+        switch (_context21.prev = _context21.next) {
           case 0:
-            _context20.next = 2;
+            _context21.next = 2;
             return (0, _customersController.getCustomerAddress)(pageId, userId);
 
           case 2:
-            addrData = _context20.sent;
+            addrData = _context21.sent;
 
             if (!addrData) {
-              _context20.next = 7;
+              _context21.next = 7;
               break;
             }
 
-            return _context20.abrupt("return", confirmAddress(pageId, userId, addrData, user, source));
+            return _context21.abrupt("return", confirmAddress(pageId, userId, addrData, user, source));
 
           case 7:
-            _context20.next = 9;
+            _context21.next = 9;
             return askForLocation(pageId, userId, user, source);
 
           case 9:
-            return _context20.abrupt("return", _context20.sent);
+            return _context21.abrupt("return", _context21.sent);
 
           case 10:
           case "end":
-            return _context20.stop();
+            return _context21.stop();
         }
       }
-    }, _callee20);
+    }, _callee21);
   }));
 
-  return function confirmAddressOrAskLocation(_x53, _x54, _x55, _x56) {
-    return _ref21.apply(this, arguments);
+  return function confirmAddressOrAskLocation(_x57, _x58, _x59, _x60) {
+    return _ref22.apply(this, arguments);
   };
 }();
 
@@ -1704,14 +1748,14 @@ exports.confirmAddressOrAskLocation = confirmAddressOrAskLocation;
 var askToTypeAddress =
 /*#__PURE__*/
 function () {
-  var _ref22 = _asyncToGenerator(
+  var _ref23 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee21(pageID, userID) {
-    return regeneratorRuntime.wrap(function _callee21$(_context21) {
+  regeneratorRuntime.mark(function _callee22(pageID, userID) {
+    return regeneratorRuntime.wrap(function _callee22$(_context22) {
       while (1) {
-        switch (_context21.prev = _context21.next) {
+        switch (_context22.prev = _context22.next) {
           case 0:
-            _context21.next = 2;
+            _context22.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageID,
               userId: userID,
@@ -1720,21 +1764,21 @@ function () {
             });
 
           case 2:
-            return _context21.abrupt("return", {
+            return _context22.abrupt("return", {
               type: 'text',
               text: 'Não foi possível localizar um endereço válido. Digite o seu endereço completo por favor.'
             });
 
           case 3:
           case "end":
-            return _context21.stop();
+            return _context22.stop();
         }
       }
-    }, _callee21);
+    }, _callee22);
   }));
 
-  return function askToTypeAddress(_x57, _x58) {
-    return _ref22.apply(this, arguments);
+  return function askToTypeAddress(_x61, _x62) {
+    return _ref23.apply(this, arguments);
   };
 }();
 
@@ -1743,14 +1787,14 @@ exports.askToTypeAddress = askToTypeAddress;
 var confirmAddress =
 /*#__PURE__*/
 function () {
-  var _ref23 = _asyncToGenerator(
+  var _ref24 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee22(pageId, userId, addrData, user, source) {
+  regeneratorRuntime.mark(function _callee23(pageId, userId, addrData, user, source) {
     var _phone, _replyText;
 
-    return regeneratorRuntime.wrap(function _callee22$(_context22) {
+    return regeneratorRuntime.wrap(function _callee23$(_context23) {
       while (1) {
-        switch (_context22.prev = _context22.next) {
+        switch (_context23.prev = _context23.next) {
           case 0:
             _phone = null;
 
@@ -1759,11 +1803,11 @@ function () {
             }
 
             if (!user) {
-              _context22.next = 7;
+              _context23.next = 7;
               break;
             }
 
-            _context22.next = 5;
+            _context23.next = 5;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -1774,11 +1818,11 @@ function () {
             });
 
           case 5:
-            _context22.next = 9;
+            _context23.next = 9;
             break;
 
           case 7:
-            _context22.next = 9;
+            _context23.next = 9;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -1790,7 +1834,7 @@ function () {
           case 9:
             _replyText = 'A entrega será para esse endereço?\n';
             _replyText = _replyText + addrData.formattedAddress;
-            return _context22.abrupt("return", {
+            return _context23.abrupt("return", {
               type: 'replies',
               text: _replyText,
               options: [{
@@ -1806,14 +1850,14 @@ function () {
 
           case 12:
           case "end":
-            return _context22.stop();
+            return _context23.stop();
         }
       }
-    }, _callee22);
+    }, _callee23);
   }));
 
-  return function confirmAddress(_x59, _x60, _x61, _x62, _x63) {
-    return _ref23.apply(this, arguments);
+  return function confirmAddress(_x63, _x64, _x65, _x66, _x67) {
+    return _ref24.apply(this, arguments);
   };
 }();
 
@@ -1822,14 +1866,14 @@ exports.confirmAddress = confirmAddress;
 var showAddress =
 /*#__PURE__*/
 function () {
-  var _ref24 = _asyncToGenerator(
+  var _ref25 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee23(pageId, userId, addrData, source) {
+  regeneratorRuntime.mark(function _callee24(pageId, userId, addrData, source) {
     var _phone, formattedAddrData;
 
-    return regeneratorRuntime.wrap(function _callee23$(_context23) {
+    return regeneratorRuntime.wrap(function _callee24$(_context24) {
       while (1) {
-        switch (_context23.prev = _context23.next) {
+        switch (_context24.prev = _context24.next) {
           case 0:
             _phone = null;
 
@@ -1838,16 +1882,16 @@ function () {
             }
 
             if (!(addrData && addrData.address_components)) {
-              _context23.next = 10;
+              _context24.next = 10;
               break;
             }
 
-            _context23.next = 5;
+            _context24.next = 5;
             return (0, _customersController.formatAddrData)(addrData);
 
           case 5:
-            formattedAddrData = _context23.sent;
-            _context23.next = 8;
+            formattedAddrData = _context24.sent;
+            _context24.next = 8;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -1856,11 +1900,11 @@ function () {
             });
 
           case 8:
-            _context23.next = 12;
+            _context24.next = 12;
             break;
 
           case 10:
-            _context23.next = 12;
+            _context24.next = 12;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -1869,21 +1913,21 @@ function () {
             });
 
           case 12:
-            return _context23.abrupt("return", {
+            return _context24.abrupt("return", {
               type: 'text',
               text: 'Ok, entregaremos nesse endereço.'
             });
 
           case 13:
           case "end":
-            return _context23.stop();
+            return _context24.stop();
         }
       }
-    }, _callee23);
+    }, _callee24);
   }));
 
-  return function showAddress(_x64, _x65, _x66, _x67) {
-    return _ref24.apply(this, arguments);
+  return function showAddress(_x68, _x69, _x70, _x71) {
+    return _ref25.apply(this, arguments);
   };
 }();
 
@@ -1892,15 +1936,15 @@ exports.showAddress = showAddress;
 var showOrderOrAskForPhone =
 /*#__PURE__*/
 function () {
-  var _ref25 = _asyncToGenerator(
+  var _ref26 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee24(pageId, userId) {
+  regeneratorRuntime.mark(function _callee25(pageId, userId) {
     var po;
-    return regeneratorRuntime.wrap(function _callee24$(_context24) {
+    return regeneratorRuntime.wrap(function _callee25$(_context25) {
       while (1) {
-        switch (_context24.prev = _context24.next) {
+        switch (_context25.prev = _context25.next) {
           case 0:
-            _context24.next = 2;
+            _context25.next = 2;
             return (0, _ordersController.getOrderPending)({
               pageId: pageId,
               userId: userId,
@@ -1908,36 +1952,36 @@ function () {
             });
 
           case 2:
-            po = _context24.sent;
+            po = _context25.sent;
 
             if (!(po.order && po.order.waitingFor === 'partial_confirmation')) {
-              _context24.next = 9;
+              _context25.next = 9;
               break;
             }
 
-            _context24.next = 6;
+            _context25.next = 6;
             return showOrderOrNextItem(pageId, userId);
 
           case 6:
-            return _context24.abrupt("return", _context24.sent);
+            return _context25.abrupt("return", _context25.sent);
 
           case 9:
-            _context24.next = 11;
+            _context25.next = 11;
             return askForPhone(pageId, userId);
 
           case 11:
-            return _context24.abrupt("return", _context24.sent);
+            return _context25.abrupt("return", _context25.sent);
 
           case 12:
           case "end":
-            return _context24.stop();
+            return _context25.stop();
         }
       }
-    }, _callee24);
+    }, _callee25);
   }));
 
-  return function showOrderOrAskForPhone(_x68, _x69) {
-    return _ref25.apply(this, arguments);
+  return function showOrderOrAskForPhone(_x72, _x73) {
+    return _ref26.apply(this, arguments);
   };
 }();
 
@@ -1946,16 +1990,16 @@ exports.showOrderOrAskForPhone = showOrderOrAskForPhone;
 var askForPhone =
 /*#__PURE__*/
 function () {
-  var _ref26 = _asyncToGenerator(
+  var _ref27 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee25(pageId, userId) {
+  regeneratorRuntime.mark(function _callee26(pageId, userId) {
     var _txt, _options;
 
-    return regeneratorRuntime.wrap(function _callee25$(_context25) {
+    return regeneratorRuntime.wrap(function _callee26$(_context26) {
       while (1) {
-        switch (_context25.prev = _context25.next) {
+        switch (_context26.prev = _context26.next) {
           case 0:
-            _context25.next = 2;
+            _context26.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -1979,7 +2023,7 @@ function () {
               event: 'PHONE_CONFIRMED'
             });
 
-            return _context25.abrupt("return", {
+            return _context26.abrupt("return", {
               type: 'replies',
               text: _txt,
               options: _options
@@ -1987,14 +2031,14 @@ function () {
 
           case 7:
           case "end":
-            return _context25.stop();
+            return _context26.stop();
         }
       }
-    }, _callee25);
+    }, _callee26);
   }));
 
-  return function askForPhone(_x70, _x71) {
-    return _ref26.apply(this, arguments);
+  return function askForPhone(_x74, _x75) {
+    return _ref27.apply(this, arguments);
   };
 }();
 
@@ -2003,15 +2047,15 @@ exports.askForPhone = askForPhone;
 var askToTypePhone =
 /*#__PURE__*/
 function () {
-  var _ref27 = _asyncToGenerator(
+  var _ref28 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee26(pageId, userId) {
+  regeneratorRuntime.mark(function _callee27(pageId, userId) {
     var out;
-    return regeneratorRuntime.wrap(function _callee26$(_context26) {
+    return regeneratorRuntime.wrap(function _callee27$(_context27) {
       while (1) {
-        switch (_context26.prev = _context26.next) {
+        switch (_context27.prev = _context27.next) {
           case 0:
-            _context26.next = 2;
+            _context27.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -2023,18 +2067,18 @@ function () {
             out.add({
               text: 'Por favor, digite o número do telefone válido para que possamos confirmar o pedido. Pode digitar o 📞:'
             });
-            return _context26.abrupt("return", out);
+            return _context27.abrupt("return", out);
 
           case 5:
           case "end":
-            return _context26.stop();
+            return _context27.stop();
         }
       }
-    }, _callee26);
+    }, _callee27);
   }));
 
-  return function askToTypePhone(_x72, _x73) {
-    return _ref27.apply(this, arguments);
+  return function askToTypePhone(_x76, _x77) {
+    return _ref28.apply(this, arguments);
   };
 }();
 
@@ -2043,17 +2087,17 @@ exports.askToTypePhone = askToTypePhone;
 var confirmTypedPhone =
 /*#__PURE__*/
 function () {
-  var _ref28 = _asyncToGenerator(
+  var _ref29 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee27(pageId, userId, phone) {
+  regeneratorRuntime.mark(function _callee28(pageId, userId, phone) {
     var out, _txt, replies;
 
-    return regeneratorRuntime.wrap(function _callee27$(_context27) {
+    return regeneratorRuntime.wrap(function _callee28$(_context28) {
       while (1) {
-        switch (_context27.prev = _context27.next) {
+        switch (_context28.prev = _context28.next) {
           case 0:
             out = new _facebookMessengerBot.Elements();
-            _context27.next = 3;
+            _context28.next = 3;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -2077,18 +2121,18 @@ function () {
               event: 'PHONE_CONFIRMED'
             });
             out.setQuickReplies(replies);
-            return _context27.abrupt("return", out);
+            return _context28.abrupt("return", out);
 
           case 10:
           case "end":
-            return _context27.stop();
+            return _context28.stop();
         }
       }
-    }, _callee27);
+    }, _callee28);
   }));
 
-  return function confirmTypedPhone(_x74, _x75, _x76) {
-    return _ref28.apply(this, arguments);
+  return function confirmTypedPhone(_x78, _x79, _x80) {
+    return _ref29.apply(this, arguments);
   };
 }();
 
@@ -2097,15 +2141,15 @@ exports.confirmTypedPhone = confirmTypedPhone;
 var showPhone =
 /*#__PURE__*/
 function () {
-  var _ref29 = _asyncToGenerator(
+  var _ref30 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee28(pageId, userId, phone) {
+  regeneratorRuntime.mark(function _callee29(pageId, userId, phone) {
     var out;
-    return regeneratorRuntime.wrap(function _callee28$(_context28) {
+    return regeneratorRuntime.wrap(function _callee29$(_context29) {
       while (1) {
-        switch (_context28.prev = _context28.next) {
+        switch (_context29.prev = _context29.next) {
           case 0:
-            _context28.next = 2;
+            _context29.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -2118,18 +2162,18 @@ function () {
             out.add({
               text: 'Usaremos o número ' + phone + ' para confirmar o pedido. Agora vou pegar as informações do pedido.'
             });
-            return _context28.abrupt("return", out);
+            return _context29.abrupt("return", out);
 
           case 5:
           case "end":
-            return _context28.stop();
+            return _context29.stop();
         }
       }
-    }, _callee28);
+    }, _callee29);
   }));
 
-  return function showPhone(_x77, _x78, _x79) {
-    return _ref29.apply(this, arguments);
+  return function showPhone(_x81, _x82, _x83) {
+    return _ref30.apply(this, arguments);
   };
 }();
 
@@ -2138,37 +2182,37 @@ exports.showPhone = showPhone;
 var showDeliverAskForQuantity =
 /*#__PURE__*/
 function () {
-  var _ref30 = _asyncToGenerator(
+  var _ref31 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee29(pageId, userId, data, user, source) {
+  regeneratorRuntime.mark(function _callee30(pageId, userId, data, user, source) {
     var prevAnswer, nextQuestion;
-    return regeneratorRuntime.wrap(function _callee29$(_context29) {
+    return regeneratorRuntime.wrap(function _callee30$(_context30) {
       while (1) {
-        switch (_context29.prev = _context29.next) {
+        switch (_context30.prev = _context30.next) {
           case 0:
-            _context29.next = 2;
+            _context30.next = 2;
             return showDeliver(pageId, userId, data, user, source);
 
           case 2:
-            prevAnswer = _context29.sent;
-            _context29.next = 5;
+            prevAnswer = _context30.sent;
+            _context30.next = 5;
             return askForQuantity(pageId, userId);
 
           case 5:
-            nextQuestion = _context29.sent;
+            nextQuestion = _context30.sent;
             nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
-            return _context29.abrupt("return", nextQuestion);
+            return _context30.abrupt("return", nextQuestion);
 
           case 8:
           case "end":
-            return _context29.stop();
+            return _context30.stop();
         }
       }
-    }, _callee29);
+    }, _callee30);
   }));
 
-  return function showDeliverAskForQuantity(_x80, _x81, _x82, _x83, _x84) {
-    return _ref30.apply(this, arguments);
+  return function showDeliverAskForQuantity(_x84, _x85, _x86, _x87, _x88) {
+    return _ref31.apply(this, arguments);
   };
 }();
 /**
@@ -2186,20 +2230,20 @@ exports.showDeliverAskForQuantity = showDeliverAskForQuantity;
 var showAddressAskForQuantity =
 /*#__PURE__*/
 function () {
-  var _ref31 = _asyncToGenerator(
+  var _ref32 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee30(pageId, userId, addrData, source) {
+  regeneratorRuntime.mark(function _callee31(pageId, userId, addrData, source) {
     var prevAnswer, nextQuestion, po;
-    return regeneratorRuntime.wrap(function _callee30$(_context30) {
+    return regeneratorRuntime.wrap(function _callee31$(_context31) {
       while (1) {
-        switch (_context30.prev = _context30.next) {
+        switch (_context31.prev = _context31.next) {
           case 0:
-            _context30.next = 2;
+            _context31.next = 2;
             return showAddress(pageId, userId, addrData, source);
 
           case 2:
-            prevAnswer = _context30.sent;
-            _context30.next = 5;
+            prevAnswer = _context31.sent;
+            _context31.next = 5;
             return (0, _ordersController.getOrderPending)({
               pageId: pageId,
               userId: userId,
@@ -2207,72 +2251,72 @@ function () {
             });
 
           case 5:
-            po = _context30.sent;
+            po = _context31.sent;
 
             if (!(po && po.order && po.order.backToConfirmation)) {
-              _context30.next = 24;
+              _context31.next = 24;
               break;
             }
 
             if (!(po.order.backToConfirmation === 'full_confirmation')) {
-              _context30.next = 13;
+              _context31.next = 13;
               break;
             }
 
-            _context30.next = 10;
+            _context31.next = 10;
             return showFullOrder(pageId, userId);
 
           case 10:
-            nextQuestion = _context30.sent;
-            _context30.next = 22;
+            nextQuestion = _context31.sent;
+            _context31.next = 22;
             break;
 
           case 13:
             if (!(po.order.backToConfirmation === 'partial_confirmation')) {
-              _context30.next = 19;
+              _context31.next = 19;
               break;
             }
 
-            _context30.next = 16;
+            _context31.next = 16;
             return showOrderOrNextItem(pageId, userId);
 
           case 16:
-            nextQuestion = _context30.sent;
-            _context30.next = 22;
+            nextQuestion = _context31.sent;
+            _context31.next = 22;
             break;
 
           case 19:
-            _context30.next = 21;
+            _context31.next = 21;
             return askForQuantity(pageId, userId);
 
           case 21:
-            nextQuestion = _context30.sent;
+            nextQuestion = _context31.sent;
 
           case 22:
-            _context30.next = 27;
+            _context31.next = 27;
             break;
 
           case 24:
-            _context30.next = 26;
+            _context31.next = 26;
             return askForQuantity(pageId, userId);
 
           case 26:
-            nextQuestion = _context30.sent;
+            nextQuestion = _context31.sent;
 
           case 27:
             nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
-            return _context30.abrupt("return", nextQuestion);
+            return _context31.abrupt("return", nextQuestion);
 
           case 29:
           case "end":
-            return _context30.stop();
+            return _context31.stop();
         }
       }
-    }, _callee30);
+    }, _callee31);
   }));
 
-  return function showAddressAskForQuantity(_x85, _x86, _x87, _x88) {
-    return _ref31.apply(this, arguments);
+  return function showAddressAskForQuantity(_x89, _x90, _x91, _x92) {
+    return _ref32.apply(this, arguments);
   };
 }();
 
@@ -2281,14 +2325,14 @@ exports.showAddressAskForQuantity = showAddressAskForQuantity;
 var askForQuantity =
 /*#__PURE__*/
 function () {
-  var _ref32 = _asyncToGenerator(
+  var _ref33 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee31(pageId, userId) {
-    return regeneratorRuntime.wrap(function _callee31$(_context31) {
+  regeneratorRuntime.mark(function _callee32(pageId, userId) {
+    return regeneratorRuntime.wrap(function _callee32$(_context32) {
       while (1) {
-        switch (_context31.prev = _context31.next) {
+        switch (_context32.prev = _context32.next) {
           case 0:
-            _context31.next = 2;
+            _context32.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -2296,7 +2340,7 @@ function () {
             });
 
           case 2:
-            return _context31.abrupt("return", {
+            return _context32.abrupt("return", {
               type: 'replies',
               text: 'Quantas pizzas você quer?',
               options: [{
@@ -2323,14 +2367,14 @@ function () {
 
           case 3:
           case "end":
-            return _context31.stop();
+            return _context32.stop();
         }
       }
-    }, _callee31);
+    }, _callee32);
   }));
 
-  return function askForQuantity(_x89, _x90) {
-    return _ref32.apply(this, arguments);
+  return function askForQuantity(_x93, _x94) {
+    return _ref33.apply(this, arguments);
   };
 }();
 
@@ -2339,14 +2383,14 @@ exports.askForQuantity = askForQuantity;
 var askForQuantityMore =
 /*#__PURE__*/
 function () {
-  var _ref33 = _asyncToGenerator(
+  var _ref34 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee32(pageId, userId) {
-    return regeneratorRuntime.wrap(function _callee32$(_context32) {
+  regeneratorRuntime.mark(function _callee33(pageId, userId) {
+    return regeneratorRuntime.wrap(function _callee33$(_context33) {
       while (1) {
-        switch (_context32.prev = _context32.next) {
+        switch (_context33.prev = _context33.next) {
           case 0:
-            _context32.next = 2;
+            _context33.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -2354,7 +2398,7 @@ function () {
             });
 
           case 2:
-            return _context32.abrupt("return", {
+            return _context33.abrupt("return", {
               type: 'replies',
               text: 'Quantas pizzas você quer?',
               options: [{
@@ -2381,14 +2425,14 @@ function () {
 
           case 3:
           case "end":
-            return _context32.stop();
+            return _context33.stop();
         }
       }
-    }, _callee32);
+    }, _callee33);
   }));
 
-  return function askForQuantityMore(_x91, _x92) {
-    return _ref33.apply(this, arguments);
+  return function askForQuantityMore(_x95, _x96) {
+    return _ref34.apply(this, arguments);
   };
 }();
 
@@ -2397,17 +2441,17 @@ exports.askForQuantityMore = askForQuantityMore;
 var showQuantity =
 /*#__PURE__*/
 function () {
-  var _ref34 = _asyncToGenerator(
+  var _ref35 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee33(pageId, userId, data) {
+  regeneratorRuntime.mark(function _callee34(pageId, userId, data) {
     var qty, out;
-    return regeneratorRuntime.wrap(function _callee33$(_context33) {
+    return regeneratorRuntime.wrap(function _callee34$(_context34) {
       while (1) {
-        switch (_context33.prev = _context33.next) {
+        switch (_context34.prev = _context34.next) {
           case 0:
             // data is 'qty_1', 'qty_2', 'qty_3'...
             qty = data.substr(data.length - 1, 1);
-            _context33.next = 3;
+            _context34.next = 3;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -2431,18 +2475,18 @@ function () {
             } // out.text = out.text + '(digite 0 p/ desfazer)'
 
 
-            return _context33.abrupt("return", out);
+            return _context34.abrupt("return", out);
 
           case 5:
           case "end":
-            return _context33.stop();
+            return _context34.stop();
         }
       }
-    }, _callee33);
+    }, _callee34);
   }));
 
-  return function showQuantity(_x93, _x94, _x95) {
-    return _ref34.apply(this, arguments);
+  return function showQuantity(_x97, _x98, _x99) {
+    return _ref35.apply(this, arguments);
   };
 }();
 
@@ -2451,16 +2495,16 @@ exports.showQuantity = showQuantity;
 var askForSize =
 /*#__PURE__*/
 function () {
-  var _ref35 = _asyncToGenerator(
+  var _ref36 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee34(pageId, userId) {
+  regeneratorRuntime.mark(function _callee35(pageId, userId) {
     var po, _text, _options, sizesWithPricing, sizes, i, _data, out, _out;
 
-    return regeneratorRuntime.wrap(function _callee34$(_context34) {
+    return regeneratorRuntime.wrap(function _callee35$(_context35) {
       while (1) {
-        switch (_context34.prev = _context34.next) {
+        switch (_context35.prev = _context35.next) {
           case 0:
-            _context34.next = 2;
+            _context35.next = 2;
             return (0, _ordersController.getOrderPending)({
               pageId: pageId,
               userId: userId,
@@ -2468,10 +2512,10 @@ function () {
             });
 
           case 2:
-            po = _context34.sent;
+            po = _context35.sent;
 
             if (!po.order) {
-              _context34.next = 25;
+              _context35.next = 25;
               break;
             }
 
@@ -2485,16 +2529,16 @@ function () {
             }
 
             _options = [];
-            _context34.next = 9;
+            _context35.next = 9;
             return (0, _pricingsController.getPricingSizing)(pageId);
 
           case 9:
-            sizesWithPricing = _context34.sent;
-            _context34.next = 12;
+            sizesWithPricing = _context35.sent;
+            _context35.next = 12;
             return (0, _sizesController.getSizes)(pageId, sizesWithPricing);
 
           case 12:
-            sizes = _context34.sent;
+            sizes = _context35.sent;
 
             for (i = 0; i < sizes.length; i++) {
               _data = {
@@ -2517,11 +2561,11 @@ function () {
             };
 
             if (!(po.order.qty === 1)) {
-              _context34.next = 20;
+              _context35.next = 20;
               break;
             }
 
-            _context34.next = 18;
+            _context35.next = 18;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -2529,11 +2573,11 @@ function () {
             });
 
           case 18:
-            _context34.next = 22;
+            _context35.next = 22;
             break;
 
           case 20:
-            _context34.next = 22;
+            _context35.next = 22;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -2544,25 +2588,25 @@ function () {
             });
 
           case 22:
-            return _context34.abrupt("return", out);
+            return _context35.abrupt("return", out);
 
           case 25:
             _out = {
               type: 'text',
               text: MSG_GENERAL_ERROR
             };
-            return _context34.abrupt("return", _out);
+            return _context35.abrupt("return", _out);
 
           case 27:
           case "end":
-            return _context34.stop();
+            return _context35.stop();
         }
       }
-    }, _callee34);
+    }, _callee35);
   }));
 
-  return function askForSize(_x96, _x97) {
-    return _ref35.apply(this, arguments);
+  return function askForSize(_x100, _x101) {
+    return _ref36.apply(this, arguments);
   };
 }();
 /**
@@ -2579,86 +2623,26 @@ exports.askForSize = askForSize;
 var showQuantityAskForSize =
 /*#__PURE__*/
 function () {
-  var _ref36 = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee35(pageId, userId, data) {
-    var prevAnswer, nextQuestion;
-    return regeneratorRuntime.wrap(function _callee35$(_context35) {
-      while (1) {
-        switch (_context35.prev = _context35.next) {
-          case 0:
-            _context35.next = 2;
-            return showQuantity(pageId, userId, data);
-
-          case 2:
-            prevAnswer = _context35.sent;
-            _context35.next = 5;
-            return askForSize(pageId, userId);
-
-          case 5:
-            nextQuestion = _context35.sent;
-            nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
-            return _context35.abrupt("return", nextQuestion);
-
-          case 8:
-          case "end":
-            return _context35.stop();
-        }
-      }
-    }, _callee35);
-  }));
-
-  return function showQuantityAskForSize(_x98, _x99, _x100) {
-    return _ref36.apply(this, arguments);
-  };
-}();
-
-exports.showQuantityAskForSize = showQuantityAskForSize;
-
-var showSize =
-/*#__PURE__*/
-function () {
   var _ref37 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee36(pageId, userId, data) {
+    var prevAnswer, nextQuestion;
     return regeneratorRuntime.wrap(function _callee36$(_context36) {
       while (1) {
         switch (_context36.prev = _context36.next) {
           case 0:
-            if (!(data && data.split && data.split > 1)) {
-              _context36.next = 5;
-              break;
-            }
+            _context36.next = 2;
+            return showQuantity(pageId, userId, data);
 
-            _context36.next = 3;
-            return (0, _ordersController.updateOrder)({
-              pageId: pageId,
-              userId: userId,
-              sizeId: data.id,
-              undo: 'size',
-              waitingFor: 'split'
-            });
-
-          case 3:
-            _context36.next = 7;
-            break;
+          case 2:
+            prevAnswer = _context36.sent;
+            _context36.next = 5;
+            return askForSize(pageId, userId);
 
           case 5:
-            _context36.next = 7;
-            return (0, _ordersController.updateOrder)({
-              pageId: pageId,
-              userId: userId,
-              sizeId: data.id,
-              undo: 'size',
-              waitingFor: 'flavor'
-            });
-
-          case 7:
-            return _context36.abrupt("return", {
-              type: 'text',
-              text: '✅ ' + ' Tamanho: ' + data.size // + ' (digite 0 p/ desfazer)',
-
-            });
+            nextQuestion = _context36.sent;
+            nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
+            return _context36.abrupt("return", nextQuestion);
 
           case 8:
           case "end":
@@ -2668,8 +2652,68 @@ function () {
     }, _callee36);
   }));
 
-  return function showSize(_x101, _x102, _x103) {
+  return function showQuantityAskForSize(_x102, _x103, _x104) {
     return _ref37.apply(this, arguments);
+  };
+}();
+
+exports.showQuantityAskForSize = showQuantityAskForSize;
+
+var showSize =
+/*#__PURE__*/
+function () {
+  var _ref38 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee37(pageId, userId, data) {
+    return regeneratorRuntime.wrap(function _callee37$(_context37) {
+      while (1) {
+        switch (_context37.prev = _context37.next) {
+          case 0:
+            if (!(data && data.split && data.split > 1)) {
+              _context37.next = 5;
+              break;
+            }
+
+            _context37.next = 3;
+            return (0, _ordersController.updateOrder)({
+              pageId: pageId,
+              userId: userId,
+              sizeId: data.id,
+              undo: 'size',
+              waitingFor: 'split'
+            });
+
+          case 3:
+            _context37.next = 7;
+            break;
+
+          case 5:
+            _context37.next = 7;
+            return (0, _ordersController.updateOrder)({
+              pageId: pageId,
+              userId: userId,
+              sizeId: data.id,
+              undo: 'size',
+              waitingFor: 'flavor'
+            });
+
+          case 7:
+            return _context37.abrupt("return", {
+              type: 'text',
+              text: '✅ ' + ' Tamanho: ' + data.size // + ' (digite 0 p/ desfazer)',
+
+            });
+
+          case 8:
+          case "end":
+            return _context37.stop();
+        }
+      }
+    }, _callee37);
+  }));
+
+  return function showSize(_x105, _x106, _x107) {
+    return _ref38.apply(this, arguments);
   };
 }();
 /**
@@ -2685,16 +2729,16 @@ exports.showSize = showSize;
 var checkSplit =
 /*#__PURE__*/
 function () {
-  var _ref38 = _asyncToGenerator(
+  var _ref39 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee37(pageId, userId, multiple) {
+  regeneratorRuntime.mark(function _callee38(pageId, userId, multiple) {
     var pendingOrder, currentSize, _txt, _options, i, _replyText;
 
-    return regeneratorRuntime.wrap(function _callee37$(_context37) {
+    return regeneratorRuntime.wrap(function _callee38$(_context38) {
       while (1) {
-        switch (_context37.prev = _context37.next) {
+        switch (_context38.prev = _context38.next) {
           case 0:
-            _context37.next = 2;
+            _context38.next = 2;
             return (0, _ordersController.getOrderPending)({
               pageId: pageId,
               userId: userId,
@@ -2702,21 +2746,21 @@ function () {
             });
 
           case 2:
-            pendingOrder = _context37.sent;
+            pendingOrder = _context38.sent;
 
             if (!pendingOrder.order) {
-              _context37.next = 18;
+              _context38.next = 18;
               break;
             }
 
-            _context37.next = 6;
+            _context38.next = 6;
             return (0, _sizesController.getSize)(pageId, pendingOrder.order.currentItemSize);
 
           case 6:
-            currentSize = _context37.sent;
+            currentSize = _context38.sent;
 
             if (!(currentSize.split && currentSize.split > 1)) {
-              _context37.next = 15;
+              _context38.next = 15;
               break;
             }
 
@@ -2734,29 +2778,29 @@ function () {
               });
             }
 
-            return _context37.abrupt("return", {
+            return _context38.abrupt("return", {
               type: 'replies',
               text: _txt,
               options: _options
             });
 
           case 15:
-            _context37.next = 17;
+            _context38.next = 17;
             return askForFlavorOrConfirm(pageId, userId, multiple);
 
           case 17:
-            return _context37.abrupt("return", _context37.sent);
+            return _context38.abrupt("return", _context38.sent);
 
           case 18:
           case "end":
-            return _context37.stop();
+            return _context38.stop();
         }
       }
-    }, _callee37);
+    }, _callee38);
   }));
 
-  return function checkSplit(_x104, _x105, _x106) {
-    return _ref38.apply(this, arguments);
+  return function checkSplit(_x108, _x109, _x110) {
+    return _ref39.apply(this, arguments);
   };
 }();
 
@@ -2765,37 +2809,37 @@ exports.checkSplit = checkSplit;
 var showSizeCheckSplit =
 /*#__PURE__*/
 function () {
-  var _ref39 = _asyncToGenerator(
+  var _ref40 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee38(pageId, userId, data, multiple) {
+  regeneratorRuntime.mark(function _callee39(pageId, userId, data, multiple) {
     var prevAnswer, nextQuestion;
-    return regeneratorRuntime.wrap(function _callee38$(_context38) {
+    return regeneratorRuntime.wrap(function _callee39$(_context39) {
       while (1) {
-        switch (_context38.prev = _context38.next) {
+        switch (_context39.prev = _context39.next) {
           case 0:
-            _context38.next = 2;
+            _context39.next = 2;
             return showSize(pageId, userId, data);
 
           case 2:
-            prevAnswer = _context38.sent;
-            _context38.next = 5;
+            prevAnswer = _context39.sent;
+            _context39.next = 5;
             return checkSplit(pageId, userId, multiple);
 
           case 5:
-            nextQuestion = _context38.sent;
+            nextQuestion = _context39.sent;
             nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
-            return _context38.abrupt("return", nextQuestion);
+            return _context39.abrupt("return", nextQuestion);
 
           case 8:
           case "end":
-            return _context38.stop();
+            return _context39.stop();
         }
       }
-    }, _callee38);
+    }, _callee39);
   }));
 
-  return function showSizeCheckSplit(_x107, _x108, _x109, _x110) {
-    return _ref39.apply(this, arguments);
+  return function showSizeCheckSplit(_x111, _x112, _x113, _x114) {
+    return _ref40.apply(this, arguments);
   };
 }();
 /**
@@ -2811,16 +2855,16 @@ exports.showSizeCheckSplit = showSizeCheckSplit;
 var showSplit =
 /*#__PURE__*/
 function () {
-  var _ref40 = _asyncToGenerator(
+  var _ref41 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee39(pageId, userId, data) {
+  regeneratorRuntime.mark(function _callee40(pageId, userId, data) {
     var _txtFlavor;
 
-    return regeneratorRuntime.wrap(function _callee39$(_context39) {
+    return regeneratorRuntime.wrap(function _callee40$(_context40) {
       while (1) {
-        switch (_context39.prev = _context39.next) {
+        switch (_context40.prev = _context40.next) {
           case 0:
-            _context39.next = 2;
+            _context40.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -2831,21 +2875,21 @@ function () {
 
           case 2:
             _txtFlavor = data === 1 ? 'Sabor' : 'Sabores';
-            return _context39.abrupt("return", {
+            return _context40.abrupt("return", {
               type: 'text',
               text: '✅ ' + data + ' ' + _txtFlavor
             });
 
           case 4:
           case "end":
-            return _context39.stop();
+            return _context40.stop();
         }
       }
-    }, _callee39);
+    }, _callee40);
   }));
 
-  return function showSplit(_x111, _x112, _x113) {
-    return _ref40.apply(this, arguments);
+  return function showSplit(_x115, _x116, _x117) {
+    return _ref41.apply(this, arguments);
   };
 }();
 
@@ -2854,15 +2898,15 @@ exports.showSplit = showSplit;
 var askForFlavorOrConfirm =
 /*#__PURE__*/
 function () {
-  var _ref41 = _asyncToGenerator(
+  var _ref42 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee40(pageId, userId, multiple) {
+  regeneratorRuntime.mark(function _callee41(pageId, userId, multiple) {
     var po, i;
-    return regeneratorRuntime.wrap(function _callee40$(_context40) {
+    return regeneratorRuntime.wrap(function _callee41$(_context41) {
       while (1) {
-        switch (_context40.prev = _context40.next) {
+        switch (_context41.prev = _context41.next) {
           case 0:
-            _context40.next = 2;
+            _context41.next = 2;
             return (0, _ordersController.getOrderPending)({
               pageId: pageId,
               userId: userId,
@@ -2870,27 +2914,27 @@ function () {
             });
 
           case 2:
-            po = _context40.sent;
+            po = _context41.sent;
 
             if (!po.order) {
-              _context40.next = 25;
+              _context41.next = 25;
               break;
             }
 
             if (!(po.order.originalSplit > 1 && po.order.originalSplit >= po.order.currentItemSplit)) {
-              _context40.next = 10;
+              _context41.next = 10;
               break;
             }
 
-            _context40.next = 7;
+            _context41.next = 7;
             return askForFlavor(pageId, userId, multiple, po);
 
           case 7:
-            return _context40.abrupt("return", _context40.sent);
+            return _context41.abrupt("return", _context41.sent);
 
           case 10:
             if (!(po.items && po.items.length)) {
-              _context40.next = 25;
+              _context41.next = 25;
               break;
             }
 
@@ -2898,47 +2942,47 @@ function () {
 
           case 12:
             if (!(i < po.items.length)) {
-              _context40.next = 22;
+              _context41.next = 22;
               break;
             }
 
             if (!(po.items[i].status === 0 && po.items[i].flavorId > 0)) {
-              _context40.next = 19;
+              _context41.next = 19;
               break;
             }
 
-            _context40.next = 16;
+            _context41.next = 16;
             return (0, _itemsController.updateStatusSpecificItem)(po.items[i]._id, 1);
 
           case 16:
-            _context40.next = 18;
+            _context41.next = 18;
             return showOrderOrNextItem(pageId, userId);
 
           case 18:
-            return _context40.abrupt("return", _context40.sent);
+            return _context41.abrupt("return", _context41.sent);
 
           case 19:
             i++;
-            _context40.next = 12;
+            _context41.next = 12;
             break;
 
           case 22:
-            _context40.next = 24;
+            _context41.next = 24;
             return askForFlavor(pageId, userId, multiple, po);
 
           case 24:
-            return _context40.abrupt("return", _context40.sent);
+            return _context41.abrupt("return", _context41.sent);
 
           case 25:
           case "end":
-            return _context40.stop();
+            return _context41.stop();
         }
       }
-    }, _callee40);
+    }, _callee41);
   }));
 
-  return function askForFlavorOrConfirm(_x114, _x115, _x116) {
-    return _ref41.apply(this, arguments);
+  return function askForFlavorOrConfirm(_x118, _x119, _x120) {
+    return _ref42.apply(this, arguments);
   };
 }();
 
@@ -2947,37 +2991,37 @@ exports.askForFlavorOrConfirm = askForFlavorOrConfirm;
 var showSplitCheckFlavor =
 /*#__PURE__*/
 function () {
-  var _ref42 = _asyncToGenerator(
+  var _ref43 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee41(pageId, userId, data) {
+  regeneratorRuntime.mark(function _callee42(pageId, userId, data) {
     var prevAnswer, nextQuestion;
-    return regeneratorRuntime.wrap(function _callee41$(_context41) {
+    return regeneratorRuntime.wrap(function _callee42$(_context42) {
       while (1) {
-        switch (_context41.prev = _context41.next) {
+        switch (_context42.prev = _context42.next) {
           case 0:
-            _context41.next = 2;
+            _context42.next = 2;
             return showSplit(pageId, userId, data);
 
           case 2:
-            prevAnswer = _context41.sent;
-            _context41.next = 5;
+            prevAnswer = _context42.sent;
+            _context42.next = 5;
             return askForFlavor(pageId, userId, 1);
 
           case 5:
-            nextQuestion = _context41.sent;
+            nextQuestion = _context42.sent;
             nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
-            return _context41.abrupt("return", nextQuestion);
+            return _context42.abrupt("return", nextQuestion);
 
           case 8:
           case "end":
-            return _context41.stop();
+            return _context42.stop();
         }
       }
-    }, _callee41);
+    }, _callee42);
   }));
 
-  return function showSplitCheckFlavor(_x117, _x118, _x119) {
-    return _ref42.apply(this, arguments);
+  return function showSplitCheckFlavor(_x121, _x122, _x123) {
+    return _ref43.apply(this, arguments);
   };
 }();
 /**
@@ -2993,28 +3037,28 @@ exports.showSplitCheckFlavor = showSplitCheckFlavor;
 var askForFlavor =
 /*#__PURE__*/
 function () {
-  var _ref43 = _asyncToGenerator(
+  var _ref44 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee42(pageId, userId, multiple, pendingOrder) {
+  regeneratorRuntime.mark(function _callee43(pageId, userId, multiple, pendingOrder) {
     var po, flavorsArray, _splitForTheItem, currentSplit, _txt, NUMBER_OF_ITEMS, _rangeIni, _rangeEnd, _options, i, _fl, _data, _subtext, buttons, _buttons, buttonsOpt, _buttons2;
 
-    return regeneratorRuntime.wrap(function _callee42$(_context42) {
+    return regeneratorRuntime.wrap(function _callee43$(_context43) {
       while (1) {
-        switch (_context42.prev = _context42.next) {
+        switch (_context43.prev = _context43.next) {
           case 0:
             po = null;
 
             if (!(pendingOrder && pendingOrder.order)) {
-              _context42.next = 5;
+              _context43.next = 5;
               break;
             }
 
             po = pendingOrder;
-            _context42.next = 8;
+            _context43.next = 8;
             break;
 
           case 5:
-            _context42.next = 7;
+            _context43.next = 7;
             return (0, _ordersController.getOrderPending)({
               pageId: pageId,
               userId: userId,
@@ -3022,14 +3066,14 @@ function () {
             });
 
           case 7:
-            po = _context42.sent;
+            po = _context43.sent;
 
           case 8:
-            _context42.next = 10;
+            _context43.next = 10;
             return getFlavorsAndToppings(pageId, po.order.currentItemCategory, po.order.currentItemSize);
 
           case 10:
-            flavorsArray = _context42.sent;
+            flavorsArray = _context43.sent;
             // This variable will be passed as split parameter to updateOrder, so,
             // updateOrder can update the item properly, with the value of originalSplit.
             _splitForTheItem = po.order.originalSplit; // In case where the user typed an option wrongly, the bot invokes askForFlavor
@@ -3142,7 +3186,7 @@ function () {
               currentItem: po.order.currentItem,
               split: _splitForTheItem
             });
-            return _context42.abrupt("return", {
+            return _context43.abrupt("return", {
               type: 'fulllist',
               text: _txt,
               options: _options
@@ -3150,14 +3194,14 @@ function () {
 
           case 23:
           case "end":
-            return _context42.stop();
+            return _context43.stop();
         }
       }
-    }, _callee42);
+    }, _callee43);
   }));
 
-  return function askForFlavor(_x120, _x121, _x122, _x123) {
-    return _ref43.apply(this, arguments);
+  return function askForFlavor(_x124, _x125, _x126, _x127) {
+    return _ref44.apply(this, arguments);
   };
 }();
 
@@ -3166,16 +3210,16 @@ exports.askForFlavor = askForFlavor;
 var showFlavor =
 /*#__PURE__*/
 function () {
-  var _ref44 = _asyncToGenerator(
+  var _ref45 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee43(pageId, userId, data) {
+  regeneratorRuntime.mark(function _callee44(pageId, userId, data) {
     var po, currentSplit, itemId, origSplit, orderId, _complete, _showSplit;
 
-    return regeneratorRuntime.wrap(function _callee43$(_context43) {
+    return regeneratorRuntime.wrap(function _callee44$(_context44) {
       while (1) {
-        switch (_context43.prev = _context43.next) {
+        switch (_context44.prev = _context44.next) {
           case 0:
-            _context43.next = 2;
+            _context44.next = 2;
             return (0, _ordersController.getOrderPending)({
               pageId: pageId,
               userId: userId,
@@ -3183,7 +3227,7 @@ function () {
             });
 
           case 2:
-            po = _context43.sent;
+            po = _context44.sent;
             origSplit = po.order.originalSplit;
             orderId = po.order.id;
 
@@ -3197,7 +3241,7 @@ function () {
             _complete = false;
             if (origSplit > 1 && currentSplit > origSplit) _complete = true;else if (!po.order.originalSplit || origSplit === 1) _complete = true;
             console.info('showFlavor _complete:', _complete, ' originalSplit:', po.order.originalSplit, 'currentSplit: ', currentSplit, ' price: ', data.price);
-            _context43.next = 11;
+            _context44.next = 11;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -3218,32 +3262,32 @@ function () {
             }
 
             if (!currentSplit) {
-              _context43.next = 17;
+              _context44.next = 17;
               break;
             }
 
             _showSplit = currentSplit - 1;
-            return _context43.abrupt("return", {
+            return _context44.abrupt("return", {
               type: 'text',
               text: '✅ ' + _showSplit + 'o. Sabor: ' + data.flavor
             });
 
           case 17:
-            return _context43.abrupt("return", {
+            return _context44.abrupt("return", {
               type: 'text',
               text: '✅ ' + ' Sabor: ' + data.flavor
             });
 
           case 18:
           case "end":
-            return _context43.stop();
+            return _context44.stop();
         }
       }
-    }, _callee43);
+    }, _callee44);
   }));
 
-  return function showFlavor(_x124, _x125, _x126) {
-    return _ref44.apply(this, arguments);
+  return function showFlavor(_x128, _x129, _x130) {
+    return _ref45.apply(this, arguments);
   };
 }();
 
@@ -3252,64 +3296,10 @@ exports.showFlavor = showFlavor;
 var showOrderOrNextItem =
 /*#__PURE__*/
 function () {
-  var _ref45 = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee44(pageId, userId) {
-    var po;
-    return regeneratorRuntime.wrap(function _callee44$(_context44) {
-      while (1) {
-        switch (_context44.prev = _context44.next) {
-          case 0:
-            _context44.next = 2;
-            return (0, _ordersController.getOrderPending)({
-              pageId: pageId,
-              userId: userId,
-              isComplete: true
-            });
-
-          case 2:
-            po = _context44.sent;
-
-            if (!(po.order.originalSplit > 1 && po.order.currentItemSplit <= po.order.originalSplit)) {
-              _context44.next = 9;
-              break;
-            }
-
-            _context44.next = 6;
-            return askForCategory(pageId, userId, po.order.currentItemSplit);
-
-          case 6:
-            return _context44.abrupt("return", _context44.sent);
-
-          case 9:
-            _context44.next = 11;
-            return showPartialOrder(pageId, userId, po);
-
-          case 11:
-            return _context44.abrupt("return", _context44.sent);
-
-          case 12:
-          case "end":
-            return _context44.stop();
-        }
-      }
-    }, _callee44);
-  }));
-
-  return function showOrderOrNextItem(_x127, _x128) {
-    return _ref45.apply(this, arguments);
-  };
-}();
-
-exports.showOrderOrNextItem = showOrderOrNextItem;
-
-var cancelPendingShowPartialOrder =
-/*#__PURE__*/
-function () {
   var _ref46 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee45(pageId, userId) {
-    var po, i;
+    var po;
     return regeneratorRuntime.wrap(function _callee45$(_context45) {
       while (1) {
         switch (_context45.prev = _context45.next) {
@@ -3324,12 +3314,66 @@ function () {
           case 2:
             po = _context45.sent;
 
-            if (!(po.items && po.items.length > 0)) {
-              _context45.next = 7;
+            if (!(po.order.originalSplit > 1 && po.order.currentItemSplit <= po.order.originalSplit)) {
+              _context45.next = 9;
               break;
             }
 
             _context45.next = 6;
+            return askForCategory(pageId, userId, po.order.currentItemSplit);
+
+          case 6:
+            return _context45.abrupt("return", _context45.sent);
+
+          case 9:
+            _context45.next = 11;
+            return showPartialOrder(pageId, userId, po);
+
+          case 11:
+            return _context45.abrupt("return", _context45.sent);
+
+          case 12:
+          case "end":
+            return _context45.stop();
+        }
+      }
+    }, _callee45);
+  }));
+
+  return function showOrderOrNextItem(_x131, _x132) {
+    return _ref46.apply(this, arguments);
+  };
+}();
+
+exports.showOrderOrNextItem = showOrderOrNextItem;
+
+var cancelPendingShowPartialOrder =
+/*#__PURE__*/
+function () {
+  var _ref47 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee46(pageId, userId) {
+    var po, i;
+    return regeneratorRuntime.wrap(function _callee46$(_context46) {
+      while (1) {
+        switch (_context46.prev = _context46.next) {
+          case 0:
+            _context46.next = 2;
+            return (0, _ordersController.getOrderPending)({
+              pageId: pageId,
+              userId: userId,
+              isComplete: true
+            });
+
+          case 2:
+            po = _context46.sent;
+
+            if (!(po.items && po.items.length > 0)) {
+              _context46.next = 7;
+              break;
+            }
+
+            _context46.next = 6;
             return (0, _itemsController.deletePendingItem)(pageId, po.order.id);
 
           case 6:
@@ -3340,22 +3384,22 @@ function () {
             }
 
           case 7:
-            _context45.next = 9;
+            _context46.next = 9;
             return showPartialOrder(pageId, userId, po);
 
           case 9:
-            return _context45.abrupt("return", _context45.sent);
+            return _context46.abrupt("return", _context46.sent);
 
           case 10:
           case "end":
-            return _context45.stop();
+            return _context46.stop();
         }
       }
-    }, _callee45);
+    }, _callee46);
   }));
 
-  return function cancelPendingShowPartialOrder(_x129, _x130) {
-    return _ref46.apply(this, arguments);
+  return function cancelPendingShowPartialOrder(_x133, _x134) {
+    return _ref47.apply(this, arguments);
   };
 }();
 
@@ -3364,21 +3408,21 @@ exports.cancelPendingShowPartialOrder = cancelPendingShowPartialOrder;
 var showPartialOrder =
 /*#__PURE__*/
 function () {
-  var _ref47 = _asyncToGenerator(
+  var _ref48 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee46(pageId, userId, po) {
+  regeneratorRuntime.mark(function _callee47(pageId, userId, po) {
     var total_price, _txt, _iteratorNormalCompletion6, _didIteratorError6, _iteratorError6, _iterator6, _step6, item, _txtQty, _txtSize, _options;
 
-    return regeneratorRuntime.wrap(function _callee46$(_context46) {
+    return regeneratorRuntime.wrap(function _callee47$(_context47) {
       while (1) {
-        switch (_context46.prev = _context46.next) {
+        switch (_context47.prev = _context47.next) {
           case 0:
             if (po) {
-              _context46.next = 4;
+              _context47.next = 4;
               break;
             }
 
-            _context46.next = 3;
+            _context47.next = 3;
             return (0, _ordersController.getOrderPending)({
               pageId: pageId,
               userId: userId,
@@ -3386,10 +3430,10 @@ function () {
             });
 
           case 3:
-            po = _context46.sent;
+            po = _context47.sent;
 
           case 4:
-            _context46.next = 6;
+            _context47.next = 6;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -3403,7 +3447,7 @@ function () {
             _txt = '𝗣𝗲𝗱𝗶𝗱𝗼:' + po.order.id + '\n';
 
             if (!(po.items && po.items.length > 0)) {
-              _context46.next = 33;
+              _context47.next = 33;
               break;
             }
 
@@ -3411,7 +3455,7 @@ function () {
             _iteratorNormalCompletion6 = true;
             _didIteratorError6 = false;
             _iteratorError6 = undefined;
-            _context46.prev = 13;
+            _context47.prev = 13;
 
             for (_iterator6 = po.items[Symbol.iterator](); !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
               item = _step6.value;
@@ -3427,38 +3471,38 @@ function () {
               if (item.price) total_price += item.price;
             }
 
-            _context46.next = 21;
+            _context47.next = 21;
             break;
 
           case 17:
-            _context46.prev = 17;
-            _context46.t0 = _context46["catch"](13);
+            _context47.prev = 17;
+            _context47.t0 = _context47["catch"](13);
             _didIteratorError6 = true;
-            _iteratorError6 = _context46.t0;
+            _iteratorError6 = _context47.t0;
 
           case 21:
-            _context46.prev = 21;
-            _context46.prev = 22;
+            _context47.prev = 21;
+            _context47.prev = 22;
 
             if (!_iteratorNormalCompletion6 && _iterator6["return"] != null) {
               _iterator6["return"]();
             }
 
           case 24:
-            _context46.prev = 24;
+            _context47.prev = 24;
 
             if (!_didIteratorError6) {
-              _context46.next = 27;
+              _context47.next = 27;
               break;
             }
 
             throw _iteratorError6;
 
           case 27:
-            return _context46.finish(24);
+            return _context47.finish(24);
 
           case 28:
-            return _context46.finish(21);
+            return _context47.finish(21);
 
           case 29:
             if (po.order.deliver_type && po.order.deliver_type === 'delivery') {
@@ -3469,7 +3513,7 @@ function () {
             }
 
             _txt = _txt + '𝗧𝗼𝘁𝗮𝗹: ' + (0, _util2.formatAsCurrency)(total_price) + '\n\n';
-            _context46.next = 34;
+            _context47.next = 34;
             break;
 
           case 33:
@@ -3519,7 +3563,7 @@ function () {
               event: 'STOP_ORDER_OPTIONS'
             });
 
-            return _context46.abrupt("return", {
+            return _context47.abrupt("return", {
               type: 'replies',
               text: _txt,
               options: _options
@@ -3527,14 +3571,14 @@ function () {
 
           case 40:
           case "end":
-            return _context46.stop();
+            return _context47.stop();
         }
       }
-    }, _callee46, null, [[13, 17, 21, 29], [22,, 24, 28]]);
+    }, _callee47, null, [[13, 17, 21, 29], [22,, 24, 28]]);
   }));
 
-  return function showPartialOrder(_x131, _x132, _x133) {
-    return _ref47.apply(this, arguments);
+  return function showPartialOrder(_x135, _x136, _x137) {
+    return _ref48.apply(this, arguments);
   };
 }(); // export const showOrderOrNextItem = async (pageId, userId) => {
 //     const po = await getOrderPending({ pageId, userId, isComplete: true });
@@ -3604,37 +3648,37 @@ exports.showPartialOrder = showPartialOrder;
 var showFlavorCheckItem =
 /*#__PURE__*/
 function () {
-  var _ref48 = _asyncToGenerator(
+  var _ref49 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee47(pageId, userId, data) {
+  regeneratorRuntime.mark(function _callee48(pageId, userId, data) {
     var prevAnswer, nextQuestion;
-    return regeneratorRuntime.wrap(function _callee47$(_context47) {
+    return regeneratorRuntime.wrap(function _callee48$(_context48) {
       while (1) {
-        switch (_context47.prev = _context47.next) {
+        switch (_context48.prev = _context48.next) {
           case 0:
-            _context47.next = 2;
+            _context48.next = 2;
             return showFlavor(pageId, userId, data);
 
           case 2:
-            prevAnswer = _context47.sent;
-            _context47.next = 5;
+            prevAnswer = _context48.sent;
+            _context48.next = 5;
             return showOrderOrNextItem(pageId, userId);
 
           case 5:
-            nextQuestion = _context47.sent;
+            nextQuestion = _context48.sent;
             nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
-            return _context47.abrupt("return", nextQuestion);
+            return _context48.abrupt("return", nextQuestion);
 
           case 8:
           case "end":
-            return _context47.stop();
+            return _context48.stop();
         }
       }
-    }, _callee47);
+    }, _callee48);
   }));
 
-  return function showFlavorCheckItem(_x134, _x135, _x136) {
-    return _ref48.apply(this, arguments);
+  return function showFlavorCheckItem(_x138, _x139, _x140) {
+    return _ref49.apply(this, arguments);
   };
 }();
 
@@ -3643,31 +3687,31 @@ exports.showFlavorCheckItem = showFlavorCheckItem;
 var askForPaymentType =
 /*#__PURE__*/
 function () {
-  var _ref49 = _asyncToGenerator(
+  var _ref50 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee48(pageId, userId) {
+  regeneratorRuntime.mark(function _callee49(pageId, userId) {
     var _options, storeData, _iteratorNormalCompletion7, _didIteratorError7, _iteratorError7, _iterator7, _step7, paymentType, _txt;
 
-    return regeneratorRuntime.wrap(function _callee48$(_context48) {
+    return regeneratorRuntime.wrap(function _callee49$(_context49) {
       while (1) {
-        switch (_context48.prev = _context48.next) {
+        switch (_context49.prev = _context49.next) {
           case 0:
             _options = [];
-            _context48.next = 3;
+            _context49.next = 3;
             return (0, _storesController.getStoreData)(pageId);
 
           case 3:
-            storeData = _context48.sent;
+            storeData = _context49.sent;
 
             if (!(storeData.payment_types && storeData.payment_types.length > 0)) {
-              _context48.next = 26;
+              _context49.next = 26;
               break;
             }
 
             _iteratorNormalCompletion7 = true;
             _didIteratorError7 = false;
             _iteratorError7 = undefined;
-            _context48.prev = 8;
+            _context49.prev = 8;
 
             for (_iterator7 = storeData.payment_types[Symbol.iterator](); !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
               paymentType = _step7.value;
@@ -3690,41 +3734,41 @@ function () {
               });
             }
 
-            _context48.next = 16;
+            _context49.next = 16;
             break;
 
           case 12:
-            _context48.prev = 12;
-            _context48.t0 = _context48["catch"](8);
+            _context49.prev = 12;
+            _context49.t0 = _context49["catch"](8);
             _didIteratorError7 = true;
-            _iteratorError7 = _context48.t0;
+            _iteratorError7 = _context49.t0;
 
           case 16:
-            _context48.prev = 16;
-            _context48.prev = 17;
+            _context49.prev = 16;
+            _context49.prev = 17;
 
             if (!_iteratorNormalCompletion7 && _iterator7["return"] != null) {
               _iterator7["return"]();
             }
 
           case 19:
-            _context48.prev = 19;
+            _context49.prev = 19;
 
             if (!_didIteratorError7) {
-              _context48.next = 22;
+              _context49.next = 22;
               break;
             }
 
             throw _iteratorError7;
 
           case 22:
-            return _context48.finish(19);
+            return _context49.finish(19);
 
           case 23:
-            return _context48.finish(16);
+            return _context49.finish(16);
 
           case 24:
-            _context48.next = 28;
+            _context49.next = 28;
             break;
 
           case 26:
@@ -3749,7 +3793,7 @@ function () {
             });
 
           case 28:
-            _context48.next = 30;
+            _context49.next = 30;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -3757,7 +3801,7 @@ function () {
             });
 
           case 30:
-            return _context48.abrupt("return", {
+            return _context49.abrupt("return", {
               type: 'replies',
               text: 'Qual a forma de pagamento?',
               options: _options
@@ -3765,14 +3809,14 @@ function () {
 
           case 31:
           case "end":
-            return _context48.stop();
+            return _context49.stop();
         }
       }
-    }, _callee48, null, [[8, 12, 16, 24], [17,, 19, 23]]);
+    }, _callee49, null, [[8, 12, 16, 24], [17,, 19, 23]]);
   }));
 
-  return function askForPaymentType(_x137, _x138) {
-    return _ref49.apply(this, arguments);
+  return function askForPaymentType(_x141, _x142) {
+    return _ref50.apply(this, arguments);
   };
 }();
 
@@ -3781,16 +3825,16 @@ exports.askForPaymentType = askForPaymentType;
 var showPaymentType =
 /*#__PURE__*/
 function () {
-  var _ref50 = _asyncToGenerator(
+  var _ref51 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee49(pageId, userId, data) {
+  regeneratorRuntime.mark(function _callee50(pageId, userId, data) {
     var _txtPaymentType;
 
-    return regeneratorRuntime.wrap(function _callee49$(_context49) {
+    return regeneratorRuntime.wrap(function _callee50$(_context50) {
       while (1) {
-        switch (_context49.prev = _context49.next) {
+        switch (_context50.prev = _context50.next) {
           case 0:
-            _context49.next = 2;
+            _context50.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -3801,21 +3845,21 @@ function () {
 
           case 2:
             _txtPaymentType = data.payment_type;
-            return _context49.abrupt("return", {
+            return _context50.abrupt("return", {
               type: 'text',
               text: '✅ ' + ' Forma de pagamento: ' + _txtPaymentType
             });
 
           case 4:
           case "end":
-            return _context49.stop();
+            return _context50.stop();
         }
       }
-    }, _callee49);
+    }, _callee50);
   }));
 
-  return function showPaymentType(_x139, _x140, _x141) {
-    return _ref50.apply(this, arguments);
+  return function showPaymentType(_x143, _x144, _x145) {
+    return _ref51.apply(this, arguments);
   };
 }();
 
@@ -3824,14 +3868,14 @@ exports.showPaymentType = showPaymentType;
 var askForPaymentChange =
 /*#__PURE__*/
 function () {
-  var _ref51 = _asyncToGenerator(
+  var _ref52 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee50(pageId, userId) {
+  regeneratorRuntime.mark(function _callee51(pageId, userId) {
     var _options;
 
-    return regeneratorRuntime.wrap(function _callee50$(_context50) {
+    return regeneratorRuntime.wrap(function _callee51$(_context51) {
       while (1) {
-        switch (_context50.prev = _context50.next) {
+        switch (_context51.prev = _context51.next) {
           case 0:
             _options = [];
 
@@ -3847,7 +3891,7 @@ function () {
               event: 'ORDER_PAYMENT_CHANGE'
             });
 
-            _context50.next = 5;
+            _context51.next = 5;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -3855,7 +3899,7 @@ function () {
             });
 
           case 5:
-            return _context50.abrupt("return", {
+            return _context51.abrupt("return", {
               type: 'replies',
               text: 'Precisa de troco?',
               options: _options
@@ -3863,14 +3907,14 @@ function () {
 
           case 6:
           case "end":
-            return _context50.stop();
+            return _context51.stop();
         }
       }
-    }, _callee50);
+    }, _callee51);
   }));
 
-  return function askForPaymentChange(_x142, _x143) {
-    return _ref51.apply(this, arguments);
+  return function askForPaymentChange(_x146, _x147) {
+    return _ref52.apply(this, arguments);
   };
 }();
 /**
@@ -3886,37 +3930,37 @@ exports.askForPaymentChange = askForPaymentChange;
 var showPaymentTypeAskForPaymentChange =
 /*#__PURE__*/
 function () {
-  var _ref52 = _asyncToGenerator(
+  var _ref53 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee51(pageId, userId, data) {
+  regeneratorRuntime.mark(function _callee52(pageId, userId, data) {
     var prevAnswer, nextQuestion;
-    return regeneratorRuntime.wrap(function _callee51$(_context51) {
+    return regeneratorRuntime.wrap(function _callee52$(_context52) {
       while (1) {
-        switch (_context51.prev = _context51.next) {
+        switch (_context52.prev = _context52.next) {
           case 0:
-            _context51.next = 2;
+            _context52.next = 2;
             return showPaymentType(pageId, userId, data);
 
           case 2:
-            prevAnswer = _context51.sent;
-            _context51.next = 5;
+            prevAnswer = _context52.sent;
+            _context52.next = 5;
             return askForPaymentChange(pageId, userId);
 
           case 5:
-            nextQuestion = _context51.sent;
+            nextQuestion = _context52.sent;
             nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
-            return _context51.abrupt("return", nextQuestion);
+            return _context52.abrupt("return", nextQuestion);
 
           case 8:
           case "end":
-            return _context51.stop();
+            return _context52.stop();
         }
       }
-    }, _callee51);
+    }, _callee52);
   }));
 
-  return function showPaymentTypeAskForPaymentChange(_x144, _x145, _x146) {
-    return _ref52.apply(this, arguments);
+  return function showPaymentTypeAskForPaymentChange(_x148, _x149, _x150) {
+    return _ref53.apply(this, arguments);
   };
 }();
 
@@ -3925,16 +3969,16 @@ exports.showPaymentTypeAskForPaymentChange = showPaymentTypeAskForPaymentChange;
 var showPaymentChange =
 /*#__PURE__*/
 function () {
-  var _ref53 = _asyncToGenerator(
+  var _ref54 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee52(pageId, userId, data) {
+  regeneratorRuntime.mark(function _callee53(pageId, userId, data) {
     var _txtPaymentChange;
 
-    return regeneratorRuntime.wrap(function _callee52$(_context52) {
+    return regeneratorRuntime.wrap(function _callee53$(_context53) {
       while (1) {
-        switch (_context52.prev = _context52.next) {
+        switch (_context53.prev = _context53.next) {
           case 0:
-            _context52.next = 2;
+            _context53.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -3943,21 +3987,21 @@ function () {
 
           case 2:
             _txtPaymentChange = data === 'payment_change_yes' ? 'Levaremos trocado' : 'Não precisa de troco';
-            return _context52.abrupt("return", {
+            return _context53.abrupt("return", {
               type: 'text',
               text: '✅ ' + _txtPaymentChange
             });
 
           case 4:
           case "end":
-            return _context52.stop();
+            return _context53.stop();
         }
       }
-    }, _callee52);
+    }, _callee53);
   }));
 
-  return function showPaymentChange(_x147, _x148, _x149) {
-    return _ref53.apply(this, arguments);
+  return function showPaymentChange(_x151, _x152, _x153) {
+    return _ref54.apply(this, arguments);
   };
 }();
 
@@ -3966,14 +4010,14 @@ exports.showPaymentChange = showPaymentChange;
 var askForComments =
 /*#__PURE__*/
 function () {
-  var _ref54 = _asyncToGenerator(
+  var _ref55 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee53(pageId, userId) {
+  regeneratorRuntime.mark(function _callee54(pageId, userId) {
     var _options;
 
-    return regeneratorRuntime.wrap(function _callee53$(_context53) {
+    return regeneratorRuntime.wrap(function _callee54$(_context54) {
       while (1) {
-        switch (_context53.prev = _context53.next) {
+        switch (_context54.prev = _context54.next) {
           case 0:
             _options = [];
 
@@ -3989,7 +4033,7 @@ function () {
               event: 'ORDER_COMMENTS'
             });
 
-            _context53.next = 5;
+            _context54.next = 5;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -3997,7 +4041,7 @@ function () {
             });
 
           case 5:
-            return _context53.abrupt("return", {
+            return _context54.abrupt("return", {
               type: 'replies',
               text: 'Quer enviar alguma observação sobre o pedido ou entrega?',
               options: _options
@@ -4005,14 +4049,14 @@ function () {
 
           case 6:
           case "end":
-            return _context53.stop();
+            return _context54.stop();
         }
       }
-    }, _callee53);
+    }, _callee54);
   }));
 
-  return function askForComments(_x150, _x151) {
-    return _ref54.apply(this, arguments);
+  return function askForComments(_x154, _x155) {
+    return _ref55.apply(this, arguments);
   };
 }();
 
@@ -4021,37 +4065,37 @@ exports.askForComments = askForComments;
 var showPaymentChangeAskForComments =
 /*#__PURE__*/
 function () {
-  var _ref55 = _asyncToGenerator(
+  var _ref56 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee54(pageId, userId, data) {
+  regeneratorRuntime.mark(function _callee55(pageId, userId, data) {
     var prevAnswer, nextQuestion;
-    return regeneratorRuntime.wrap(function _callee54$(_context54) {
+    return regeneratorRuntime.wrap(function _callee55$(_context55) {
       while (1) {
-        switch (_context54.prev = _context54.next) {
+        switch (_context55.prev = _context55.next) {
           case 0:
-            _context54.next = 2;
+            _context55.next = 2;
             return showPaymentChange(pageId, userId, data);
 
           case 2:
-            prevAnswer = _context54.sent;
-            _context54.next = 5;
+            prevAnswer = _context55.sent;
+            _context55.next = 5;
             return askForComments(pageId, userId);
 
           case 5:
-            nextQuestion = _context54.sent;
+            nextQuestion = _context55.sent;
             nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
-            return _context54.abrupt("return", nextQuestion);
+            return _context55.abrupt("return", nextQuestion);
 
           case 8:
           case "end":
-            return _context54.stop();
+            return _context55.stop();
         }
       }
-    }, _callee54);
+    }, _callee55);
   }));
 
-  return function showPaymentChangeAskForComments(_x152, _x153, _x154) {
-    return _ref55.apply(this, arguments);
+  return function showPaymentChangeAskForComments(_x156, _x157, _x158) {
+    return _ref56.apply(this, arguments);
   };
 }();
 
@@ -4060,21 +4104,21 @@ exports.showPaymentChangeAskForComments = showPaymentChangeAskForComments;
 var askToTypeComments =
 /*#__PURE__*/
 function () {
-  var _ref56 = _asyncToGenerator(
+  var _ref57 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee55(pageID, userID, item) {
+  regeneratorRuntime.mark(function _callee56(pageID, userID, item) {
     var _txt;
 
-    return regeneratorRuntime.wrap(function _callee55$(_context55) {
+    return regeneratorRuntime.wrap(function _callee56$(_context56) {
       while (1) {
-        switch (_context55.prev = _context55.next) {
+        switch (_context56.prev = _context56.next) {
           case 0:
             if (!item) {
-              _context55.next = 6;
+              _context56.next = 6;
               break;
             }
 
-            _context55.next = 3;
+            _context56.next = 3;
             return (0, _ordersController.updateOrder)({
               pageId: pageID,
               userId: userID,
@@ -4084,11 +4128,11 @@ function () {
 
           case 3:
             _txt = 'Diga o que gostaria de pedir: por ex. sem cebola ou ovos. Pode digitar:';
-            _context55.next = 9;
+            _context56.next = 9;
             break;
 
           case 6:
-            _context55.next = 8;
+            _context56.next = 8;
             return (0, _ordersController.updateOrder)({
               pageId: pageID,
               userId: userID,
@@ -4099,21 +4143,21 @@ function () {
             _txt = 'Digite as observações que você tem para a entrega ou pedido. Pode digitar!';
 
           case 9:
-            return _context55.abrupt("return", {
+            return _context56.abrupt("return", {
               type: 'text',
               text: _txt
             });
 
           case 10:
           case "end":
-            return _context55.stop();
+            return _context56.stop();
         }
       }
-    }, _callee55);
+    }, _callee56);
   }));
 
-  return function askToTypeComments(_x155, _x156, _x157) {
-    return _ref56.apply(this, arguments);
+  return function askToTypeComments(_x159, _x160, _x161) {
+    return _ref57.apply(this, arguments);
   };
 }();
 
@@ -4122,16 +4166,16 @@ exports.askToTypeComments = askToTypeComments;
 var showComments =
 /*#__PURE__*/
 function () {
-  var _ref57 = _asyncToGenerator(
+  var _ref58 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee56(pageId, userId, text) {
+  regeneratorRuntime.mark(function _callee57(pageId, userId, text) {
     var _txtComments;
 
-    return regeneratorRuntime.wrap(function _callee56$(_context56) {
+    return regeneratorRuntime.wrap(function _callee57$(_context57) {
       while (1) {
-        switch (_context56.prev = _context56.next) {
+        switch (_context57.prev = _context57.next) {
           case 0:
-            _context56.next = 2;
+            _context57.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -4141,21 +4185,21 @@ function () {
           case 2:
             _txtComments = 'Observações para o pedido/entrega:\n';
             _txtComments += text;
-            return _context56.abrupt("return", {
+            return _context57.abrupt("return", {
               type: 'text',
               text: '✅ ' + _txtComments
             });
 
           case 5:
           case "end":
-            return _context56.stop();
+            return _context57.stop();
         }
       }
-    }, _callee56);
+    }, _callee57);
   }));
 
-  return function showComments(_x158, _x159, _x160) {
-    return _ref57.apply(this, arguments);
+  return function showComments(_x162, _x163, _x164) {
+    return _ref58.apply(this, arguments);
   };
 }();
 
@@ -4164,16 +4208,16 @@ exports.showComments = showComments;
 var showFullOrder =
 /*#__PURE__*/
 function () {
-  var _ref58 = _asyncToGenerator(
+  var _ref59 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee57(pageId, userId) {
+  regeneratorRuntime.mark(function _callee58(pageId, userId) {
     var po, total_price, _txt, _iteratorNormalCompletion8, _didIteratorError8, _iteratorError8, _iterator8, _step8, item, _txtQty, _txtSize, _txtComments;
 
-    return regeneratorRuntime.wrap(function _callee57$(_context57) {
+    return regeneratorRuntime.wrap(function _callee58$(_context58) {
       while (1) {
-        switch (_context57.prev = _context57.next) {
+        switch (_context58.prev = _context58.next) {
           case 0:
-            _context57.next = 2;
+            _context58.next = 2;
             return (0, _ordersController.getOrderPending)({
               pageId: pageId,
               userId: userId,
@@ -4181,14 +4225,14 @@ function () {
             });
 
           case 2:
-            po = _context57.sent;
+            po = _context58.sent;
             total_price = 0;
             _txt = 'Seguem os detalhes do seu pedido:\n\n';
             _txt = _txt + '𝗣𝗲𝗱𝗶𝗱𝗼: ' + po.order.id + '\n';
             _iteratorNormalCompletion8 = true;
             _didIteratorError8 = false;
             _iteratorError8 = undefined;
-            _context57.prev = 9;
+            _context58.prev = 9;
 
             for (_iterator8 = po.items[Symbol.iterator](); !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
               item = _step8.value;
@@ -4202,38 +4246,38 @@ function () {
               }
             }
 
-            _context57.next = 17;
+            _context58.next = 17;
             break;
 
           case 13:
-            _context57.prev = 13;
-            _context57.t0 = _context57["catch"](9);
+            _context58.prev = 13;
+            _context58.t0 = _context58["catch"](9);
             _didIteratorError8 = true;
-            _iteratorError8 = _context57.t0;
+            _iteratorError8 = _context58.t0;
 
           case 17:
-            _context57.prev = 17;
-            _context57.prev = 18;
+            _context58.prev = 17;
+            _context58.prev = 18;
 
             if (!_iteratorNormalCompletion8 && _iterator8["return"] != null) {
               _iterator8["return"]();
             }
 
           case 20:
-            _context57.prev = 20;
+            _context58.prev = 20;
 
             if (!_didIteratorError8) {
-              _context57.next = 23;
+              _context58.next = 23;
               break;
             }
 
             throw _iteratorError8;
 
           case 23:
-            return _context57.finish(20);
+            return _context58.finish(20);
 
           case 24:
-            return _context57.finish(17);
+            return _context58.finish(17);
 
           case 25:
             if (po.order.deliver_type && po.order.deliver_type === 'pickup') {
@@ -4268,7 +4312,7 @@ function () {
             _txt = _txt + '𝗧𝗼𝘁𝗮𝗹: ' + (0, _util2.formatAsCurrency)(total_price) + '\n';
             _txtComments = po.order.comments || 'Sem observações';
             _txt = _txt + '𝗢𝗯𝘀𝗲𝗿𝘃𝗮𝗰̧𝗼̃𝗲𝘀: ' + _txtComments + '\n';
-            return _context57.abrupt("return", {
+            return _context58.abrupt("return", {
               type: 'text',
               text: _txt // the code below was used to ask for a final confirmation.
               // _txt = _txt + 'Posso confirmar o pedido?';
@@ -4299,14 +4343,14 @@ function () {
 
           case 35:
           case "end":
-            return _context57.stop();
+            return _context58.stop();
         }
       }
-    }, _callee57, null, [[9, 13, 17, 25], [18,, 20, 24]]);
+    }, _callee58, null, [[9, 13, 17, 25], [18,, 20, 24]]);
   }));
 
-  return function showFullOrder(_x161, _x162) {
-    return _ref58.apply(this, arguments);
+  return function showFullOrder(_x165, _x166) {
+    return _ref59.apply(this, arguments);
   };
 }();
 /**
@@ -4322,37 +4366,37 @@ exports.showFullOrder = showFullOrder;
 var showPaymentTypeAskForComments =
 /*#__PURE__*/
 function () {
-  var _ref59 = _asyncToGenerator(
+  var _ref60 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee58(pageId, userId, data) {
+  regeneratorRuntime.mark(function _callee59(pageId, userId, data) {
     var prevAnswer, nextQuestion;
-    return regeneratorRuntime.wrap(function _callee58$(_context58) {
+    return regeneratorRuntime.wrap(function _callee59$(_context59) {
       while (1) {
-        switch (_context58.prev = _context58.next) {
+        switch (_context59.prev = _context59.next) {
           case 0:
-            _context58.next = 2;
+            _context59.next = 2;
             return showPaymentType(pageId, userId, data);
 
           case 2:
-            prevAnswer = _context58.sent;
-            _context58.next = 5;
+            prevAnswer = _context59.sent;
+            _context59.next = 5;
             return askForComments(pageId, userId);
 
           case 5:
-            nextQuestion = _context58.sent;
+            nextQuestion = _context59.sent;
             nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
-            return _context58.abrupt("return", nextQuestion);
+            return _context59.abrupt("return", nextQuestion);
 
           case 8:
           case "end":
-            return _context58.stop();
+            return _context59.stop();
         }
       }
-    }, _callee58);
+    }, _callee59);
   }));
 
-  return function showPaymentTypeAskForComments(_x163, _x164, _x165) {
-    return _ref59.apply(this, arguments);
+  return function showPaymentTypeAskForComments(_x167, _x168, _x169) {
+    return _ref60.apply(this, arguments);
   };
 }();
 /**
@@ -4368,46 +4412,46 @@ exports.showPaymentTypeAskForComments = showPaymentTypeAskForComments;
 var showFullOrderConfirmOrder =
 /*#__PURE__*/
 function () {
-  var _ref60 = _asyncToGenerator(
+  var _ref61 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee59(pageId, userId, data) {
+  regeneratorRuntime.mark(function _callee60(pageId, userId, data) {
     var prevAnswer, nextAnswer;
-    return regeneratorRuntime.wrap(function _callee59$(_context59) {
+    return regeneratorRuntime.wrap(function _callee60$(_context60) {
       while (1) {
-        switch (_context59.prev = _context59.next) {
+        switch (_context60.prev = _context60.next) {
           case 0:
             if (!(data && data !== 'comments_no')) {
-              _context59.next = 3;
+              _context60.next = 3;
               break;
             }
 
-            _context59.next = 3;
+            _context60.next = 3;
             return showComments(pageId, userId, data);
 
           case 3:
-            _context59.next = 5;
+            _context60.next = 5;
             return showFullOrder(pageId, userId);
 
           case 5:
-            prevAnswer = _context59.sent;
-            _context59.next = 8;
+            prevAnswer = _context60.sent;
+            _context60.next = 8;
             return confirmOrder(pageId, userId);
 
           case 8:
-            nextAnswer = _context59.sent;
+            nextAnswer = _context60.sent;
             nextAnswer.text = prevAnswer.text + '\n\n' + nextAnswer.text;
-            return _context59.abrupt("return", nextAnswer);
+            return _context60.abrupt("return", nextAnswer);
 
           case 11:
           case "end":
-            return _context59.stop();
+            return _context60.stop();
         }
       }
-    }, _callee59);
+    }, _callee60);
   }));
 
-  return function showFullOrderConfirmOrder(_x166, _x167, _x168) {
-    return _ref60.apply(this, arguments);
+  return function showFullOrderConfirmOrder(_x170, _x171, _x172) {
+    return _ref61.apply(this, arguments);
   };
 }();
 
@@ -4416,14 +4460,14 @@ exports.showFullOrderConfirmOrder = showFullOrderConfirmOrder;
 var confirmOrder =
 /*#__PURE__*/
 function () {
-  var _ref61 = _asyncToGenerator(
+  var _ref62 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee60(pageId, userId) {
-    return regeneratorRuntime.wrap(function _callee60$(_context60) {
+  regeneratorRuntime.mark(function _callee61(pageId, userId) {
+    return regeneratorRuntime.wrap(function _callee61$(_context61) {
       while (1) {
-        switch (_context60.prev = _context60.next) {
+        switch (_context61.prev = _context61.next) {
           case 0:
-            _context60.next = 2;
+            _context61.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -4432,21 +4476,21 @@ function () {
             });
 
           case 2:
-            return _context60.abrupt("return", {
+            return _context61.abrupt("return", {
               type: 'text',
               text: '✅ Pedido Confirmado!'
             });
 
           case 3:
           case "end":
-            return _context60.stop();
+            return _context61.stop();
         }
       }
-    }, _callee60);
+    }, _callee61);
   }));
 
-  return function confirmOrder(_x169, _x170) {
-    return _ref61.apply(this, arguments);
+  return function confirmOrder(_x173, _x174) {
+    return _ref62.apply(this, arguments);
   };
 }();
 
@@ -4455,25 +4499,25 @@ exports.confirmOrder = confirmOrder;
 var askForChangeOrder =
 /*#__PURE__*/
 function () {
-  var _ref62 = _asyncToGenerator(
+  var _ref63 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee61(pageId, userId, data) {
+  regeneratorRuntime.mark(function _callee62(pageId, userId, data) {
     var confirmStep, _txt, _options, _evt;
 
-    return regeneratorRuntime.wrap(function _callee61$(_context61) {
+    return regeneratorRuntime.wrap(function _callee62$(_context62) {
       while (1) {
-        switch (_context61.prev = _context61.next) {
+        switch (_context62.prev = _context62.next) {
           case 0:
             if (data && data.hasOwnProperty('backTo')) {
               confirmStep = data.backTo;
             }
 
             if (!confirmStep) {
-              _context61.next = 6;
+              _context62.next = 6;
               break;
             }
 
-            _context61.next = 4;
+            _context62.next = 4;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -4482,11 +4526,11 @@ function () {
             });
 
           case 4:
-            _context61.next = 8;
+            _context62.next = 8;
             break;
 
           case 6:
-            _context61.next = 8;
+            _context62.next = 8;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -4523,7 +4567,7 @@ function () {
               });
             }
 
-            return _context61.abrupt("return", {
+            return _context62.abrupt("return", {
               type: 'replies',
               text: _txt,
               options: _options
@@ -4531,14 +4575,14 @@ function () {
 
           case 14:
           case "end":
-            return _context61.stop();
+            return _context62.stop();
         }
       }
-    }, _callee61);
+    }, _callee62);
   }));
 
-  return function askForChangeOrder(_x171, _x172, _x173) {
-    return _ref62.apply(this, arguments);
+  return function askForChangeOrder(_x175, _x176, _x177) {
+    return _ref63.apply(this, arguments);
   };
 }();
 
@@ -4547,16 +4591,16 @@ exports.askForChangeOrder = askForChangeOrder;
 var askForOptionsToChange =
 /*#__PURE__*/
 function () {
-  var _ref63 = _asyncToGenerator(
+  var _ref64 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee62(pageId, userId, item) {
+  regeneratorRuntime.mark(function _callee63(pageId, userId, item) {
     var _txt, _options;
 
-    return regeneratorRuntime.wrap(function _callee62$(_context62) {
+    return regeneratorRuntime.wrap(function _callee63$(_context63) {
       while (1) {
-        switch (_context62.prev = _context62.next) {
+        switch (_context63.prev = _context63.next) {
           case 0:
-            _context62.prev = 0;
+            _context63.prev = 0;
             _txt = 'Ok, o que você gostaria de fazer?';
             _options = [];
 
@@ -4572,30 +4616,30 @@ function () {
               event: 'ORDER_CANCEL_ITEM'
             });
 
-            return _context62.abrupt("return", {
+            return _context63.abrupt("return", {
               type: 'replies',
               text: _txt,
               options: _options
             });
 
           case 8:
-            _context62.prev = 8;
-            _context62.t0 = _context62["catch"](0);
+            _context63.prev = 8;
+            _context63.t0 = _context63["catch"](0);
             console.error({
-              askForOptionsToChangeErr: _context62.t0
+              askForOptionsToChangeErr: _context63.t0
             });
-            throw _context62.t0;
+            throw _context63.t0;
 
           case 12:
           case "end":
-            return _context62.stop();
+            return _context63.stop();
         }
       }
-    }, _callee62, null, [[0, 8]]);
+    }, _callee63, null, [[0, 8]]);
   }));
 
-  return function askForOptionsToChange(_x174, _x175, _x176) {
-    return _ref63.apply(this, arguments);
+  return function askForOptionsToChange(_x178, _x179, _x180) {
+    return _ref64.apply(this, arguments);
   };
 }();
 
@@ -4604,16 +4648,16 @@ exports.askForOptionsToChange = askForOptionsToChange;
 var askForSpecificItem =
 /*#__PURE__*/
 function () {
-  var _ref64 = _asyncToGenerator(
+  var _ref65 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee63(pageId, userId, data) {
+  regeneratorRuntime.mark(function _callee64(pageId, userId, data) {
     var pendingOrder, _options, _itemId, _iteratorNormalCompletion9, _didIteratorError9, _iteratorError9, _iterator9, _step9, item, _txt, _sizeSplit, _txtHead;
 
-    return regeneratorRuntime.wrap(function _callee63$(_context63) {
+    return regeneratorRuntime.wrap(function _callee64$(_context64) {
       while (1) {
-        switch (_context63.prev = _context63.next) {
+        switch (_context64.prev = _context64.next) {
           case 0:
-            _context63.next = 2;
+            _context64.next = 2;
             return (0, _ordersController.getOrderPending)({
               pageId: pageId,
               userId: userId,
@@ -4621,10 +4665,10 @@ function () {
             });
 
           case 2:
-            pendingOrder = _context63.sent;
+            pendingOrder = _context64.sent;
 
             if (!(pendingOrder.items && pendingOrder.items.length > 1)) {
-              _context63.next = 30;
+              _context64.next = 30;
               break;
             }
 
@@ -4633,7 +4677,7 @@ function () {
             _iteratorNormalCompletion9 = true;
             _didIteratorError9 = false;
             _iteratorError9 = undefined;
-            _context63.prev = 9;
+            _context64.prev = 9;
 
             for (_iterator9 = pendingOrder.items[Symbol.iterator](); !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
               item = _step9.value;
@@ -4674,50 +4718,50 @@ function () {
               }
             }
 
-            _context63.next = 17;
+            _context64.next = 17;
             break;
 
           case 13:
-            _context63.prev = 13;
-            _context63.t0 = _context63["catch"](9);
+            _context64.prev = 13;
+            _context64.t0 = _context64["catch"](9);
             _didIteratorError9 = true;
-            _iteratorError9 = _context63.t0;
+            _iteratorError9 = _context64.t0;
 
           case 17:
-            _context63.prev = 17;
-            _context63.prev = 18;
+            _context64.prev = 17;
+            _context64.prev = 18;
 
             if (!_iteratorNormalCompletion9 && _iterator9["return"] != null) {
               _iterator9["return"]();
             }
 
           case 20:
-            _context63.prev = 20;
+            _context64.prev = 20;
 
             if (!_didIteratorError9) {
-              _context63.next = 23;
+              _context64.next = 23;
               break;
             }
 
             throw _iteratorError9;
 
           case 23:
-            return _context63.finish(20);
+            return _context64.finish(20);
 
           case 24:
-            return _context63.finish(17);
+            return _context64.finish(17);
 
           case 25:
             _txtHead = 'Escolha qual dos itens deseja ';
             if (data && data.option === 'change_item') _txtHead = _txtHead + 'alterar:';else _txtHead = _txtHead + 'remover:';
-            return _context63.abrupt("return", {
+            return _context64.abrupt("return", {
               type: 'replies',
               text: _txtHead,
               options: _options
             });
 
           case 30:
-            _context63.next = 32;
+            _context64.next = 32;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -4725,22 +4769,22 @@ function () {
             });
 
           case 32:
-            _context63.next = 34;
+            _context64.next = 34;
             return askForOptionsToChange(pageId, userId, pendingOrder.items[0]);
 
           case 34:
-            return _context63.abrupt("return", _context63.sent);
+            return _context64.abrupt("return", _context64.sent);
 
           case 35:
           case "end":
-            return _context63.stop();
+            return _context64.stop();
         }
       }
-    }, _callee63, null, [[9, 13, 17, 25], [18,, 20, 24]]);
+    }, _callee64, null, [[9, 13, 17, 25], [18,, 20, 24]]);
   }));
 
-  return function askForSpecificItem(_x177, _x178, _x179) {
-    return _ref64.apply(this, arguments);
+  return function askForSpecificItem(_x181, _x182, _x183) {
+    return _ref65.apply(this, arguments);
   };
 }();
 /**
@@ -4755,21 +4799,21 @@ exports.askForSpecificItem = askForSpecificItem;
 var askForWantBeverage =
 /*#__PURE__*/
 function () {
-  var _ref65 = _asyncToGenerator(
+  var _ref66 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee64(pageId, userId) {
+  regeneratorRuntime.mark(function _callee65(pageId, userId) {
     var pendingOrder, noBeverage, _txt, _options;
 
-    return regeneratorRuntime.wrap(function _callee64$(_context64) {
+    return regeneratorRuntime.wrap(function _callee65$(_context65) {
       while (1) {
-        switch (_context64.prev = _context64.next) {
+        switch (_context65.prev = _context65.next) {
           case 0:
             (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
               waitingFor: 'want_beverage'
             });
-            _context64.next = 3;
+            _context65.next = 3;
             return (0, _ordersController.getOrderPending)({
               pageId: pageId,
               userId: userId,
@@ -4777,11 +4821,11 @@ function () {
             });
 
           case 3:
-            pendingOrder = _context64.sent;
+            pendingOrder = _context65.sent;
             noBeverage = pendingOrder.order.no_beverage;
 
             if (!(typeof noBeverage === 'undefined')) {
-              _context64.next = 13;
+              _context65.next = 13;
               break;
             }
 
@@ -4800,25 +4844,25 @@ function () {
               event: 'ORDER_CONFIRM_BEVERAGE'
             });
 
-            return _context64.abrupt("return", {
+            return _context65.abrupt("return", {
               type: 'replies',
               text: _txt,
               options: _options
             });
 
           case 13:
-            return _context64.abrupt("return", showFullOrder(pageId, userId));
+            return _context65.abrupt("return", showFullOrder(pageId, userId));
 
           case 14:
           case "end":
-            return _context64.stop();
+            return _context65.stop();
         }
       }
-    }, _callee64);
+    }, _callee65);
   }));
 
-  return function askForWantBeverage(_x180, _x181) {
-    return _ref65.apply(this, arguments);
+  return function askForWantBeverage(_x184, _x185) {
+    return _ref66.apply(this, arguments);
   };
 }();
 /**
@@ -4834,16 +4878,16 @@ exports.askForWantBeverage = askForWantBeverage;
 var askForBeverages =
 /*#__PURE__*/
 function () {
-  var _ref66 = _asyncToGenerator(
+  var _ref67 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee65(pageId, userId, multiple) {
+  regeneratorRuntime.mark(function _callee66(pageId, userId, multiple) {
     var beveragesArr, _rangeIni, _rangeEnd, _options, i, _bev, _data, buttons, _subtext, buttonsOpt, _data2, _buttons3, _subtext2;
 
-    return regeneratorRuntime.wrap(function _callee65$(_context65) {
+    return regeneratorRuntime.wrap(function _callee66$(_context66) {
       while (1) {
-        switch (_context65.prev = _context65.next) {
+        switch (_context66.prev = _context66.next) {
           case 0:
-            _context65.next = 2;
+            _context66.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -4852,11 +4896,11 @@ function () {
             });
 
           case 2:
-            _context65.next = 4;
+            _context66.next = 4;
             return (0, _beveragesController.getBeverages)(pageId);
 
           case 4:
-            beveragesArr = _context65.sent;
+            beveragesArr = _context66.sent;
             _rangeIni = (multiple - 1) * 4;
             _rangeEnd = multiple * 4;
             _options = [];
@@ -4922,7 +4966,7 @@ function () {
               });
             }
 
-            return _context65.abrupt("return", {
+            return _context66.abrupt("return", {
               type: 'fulllist',
               text: 'Selecione uma bebida:',
               options: _options
@@ -4930,14 +4974,14 @@ function () {
 
           case 11:
           case "end":
-            return _context65.stop();
+            return _context66.stop();
         }
       }
-    }, _callee65);
+    }, _callee66);
   }));
 
-  return function askForBeverages(_x182, _x183, _x184) {
-    return _ref66.apply(this, arguments);
+  return function askForBeverages(_x186, _x187, _x188) {
+    return _ref67.apply(this, arguments);
   };
 }();
 /**
@@ -4953,14 +4997,14 @@ exports.askForBeverages = askForBeverages;
 var showNoBeverage =
 /*#__PURE__*/
 function () {
-  var _ref67 = _asyncToGenerator(
+  var _ref68 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee66(pageId, userId, data) {
-    return regeneratorRuntime.wrap(function _callee66$(_context66) {
+  regeneratorRuntime.mark(function _callee67(pageId, userId, data) {
+    return regeneratorRuntime.wrap(function _callee67$(_context67) {
       while (1) {
-        switch (_context66.prev = _context66.next) {
+        switch (_context67.prev = _context67.next) {
           case 0:
-            _context66.next = 2;
+            _context67.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -4969,21 +5013,21 @@ function () {
             });
 
           case 2:
-            return _context66.abrupt("return", {
+            return _context67.abrupt("return", {
               type: 'text',
               text: '❌ ' + ' Sem bebida para o seu pedido. '
             });
 
           case 3:
           case "end":
-            return _context66.stop();
+            return _context67.stop();
         }
       }
-    }, _callee66);
+    }, _callee67);
   }));
 
-  return function showNoBeverage(_x185, _x186, _x187) {
-    return _ref67.apply(this, arguments);
+  return function showNoBeverage(_x189, _x190, _x191) {
+    return _ref68.apply(this, arguments);
   };
 }();
 /**
@@ -4999,14 +5043,14 @@ exports.showNoBeverage = showNoBeverage;
 var showBeverage =
 /*#__PURE__*/
 function () {
-  var _ref68 = _asyncToGenerator(
+  var _ref69 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee67(pageId, userId, data) {
-    return regeneratorRuntime.wrap(function _callee67$(_context67) {
+  regeneratorRuntime.mark(function _callee68(pageId, userId, data) {
+    return regeneratorRuntime.wrap(function _callee68$(_context68) {
       while (1) {
-        switch (_context67.prev = _context67.next) {
+        switch (_context68.prev = _context68.next) {
           case 0:
-            _context67.next = 2;
+            _context68.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -5019,21 +5063,21 @@ function () {
             });
 
           case 2:
-            return _context67.abrupt("return", {
+            return _context68.abrupt("return", {
               type: 'text',
               text: '✅ ' + '1 Bebida: ' + data.beverage
             });
 
           case 3:
           case "end":
-            return _context67.stop();
+            return _context68.stop();
         }
       }
-    }, _callee67);
+    }, _callee68);
   }));
 
-  return function showBeverage(_x188, _x189, _x190) {
-    return _ref68.apply(this, arguments);
+  return function showBeverage(_x192, _x193, _x194) {
+    return _ref69.apply(this, arguments);
   };
 }();
 /**
@@ -5049,52 +5093,6 @@ exports.showBeverage = showBeverage;
 var showBeverageAskForPaymentType =
 /*#__PURE__*/
 function () {
-  var _ref69 = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee68(pageId, userId, data) {
-    var prevAnswer, nextQuestion;
-    return regeneratorRuntime.wrap(function _callee68$(_context68) {
-      while (1) {
-        switch (_context68.prev = _context68.next) {
-          case 0:
-            _context68.next = 2;
-            return showBeverage(pageId, userId, data);
-
-          case 2:
-            prevAnswer = _context68.sent;
-            _context68.next = 5;
-            return askForPaymentType(pageId, userId);
-
-          case 5:
-            nextQuestion = _context68.sent;
-            nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
-            return _context68.abrupt("return", nextQuestion);
-
-          case 8:
-          case "end":
-            return _context68.stop();
-        }
-      }
-    }, _callee68);
-  }));
-
-  return function showBeverageAskForPaymentType(_x191, _x192, _x193) {
-    return _ref69.apply(this, arguments);
-  };
-}();
-/**
- * Used on Whatsapp
- * @param {*} pageId
- * @param {*} userId
- * @param {*} data
- */
-
-
-exports.showBeverageAskForPaymentType = showBeverageAskForPaymentType;
-
-var showNoBeverageAskForPaymentType =
-/*#__PURE__*/
-function () {
   var _ref70 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee69(pageId, userId, data) {
@@ -5104,7 +5102,7 @@ function () {
         switch (_context69.prev = _context69.next) {
           case 0:
             _context69.next = 2;
-            return showNoBeverage(pageId, userId, data);
+            return showBeverage(pageId, userId, data);
 
           case 2:
             prevAnswer = _context69.sent;
@@ -5124,8 +5122,54 @@ function () {
     }, _callee69);
   }));
 
-  return function showNoBeverageAskForPaymentType(_x194, _x195, _x196) {
+  return function showBeverageAskForPaymentType(_x195, _x196, _x197) {
     return _ref70.apply(this, arguments);
+  };
+}();
+/**
+ * Used on Whatsapp
+ * @param {*} pageId
+ * @param {*} userId
+ * @param {*} data
+ */
+
+
+exports.showBeverageAskForPaymentType = showBeverageAskForPaymentType;
+
+var showNoBeverageAskForPaymentType =
+/*#__PURE__*/
+function () {
+  var _ref71 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee70(pageId, userId, data) {
+    var prevAnswer, nextQuestion;
+    return regeneratorRuntime.wrap(function _callee70$(_context70) {
+      while (1) {
+        switch (_context70.prev = _context70.next) {
+          case 0:
+            _context70.next = 2;
+            return showNoBeverage(pageId, userId, data);
+
+          case 2:
+            prevAnswer = _context70.sent;
+            _context70.next = 5;
+            return askForPaymentType(pageId, userId);
+
+          case 5:
+            nextQuestion = _context70.sent;
+            nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
+            return _context70.abrupt("return", nextQuestion);
+
+          case 8:
+          case "end":
+            return _context70.stop();
+        }
+      }
+    }, _callee70);
+  }));
+
+  return function showNoBeverageAskForPaymentType(_x198, _x199, _x200) {
+    return _ref71.apply(this, arguments);
   };
 }();
 /**
@@ -5141,25 +5185,25 @@ exports.showNoBeverageAskForPaymentType = showNoBeverageAskForPaymentType;
 var changeItem =
 /*#__PURE__*/
 function () {
-  var _ref71 = _asyncToGenerator(
+  var _ref72 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee70(pageId, userId, item) {
-    return regeneratorRuntime.wrap(function _callee70$(_context70) {
+  regeneratorRuntime.mark(function _callee71(pageId, userId, item) {
+    return regeneratorRuntime.wrap(function _callee71$(_context71) {
       while (1) {
-        switch (_context70.prev = _context70.next) {
+        switch (_context71.prev = _context71.next) {
           case 0:
-            return _context70.abrupt("return", askToTypeComments(pageId, userId, item));
+            return _context71.abrupt("return", askToTypeComments(pageId, userId, item));
 
           case 1:
           case "end":
-            return _context70.stop();
+            return _context71.stop();
         }
       }
-    }, _callee70);
+    }, _callee71);
   }));
 
-  return function changeItem(_x197, _x198, _x199) {
-    return _ref71.apply(this, arguments);
+  return function changeItem(_x201, _x202, _x203) {
+    return _ref72.apply(this, arguments);
   };
 }();
 
@@ -5168,57 +5212,10 @@ exports.changeItem = changeItem;
 var showCommentsItem =
 /*#__PURE__*/
 function () {
-  var _ref72 = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee71(pageId, userId, data) {
-    var po;
-    return regeneratorRuntime.wrap(function _callee71$(_context71) {
-      while (1) {
-        switch (_context71.prev = _context71.next) {
-          case 0:
-            _context71.next = 2;
-            return (0, _ordersController.getOrderPending)({
-              pageId: pageId,
-              userId: userId,
-              isComplete: false
-            });
-
-          case 2:
-            po = _context71.sent;
-
-            if (po && po.order && po.order.waitingFor === 'typed_comments_item') {
-              // without await to run later.
-              (0, _itemsController.updateItemDirect)(pageId, po.order.id, po.order.waitingForData, data);
-            }
-
-            _context71.next = 6;
-            return showPartialOrder(pageId, userId);
-
-          case 6:
-            return _context71.abrupt("return", _context71.sent);
-
-          case 7:
-          case "end":
-            return _context71.stop();
-        }
-      }
-    }, _callee71);
-  }));
-
-  return function showCommentsItem(_x200, _x201, _x202) {
-    return _ref72.apply(this, arguments);
-  };
-}();
-
-exports.showCommentsItem = showCommentsItem;
-
-var cancelItem =
-/*#__PURE__*/
-function () {
   var _ref73 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee72(pageId, userId, item) {
-    var po, result1;
+  regeneratorRuntime.mark(function _callee72(pageId, userId, data) {
+    var po;
     return regeneratorRuntime.wrap(function _callee72$(_context72) {
       while (1) {
         switch (_context72.prev = _context72.next) {
@@ -5232,32 +5229,19 @@ function () {
 
           case 2:
             po = _context72.sent;
-            _context72.next = 5;
-            return (0, _itemsController.deleteItem)(pageId, po.order.id, item.itemId);
 
-          case 5:
-            result1 = _context72.sent;
-            console.info('cancelItem:', result1); // if (result1) {
-
-            if (!(po.order.backToConfirmation === 'full_confirmation')) {
-              _context72.next = 13;
-              break;
+            if (po && po.order && po.order.waitingFor === 'typed_comments_item') {
+              // without await to run later.
+              (0, _itemsController.updateItemDirect)(pageId, po.order.id, po.order.waitingForData, data);
             }
 
-            _context72.next = 10;
-            return showFullOrder(pageId, userId);
-
-          case 10:
-            return _context72.abrupt("return", _context72.sent);
-
-          case 13:
-            _context72.next = 15;
+            _context72.next = 6;
             return showPartialOrder(pageId, userId);
 
-          case 15:
+          case 6:
             return _context72.abrupt("return", _context72.sent);
 
-          case 16:
+          case 7:
           case "end":
             return _context72.stop();
         }
@@ -5265,8 +5249,68 @@ function () {
     }, _callee72);
   }));
 
-  return function cancelItem(_x203, _x204, _x205) {
+  return function showCommentsItem(_x204, _x205, _x206) {
     return _ref73.apply(this, arguments);
+  };
+}();
+
+exports.showCommentsItem = showCommentsItem;
+
+var cancelItem =
+/*#__PURE__*/
+function () {
+  var _ref74 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee73(pageId, userId, item) {
+    var po, result1;
+    return regeneratorRuntime.wrap(function _callee73$(_context73) {
+      while (1) {
+        switch (_context73.prev = _context73.next) {
+          case 0:
+            _context73.next = 2;
+            return (0, _ordersController.getOrderPending)({
+              pageId: pageId,
+              userId: userId,
+              isComplete: false
+            });
+
+          case 2:
+            po = _context73.sent;
+            _context73.next = 5;
+            return (0, _itemsController.deleteItem)(pageId, po.order.id, item.itemId);
+
+          case 5:
+            result1 = _context73.sent;
+            console.info('cancelItem:', result1); // if (result1) {
+
+            if (!(po.order.backToConfirmation === 'full_confirmation')) {
+              _context73.next = 13;
+              break;
+            }
+
+            _context73.next = 10;
+            return showFullOrder(pageId, userId);
+
+          case 10:
+            return _context73.abrupt("return", _context73.sent);
+
+          case 13:
+            _context73.next = 15;
+            return showPartialOrder(pageId, userId);
+
+          case 15:
+            return _context73.abrupt("return", _context73.sent);
+
+          case 16:
+          case "end":
+            return _context73.stop();
+        }
+      }
+    }, _callee73);
+  }));
+
+  return function cancelItem(_x207, _x208, _x209) {
+    return _ref74.apply(this, arguments);
   };
 }();
 
@@ -5275,29 +5319,29 @@ exports.cancelItem = cancelItem;
 var updateItemAskOptions =
 /*#__PURE__*/
 function () {
-  var _ref74 = _asyncToGenerator(
+  var _ref75 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee73(pageId, userId, item) {
-    return regeneratorRuntime.wrap(function _callee73$(_context73) {
+  regeneratorRuntime.mark(function _callee74(pageId, userId, item) {
+    return regeneratorRuntime.wrap(function _callee74$(_context74) {
       while (1) {
-        switch (_context73.prev = _context73.next) {
+        switch (_context74.prev = _context74.next) {
           case 0:
-            _context73.next = 2;
+            _context74.next = 2;
             return askForOptionsToChange(pageId, userId, item);
 
           case 2:
-            return _context73.abrupt("return", _context73.sent);
+            return _context74.abrupt("return", _context74.sent);
 
           case 3:
           case "end":
-            return _context73.stop();
+            return _context74.stop();
         }
       }
-    }, _callee73);
+    }, _callee74);
   }));
 
-  return function updateItemAskOptions(_x206, _x207, _x208) {
-    return _ref74.apply(this, arguments);
+  return function updateItemAskOptions(_x210, _x211, _x212) {
+    return _ref75.apply(this, arguments);
   };
 }();
 
@@ -5306,51 +5350,10 @@ exports.updateItemAskOptions = updateItemAskOptions;
 var sendShippingNotification =
 /*#__PURE__*/
 function () {
-  var _ref75 = _asyncToGenerator(
+  var _ref76 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee74(pageId, userId, orderId) {
-    var _ref76, accessToken, _txt, out;
-
-    return regeneratorRuntime.wrap(function _callee74$(_context74) {
-      while (1) {
-        switch (_context74.prev = _context74.next) {
-          case 0:
-            _context74.next = 2;
-            return (0, _pagesController.getOnePageToken)(pageId);
-
-          case 2:
-            _ref76 = _context74.sent;
-            accessToken = _ref76.accessToken;
-            _txt = 'O seu pedido número ' + orderId + ' acabou de sair para entrega. Bom apetite!';
-            out = new _facebookMessengerBot.Elements();
-            out.add({
-              text: _txt
-            });
-            _context74.next = 9;
-            return _facebookMessengerBot.Bot.send_message_tag(accessToken, userId, out);
-
-          case 9:
-          case "end":
-            return _context74.stop();
-        }
-      }
-    }, _callee74);
-  }));
-
-  return function sendShippingNotification(_x209, _x210, _x211) {
-    return _ref75.apply(this, arguments);
-  };
-}();
-
-exports.sendShippingNotification = sendShippingNotification;
-
-var sendRejectionNotification =
-/*#__PURE__*/
-function () {
-  var _ref77 = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee75(pageId, userId, orderId, rejectionExplanation) {
-    var _ref78, accessToken, _txt, out;
+  regeneratorRuntime.mark(function _callee75(pageId, userId, orderId) {
+    var _ref77, accessToken, _txt, out;
 
     return regeneratorRuntime.wrap(function _callee75$(_context75) {
       while (1) {
@@ -5360,9 +5363,9 @@ function () {
             return (0, _pagesController.getOnePageToken)(pageId);
 
           case 2:
-            _ref78 = _context75.sent;
-            accessToken = _ref78.accessToken;
-            _txt = 'Infelizmente não poderemos atender o seu pedido número ' + orderId + '. Segue o motivo: ' + rejectionExplanation;
+            _ref77 = _context75.sent;
+            accessToken = _ref77.accessToken;
+            _txt = 'O seu pedido número ' + orderId + ' acabou de sair para entrega. Bom apetite!';
             out = new _facebookMessengerBot.Elements();
             out.add({
               text: _txt
@@ -5378,8 +5381,49 @@ function () {
     }, _callee75);
   }));
 
-  return function sendRejectionNotification(_x212, _x213, _x214, _x215) {
-    return _ref77.apply(this, arguments);
+  return function sendShippingNotification(_x213, _x214, _x215) {
+    return _ref76.apply(this, arguments);
+  };
+}();
+
+exports.sendShippingNotification = sendShippingNotification;
+
+var sendRejectionNotification =
+/*#__PURE__*/
+function () {
+  var _ref78 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee76(pageId, userId, orderId, rejectionExplanation) {
+    var _ref79, accessToken, _txt, out;
+
+    return regeneratorRuntime.wrap(function _callee76$(_context76) {
+      while (1) {
+        switch (_context76.prev = _context76.next) {
+          case 0:
+            _context76.next = 2;
+            return (0, _pagesController.getOnePageToken)(pageId);
+
+          case 2:
+            _ref79 = _context76.sent;
+            accessToken = _ref79.accessToken;
+            _txt = 'Infelizmente não poderemos atender o seu pedido número ' + orderId + '. Segue o motivo: ' + rejectionExplanation;
+            out = new _facebookMessengerBot.Elements();
+            out.add({
+              text: _txt
+            });
+            _context76.next = 9;
+            return _facebookMessengerBot.Bot.send_message_tag(accessToken, userId, out);
+
+          case 9:
+          case "end":
+            return _context76.stop();
+        }
+      }
+    }, _callee76);
+  }));
+
+  return function sendRejectionNotification(_x216, _x217, _x218, _x219) {
+    return _ref78.apply(this, arguments);
   };
 }();
 /**
@@ -5394,39 +5438,39 @@ exports.sendRejectionNotification = sendRejectionNotification;
 var cancelPendingOrder =
 /*#__PURE__*/
 function () {
-  var _ref79 = _asyncToGenerator(
+  var _ref80 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee76(pageId, userId) {
+  regeneratorRuntime.mark(function _callee77(pageId, userId) {
     var out;
-    return regeneratorRuntime.wrap(function _callee76$(_context76) {
+    return regeneratorRuntime.wrap(function _callee77$(_context77) {
       while (1) {
-        switch (_context76.prev = _context76.next) {
+        switch (_context77.prev = _context77.next) {
           case 0:
-            _context76.next = 2;
+            _context77.next = 2;
             return (0, _ordersController.cancelOrder)({
               pageId: pageId,
               userId: userId
             });
 
           case 2:
-            _context76.next = 4;
+            _context77.next = 4;
             return sendMainMenu();
 
           case 4:
-            out = _context76.sent;
+            out = _context77.sent;
             out.text = '❌ Pedido Cancelado!' + '\n\n' + out.text;
-            return _context76.abrupt("return", out);
+            return _context77.abrupt("return", out);
 
           case 7:
           case "end":
-            return _context76.stop();
+            return _context77.stop();
         }
       }
-    }, _callee76);
+    }, _callee77);
   }));
 
-  return function cancelPendingOrder(_x216, _x217) {
-    return _ref79.apply(this, arguments);
+  return function cancelPendingOrder(_x220, _x221) {
+    return _ref80.apply(this, arguments);
   };
 }();
 
@@ -5435,55 +5479,16 @@ exports.cancelPendingOrder = cancelPendingOrder;
 var showDeliverAskForCategory =
 /*#__PURE__*/
 function () {
-  var _ref80 = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee77(pageId, userId, data, user, source) {
-    var prevAnswer, nextQuestion;
-    return regeneratorRuntime.wrap(function _callee77$(_context77) {
-      while (1) {
-        switch (_context77.prev = _context77.next) {
-          case 0:
-            _context77.next = 2;
-            return showDeliver(pageId, userId, data, user, source);
-
-          case 2:
-            prevAnswer = _context77.sent;
-            _context77.next = 5;
-            return askForCategory(pageId, userId);
-
-          case 5:
-            nextQuestion = _context77.sent;
-            nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
-            return _context77.abrupt("return", nextQuestion);
-
-          case 8:
-          case "end":
-            return _context77.stop();
-        }
-      }
-    }, _callee77);
-  }));
-
-  return function showDeliverAskForCategory(_x218, _x219, _x220, _x221, _x222) {
-    return _ref80.apply(this, arguments);
-  };
-}();
-
-exports.showDeliverAskForCategory = showDeliverAskForCategory;
-
-var showAddressAskForCategory =
-/*#__PURE__*/
-function () {
   var _ref81 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee78(pageId, userId, addrData, source) {
+  regeneratorRuntime.mark(function _callee78(pageId, userId, data, user, source) {
     var prevAnswer, nextQuestion;
     return regeneratorRuntime.wrap(function _callee78$(_context78) {
       while (1) {
         switch (_context78.prev = _context78.next) {
           case 0:
             _context78.next = 2;
-            return showAddress(pageId, userId, addrData, source);
+            return showDeliver(pageId, userId, data, user, source);
 
           case 2:
             prevAnswer = _context78.sent;
@@ -5503,8 +5508,47 @@ function () {
     }, _callee78);
   }));
 
-  return function showAddressAskForCategory(_x223, _x224, _x225, _x226) {
+  return function showDeliverAskForCategory(_x222, _x223, _x224, _x225, _x226) {
     return _ref81.apply(this, arguments);
+  };
+}();
+
+exports.showDeliverAskForCategory = showDeliverAskForCategory;
+
+var showAddressAskForCategory =
+/*#__PURE__*/
+function () {
+  var _ref82 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee79(pageId, userId, addrData, source) {
+    var prevAnswer, nextQuestion;
+    return regeneratorRuntime.wrap(function _callee79$(_context79) {
+      while (1) {
+        switch (_context79.prev = _context79.next) {
+          case 0:
+            _context79.next = 2;
+            return showAddress(pageId, userId, addrData, source);
+
+          case 2:
+            prevAnswer = _context79.sent;
+            _context79.next = 5;
+            return askForCategory(pageId, userId);
+
+          case 5:
+            nextQuestion = _context79.sent;
+            nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
+            return _context79.abrupt("return", nextQuestion);
+
+          case 8:
+          case "end":
+            return _context79.stop();
+        }
+      }
+    }, _callee79);
+  }));
+
+  return function showAddressAskForCategory(_x227, _x228, _x229, _x230) {
+    return _ref82.apply(this, arguments);
   };
 }();
 /**
@@ -5521,16 +5565,16 @@ exports.showAddressAskForCategory = showAddressAskForCategory;
 var askForCategory =
 /*#__PURE__*/
 function () {
-  var _ref82 = _asyncToGenerator(
+  var _ref83 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee79(pageId, userId, split) {
+  regeneratorRuntime.mark(function _callee80(pageId, userId, split) {
     var categories, _txt, _options, _iteratorNormalCompletion10, _didIteratorError10, _iteratorError10, _iterator10, _step10, item, _data, _buttons4, buttons;
 
-    return regeneratorRuntime.wrap(function _callee79$(_context79) {
+    return regeneratorRuntime.wrap(function _callee80$(_context80) {
       while (1) {
-        switch (_context79.prev = _context79.next) {
+        switch (_context80.prev = _context80.next) {
           case 0:
-            _context79.next = 2;
+            _context80.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -5539,11 +5583,11 @@ function () {
             });
 
           case 2:
-            _context79.next = 4;
+            _context80.next = 4;
             return (0, _categoriesController.getCategories)(pageId);
 
           case 4:
-            categories = _context79.sent;
+            categories = _context80.sent;
             _txt = '';
 
             if (split) {
@@ -5556,23 +5600,23 @@ function () {
             _iteratorNormalCompletion10 = true;
             _didIteratorError10 = false;
             _iteratorError10 = undefined;
-            _context79.prev = 11;
+            _context80.prev = 11;
             _iterator10 = categories[Symbol.iterator]();
 
           case 13:
             if (_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done) {
-              _context79.next = 23;
+              _context80.next = 23;
               break;
             }
 
             item = _step10.value;
 
             if (!(split && !item.is_pizza)) {
-              _context79.next = 17;
+              _context80.next = 17;
               break;
             }
 
-            return _context79.abrupt("continue", 20);
+            return _context80.abrupt("continue", 20);
 
           case 17:
             _data = {
@@ -5593,42 +5637,42 @@ function () {
 
           case 20:
             _iteratorNormalCompletion10 = true;
-            _context79.next = 13;
+            _context80.next = 13;
             break;
 
           case 23:
-            _context79.next = 29;
+            _context80.next = 29;
             break;
 
           case 25:
-            _context79.prev = 25;
-            _context79.t0 = _context79["catch"](11);
+            _context80.prev = 25;
+            _context80.t0 = _context80["catch"](11);
             _didIteratorError10 = true;
-            _iteratorError10 = _context79.t0;
+            _iteratorError10 = _context80.t0;
 
           case 29:
-            _context79.prev = 29;
-            _context79.prev = 30;
+            _context80.prev = 29;
+            _context80.prev = 30;
 
             if (!_iteratorNormalCompletion10 && _iterator10["return"] != null) {
               _iterator10["return"]();
             }
 
           case 32:
-            _context79.prev = 32;
+            _context80.prev = 32;
 
             if (!_didIteratorError10) {
-              _context79.next = 35;
+              _context80.next = 35;
               break;
             }
 
             throw _iteratorError10;
 
           case 35:
-            return _context79.finish(32);
+            return _context80.finish(32);
 
           case 36:
-            return _context79.finish(29);
+            return _context80.finish(29);
 
           case 37:
             buttons = {
@@ -5643,7 +5687,7 @@ function () {
               buttons: buttons
             });
 
-            return _context79.abrupt("return", {
+            return _context80.abrupt("return", {
               type: 'list',
               text: _txt,
               options: _options
@@ -5651,14 +5695,14 @@ function () {
 
           case 40:
           case "end":
-            return _context79.stop();
+            return _context80.stop();
         }
       }
-    }, _callee79, null, [[11, 25, 29, 37], [30,, 32, 36]]);
+    }, _callee80, null, [[11, 25, 29, 37], [30,, 32, 36]]);
   }));
 
-  return function askForCategory(_x227, _x228, _x229) {
-    return _ref82.apply(this, arguments);
+  return function askForCategory(_x231, _x232, _x233) {
+    return _ref83.apply(this, arguments);
   };
 }();
 
@@ -5667,14 +5711,14 @@ exports.askForCategory = askForCategory;
 var showCategory =
 /*#__PURE__*/
 function () {
-  var _ref83 = _asyncToGenerator(
+  var _ref84 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee80(pageId, userId, data) {
-    return regeneratorRuntime.wrap(function _callee80$(_context80) {
+  regeneratorRuntime.mark(function _callee81(pageId, userId, data) {
+    return regeneratorRuntime.wrap(function _callee81$(_context81) {
       while (1) {
-        switch (_context80.prev = _context80.next) {
+        switch (_context81.prev = _context81.next) {
           case 0:
-            _context80.next = 2;
+            _context81.next = 2;
             return (0, _ordersController.updateOrder)({
               pageId: pageId,
               userId: userId,
@@ -5683,21 +5727,21 @@ function () {
             });
 
           case 2:
-            return _context80.abrupt("return", {
+            return _context81.abrupt("return", {
               type: 'text',
               text: '✅ ' + 'Categoria: ' + data.name
             });
 
           case 3:
           case "end":
-            return _context80.stop();
+            return _context81.stop();
         }
       }
-    }, _callee80);
+    }, _callee81);
   }));
 
-  return function showCategory(_x230, _x231, _x232) {
-    return _ref83.apply(this, arguments);
+  return function showCategory(_x234, _x235, _x236) {
+    return _ref84.apply(this, arguments);
   };
 }();
 
@@ -5706,37 +5750,37 @@ exports.showCategory = showCategory;
 var showCategoryAskForSize =
 /*#__PURE__*/
 function () {
-  var _ref84 = _asyncToGenerator(
+  var _ref85 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee81(pageId, userId, data) {
+  regeneratorRuntime.mark(function _callee82(pageId, userId, data) {
     var prevAnswer, nextQuestion;
-    return regeneratorRuntime.wrap(function _callee81$(_context81) {
+    return regeneratorRuntime.wrap(function _callee82$(_context82) {
       while (1) {
-        switch (_context81.prev = _context81.next) {
+        switch (_context82.prev = _context82.next) {
           case 0:
-            _context81.next = 2;
+            _context82.next = 2;
             return showCategory(pageId, userId, data);
 
           case 2:
-            prevAnswer = _context81.sent;
-            _context81.next = 5;
+            prevAnswer = _context82.sent;
+            _context82.next = 5;
             return askForSizeCat(pageId, userId, data.id);
 
           case 5:
-            nextQuestion = _context81.sent;
+            nextQuestion = _context82.sent;
             nextQuestion.text = prevAnswer.text + '\n\n' + nextQuestion.text;
-            return _context81.abrupt("return", nextQuestion);
+            return _context82.abrupt("return", nextQuestion);
 
           case 8:
           case "end":
-            return _context81.stop();
+            return _context82.stop();
         }
       }
-    }, _callee81);
+    }, _callee82);
   }));
 
-  return function showCategoryAskForSize(_x233, _x234, _x235) {
-    return _ref84.apply(this, arguments);
+  return function showCategoryAskForSize(_x237, _x238, _x239) {
+    return _ref85.apply(this, arguments);
   };
 }();
 
@@ -5745,16 +5789,16 @@ exports.showCategoryAskForSize = showCategoryAskForSize;
 var askForSizeCat =
 /*#__PURE__*/
 function () {
-  var _ref85 = _asyncToGenerator(
+  var _ref86 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee82(pageId, userId, categoryId) {
+  regeneratorRuntime.mark(function _callee83(pageId, userId, categoryId) {
     var po, category, sizesWithPricing, size, sizeData, _text, _options, sizes, i, _data;
 
-    return regeneratorRuntime.wrap(function _callee82$(_context82) {
+    return regeneratorRuntime.wrap(function _callee83$(_context83) {
       while (1) {
-        switch (_context82.prev = _context82.next) {
+        switch (_context83.prev = _context83.next) {
           case 0:
-            _context82.next = 2;
+            _context83.next = 2;
             return (0, _ordersController.getOrderPending)({
               pageId: pageId,
               userId: userId,
@@ -5762,50 +5806,50 @@ function () {
             });
 
           case 2:
-            po = _context82.sent;
+            po = _context83.sent;
             if (!categoryId) categoryId = po.order.currentItemCategory; // User is spliting the pizza into more than one category
 
             if (!(po.order.originalSplit > 1 && po.order.currentItemSplit <= po.order.originalSplit)) {
-              _context82.next = 8;
+              _context83.next = 8;
               break;
             }
 
-            return _context82.abrupt("return", askForFlavor(pageId, userId, 1, po));
+            return _context83.abrupt("return", askForFlavor(pageId, userId, 1, po));
 
           case 8:
-            _context82.next = 10;
+            _context83.next = 10;
             return (0, _categoriesController.getCategory)(pageId, categoryId);
 
           case 10:
-            category = _context82.sent;
+            category = _context83.sent;
 
             if (!category.price_by_size) {
-              _context82.next = 33;
+              _context83.next = 33;
               break;
             }
 
-            _context82.next = 14;
+            _context83.next = 14;
             return (0, _pricingsController.getPricingSizing)(pageId, categoryId);
 
           case 14:
-            sizesWithPricing = _context82.sent;
+            sizesWithPricing = _context83.sent;
 
             if (!(sizesWithPricing.length === 1)) {
-              _context82.next = 23;
+              _context83.next = 23;
               break;
             }
 
-            _context82.next = 18;
+            _context83.next = 18;
             return (0, _sizesController.getSize)(pageId, sizesWithPricing[0]);
 
           case 18:
-            size = _context82.sent;
+            size = _context83.sent;
             sizeData = {
               id: size.id,
               size: size.size // Update the order with the unique size and checkSplit
 
             };
-            return _context82.abrupt("return", showSizeCheckSplit(pageId, userId, sizeData));
+            return _context83.abrupt("return", showSizeCheckSplit(pageId, userId, sizeData));
 
           case 23:
             // Without await, to run later
@@ -5816,11 +5860,11 @@ function () {
             });
             _text = 'Selecione o tamanho:';
             _options = [];
-            _context82.next = 28;
+            _context83.next = 28;
             return (0, _sizesController.getSizes)(pageId, sizesWithPricing);
 
           case 28:
-            sizes = _context82.sent;
+            sizes = _context83.sent;
 
             for (i = 0; i < sizes.length; i++) {
               _data = {
@@ -5836,33 +5880,33 @@ function () {
               });
             }
 
-            return _context82.abrupt("return", {
+            return _context83.abrupt("return", {
               type: 'replies',
               text: _text,
               options: _options
             });
 
           case 31:
-            _context82.next = 36;
+            _context83.next = 36;
             break;
 
           case 33:
-            _context82.next = 35;
+            _context83.next = 35;
             return askForFlavor(pageId, userId, 1);
 
           case 35:
-            return _context82.abrupt("return", _context82.sent);
+            return _context83.abrupt("return", _context83.sent);
 
           case 36:
           case "end":
-            return _context82.stop();
+            return _context83.stop();
         }
       }
-    }, _callee82);
+    }, _callee83);
   }));
 
-  return function askForSizeCat(_x236, _x237, _x238) {
-    return _ref85.apply(this, arguments);
+  return function askForSizeCat(_x240, _x241, _x242) {
+    return _ref86.apply(this, arguments);
   };
 }();
 

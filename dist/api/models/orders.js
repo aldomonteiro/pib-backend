@@ -111,6 +111,9 @@ var schema = new Schema({
   comments: {
     type: String
   },
+  postComments: {
+    type: String
+  },
   rejection_reason: {
     type: String
   },
@@ -180,6 +183,11 @@ schema.pre('save', function (next) {
       this.status3 = 'delivered';
       break;
 
+    case 7:
+      this.status2 = 'finished';
+      this.status3 = 'finished';
+      break;
+
     case 8:
       this.status2 = 'rejected';
       this.status3 = 'cancelled';
@@ -197,7 +205,7 @@ schema.pre('save', function (next) {
   next();
 });
 
-var _default = _mongoose["default"].model("orders", schema);
+var _default = _mongoose["default"].model('orders', schema);
 
 exports["default"] = _default;
 //# sourceMappingURL=orders.js.map
