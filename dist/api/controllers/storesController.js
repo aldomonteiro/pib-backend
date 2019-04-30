@@ -119,7 +119,8 @@ var store_create = function store_create(req, res) {
       catalog_url2: req.body.catalog_url2,
       missing_address_notification: req.body.missing_address_notification,
       accept_notification: req.body.accept_notification,
-      deliver_notification: req.body.deliver_notification
+      deliver_notification: req.body.deliver_notification,
+      total_notification: req.body.total_notification
     });
     newRecord.save().then(function (result) {
       res.status(200).json(result);
@@ -212,6 +213,7 @@ var store_update = function store_update(req, res) {
           doc.missing_address_notification = req.body.missing_address_notification;
           doc.accept_notification = req.body.accept_notification;
           doc.deliver_notification = req.body.deliver_notification;
+          doc.total_notification = req.body.total_notification;
           doc.default_messages = req.body.default_messages;
           doc.save(function (err, result) {
             if (err) {

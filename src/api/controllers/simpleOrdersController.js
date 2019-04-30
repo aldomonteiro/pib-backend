@@ -5,6 +5,7 @@ import { getStoreData } from './storesController';
 import {
     configSortQuery, configRangeQueryNew,
     configFilterQueryMultiple,
+    formatAsCurrency,
 } from '../util/util';
 import { DateTime } from 'luxon';
 // import { Bot, Elements } from 'facebook-messenger-bot';
@@ -110,6 +111,12 @@ export const order_get_one = async (req, res) => {
     }
 }
 
+const appendTimedComments = comments => {
+    const dateTime = DateTime.local().setZone('America/Sao_Paulo');
+    const hours = dateTime.hour + ':' + dateTime.minute + '> ';
+    return hours + comments;
+}
+
 // UPDATE
 export const order_update = async (req, res) => {
     if (req.body && req.body.id) {
@@ -134,28 +141,49 @@ export const order_update = async (req, res) => {
             } else if (operation === 'ACCEPT') {
                 doc.status = ORDERSTATUS_ACCEPTED;
                 const store = await getStoreData(doc.pageId);
-                sendNotification(store.phone, doc.userId, store.accept_notification);
+                const notif = store.accept_notification;
+                if (notif) {
+                    doc.comments = doc.comments + '\n' + appendTimedComments(notif)
+                    sendNotification(store.phone, doc.userId, notif);
+                }
             } else if (operation === 'PRINT') {
                 doc.status = ORDERSTATUS_PRINTED;
                 // sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
             } else if (operation === 'DELIVER') {
                 doc.status = ORDERSTATUS_DELIVERED;
                 const store = await getStoreData(doc.pageId);
-                sendNotification(store.phone, doc.userId, store.deliver_notification);
+
+                const notif = store.deliver_notification;
+                if (notif) {
+                    doc.comments = doc.comments + '\n' + appendTimedComments(notif)
+                    sendNotification(store.phone, doc.userId, notif);
+                }
             } else if (operation === 'MISSING_ADDRESS') {
                 updateOrder = false;
                 const store = await getStoreData(doc.pageId);
-                sendNotification(store.phone, doc.userId, store.missing_address_notification);
+
+                const notif = store.missing_address_notification;
+                if (notif) {
+                    updateOrder = true;
+                    doc.comments = doc.comments + '\n' + appendTimedComments(notif)
+                    sendNotification(store.phone, doc.userId, notif);
+                }
             } else if (operation === 'OPEN_QUESTION') {
                 const { question } = req.body;
                 // doc.comments = doc.comments + '\n' + question;
                 const store = await getStoreData(doc.pageId);
-                sendNotification(store.phone, doc.userId, question);
+
+                const notif = question;
+                if (notif) {
+                    updateOrder = true;
+                    doc.comments = doc.comments + '\n' + appendTimedComments(notif)
+                    sendNotification(store.phone, doc.userId, notif);
+                }
             } else if (operation === 'UPDATE_ORDER_DATA') {
                 const {
                     newAddress,
                     newDetails,
-                    newTotal,
+                    newTotal, totalNotification,
                     updatePostComments, updatedPostComment,
                     closeOrder } = req.body;
                 if (newAddress)
@@ -163,10 +191,22 @@ export const order_update = async (req, res) => {
                 else if (newDetails)
                     doc.details = newDetails;
                 else if (newTotal) {
-                    const formatted = newTotal.replace(',', '.')
-                    if (!isNaN(Number(formatted)))
+                    const formatted = newTotal.toString().replace(',', '.')
+                    if (!isNaN(Number(formatted))) {
                         doc.total = Number(formatted);
-                    else {
+
+                        if (totalNotification) {
+                            const store = await getStoreData(doc.pageId);
+
+                            const notif = store.total_notification;
+                            if (notif) {
+                                const message = notif.toString().replace('$TOTAL', formatAsCurrency(doc.total))
+                                updateOrder = true;
+                                doc.comments = doc.comments + '\n' + appendTimedComments(message)
+                                sendNotification(store.phone, doc.userId, message);
+                            }
+                        }
+                    } else {
                         res.status(500).json({ message: 'pos.orders.messages.invalidTotal' });
                         return
                     }
@@ -224,8 +264,10 @@ export const deleteManyOrders = async (pageID) => {
 export const getOrderJson = async (pageId, orderId) => {
     try {
         const order = await Order.findOne({ pageId: pageId, id: orderId });
-        const customer = await getCustomerById(pageId, order.customerId);
-        return getOrderData(order, customer);
+        if (order) {
+            const customer = await getCustomerById(pageId, order.customerId);
+            return getOrderData(order, customer);
+        } else return null;
     } catch (getOrderJsonErr) {
         console.error({ getOrderJsonErr });
         throw new Error(getOrderJsonErr.message);
@@ -336,8 +378,11 @@ export const updateOrder = async orderData => {
 
                 order.postComments.push(postComments);
 
+                const dateTime = DateTime.local().setZone('America/Sao_Paulo');
+                const hours = dateTime.hour + ':' + dateTime.minute + '> ';
+
                 if (mergeComments)
-                    order.comments = order.comments ? order.comments + '\n' + postComments : postComments;
+                    order.comments = order.comments ? order.comments + '\n' + hours + postComments : hours + postComments;
 
                 updateOrder = true;
             }
@@ -369,11 +414,14 @@ export const updateOrder = async orderData => {
             let orderId = 1;
             if (resultLastId && resultLastId.length) orderId = resultLastId[0].id + 1;
 
+            const dateTime = DateTime.local().setZone('America/Sao_Paulo');
+            const hours = dateTime.hour + ':' + dateTime.minute + '> ';
+
             let _comments;
             if (mergeComments && postComments)
-                _comments = comments ? comments + '\n' + postComments : postComments;
+                _comments = comments ? comments + '\n' + hours + postComments : hours + postComments;
             else
-                _comments = comments;
+                _comments = hours + comments;
 
             // First message goes to details, not to postComments
             const order = new Order({

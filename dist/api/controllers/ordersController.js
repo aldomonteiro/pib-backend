@@ -273,14 +273,14 @@ function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee3(req, res) {
-    var _req$body, id, operation, pageId, doc, _updateOrder, rejectionExplanation, store, _store, _store2, question, _store3, _req$body2, newAddress, newTotal, updatePostComments, closeOrder, formatted, jsonOrder;
+    var _req$body, id, operation, pageId, doc, _updateOrder, rejectionExplanation, store, _store, _store2, question, _store3, _req$body2, newAddress, newTotal, updatePostComments, closeOrder, totalNotification, formatted, _store4, message, jsonOrder;
 
     return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
             if (!(req.body && req.body.id)) {
-              _context3.next = 98;
+              _context3.next = 103;
               break;
             }
 
@@ -308,7 +308,7 @@ function () {
             doc.sent_reject_notification = _luxon.DateTime.local();
             doc.rejection_reason = rejectionExplanation;
             (0, _botController.sendRejectionNotification)(doc.pageId, doc.userId, doc.id, rejectionExplanation);
-            _context3.next = 85;
+            _context3.next = 90;
             break;
 
           case 17:
@@ -319,7 +319,7 @@ function () {
 
             doc.status = ORDERSTATUS_VIEWED; // sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
 
-            _context3.next = 85;
+            _context3.next = 90;
             break;
 
           case 21:
@@ -335,7 +335,7 @@ function () {
           case 25:
             store = _context3.sent;
             sendNotification(store.phone, doc.userId, store.accept_notification);
-            _context3.next = 85;
+            _context3.next = 90;
             break;
 
           case 29:
@@ -346,7 +346,7 @@ function () {
 
             doc.status = ORDERSTATUS_PRINTED; // sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
 
-            _context3.next = 85;
+            _context3.next = 90;
             break;
 
           case 33:
@@ -361,8 +361,8 @@ function () {
 
           case 37:
             _store = _context3.sent;
-            sendNotification(_store.phone, doc.userId, _store.deliver_notification);
-            _context3.next = 85;
+            if (_store.deliver_notification) sendNotification(_store.phone, doc.userId, _store.deliver_notification);
+            _context3.next = 90;
             break;
 
           case 41:
@@ -378,7 +378,7 @@ function () {
           case 45:
             _store2 = _context3.sent;
             sendNotification(_store2.phone, doc.userId, _store2.missing_address_notification);
-            _context3.next = 85;
+            _context3.next = 90;
             break;
 
           case 49:
@@ -395,16 +395,16 @@ function () {
           case 54:
             _store3 = _context3.sent;
             sendNotification(_store3.phone, doc.userId, question);
-            _context3.next = 85;
+            _context3.next = 90;
             break;
 
           case 58:
             if (!(operation === 'UPDATE_ORDER_DATA')) {
-              _context3.next = 77;
+              _context3.next = 82;
               break;
             }
 
-            _req$body2 = req.body, newAddress = _req$body2.newAddress, newTotal = _req$body2.newTotal, updatePostComments = _req$body2.updatePostComments, closeOrder = _req$body2.closeOrder;
+            _req$body2 = req.body, newAddress = _req$body2.newAddress, newTotal = _req$body2.newTotal, updatePostComments = _req$body2.updatePostComments, closeOrder = _req$body2.closeOrder, totalNotification = _req$body2.totalNotification;
 
             if (!newAddress) {
               _context3.next = 64;
@@ -412,37 +412,55 @@ function () {
             }
 
             doc.address = newAddress;
-            _context3.next = 75;
+            _context3.next = 80;
             break;
 
           case 64:
             if (!newTotal) {
-              _context3.next = 74;
+              _context3.next = 79;
               break;
             }
 
             formatted = newTotal.replace(',', '.');
 
             if (isNaN(Number(formatted))) {
-              _context3.next = 70;
+              _context3.next = 75;
               break;
             }
 
             doc.total = Number(formatted);
-            _context3.next = 72;
+
+            if (!totalNotification) {
+              _context3.next = 73;
+              break;
+            }
+
+            _context3.next = 71;
+            return (0, _storesController.getStoreData)(doc.pageId);
+
+          case 71:
+            _store4 = _context3.sent;
+
+            if (_store4.total_notification) {
+              message = _store4.total_notification.toString().replace('$TOTAL', (0, _util2.formatAsCurrency)(doc.total));
+              sendNotification(_store4.phone, doc.userId, message);
+            }
+
+          case 73:
+            _context3.next = 77;
             break;
 
-          case 70:
+          case 75:
             res.status(500).json({
               message: 'pos.orders.messages.invalidTotal'
             });
             return _context3.abrupt("return");
 
-          case 72:
-            _context3.next = 75;
+          case 77:
+            _context3.next = 80;
             break;
 
-          case 74:
+          case 79:
             if (updatePostComments) {
               if (updatePostComments === 'MERGE') {
                 doc.comments = doc.comments + '\n' + doc.postComments;
@@ -454,11 +472,11 @@ function () {
               doc.status = ORDERSTATUS_FINISHED;
             }
 
-          case 75:
-            _context3.next = 85;
+          case 80:
+            _context3.next = 90;
             break;
 
-          case 77:
+          case 82:
             if (req.body.status2 === 'ordered') {
               doc.status = ORDERSTATUS_CONFIRMED;
             } else if (req.body.status2 === 'delivered') {
@@ -469,60 +487,60 @@ function () {
             }
 
             if (!(doc.status === ORDERSTATUS_DELIVERED)) {
-              _context3.next = 85;
+              _context3.next = 90;
               break;
             }
 
             if (!(doc.source !== 'whatsapp')) {
-              _context3.next = 85;
+              _context3.next = 90;
               break;
             }
 
             if (doc.sent_shipping_notification) {
-              _context3.next = 85;
+              _context3.next = 90;
               break;
             }
 
             console.info('I am going to send to ' + doc.userId + ', about the order number:' + doc.id + ' a shipping notification');
-            _context3.next = 84;
+            _context3.next = 89;
             return (0, _botController.sendShippingNotification)(doc.pageId, doc.userId, doc.id);
 
-          case 84:
+          case 89:
             doc.sent_shipping_notification = _luxon.DateTime.local();
 
-          case 85:
+          case 90:
             if (!_updateOrder) {
-              _context3.next = 88;
+              _context3.next = 93;
               break;
             }
 
-            _context3.next = 88;
+            _context3.next = 93;
             return doc.save();
 
-          case 88:
-            _context3.next = 90;
+          case 93:
+            _context3.next = 95;
             return getOrderJson(pageId, doc.id);
 
-          case 90:
+          case 95:
             jsonOrder = _context3.sent;
             res.status(200).json(jsonOrder);
-            _context3.next = 98;
+            _context3.next = 103;
             break;
 
-          case 94:
-            _context3.prev = 94;
+          case 99:
+            _context3.prev = 99;
             _context3.t0 = _context3["catch"](1);
             console.error(_context3.t0);
             res.status(500).json({
               message: _context3.t0.message
             });
 
-          case 98:
+          case 103:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, null, [[1, 94]]);
+    }, _callee3, null, [[1, 99]]);
   }));
 
   return function order_update(_x5, _x6) {

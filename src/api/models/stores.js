@@ -55,6 +55,7 @@ const schema = new Schema(
         missing_address_notification: { type: String },
         accept_notification: { type: String },
         deliver_notification: { type: String },
+        total_notification: { type: String },
         default_messages: [{ default_message: { type: String } }],
     }, { timestamps: true },
 );

@@ -5,7 +5,7 @@ import { updateCustomer, getCustomerById } from './customersController';
 import { getStoreData, calcDeliveryFee } from './storesController';
 import {
     configSortQuery, configRangeQueryNew,
-    configFilterQueryMultiple, distanceBetweenCoordinates,
+    configFilterQueryMultiple, distanceBetweenCoordinates, formatAsCurrency,
 } from '../util/util';
 import { DateTime } from 'luxon';
 // import { Bot, Elements } from 'facebook-messenger-bot';
@@ -148,7 +148,8 @@ export const order_update = async (req, res) => {
             } else if (operation === 'DELIVER') {
                 doc.status = ORDERSTATUS_DELIVERED;
                 const store = await getStoreData(doc.pageId);
-                sendNotification(store.phone, doc.userId, store.deliver_notification);
+                if (store.deliver_notification)
+                    sendNotification(store.phone, doc.userId, store.deliver_notification);
             } else if (operation === 'MISSING_ADDRESS') {
                 updateOrder = false;
                 const store = await getStoreData(doc.pageId);
@@ -159,14 +160,23 @@ export const order_update = async (req, res) => {
                 const store = await getStoreData(doc.pageId);
                 sendNotification(store.phone, doc.userId, question);
             } else if (operation === 'UPDATE_ORDER_DATA') {
-                const { newAddress, newTotal, updatePostComments, closeOrder } = req.body;
+                const { newAddress, newTotal, updatePostComments, closeOrder, totalNotification } = req.body;
                 if (newAddress)
                     doc.address = newAddress;
                 else if (newTotal) {
                     const formatted = newTotal.replace(',', '.')
-                    if (!isNaN(Number(formatted)))
+                    if (!isNaN(Number(formatted))) {
                         doc.total = Number(formatted);
-                    else {
+
+                        if (totalNotification) {
+                            const store = await getStoreData(doc.pageId);
+
+                            if (store.total_notification) {
+                                const message = store.total_notification.toString().replace('$TOTAL', formatAsCurrency(doc.total))
+                                sendNotification(store.phone, doc.userId, message);
+                            }
+                        }
+                    } else {
                         res.status(500).json({ message: 'pos.orders.messages.invalidTotal' });
                         return
                     }

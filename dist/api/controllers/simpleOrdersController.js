@@ -240,10 +240,17 @@ function () {
   return function order_get_one(_x3, _x4) {
     return _ref2.apply(this, arguments);
   };
-}(); // UPDATE
-
+}();
 
 exports.order_get_one = order_get_one;
+
+var appendTimedComments = function appendTimedComments(comments) {
+  var dateTime = _luxon.DateTime.local().setZone('America/Sao_Paulo');
+
+  var hours = dateTime.hour + ':' + dateTime.minute + '> ';
+  return hours + comments;
+}; // UPDATE
+
 
 var order_update =
 /*#__PURE__*/
@@ -251,14 +258,14 @@ function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee3(req, res) {
-    var _req$body, id, operation, pageId, doc, _updateOrder, rejectionExplanation, store, _store, _store2, question, _store3, _req$body2, newAddress, newDetails, newTotal, updatePostComments, updatedPostComment, closeOrder, formatted, index, _index, jsonOrder;
+    var _req$body, id, operation, pageId, doc, _updateOrder, rejectionExplanation, store, notif, _store, _notif, _store2, _notif2, question, _store3, _notif3, _req$body2, newAddress, newDetails, newTotal, totalNotification, updatePostComments, updatedPostComment, closeOrder, formatted, _store4, _notif4, message, index, _index, jsonOrder;
 
     return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
             if (!(req.body && req.body.id)) {
-              _context3.next = 101;
+              _context3.next = 111;
               break;
             }
 
@@ -286,7 +293,7 @@ function () {
             doc.sent_reject_notification = _luxon.DateTime.local();
             doc.rejection_reason = rejectionExplanation;
             (0, _botController.sendRejectionNotification)(doc.pageId, doc.userId, doc.id, rejectionExplanation);
-            _context3.next = 88;
+            _context3.next = 98;
             break;
 
           case 17:
@@ -297,12 +304,12 @@ function () {
 
             doc.status = ORDERSTATUS_VIEWED; // sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
 
-            _context3.next = 88;
+            _context3.next = 98;
             break;
 
           case 21:
             if (!(operation === 'ACCEPT')) {
-              _context3.next = 29;
+              _context3.next = 30;
               break;
             }
 
@@ -312,125 +319,172 @@ function () {
 
           case 25:
             store = _context3.sent;
-            sendNotification(store.phone, doc.userId, store.accept_notification);
-            _context3.next = 88;
+            notif = store.accept_notification;
+
+            if (notif) {
+              doc.comments = doc.comments + '\n' + appendTimedComments(notif);
+              sendNotification(store.phone, doc.userId, notif);
+            }
+
+            _context3.next = 98;
             break;
 
-          case 29:
+          case 30:
             if (!(operation === 'PRINT')) {
-              _context3.next = 33;
+              _context3.next = 34;
               break;
             }
 
             doc.status = ORDERSTATUS_PRINTED; // sendRejectionNotification(doc.pageId, doc.userId, doc.id, rejectionExplanation);
 
-            _context3.next = 88;
+            _context3.next = 98;
             break;
 
-          case 33:
+          case 34:
             if (!(operation === 'DELIVER')) {
-              _context3.next = 41;
+              _context3.next = 43;
               break;
             }
 
             doc.status = ORDERSTATUS_DELIVERED;
-            _context3.next = 37;
+            _context3.next = 38;
             return (0, _storesController.getStoreData)(doc.pageId);
 
-          case 37:
+          case 38:
             _store = _context3.sent;
-            sendNotification(_store.phone, doc.userId, _store.deliver_notification);
-            _context3.next = 88;
+            _notif = _store.deliver_notification;
+
+            if (_notif) {
+              doc.comments = doc.comments + '\n' + appendTimedComments(_notif);
+              sendNotification(_store.phone, doc.userId, _notif);
+            }
+
+            _context3.next = 98;
             break;
 
-          case 41:
+          case 43:
             if (!(operation === 'MISSING_ADDRESS')) {
-              _context3.next = 49;
+              _context3.next = 52;
               break;
             }
 
             _updateOrder = false;
-            _context3.next = 45;
+            _context3.next = 47;
             return (0, _storesController.getStoreData)(doc.pageId);
 
-          case 45:
+          case 47:
             _store2 = _context3.sent;
-            sendNotification(_store2.phone, doc.userId, _store2.missing_address_notification);
-            _context3.next = 88;
+            _notif2 = _store2.missing_address_notification;
+
+            if (_notif2) {
+              _updateOrder = true;
+              doc.comments = doc.comments + '\n' + appendTimedComments(_notif2);
+              sendNotification(_store2.phone, doc.userId, _notif2);
+            }
+
+            _context3.next = 98;
             break;
 
-          case 49:
+          case 52:
             if (!(operation === 'OPEN_QUESTION')) {
-              _context3.next = 57;
+              _context3.next = 61;
               break;
             }
 
             question = req.body.question; // doc.comments = doc.comments + '\n' + question;
 
-            _context3.next = 53;
+            _context3.next = 56;
             return (0, _storesController.getStoreData)(doc.pageId);
 
-          case 53:
+          case 56:
             _store3 = _context3.sent;
-            sendNotification(_store3.phone, doc.userId, question);
-            _context3.next = 88;
+            _notif3 = question;
+
+            if (_notif3) {
+              _updateOrder = true;
+              doc.comments = doc.comments + '\n' + appendTimedComments(_notif3);
+              sendNotification(_store3.phone, doc.userId, _notif3);
+            }
+
+            _context3.next = 98;
             break;
 
-          case 57:
+          case 61:
             if (!(operation === 'UPDATE_ORDER_DATA')) {
-              _context3.next = 80;
+              _context3.next = 90;
               break;
             }
 
-            _req$body2 = req.body, newAddress = _req$body2.newAddress, newDetails = _req$body2.newDetails, newTotal = _req$body2.newTotal, updatePostComments = _req$body2.updatePostComments, updatedPostComment = _req$body2.updatedPostComment, closeOrder = _req$body2.closeOrder;
+            _req$body2 = req.body, newAddress = _req$body2.newAddress, newDetails = _req$body2.newDetails, newTotal = _req$body2.newTotal, totalNotification = _req$body2.totalNotification, updatePostComments = _req$body2.updatePostComments, updatedPostComment = _req$body2.updatedPostComment, closeOrder = _req$body2.closeOrder;
 
             if (!newAddress) {
-              _context3.next = 63;
-              break;
-            }
-
-            doc.address = newAddress;
-            _context3.next = 78;
-            break;
-
-          case 63:
-            if (!newDetails) {
               _context3.next = 67;
               break;
             }
 
-            doc.details = newDetails;
-            _context3.next = 78;
+            doc.address = newAddress;
+            _context3.next = 88;
             break;
 
           case 67:
-            if (!newTotal) {
-              _context3.next = 77;
+            if (!newDetails) {
+              _context3.next = 71;
               break;
             }
 
-            formatted = newTotal.replace(',', '.');
+            doc.details = newDetails;
+            _context3.next = 88;
+            break;
+
+          case 71:
+            if (!newTotal) {
+              _context3.next = 87;
+              break;
+            }
+
+            formatted = newTotal.toString().replace(',', '.');
 
             if (isNaN(Number(formatted))) {
-              _context3.next = 73;
+              _context3.next = 83;
               break;
             }
 
             doc.total = Number(formatted);
-            _context3.next = 75;
+
+            if (!totalNotification) {
+              _context3.next = 81;
+              break;
+            }
+
+            _context3.next = 78;
+            return (0, _storesController.getStoreData)(doc.pageId);
+
+          case 78:
+            _store4 = _context3.sent;
+            _notif4 = _store4.total_notification;
+
+            if (_notif4) {
+              message = _notif4.toString().replace('$TOTAL', (0, _util2.formatAsCurrency)(doc.total));
+              _updateOrder = true;
+              doc.comments = doc.comments + '\n' + appendTimedComments(message);
+              sendNotification(_store4.phone, doc.userId, message);
+            }
+
+          case 81:
+            _context3.next = 85;
             break;
 
-          case 73:
+          case 83:
             res.status(500).json({
               message: 'pos.orders.messages.invalidTotal'
             });
             return _context3.abrupt("return");
 
-          case 75:
-            _context3.next = 78;
+          case 85:
+            _context3.next = 88;
             break;
 
-          case 77:
+          case 87:
             if (updatePostComments) {
               if (updatePostComments === 'MERGE') {
                 doc.details = doc.details ? doc.details + '\n' + updatedPostComment : updatedPostComment;
@@ -444,11 +498,11 @@ function () {
               doc.status = ORDERSTATUS_FINISHED;
             }
 
-          case 78:
-            _context3.next = 88;
+          case 88:
+            _context3.next = 98;
             break;
 
-          case 80:
+          case 90:
             if (req.body.status2 === 'ordered') {
               doc.status = ORDERSTATUS_CONFIRMED;
             } else if (req.body.status2 === 'delivered') {
@@ -459,60 +513,60 @@ function () {
             }
 
             if (!(doc.status === ORDERSTATUS_DELIVERED)) {
-              _context3.next = 88;
+              _context3.next = 98;
               break;
             }
 
             if (!(doc.source !== 'whatsapp')) {
-              _context3.next = 88;
+              _context3.next = 98;
               break;
             }
 
             if (doc.sent_shipping_notification) {
-              _context3.next = 88;
+              _context3.next = 98;
               break;
             }
 
             console.info('I am going to send to ' + doc.userId + ', about the order number:' + doc.id + ' a shipping notification');
-            _context3.next = 87;
+            _context3.next = 97;
             return (0, _botController.sendShippingNotification)(doc.pageId, doc.userId, doc.id);
 
-          case 87:
+          case 97:
             doc.sent_shipping_notification = _luxon.DateTime.local();
 
-          case 88:
+          case 98:
             if (!_updateOrder) {
-              _context3.next = 91;
+              _context3.next = 101;
               break;
             }
 
-            _context3.next = 91;
+            _context3.next = 101;
             return doc.save();
 
-          case 91:
-            _context3.next = 93;
+          case 101:
+            _context3.next = 103;
             return getOrderJson(pageId, doc.id);
 
-          case 93:
+          case 103:
             jsonOrder = _context3.sent;
             res.status(200).json(jsonOrder);
-            _context3.next = 101;
+            _context3.next = 111;
             break;
 
-          case 97:
-            _context3.prev = 97;
+          case 107:
+            _context3.prev = 107;
             _context3.t0 = _context3["catch"](1);
             console.error(_context3.t0);
             res.status(500).json({
               message: _context3.t0.message
             });
 
-          case 101:
+          case 111:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, null, [[1, 97]]);
+    }, _callee3, null, [[1, 107]]);
   }));
 
   return function order_update(_x5, _x6) {
@@ -581,27 +635,40 @@ function () {
 
           case 3:
             order = _context5.sent;
-            _context5.next = 6;
+
+            if (!order) {
+              _context5.next = 11;
+              break;
+            }
+
+            _context5.next = 7;
             return (0, _customersController.getCustomerById)(pageId, order.customerId);
 
-          case 6:
+          case 7:
             customer = _context5.sent;
             return _context5.abrupt("return", getOrderData(order, customer));
 
-          case 10:
-            _context5.prev = 10;
+          case 11:
+            return _context5.abrupt("return", null);
+
+          case 12:
+            _context5.next = 18;
+            break;
+
+          case 14:
+            _context5.prev = 14;
             _context5.t0 = _context5["catch"](0);
             console.error({
               getOrderJsonErr: _context5.t0
             });
             throw new Error(_context5.t0.message);
 
-          case 14:
+          case 18:
           case "end":
             return _context5.stop();
         }
       }
-    }, _callee5, null, [[0, 10]]);
+    }, _callee5, null, [[0, 14]]);
   }));
 
   return function getOrderJson(_x8, _x9) {
@@ -646,7 +713,7 @@ function () {
   var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee6(orderData) {
-    var pageId, userId, user, phone, addrData, confirmOrder, waitingFor, comments, postComments, mergeComments, customerData, first_name, last_name, profile_pic, customer, order, _updateOrder2, orderJson, resultLastId, orderId, _comments, _order2, _orderJson;
+    var pageId, userId, user, phone, addrData, confirmOrder, waitingFor, comments, postComments, mergeComments, customerData, first_name, last_name, profile_pic, customer, order, _updateOrder2, dateTime, hours, orderJson, resultLastId, orderId, _dateTime, _hours, _comments, _order2, _orderJson;
 
     return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
@@ -734,7 +801,9 @@ function () {
               // order.postComments = order.postComments.concat(arrPostComments);
 
               order.postComments.push(postComments);
-              if (mergeComments) order.comments = order.comments ? order.comments + '\n' + postComments : postComments;
+              dateTime = _luxon.DateTime.local().setZone('America/Sao_Paulo');
+              hours = dateTime.hour + ':' + dateTime.minute + '> ';
+              if (mergeComments) order.comments = order.comments ? order.comments + '\n' + hours + postComments : hours + postComments;
               _updateOrder2 = true;
             }
 
@@ -761,7 +830,7 @@ function () {
               }
             }
 
-            _context6.next = 42;
+            _context6.next = 44;
             break;
 
           case 31:
@@ -774,7 +843,9 @@ function () {
             resultLastId = _context6.sent;
             orderId = 1;
             if (resultLastId && resultLastId.length) orderId = resultLastId[0].id + 1;
-            if (mergeComments && postComments) _comments = comments ? comments + '\n' + postComments : postComments;else _comments = comments; // First message goes to details, not to postComments
+            _dateTime = _luxon.DateTime.local().setZone('America/Sao_Paulo');
+            _hours = _dateTime.hour + ':' + _dateTime.minute + '> ';
+            if (mergeComments && postComments) _comments = comments ? comments + '\n' + _hours + postComments : _hours + postComments;else _comments = _hours + comments; // First message goes to details, not to postComments
 
             _order2 = new _orders["default"]({
               id: orderId,
@@ -787,31 +858,31 @@ function () {
               details: postComments,
               status: ORDERSTATUS_PENDING
             });
-            _context6.next = 40;
+            _context6.next = 42;
             return _order2.save();
 
-          case 40:
+          case 42:
             _orderJson = getOrderData(_order2, customer);
             (0, _redisController.emitEvent)(pageId, 'new-order', _orderJson);
 
-          case 42:
-            _context6.next = 48;
+          case 44:
+            _context6.next = 50;
             break;
 
-          case 44:
-            _context6.prev = 44;
+          case 46:
+            _context6.prev = 46;
             _context6.t0 = _context6["catch"](0);
             console.error({
               updateOrderError: _context6.t0
             });
             throw _context6.t0;
 
-          case 48:
+          case 50:
           case "end":
             return _context6.stop();
         }
       }
-    }, _callee6, null, [[0, 44]]);
+    }, _callee6, null, [[0, 46]]);
   }));
 
   return function updateOrder(_x10) {
