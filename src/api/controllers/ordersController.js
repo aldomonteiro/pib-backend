@@ -574,9 +574,9 @@ export const updateOrder = async orderData => {
                 // every time new comments are stores I am passing the confirmOrder parameter. So,
                 // here I check if this order was not already confirmed.
                 if (confirmOrder && currentStatus < ORDERSTATUS_CONFIRMED)
-                    emitEvent(pageId, 'new-order', { id: order.id, confirmed_at: order.confirmed_at });
+                    emitEvent(pageId, 'new-order', order);
                 else if (comments || postComments)
-                    emitEvent(pageId, 'new-comment', { id: order.id, updatedAt: DateTime.local() });
+                    emitEvent(pageId, 'new-comment', order);
             }
 
         } else {

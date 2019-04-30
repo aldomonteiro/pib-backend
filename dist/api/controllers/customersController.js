@@ -640,8 +640,8 @@ function () {
             _context8.next = 3;
             return _axios["default"].get('https://maps.googleapis.com/maps/api/geocode/json', {
               params: {
-                'latlng': location.lat + ',' + location["long"],
-                'key': API_KEY
+                latlng: location.lat + ',' + location["long"],
+                key: API_KEY
               }
             });
 
@@ -667,27 +667,25 @@ function () {
   var _ref10 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee9(custData) {
-    var customerID, customer, first_name, last_name, phone, profile_pic, location, addrData, updateDb, resultLastId, lastId, newRecord;
+    var customer, first_name, last_name, phone, profile_pic, location, addrData, updateDb, resultLastId, lastId, newRecord;
     return regeneratorRuntime.wrap(function _callee9$(_context9) {
       while (1) {
         switch (_context9.prev = _context9.next) {
           case 0:
-            customerID = 0;
-            _context9.next = 3;
+            _context9.next = 2;
             return _customers["default"].findOne({
               pageId: custData.pageId,
               userId: custData.userId
             }).exec();
 
-          case 3:
+          case 2:
             customer = _context9.sent;
 
             if (!(customer && customer.id)) {
-              _context9.next = 17;
+              _context9.next = 16;
               break;
             }
 
-            customerID = customer.id;
             first_name = custData.first_name, last_name = custData.last_name, phone = custData.phone, profile_pic = custData.profile_pic, location = custData.location, addrData = custData.addrData;
             updateDb = false;
 
@@ -723,24 +721,23 @@ function () {
             }
 
             if (!updateDb) {
-              _context9.next = 15;
+              _context9.next = 13;
               break;
             }
 
-            _context9.next = 15;
+            _context9.next = 13;
             return customer.save();
 
-          case 15:
-            _context9.next = 26;
-            break;
+          case 13:
+            return _context9.abrupt("return", customer);
 
-          case 17:
-            _context9.next = 19;
+          case 16:
+            _context9.next = 18;
             return _customers["default"].find({
               pageId: custData.pageId
             }).select('id').sort('-id').limit(1).exec();
 
-          case 19:
+          case 18:
             resultLastId = _context9.sent;
             lastId = 1;
             if (resultLastId && resultLastId.length) lastId = resultLastId[0].id + 1;
@@ -764,16 +761,13 @@ function () {
               location_long: custData.location ? custData.location["long"] : null,
               location_url: custData.location ? custData.location.url : null
             });
-            _context9.next = 25;
+            _context9.next = 24;
             return newRecord.save();
 
+          case 24:
+            return _context9.abrupt("return", newRecord);
+
           case 25:
-            customerID = newRecord.id;
-
-          case 26:
-            return _context9.abrupt("return", customerID);
-
-          case 27:
           case "end":
             return _context9.stop();
         }

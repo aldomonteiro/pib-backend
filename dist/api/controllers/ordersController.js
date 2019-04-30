@@ -1019,13 +1019,7 @@ function () {
             if (confirmOrder || comments || postComments) {
               // every time new comments are stores I am passing the confirmOrder parameter. So,
               // here I check if this order was not already confirmed.
-              if (confirmOrder && currentStatus < ORDERSTATUS_CONFIRMED) (0, _redisController.emitEvent)(pageId, 'new-order', {
-                id: order.id,
-                confirmed_at: order.confirmed_at
-              });else if (comments || postComments) (0, _redisController.emitEvent)(pageId, 'new-comment', {
-                id: order.id,
-                updatedAt: _luxon.DateTime.local()
-              });
+              if (confirmOrder && currentStatus < ORDERSTATUS_CONFIRMED) (0, _redisController.emitEvent)(pageId, 'new-order', order);else if (comments || postComments) (0, _redisController.emitEvent)(pageId, 'new-comment', order);
             }
 
             _context6.next = 84;

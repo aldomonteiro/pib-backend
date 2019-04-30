@@ -181,6 +181,7 @@ export const store_update = (req, res) => {
                     doc.missing_address_notification = req.body.missing_address_notification;
                     doc.accept_notification = req.body.accept_notification;
                     doc.deliver_notification = req.body.deliver_notification;
+                    doc.default_messages = req.body.default_messages;
 
                     doc.save((err, result) => {
                         if (err) {

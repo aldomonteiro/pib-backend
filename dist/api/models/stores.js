@@ -189,7 +189,12 @@ var schema = new Schema({
   },
   deliver_notification: {
     type: String
-  }
+  },
+  default_messages: [{
+    default_message: {
+      type: String
+    }
+  }]
 }, {
   timestamps: true
 });

@@ -93,9 +93,6 @@ var schema = new Schema({
   sent_reject_notification: {
     type: Date
   },
-  no_beverage: {
-    type: Boolean
-  },
   payment_type: {
     type: String
   },
@@ -108,12 +105,20 @@ var schema = new Schema({
   delivered_at: {
     type: Date
   },
+  changed_at: {
+    type: Date
+  },
+  // date and time where user changed something.
+  // Different from updatedAt, with has any updates, including the ones by the system.
+  details: {
+    type: String
+  },
   comments: {
     type: String
   },
-  postComments: {
+  postComments: [{
     type: String
-  },
+  }],
   rejection_reason: {
     type: String
   },
@@ -130,20 +135,16 @@ var schema = new Schema({
     type: String
   },
   distance_from_store: {
-    type: Number,
-    "default": 0
+    type: Number
   },
   delivery_fee: {
-    type: Number,
-    "default": 0
+    type: Number
   },
   surcharge_percent: {
-    type: Number,
-    "default": 0
+    type: Number
   },
   surcharge_amount: {
-    type: Number,
-    "default": 0
+    type: Number
   },
   store_address: {
     type: String

@@ -216,18 +216,16 @@ const googleMapsAPI = async (location, API_KEY) => {
     console.info('using:' + API_KEY);
     return await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
         params: {
-            'latlng': location.lat + ',' + location.long,
-            'key': API_KEY,
+            latlng: location.lat + ',' + location.long,
+            key: API_KEY,
         }
     });
 }
 
 export const updateCustomer = async (custData) => {
-    let customerID = 0;
     const customer = await Customer.findOne({ pageId: custData.pageId, userId: custData.userId }).exec();
 
     if (customer && customer.id) {
-        customerID = customer.id;
         const { first_name, last_name, phone, profile_pic, location, addrData } = custData;
 
         let updateDb = false;
@@ -266,6 +264,7 @@ export const updateCustomer = async (custData) => {
         if (updateDb) {
             await customer.save();
         }
+        return customer;
     } else {
         const resultLastId = await Customer.find({ pageId: custData.pageId })
             .select('id')
@@ -297,9 +296,8 @@ export const updateCustomer = async (custData) => {
         });
 
         await newRecord.save();
-        customerID = newRecord.id;
+        return newRecord;
     }
-    return customerID;
 }
 
 export const formatAddrData = async addrData => {

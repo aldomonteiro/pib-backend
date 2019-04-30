@@ -9,11 +9,11 @@ var _axios = _interopRequireDefault(require("axios"));
 
 var _luxon = require("luxon");
 
-var _botController = require("../bot/botController");
+var _simpleBotController = require("../bot/simpleBotController");
 
 var _storesController = require("../controllers/storesController");
 
-var _ordersController = require("../controllers/ordersController");
+var _simpleOrdersController = require("../controllers/simpleOrdersController");
 
 var _pagesController = require("../controllers/pagesController");
 
@@ -34,15 +34,18 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(args) {
-    var myId, message, userId, match, contactName, profileImg, names, first_name, last_name, _profile_pic, user, store, pageId, pendingOrder, result, addrData, oldComments, updatedComents, page, _store, lastOrder, orderDay, today, tempoEntregar, tempoRetirar, replyText;
+    var myId, message, userId, contactName, profileImg, quotedMsg, processedMsg, names, first_name, last_name, _profile_pic, user, store, pageId, result;
 
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            console.info('###### w_controller SIMPLE ######');
-            console.info(args);
-            myId = args.myId, message = args.message, userId = args.userId, match = args.match, contactName = args.contactName, profileImg = args.profileImg;
+            console.log('###### w_controller SIMPLE ######');
+            console.dir(args);
+            myId = args.myId, message = args.message, userId = args.userId, contactName = args.contactName, profileImg = args.profileImg, quotedMsg = args.quotedMsg; // If user is referencing a message (quotedMsg), insert it into processedMsg.
+            // Otherwise, processdMsg is the same message sent.
+
+            processedMsg = quotedMsg ? quotedMsg + '\n' + message : message;
             names = contactName.split(' ');
             first_name = names.shift();
             last_name = names.length >= 1 ? names.join(' ') : null;
@@ -52,221 +55,33 @@ function () {
               last_name: last_name,
               profile_pic: _profile_pic
             };
-            _context.next = 10;
+            _context.next = 11;
             return (0, _storesController.getStoreByPhone)(myId);
 
-          case 10:
+          case 11:
             store = _context.sent;
 
             if (!store) {
-              _context.next = 85;
+              _context.next = 19;
               break;
             }
 
-            console.info("store name: ".concat(store.name, ", match:").concat(match));
+            console.info("store name: ".concat(store.name));
             pageId = store.pageId;
-
-            if (match) {
-              _context.next = 79;
-              break;
-            }
-
             _context.next = 17;
-            return (0, _ordersController.getOrderPending)({
-              pageId: pageId,
-              userId: userId
-            });
-
-          case 17:
-            pendingOrder = _context.sent;
-
-            if (!(pendingOrder && pendingOrder.order)) {
-              _context.next = 42;
-              break;
-            }
-
-            console.log("pendingorder id:".concat(pendingOrder.order.id, " \n                waitingFor:").concat(pendingOrder.order.waitingFor));
-
-            if (!(pendingOrder.order.waitingFor === 'typed_address')) {
-              _context.next = 27;
-              break;
-            }
-
-            addrData = {
-              manual_addres: true,
-              formattedAddress: message
-            };
-            _context.next = 24;
-            return sendActions({
-              action: 'CONFIRM_ADDRESS',
-              pageID: pageId,
-              userID: userId,
-              addrData: addrData,
-              user: user
-            });
-
-          case 24:
-            result = _context.sent;
-            _context.next = 39;
-            break;
-
-          case 27:
-            if (!(pendingOrder.order.waitingFor === 'typed_comments')) {
-              _context.next = 39;
-              break;
-            }
-
-            oldComments = pendingOrder.order.comments;
-
-            if (!(pendingOrder.order.status >= _ordersController.ORDERSTATUS_ACCEPTED)) {
-              _context.next = 35;
-              break;
-            }
-
-            _context.next = 32;
             return sendActions({
               action: 'BASIC_UPDATE_POSTCOMMENTS',
               pageID: pageId,
               userID: userId,
-              text: message,
+              text: processedMsg,
               user: user
             });
 
-          case 32:
+          case 17:
             result = _context.sent;
-            _context.next = 39;
-            break;
-
-          case 35:
-            // concat old comments and the new comments
-            updatedComents = oldComments ? oldComments + '\n' + message : message;
-            _context.next = 38;
-            return sendActions({
-              action: 'BASIC_UPDATE_COMMENTS',
-              pageID: pageId,
-              userID: userId,
-              text: updatedComents,
-              user: user
-            });
-
-          case 38:
-            result = _context.sent;
-
-          case 39:
             return _context.abrupt("return", result);
 
-          case 42:
-            _context.next = 44;
-            return (0, _pagesController.getOnePageData)(pageId);
-
-          case 44:
-            page = _context.sent;
-            _context.next = 47;
-            return (0, _storesController.getStoreData)(pageId);
-
-          case 47:
-            _store = _context.sent;
-            _context.next = 50;
-            return (0, _ordersController.getLastUserOrder)({
-              pageId: pageId,
-              userId: userId
-            });
-
-          case 50:
-            lastOrder = _context.sent;
-
-            if (!lastOrder) {
-              _context.next = 58;
-              break;
-            }
-
-            console.log('>> Found lastOrder:', lastOrder.id);
-            orderDay = _luxon.DateTime.fromJSDate(lastOrder.createdAt).get('day');
-            today = _luxon.DateTime.local().get('day');
-
-            if (!(orderDay === today && lastOrder.status < _ordersController.ORDERSTATUS_FINISHED)) {
-              _context.next = 58;
-              break;
-            }
-
-            console.log(' from today...');
-            return _context.abrupt("return");
-
-          case 58:
-            tempoEntregar = _store.delivery_time ? "(+ ou - ".concat(_store.delivery_time, " min.)") : '';
-            tempoRetirar = _store.pickup_time ? "(+ ou - ".concat(_store.pickup_time, " min.)") : '';
-            replyText = page.firstResponseText.replace('$NAME', contactName);
-            replyText = replyText + '\n\n';
-
-            if (!(lastOrder && lastOrder.comments)) {
-              _context.next = 71;
-              break;
-            }
-
-            replyText = replyText + 'Seu último pedido:\n';
-            replyText = replyText + lastOrder.comments + '\n';
-            replyText = replyText + 'Envie *REPETIR* para fazer o mesmo pedido OU envie os dados do pedido:\n';
-            _context.next = 68;
-            return sendActions({
-              action: 'BASIC_OPTION',
-              pageID: pageId,
-              userID: userId,
-              text: replyText,
-              payload: lastOrder.comments,
-              data: 'REPETIR',
-              user: user
-            });
-
-          case 68:
-            return _context.abrupt("return", _context.sent);
-
-          case 71:
-            replyText = replyText + page.orderExample + '\n';
-            replyText = replyText.replace('$TEMPOENTREGAR', tempoEntregar);
-            replyText = replyText.replace('$TEMPORETIRAR', tempoRetirar);
-            _context.next = 76;
-            return sendActions({
-              action: 'BASIC_REPLY',
-              pageID: pageId,
-              userID: userId,
-              text: replyText,
-              user: user
-            });
-
-          case 76:
-            return _context.abrupt("return", _context.sent);
-
-          case 77:
-            _context.next = 83;
-            break;
-
-          case 79:
-            if (!(match.hasOwnProperty('text') && match.text === 'REPETIR')) {
-              _context.next = 83;
-              break;
-            }
-
-            _context.next = 82;
-            return sendActions({
-              action: 'BASIC_REPLY',
-              pageID: pageId,
-              userID: userId,
-              text: 'Ok, vamos repetir o pedido.',
-              user: user,
-              data: match.subText
-            });
-
-          case 82:
-            return _context.abrupt("return", _context.sent);
-
-          case 83:
-            _context.next = 86;
-            break;
-
-          case 85:
-            console.info("### w_controller ### did not find store for myId: ".concat(myId));
-
-          case 86:
+          case 19:
           case "end":
             return _context.stop();
         }
@@ -277,7 +92,127 @@ function () {
   return function w_controller(_x) {
     return _ref.apply(this, arguments);
   };
-}();
+}(); // /**
+//  * Receives the user and message from whatsapp and
+//  * returns a message from the system.
+//  * @param {*} args
+//  */
+// export const w_controller = async (args) => {
+//     console.log('###### w_controller SIMPLE ######');
+//     console.dir(args);
+//     const { myId, message, userId, match, contactName, profileImg, quotedMsg } = args;
+//     // If user is referencing a message (quotedMsg), insert it into processedMsg.
+//     // Otherwise, processdMsg is the same message sent.
+//     const processedMsg = quotedMsg ? quotedMsg + '\n' + message : message;
+//     const names = contactName.split(' ');
+//     const first_name = names.shift();
+//     const last_name = names.length >= 1 ? names.join(' ') : null;
+//     const _profile_pic = profileImg && decodeURIComponent(profileImg.replace('https://web.whatsapp.com/pp?e=', ''));
+//     const user = {
+//         first_name: first_name,
+//         last_name: last_name,
+//         profile_pic: _profile_pic,
+//     }
+//     const store = await getStoreByPhone(myId);
+//     if (store) {
+//         console.info(`store name: ${store.name}, match:${match}`);
+//         const { pageId } = store;
+//         // No option match, plain text.
+//         if (!match) {
+//             const pendingOrder = await getOrderPending({ pageId: pageId, userId: userId });
+//             // Found a pending order
+//             if (pendingOrder && pendingOrder.order) {
+//                 console.log(`pendingorder id:${pendingOrder.order.id} 
+//                 waitingFor:${pendingOrder.order.waitingFor}
+//                 coments:${pendingOrder.order.comments}`);
+//                 let result;
+//                 if (pendingOrder.order.waitingFor === 'typed_comments') {
+//                     const oldComments = pendingOrder.order.comments;
+//                     // Order not yet accepted
+//                     if (pendingOrder.order.status < ORDERSTATUS_ACCEPTED) {
+//                         // concat old comments and the new comments
+//                         let updatedComents = oldComments ? oldComments + '\n' + processedMsg : processedMsg;
+//                         result = await sendActions({
+//                             action: 'BASIC_UPDATE_COMMENTS',
+//                             pageID: pageId,
+//                             userID: userId,
+//                             text: updatedComents,
+//                             user: user,
+//                         });
+//                     } else { // Order already accepted
+//                         result = await sendActions({
+//                             action: 'BASIC_UPDATE_POSTCOMMENTS',
+//                             pageID: pageId,
+//                             userID: userId,
+//                             text: processedMsg,
+//                             user: user,
+//                         });
+//                     }
+//                 }
+//                 return result;
+//             } else { // No pending order found.
+//                 const page = await getOnePageData(pageId);
+//                 const store = await getStoreData(pageId);
+//                 // Get the last order from this customer.
+//                 const lastOrder = await getLastUserOrder({ pageId, userId, status: ORDERSTATUS_REJECTED });
+//                 if (lastOrder) {
+//                     console.log('>> Found lastOrder:', lastOrder.id);
+//                     const orderDay = DateTime.fromJSDate(lastOrder.createdAt).get('day');
+//                     const today = DateTime.local().get('day');
+//                     if (orderDay === today && lastOrder.status < ORDERSTATUS_FINISHED) {
+//                         console.log(' from today...');
+//                         return;
+//                     }
+//                 }
+//                 const tempoEntregar = store.delivery_time ? `(+ ou - ${store.delivery_time} min.)` : '';
+//                 const tempoRetirar = store.pickup_time ? `(+ ou - ${store.pickup_time} min.)` : '';
+//                 let replyText = page.firstResponseText.replace('$NAME', contactName);
+//                 replyText = replyText + '\n\n';
+//                 if (lastOrder && lastOrder.comments) {
+//                     replyText = replyText + 'Seu último pedido:\n';
+//                     replyText = replyText + lastOrder.comments + '\n';
+//                     replyText = replyText + 'Envie *REPETIR* para fazer o mesmo pedido OU envie os dados do pedido:\n';
+//                     return await sendActions({
+//                         action: 'BASIC_OPTION',
+//                         pageID: pageId,
+//                         userID: userId,
+//                         text: replyText,
+//                         payload: lastOrder.comments,
+//                         data: 'REPETIR',
+//                         user: user,
+//                         message: processedMsg,
+//                     });
+//                 } else {
+//                     replyText = replyText + page.orderExample + '\n';
+//                     replyText = replyText.replace('$TEMPOENTREGAR', tempoEntregar);
+//                     replyText = replyText.replace('$TEMPORETIRAR', tempoRetirar);
+//                     return await sendActions({
+//                         action: 'BASIC_REPLY',
+//                         pageID: pageId,
+//                         userID: userId,
+//                         text: replyText,
+//                         user: user,
+//                         data: processedMsg,
+//                     });
+//                 }
+//             }
+//         } else {
+//             if (match.hasOwnProperty('text') && match.text === 'REPETIR') {
+//                 return await sendActions({
+//                     action: 'BASIC_REPLY',
+//                     pageID: pageId,
+//                     userID: userId,
+//                     text: 'Ok, vamos repetir o pedido.',
+//                     user: user,
+//                     data: match.subText,
+//                 });
+//             }
+//         }
+//     } else {
+//         console.info(`### w_controller ### did not find store for myId: ${myId}`);
+//     }
+// }
+
 
 exports.w_controller = w_controller;
 
@@ -287,12 +222,12 @@ function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(_ref2) {
-    var action, pageID, userID, multiple, data, payload, location, text, addrData, user, out;
+    var action, pageID, userID, multiple, data, payload, location, text, message, user, out;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            action = _ref2.action, pageID = _ref2.pageID, userID = _ref2.userID, multiple = _ref2.multiple, data = _ref2.data, payload = _ref2.payload, location = _ref2.location, text = _ref2.text, addrData = _ref2.addrData, user = _ref2.user;
+            action = _ref2.action, pageID = _ref2.pageID, userID = _ref2.userID, multiple = _ref2.multiple, data = _ref2.data, payload = _ref2.payload, location = _ref2.location, text = _ref2.text, message = _ref2.message, user = _ref2.user;
             _context2.prev = 1;
             _context2.t0 = action;
             _context2.next = _context2.t0 === 'BASIC_REPLY' ? 5 : _context2.t0 === 'BASIC_OPTION' ? 9 : _context2.t0 === 'BASIC_UPDATE_COMMENTS' ? 13 : _context2.t0 === 'BASIC_UPDATE_POSTCOMMENTS' ? 17 : 21;
@@ -300,7 +235,7 @@ function () {
 
           case 5:
             _context2.next = 7;
-            return (0, _botController.basicReply)(pageID, userID, text, user, data);
+            return (0, _simpleBotController.basicReply)(pageID, userID, text, user, data);
 
           case 7:
             out = _context2.sent;
@@ -308,7 +243,7 @@ function () {
 
           case 9:
             _context2.next = 11;
-            return (0, _botController.basicOption)(pageID, userID, text, data, payload, user);
+            return (0, _simpleBotController.basicOption)(pageID, userID, text, data, payload, user, message);
 
           case 11:
             out = _context2.sent;
@@ -316,7 +251,7 @@ function () {
 
           case 13:
             _context2.next = 15;
-            return (0, _botController.basicComments)(pageID, userID, text, user);
+            return (0, _simpleBotController.basicComments)(pageID, userID, text, user);
 
           case 15:
             out = _context2.sent;
@@ -324,7 +259,7 @@ function () {
 
           case 17:
             _context2.next = 19;
-            return (0, _botController.basicPostComments)(pageID, userID, text, user);
+            return (0, _simpleBotController.basicPostComments)(pageID, userID, text, user);
 
           case 19:
             out = _context2.sent;
