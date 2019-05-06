@@ -197,7 +197,10 @@ var schema = new Schema({
     default_message: {
       type: String
     }
-  }]
+  }],
+  autoreply_notification: {
+    type: String
+  }
 }, {
   timestamps: true
 });

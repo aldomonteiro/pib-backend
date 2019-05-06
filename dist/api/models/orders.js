@@ -148,6 +148,9 @@ var schema = new Schema({
   },
   store_address: {
     type: String
+  },
+  sent_autoreply: {
+    type: Boolean
   }
 }, {
   timestamps: true

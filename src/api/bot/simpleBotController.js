@@ -1,5 +1,6 @@
 import { updateOrder } from '../controllers/simpleOrdersController';
 import { formatWhatsappNumber } from '../util/util';
+// import { emitEventBotWebapp } from './redisController';
 
 /**
  *
@@ -63,15 +64,38 @@ export const basicComments = async (pageId, userId, text, user) => {
  * @param {*} userId
  * @param {*} text
  */
-export const basicPostComments = async (pageId, userId, text, user) => {
+export const basicPostComments = async (pageId, userId, text, user, autoReplyMsg) => {
     const _phone = formatWhatsappNumber(userId);
-    await updateOrder({
+    const order = await updateOrder({
         pageId, userId,
         phone: _phone,
         waitingFor: 'typed_comments',
         postComments: text,
         user: user,
         mergeComments: true,
+        autoReplyMsg: autoReplyMsg,
+    });
+    return order;
+
+    // WhatsappWebBot-Delay - This solution works well with delay managed by whatsapp-web-bot.
+    // if (autoReplyMsg) {
+    //     if (!order.sent_autoreply) {            
+    //         return basicAutoReply(pageId, userId, autoReplyMsg)
+    //     } else return true;
+    // } else return true;
+}
+
+// WhatsappWebBot-Delay - This solution works well with delay managed by whatsapp-web-bot.
+// export const basicAutoReply = async (pageId, userId, text) => {
+//     await updateOrder({
+//         pageId, userId, sentAutoReply: true, comments: text, mergeComments: true,
+//     });
+//     return { type: 'text', text: text, msgType: 'withdelay' };
+// }
+
+export const basicAutoReply = async (pageId, userId, text) => {
+    await updateOrder({
+        pageId, userId, sentAutoReply: true, comments: text, mergeComments: true,
     });
     return true;
 }

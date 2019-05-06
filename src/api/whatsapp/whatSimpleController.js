@@ -1,20 +1,14 @@
 import axios from 'axios';
-import { DateTime } from 'luxon';
 import {
-    basicReply,
     basicOption,
     basicComments,
     basicPostComments,
+    basicAutoReply,
 } from '../bot/simpleBotController';
-import { getStoreByPhone, getStoreData } from '../controllers/storesController';
-import {
-    getOrderPending,
-    getLastUserOrder,
-    ORDERSTATUS_ACCEPTED,
-    ORDERSTATUS_FINISHED,
-    ORDERSTATUS_REJECTED,
-} from '../controllers/simpleOrdersController';
-import { getOnePageData } from '../controllers/pagesController';
+import { getStoreByPhone } from '../controllers/storesController';
+import { emitEventBotWhats } from '../controllers/redisController';
+
+var delayedTimeoutMSGS = {};
 
 /**
  * Receives the user and message from whatsapp and
@@ -45,15 +39,36 @@ export const w_controller = async (args) => {
         console.info(`store name: ${store.name}`);
         const { pageId } = store;
 
-        const result = await sendActions({
+        const order = await sendActions({
             action: 'BASIC_UPDATE_POSTCOMMENTS',
             pageID: pageId,
             userID: userId,
             text: processedMsg,
             user: user,
+            autoReplyMsg: store.autoreply_notification,
         });
-        return result;
+
+        if (store.autoreply_notification) {
+            if (!order.sent_autoreply) {
+                const key = order.pageId + order.userId;
+                if (!delayedTimeoutMSGS[key]) {
+                    delayedTimeoutMSGS[key] = setTimeout(directReply, 10000, myId, pageId, order.userId, store.autoreply_notification);
+                } else {
+                    clearTimeout(delayedTimeoutMSGS[key]);
+                    delayedTimeoutMSGS[key] = setTimeout(directReply, 10000, myId, pageId, order.userId, store.autoreply_notification);
+                }
+            }
+        }
+
+        return true;
     }
+}
+
+const directReply = (whatsAppId, pageId, userId, message) => {
+    const key = pageId + userId;
+    delayedTimeoutMSGS[key] = null;
+    basicAutoReply(pageId, userId, message);
+    emitEventBotWhats(whatsAppId, userId, message);
 }
 
 // /**
@@ -196,12 +211,12 @@ export const w_controller = async (args) => {
 
 export const sendActions = async ({
     action, pageID, userID, multiple, data, payload,
-    location, text, message, user }) => {
+    location, text, message, user, autoReplyMsg }) => {
     try {
         let out;
         switch (action) {
             case 'BASIC_REPLY':
-                out = await basicReply(pageID, userID, text, user, data);
+                out = await directReply(pageID, userID, text, user, data);
                 break;
             case 'BASIC_OPTION':
                 out = await basicOption(pageID, userID, text, data, payload, user, message);
@@ -210,7 +225,7 @@ export const sendActions = async ({
                 out = await basicComments(pageID, userID, text, user);
                 break;
             case 'BASIC_UPDATE_POSTCOMMENTS':
-                out = await basicPostComments(pageID, userID, text, user);
+                out = await basicPostComments(pageID, userID, text, user, autoReplyMsg);
                 break;
             default:
                 break;

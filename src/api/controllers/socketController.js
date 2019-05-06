@@ -21,6 +21,9 @@ export const setupSocketIo = (server, allowedOrigins) => {
     });
 
     io.on('connection', socket => {
+
+        logger.color('yellow').log('socket.handshake.query: ' + socket.handshake.query + ' level:' + logger.level);
+
         socket.on('acknowledgment', originID => {
             logger.color('green').log('aknowledment: ' + (originID.user || originID));
             if (originID.hasOwnProperty('origin') && originID.origin === 'whatsapp') {
@@ -52,11 +55,18 @@ export const setupSocketIo = (server, allowedOrigins) => {
         });
     });
 
-    messenger.consume('redis')
+    messenger.consume('bot-to-webapp')
         .subscribe(msg => {
             const msgJSON = JSON.parse(msg);
             const { pageID, eventName, data } = msgJSON;
             emitEvent(pageID, eventName, data);
+        });
+
+    messenger.consume('bot-to-whats')
+        .subscribe(msg => {
+            const msgJSON = JSON.parse(msg);
+            const { whatsAppId, userId, message } = msgJSON;
+            emitEventWhats(whatsAppId, 'notify', { userId: userId, message: message });
         });
 
     // setInterval(() => {

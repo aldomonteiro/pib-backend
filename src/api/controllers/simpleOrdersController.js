@@ -6,12 +6,13 @@ import {
     configSortQuery, configRangeQueryNew,
     configFilterQueryMultiple,
     formatAsCurrency,
+    addTimedMessage,
 } from '../util/util';
 import { DateTime } from 'luxon';
 // import { Bot, Elements } from 'facebook-messenger-bot';
 // import { getOnePageToken } from './pagesController';
 import { sendShippingNotification, sendRejectionNotification } from '../bot/botController';
-import { emitEvent } from './redisController';
+import { emitEventBotWebapp } from './redisController';
 import { emitEventWhats } from './socketController';
 export const ORDERSTATUS_PENDING = 0;
 export const ORDERSTATUS_CONFIRMED = 1;
@@ -111,12 +112,6 @@ export const order_get_one = async (req, res) => {
     }
 }
 
-const appendTimedComments = comments => {
-    const dateTime = DateTime.local().setZone('America/Sao_Paulo');
-    const hours = dateTime.hour + ':' + dateTime.minute + '> ';
-    return hours + comments;
-}
-
 // UPDATE
 export const order_update = async (req, res) => {
     if (req.body && req.body.id) {
@@ -143,7 +138,7 @@ export const order_update = async (req, res) => {
                 const store = await getStoreData(doc.pageId);
                 const notif = store.accept_notification;
                 if (notif) {
-                    doc.comments = doc.comments + '\n' + appendTimedComments(notif)
+                    doc.comments = addTimedMessage(doc.comments, notif)
                     sendNotification(store.phone, doc.userId, notif);
                 }
             } else if (operation === 'PRINT') {
@@ -155,7 +150,7 @@ export const order_update = async (req, res) => {
 
                 const notif = store.deliver_notification;
                 if (notif) {
-                    doc.comments = doc.comments + '\n' + appendTimedComments(notif)
+                    doc.comments = addTimedMessage(doc.comments, notif)
                     sendNotification(store.phone, doc.userId, notif);
                 }
             } else if (operation === 'MISSING_ADDRESS') {
@@ -165,7 +160,7 @@ export const order_update = async (req, res) => {
                 const notif = store.missing_address_notification;
                 if (notif) {
                     updateOrder = true;
-                    doc.comments = doc.comments + '\n' + appendTimedComments(notif)
+                    doc.comments = addTimedMessage(doc.comments, notif)
                     sendNotification(store.phone, doc.userId, notif);
                 }
             } else if (operation === 'OPEN_QUESTION') {
@@ -176,7 +171,7 @@ export const order_update = async (req, res) => {
                 const notif = question;
                 if (notif) {
                     updateOrder = true;
-                    doc.comments = doc.comments + '\n' + appendTimedComments(notif)
+                    doc.comments = addTimedMessage(doc.comments, notif)
                     sendNotification(store.phone, doc.userId, notif);
                 }
             } else if (operation === 'UPDATE_ORDER_DATA') {
@@ -202,7 +197,7 @@ export const order_update = async (req, res) => {
                             if (notif) {
                                 const message = notif.toString().replace('$TOTAL', formatAsCurrency(doc.total))
                                 updateOrder = true;
-                                doc.comments = doc.comments + '\n' + appendTimedComments(message)
+                                doc.comments = addTimedMessage(doc.comments, message)
                                 sendNotification(store.phone, doc.userId, message);
                             }
                         }
@@ -274,7 +269,7 @@ export const getOrderJson = async (pageId, orderId) => {
     }
 }
 
-const getOrderData = (order, customer) => {
+const getOrderData = (order, customer, totalAmount, totalItems) => {
     let cleaned = ('' + order.phone).replace(/\D/g, '')
     const match = cleaned.match(/^(\d{2})(\d{2})(\d{4})(\d{4})$/)
     if (match) {
@@ -287,7 +282,6 @@ const getOrderData = (order, customer) => {
         profile_pic: customer ? customer.profile_pic : null,
         createdAt: order.createdAt,
         updatedAt: order.updatedAt,
-        confirmed_at: order.confirmed_at,
         changed_at: order.changed_at,
         status: order.status,
         status2: order.status2,
@@ -297,6 +291,8 @@ const getOrderData = (order, customer) => {
         details: order.details,
         comments: order.comments,
         postComments: order.postComments,
+        asideTotalAmount: totalAmount,
+        asideTotalItems: totalItems,
     }
     return jsonOrder;
 }
@@ -307,6 +303,7 @@ export const updateOrder = async orderData => {
             phone, addrData, confirmOrder,
             waitingFor,
             comments, postComments, mergeComments,
+            sentAutoReply, autoReplyMsg,
         } = orderData;
 
         let customerData = {}
@@ -365,25 +362,40 @@ export const updateOrder = async orderData => {
             }
 
             if (comments) {
-                order.comments = comments;
+                if (mergeComments)
+                    // order.comments = order.comments ? order.comments + '\n' + hours + comments : hours + comments;
+                    order.comments = addTimedMessage(order.comments, comments);
+                else
+                    order.comments = comments;
                 updateOrder = true;
             }
 
             if (postComments) {
-                if (!order.postComments)
-                    order.postComments = [];
 
-                // let arrPostComments = postComments.split('\n');
-                // order.postComments = order.postComments.concat(arrPostComments);
+                // This store is setup to send auto reply, but it wasn't send yet.
+                // So, I am gonna put all comments into comments, not postComments.
+                if (autoReplyMsg && !order.sent_autoreply) {
+                    order.details = order.details ? order.details + '\n' + postComments : postComments;
+                } else {
 
-                order.postComments.push(postComments);
+                    if (!order.postComments)
+                        order.postComments = [];
 
-                const dateTime = DateTime.local().setZone('America/Sao_Paulo');
-                const hours = dateTime.hour + ':' + dateTime.minute + '> ';
+                    // let arrPostComments = postComments.split('\n');
+                    // order.postComments = order.postComments.concat(arrPostComments);
+
+                    order.postComments.push(postComments);
+                }
 
                 if (mergeComments)
-                    order.comments = order.comments ? order.comments + '\n' + hours + postComments : hours + postComments;
+                    // order.comments =  order.comments ? order.comments + '\n' + hours + postComments : hours + postComments;
+                    order.comments = addTimedMessage(order.comments, postComments);
 
+                updateOrder = true;
+            }
+
+            if (sentAutoReply) {
+                order.sent_autoreply = sentAutoReply;
                 updateOrder = true;
             }
 
@@ -401,9 +413,11 @@ export const updateOrder = async orderData => {
                 // } else 
                 if (comments || postComments) {
                     const orderJson = getOrderData(order, customer);
-                    emitEvent(pageId, 'new-comment', orderJson);
+                    emitEventBotWebapp(pageId, 'new-comment', orderJson);
                 }
             }
+
+            return order;
 
         } else {
             // const count = await Order.find({ pageId: pageId }).count().exec();
@@ -414,14 +428,12 @@ export const updateOrder = async orderData => {
             let orderId = 1;
             if (resultLastId && resultLastId.length) orderId = resultLastId[0].id + 1;
 
-            const dateTime = DateTime.local().setZone('America/Sao_Paulo');
-            const hours = dateTime.hour + ':' + dateTime.minute + '> ';
-
             let _comments;
             if (mergeComments && postComments)
-                _comments = comments ? comments + '\n' + hours + postComments : hours + postComments;
+                // _comments = comments ? comments + '\n' + hours + postComments : hours + postComments;
+                _comments = addTimedMessage(comments, postComments);
             else
-                _comments = hours + comments;
+                _comments = addTimedMessage(null, comments);
 
             // First message goes to details, not to postComments
             const order = new Order({
@@ -439,7 +451,9 @@ export const updateOrder = async orderData => {
 
             const orderJson = getOrderData(order, customer)
 
-            emitEvent(pageId, 'new-order', orderJson);
+            emitEventBotWebapp(pageId, 'new-order', orderJson);
+
+            return order;
         }
     } catch (updateOrderError) {
         console.error({ updateOrderError });
@@ -472,11 +486,11 @@ const fullOrderGetAll = async (queryObj, sortObj, rangeObj) => {
 
             // workaround to show totalamount and totalitems in the frontend, because
             // I am only sending part of the list (pagination)
-            // let asideTotalAmount = 0;
-            // let asideTotalItems = result.length;
-            // for (const order of result) {
-            //     asideTotalAmount = asideTotalAmount + order.total;
-            // }
+            let asideTotalAmount = 0;
+            let asideTotalItems = result.length;
+            for (const order of result) {
+                asideTotalAmount += order.total;
+            }
             // workaround end: all orders will receive these values.
 
             // instant cache to not query the database anytime.
@@ -488,7 +502,7 @@ const fullOrderGetAll = async (queryObj, sortObj, rangeObj) => {
                     savedCustomers[order.customerId] = customer;
                 }
 
-                const jsonOrder = getOrderData(order, savedCustomers[order.customerId]);
+                const jsonOrder = getOrderData(order, savedCustomers[order.customerId], asideTotalAmount, asideTotalItems);
                 ret.ordersArray.push(jsonOrder);
             }
         }
@@ -572,4 +586,8 @@ export const getOrdersCustomerStat = async orderData => {
 
 const sendNotification = (whatsAppId, userId, message) => {
     emitEventWhats(whatsAppId, 'notify', { userId: userId, message: message })
+}
+
+const sendDelayedMsg = async (pageID, userID, message) => {
+    sendNotification(whatsAppId, userId, message);
 }

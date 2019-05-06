@@ -3,21 +3,33 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.emitEvent = void 0;
+exports.emitEventBotWhats = exports.emitEventBotWebapp = void 0;
 
 var _messenger = _interopRequireDefault(require("../../messenger"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var emitEvent = function emitEvent(pageID, eventName, data) {
+var emitEventBotWebapp = function emitEventBotWebapp(pageID, eventName, data) {
   var msgStr = JSON.stringify({
     pageID: pageID,
     eventName: eventName,
     data: data
   });
 
-  _messenger["default"].publish('redis', msgStr);
+  _messenger["default"].publish('bot-to-webapp', msgStr);
 };
 
-exports.emitEvent = emitEvent;
+exports.emitEventBotWebapp = emitEventBotWebapp;
+
+var emitEventBotWhats = function emitEventBotWhats(whatsAppId, userId, message) {
+  var msgStr = JSON.stringify({
+    whatsAppId: whatsAppId,
+    userId: userId,
+    message: message
+  });
+
+  _messenger["default"].publish('bot-to-whats', msgStr);
+};
+
+exports.emitEventBotWhats = emitEventBotWhats;
 //# sourceMappingURL=redisController.js.map

@@ -240,17 +240,10 @@ function () {
   return function order_get_one(_x3, _x4) {
     return _ref2.apply(this, arguments);
   };
-}();
+}(); // UPDATE
+
 
 exports.order_get_one = order_get_one;
-
-var appendTimedComments = function appendTimedComments(comments) {
-  var dateTime = _luxon.DateTime.local().setZone('America/Sao_Paulo');
-
-  var hours = dateTime.hour + ':' + dateTime.minute + '> ';
-  return hours + comments;
-}; // UPDATE
-
 
 var order_update =
 /*#__PURE__*/
@@ -322,7 +315,7 @@ function () {
             notif = store.accept_notification;
 
             if (notif) {
-              doc.comments = doc.comments + '\n' + appendTimedComments(notif);
+              doc.comments = (0, _util2.addTimedMessage)(doc.comments, notif);
               sendNotification(store.phone, doc.userId, notif);
             }
 
@@ -355,7 +348,7 @@ function () {
             _notif = _store.deliver_notification;
 
             if (_notif) {
-              doc.comments = doc.comments + '\n' + appendTimedComments(_notif);
+              doc.comments = (0, _util2.addTimedMessage)(doc.comments, _notif);
               sendNotification(_store.phone, doc.userId, _notif);
             }
 
@@ -378,7 +371,7 @@ function () {
 
             if (_notif2) {
               _updateOrder = true;
-              doc.comments = doc.comments + '\n' + appendTimedComments(_notif2);
+              doc.comments = (0, _util2.addTimedMessage)(doc.comments, _notif2);
               sendNotification(_store2.phone, doc.userId, _notif2);
             }
 
@@ -402,7 +395,7 @@ function () {
 
             if (_notif3) {
               _updateOrder = true;
-              doc.comments = doc.comments + '\n' + appendTimedComments(_notif3);
+              doc.comments = (0, _util2.addTimedMessage)(doc.comments, _notif3);
               sendNotification(_store3.phone, doc.userId, _notif3);
             }
 
@@ -466,7 +459,7 @@ function () {
             if (_notif4) {
               message = _notif4.toString().replace('$TOTAL', (0, _util2.formatAsCurrency)(doc.total));
               _updateOrder = true;
-              doc.comments = doc.comments + '\n' + appendTimedComments(message);
+              doc.comments = (0, _util2.addTimedMessage)(doc.comments, message);
               sendNotification(_store4.phone, doc.userId, message);
             }
 
@@ -678,7 +671,7 @@ function () {
 
 exports.getOrderJson = getOrderJson;
 
-var getOrderData = function getOrderData(order, customer) {
+var getOrderData = function getOrderData(order, customer, totalAmount, totalItems) {
   var cleaned = ('' + order.phone).replace(/\D/g, '');
   var match = cleaned.match(/^(\d{2})(\d{2})(\d{4})(\d{4})$/);
 
@@ -693,7 +686,6 @@ var getOrderData = function getOrderData(order, customer) {
     profile_pic: customer ? customer.profile_pic : null,
     createdAt: order.createdAt,
     updatedAt: order.updatedAt,
-    confirmed_at: order.confirmed_at,
     changed_at: order.changed_at,
     status: order.status,
     status2: order.status2,
@@ -702,7 +694,9 @@ var getOrderData = function getOrderData(order, customer) {
     total: order.total,
     details: order.details,
     comments: order.comments,
-    postComments: order.postComments
+    postComments: order.postComments,
+    asideTotalAmount: totalAmount,
+    asideTotalItems: totalItems
   };
   return jsonOrder;
 };
@@ -713,17 +707,17 @@ function () {
   var _ref6 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee6(orderData) {
-    var pageId, userId, user, phone, addrData, confirmOrder, waitingFor, comments, postComments, mergeComments, customerData, first_name, last_name, profile_pic, customer, order, _updateOrder2, dateTime, hours, orderJson, resultLastId, orderId, _dateTime, _hours, _comments, _order2, _orderJson;
+    var pageId, _userId, user, phone, addrData, confirmOrder, waitingFor, comments, postComments, mergeComments, sentAutoReply, autoReplyMsg, customerData, first_name, last_name, profile_pic, customer, order, _updateOrder2, orderJson, resultLastId, orderId, _comments, _order2, _orderJson;
 
     return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
             _context6.prev = 0;
-            pageId = orderData.pageId, userId = orderData.userId, user = orderData.user, phone = orderData.phone, addrData = orderData.addrData, confirmOrder = orderData.confirmOrder, waitingFor = orderData.waitingFor, comments = orderData.comments, postComments = orderData.postComments, mergeComments = orderData.mergeComments;
+            pageId = orderData.pageId, _userId = orderData.userId, user = orderData.user, phone = orderData.phone, addrData = orderData.addrData, confirmOrder = orderData.confirmOrder, waitingFor = orderData.waitingFor, comments = orderData.comments, postComments = orderData.postComments, mergeComments = orderData.mergeComments, sentAutoReply = orderData.sentAutoReply, autoReplyMsg = orderData.autoReplyMsg;
             customerData = {};
             customerData.pageId = pageId;
-            customerData.userId = userId;
+            customerData.userId = _userId;
 
             if (user) {
               first_name = user.first_name, last_name = user.last_name, profile_pic = user.profile_pic;
@@ -742,7 +736,7 @@ function () {
             _context6.next = 13;
             return getLastUserOrder({
               pageId: pageId,
-              userId: userId,
+              userId: _userId,
               status: ORDERSTATUS_FINISHED
             });
 
@@ -750,7 +744,7 @@ function () {
             order = _context6.sent;
 
             if (!order) {
-              _context6.next = 31;
+              _context6.next = 33;
               break;
             }
 
@@ -792,32 +786,44 @@ function () {
             }
 
             if (comments) {
-              order.comments = comments;
+              if (mergeComments) // order.comments = order.comments ? order.comments + '\n' + hours + comments : hours + comments;
+                order.comments = (0, _util2.addTimedMessage)(order.comments, comments);else order.comments = comments;
               _updateOrder2 = true;
             }
 
             if (postComments) {
-              if (!order.postComments) order.postComments = []; // let arrPostComments = postComments.split('\n');
-              // order.postComments = order.postComments.concat(arrPostComments);
+              // This store is setup to send auto reply, but it wasn't send yet.
+              // So, I am gonna put all comments into comments, not postComments.
+              if (autoReplyMsg && !order.sent_autoreply) {
+                order.details = order.details ? order.details + '\n' + postComments : postComments;
+              } else {
+                if (!order.postComments) order.postComments = []; // let arrPostComments = postComments.split('\n');
+                // order.postComments = order.postComments.concat(arrPostComments);
 
-              order.postComments.push(postComments);
-              dateTime = _luxon.DateTime.local().setZone('America/Sao_Paulo');
-              hours = dateTime.hour + ':' + dateTime.minute + '> ';
-              if (mergeComments) order.comments = order.comments ? order.comments + '\n' + hours + postComments : hours + postComments;
+                order.postComments.push(postComments);
+              }
+
+              if (mergeComments) // order.comments =  order.comments ? order.comments + '\n' + hours + postComments : hours + postComments;
+                order.comments = (0, _util2.addTimedMessage)(order.comments, postComments);
+              _updateOrder2 = true;
+            }
+
+            if (sentAutoReply) {
+              order.sent_autoreply = sentAutoReply;
               _updateOrder2 = true;
             }
 
             if (!_updateOrder2) {
-              _context6.next = 28;
+              _context6.next = 29;
               break;
             }
 
             // changed_at keeps the last time the user sent a message.
             order.changed_at = _luxon.DateTime.local();
-            _context6.next = 28;
+            _context6.next = 29;
             return order.save();
 
-          case 28:
+          case 29:
             if (confirmOrder || comments || postComments) {
               // every time new comments are stored I am passing the confirmOrder parameter. So,
               // here I check if this order was not already confirmed.
@@ -826,31 +832,29 @@ function () {
               // } else 
               if (comments || postComments) {
                 orderJson = getOrderData(order, customer);
-                (0, _redisController.emitEvent)(pageId, 'new-comment', orderJson);
+                (0, _redisController.emitEventBotWebapp)(pageId, 'new-comment', orderJson);
               }
             }
 
-            _context6.next = 44;
-            break;
+            return _context6.abrupt("return", order);
 
-          case 31:
-            _context6.next = 33;
+          case 33:
+            _context6.next = 35;
             return _orders["default"].find({
               pageId: pageId
             }).select('id').sort('-id').limit(1).exec();
 
-          case 33:
+          case 35:
             resultLastId = _context6.sent;
             orderId = 1;
             if (resultLastId && resultLastId.length) orderId = resultLastId[0].id + 1;
-            _dateTime = _luxon.DateTime.local().setZone('America/Sao_Paulo');
-            _hours = _dateTime.hour + ':' + _dateTime.minute + '> ';
-            if (mergeComments && postComments) _comments = comments ? comments + '\n' + _hours + postComments : _hours + postComments;else _comments = _hours + comments; // First message goes to details, not to postComments
+            if (mergeComments && postComments) // _comments = comments ? comments + '\n' + hours + postComments : hours + postComments;
+              _comments = (0, _util2.addTimedMessage)(comments, postComments);else _comments = (0, _util2.addTimedMessage)(null, comments); // First message goes to details, not to postComments
 
             _order2 = new _orders["default"]({
               id: orderId,
               pageId: pageId,
-              userId: userId,
+              userId: _userId,
               customerId: customer.id,
               phone: phone,
               waitingFor: waitingFor,
@@ -863,26 +867,27 @@ function () {
 
           case 42:
             _orderJson = getOrderData(_order2, customer);
-            (0, _redisController.emitEvent)(pageId, 'new-order', _orderJson);
+            (0, _redisController.emitEventBotWebapp)(pageId, 'new-order', _orderJson);
+            return _context6.abrupt("return", _order2);
 
-          case 44:
-            _context6.next = 50;
+          case 45:
+            _context6.next = 51;
             break;
 
-          case 46:
-            _context6.prev = 46;
+          case 47:
+            _context6.prev = 47;
             _context6.t0 = _context6["catch"](0);
             console.error({
               updateOrderError: _context6.t0
             });
             throw _context6.t0;
 
-          case 50:
+          case 51:
           case "end":
             return _context6.stop();
         }
       }
-    }, _callee6, null, [[0, 46]]);
+    }, _callee6, null, [[0, 47]]);
   }));
 
   return function updateOrder(_x10) {
@@ -898,7 +903,8 @@ function () {
   var _ref7 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee7(queryObj, sortObj, rangeObj) {
-    var ret, result, savedCustomers, i, order, customer, jsonOrder;
+    var ret, result, asideTotalAmount, asideTotalItems, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, _order3, savedCustomers, i, order, customer, jsonOrder;
+
     return regeneratorRuntime.wrap(function _callee7$(_context7) {
       while (1) {
         switch (_context7.prev = _context7.next) {
@@ -927,66 +933,107 @@ function () {
             ret.ordersArray = [];
 
             if (!(result && result.length && result.length > 0)) {
-              _context7.next = 25;
+              _context7.next = 46;
               break;
             }
 
             // workaround to show totalamount and totalitems in the frontend, because
             // I am only sending part of the list (pagination)
-            // let asideTotalAmount = 0;
-            // let asideTotalItems = result.length;
-            // for (const order of result) {
-            //     asideTotalAmount = asideTotalAmount + order.total;
-            // }
-            // workaround end: all orders will receive these values.
+            asideTotalAmount = 0;
+            asideTotalItems = result.length;
+            _iteratorNormalCompletion = true;
+            _didIteratorError = false;
+            _iteratorError = undefined;
+            _context7.prev = 16;
+
+            for (_iterator = result[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              _order3 = _step.value;
+              asideTotalAmount += _order3.total;
+            } // workaround end: all orders will receive these values.
             // instant cache to not query the database anytime.
+
+
+            _context7.next = 24;
+            break;
+
+          case 20:
+            _context7.prev = 20;
+            _context7.t0 = _context7["catch"](16);
+            _didIteratorError = true;
+            _iteratorError = _context7.t0;
+
+          case 24:
+            _context7.prev = 24;
+            _context7.prev = 25;
+
+            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+              _iterator["return"]();
+            }
+
+          case 27:
+            _context7.prev = 27;
+
+            if (!_didIteratorError) {
+              _context7.next = 30;
+              break;
+            }
+
+            throw _iteratorError;
+
+          case 30:
+            return _context7.finish(27);
+
+          case 31:
+            return _context7.finish(24);
+
+          case 32:
             savedCustomers = {};
             i = ret.rangeIni;
 
-          case 13:
+          case 34:
             if (!(i < ret.rangeEnd)) {
-              _context7.next = 25;
+              _context7.next = 46;
               break;
             }
 
             order = result[i];
 
             if (savedCustomers[order.customerId]) {
-              _context7.next = 20;
+              _context7.next = 41;
               break;
             }
 
-            _context7.next = 18;
+            _context7.next = 39;
             return (0, _customersController.getCustomerById)(order.pageId, order.customerId);
 
-          case 18:
+          case 39:
             customer = _context7.sent;
             savedCustomers[order.customerId] = customer;
 
-          case 20:
-            jsonOrder = getOrderData(order, savedCustomers[order.customerId]);
+          case 41:
+            jsonOrder = getOrderData(order, savedCustomers[order.customerId], asideTotalAmount, asideTotalItems);
             ret.ordersArray.push(jsonOrder);
 
-          case 22:
+          case 43:
             i++;
-            _context7.next = 13;
+            _context7.next = 34;
             break;
 
-          case 25:
+          case 46:
             return _context7.abrupt("return", ret);
 
-          case 28:
-            _context7.prev = 28;
-            _context7.t0 = _context7["catch"](1);
-            console.error(_context7.t0);
+          case 49:
+            _context7.prev = 49;
+            _context7.t1 = _context7["catch"](1);
+            console.error(_context7.t1);
             return _context7.abrupt("return", ret);
 
-          case 32:
+          case 53:
           case "end":
             return _context7.stop();
         }
       }
-    }, _callee7, null, [[1, 28]]);
+    }, _callee7, null, [[1, 49], [16, 20, 24, 32], [25,, 27, 31]]);
   }));
 
   return function fullOrderGetAll(_x11, _x12, _x13) {
@@ -1194,7 +1241,7 @@ function () {
   var _ref12 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee12(orderData) {
-    var pageId, customerId, orders, total_spent, nb_orders, first_order, last_order, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, order;
+    var pageId, customerId, orders, total_spent, nb_orders, first_order, last_order, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, order;
 
     return regeneratorRuntime.wrap(function _callee12$(_context12) {
       while (1) {
@@ -1213,13 +1260,13 @@ function () {
             nb_orders = 0;
             first_order = Date.now();
             last_order = null;
-            _iteratorNormalCompletion = true;
-            _didIteratorError = false;
-            _iteratorError = undefined;
+            _iteratorNormalCompletion2 = true;
+            _didIteratorError2 = false;
+            _iteratorError2 = undefined;
             _context12.prev = 11;
 
-            for (_iterator = orders[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-              order = _step.value;
+            for (_iterator2 = orders[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              order = _step2.value;
               total_spent += order.total;
               nb_orders += 1;
 
@@ -1238,26 +1285,26 @@ function () {
           case 15:
             _context12.prev = 15;
             _context12.t0 = _context12["catch"](11);
-            _didIteratorError = true;
-            _iteratorError = _context12.t0;
+            _didIteratorError2 = true;
+            _iteratorError2 = _context12.t0;
 
           case 19:
             _context12.prev = 19;
             _context12.prev = 20;
 
-            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-              _iterator["return"]();
+            if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+              _iterator2["return"]();
             }
 
           case 22:
             _context12.prev = 22;
 
-            if (!_didIteratorError) {
+            if (!_didIteratorError2) {
               _context12.next = 25;
               break;
             }
 
-            throw _iteratorError;
+            throw _iteratorError2;
 
           case 25:
             return _context12.finish(22);
@@ -1294,4 +1341,29 @@ var sendNotification = function sendNotification(whatsAppId, userId, message) {
     message: message
   });
 };
+
+var sendDelayedMsg =
+/*#__PURE__*/
+function () {
+  var _ref13 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee13(pageID, userID, message) {
+    return regeneratorRuntime.wrap(function _callee13$(_context13) {
+      while (1) {
+        switch (_context13.prev = _context13.next) {
+          case 0:
+            sendNotification(whatsAppId, userId, message);
+
+          case 1:
+          case "end":
+            return _context13.stop();
+        }
+      }
+    }, _callee13);
+  }));
+
+  return function sendDelayedMsg(_x19, _x20, _x21) {
+    return _ref13.apply(this, arguments);
+  };
+}();
 //# sourceMappingURL=simpleOrdersController.js.map

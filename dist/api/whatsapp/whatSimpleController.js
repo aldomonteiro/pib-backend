@@ -7,15 +7,11 @@ exports.waboxapp_sendMessage = exports.sendActions = exports.w_controller = void
 
 var _axios = _interopRequireDefault(require("axios"));
 
-var _luxon = require("luxon");
-
 var _simpleBotController = require("../bot/simpleBotController");
 
 var _storesController = require("../controllers/storesController");
 
-var _simpleOrdersController = require("../controllers/simpleOrdersController");
-
-var _pagesController = require("../controllers/pagesController");
+var _redisController = require("../controllers/redisController");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -23,18 +19,20 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+var delayedTimeoutMSGS = {};
 /**
  * Receives the user and message from whatsapp and
  * returns a message from the system.
  * @param {*} args
  */
+
 var w_controller =
 /*#__PURE__*/
 function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(args) {
-    var myId, message, userId, contactName, profileImg, quotedMsg, processedMsg, names, first_name, last_name, _profile_pic, user, store, pageId, result;
+    var myId, message, userId, contactName, profileImg, quotedMsg, processedMsg, names, first_name, last_name, _profile_pic, user, store, pageId, order, key;
 
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -62,7 +60,7 @@ function () {
             store = _context.sent;
 
             if (!store) {
-              _context.next = 19;
+              _context.next = 20;
               break;
             }
 
@@ -74,14 +72,29 @@ function () {
               pageID: pageId,
               userID: userId,
               text: processedMsg,
-              user: user
+              user: user,
+              autoReplyMsg: store.autoreply_notification
             });
 
           case 17:
-            result = _context.sent;
-            return _context.abrupt("return", result);
+            order = _context.sent;
 
-          case 19:
+            if (store.autoreply_notification) {
+              if (!order.sent_autoreply) {
+                key = order.pageId + order.userId;
+
+                if (!delayedTimeoutMSGS[key]) {
+                  delayedTimeoutMSGS[key] = setTimeout(directReply, 10000, myId, pageId, order.userId, store.autoreply_notification);
+                } else {
+                  clearTimeout(delayedTimeoutMSGS[key]);
+                  delayedTimeoutMSGS[key] = setTimeout(directReply, 10000, myId, pageId, order.userId, store.autoreply_notification);
+                }
+              }
+            }
+
+            return _context.abrupt("return", true);
+
+          case 20:
           case "end":
             return _context.stop();
         }
@@ -92,7 +105,16 @@ function () {
   return function w_controller(_x) {
     return _ref.apply(this, arguments);
   };
-}(); // /**
+}();
+
+exports.w_controller = w_controller;
+
+var directReply = function directReply(whatsAppId, pageId, userId, message) {
+  var key = pageId + userId;
+  delayedTimeoutMSGS[key] = null;
+  (0, _simpleBotController.basicAutoReply)(pageId, userId, message);
+  (0, _redisController.emitEventBotWhats)(whatsAppId, userId, message);
+}; // /**
 //  * Receives the user and message from whatsapp and
 //  * returns a message from the system.
 //  * @param {*} args
@@ -214,20 +236,18 @@ function () {
 // }
 
 
-exports.w_controller = w_controller;
-
 var sendActions =
 /*#__PURE__*/
 function () {
   var _ref3 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(_ref2) {
-    var action, pageID, userID, multiple, data, payload, location, text, message, user, out;
+    var action, pageID, userID, multiple, data, payload, location, text, message, user, autoReplyMsg, out;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            action = _ref2.action, pageID = _ref2.pageID, userID = _ref2.userID, multiple = _ref2.multiple, data = _ref2.data, payload = _ref2.payload, location = _ref2.location, text = _ref2.text, message = _ref2.message, user = _ref2.user;
+            action = _ref2.action, pageID = _ref2.pageID, userID = _ref2.userID, multiple = _ref2.multiple, data = _ref2.data, payload = _ref2.payload, location = _ref2.location, text = _ref2.text, message = _ref2.message, user = _ref2.user, autoReplyMsg = _ref2.autoReplyMsg;
             _context2.prev = 1;
             _context2.t0 = action;
             _context2.next = _context2.t0 === 'BASIC_REPLY' ? 5 : _context2.t0 === 'BASIC_OPTION' ? 9 : _context2.t0 === 'BASIC_UPDATE_COMMENTS' ? 13 : _context2.t0 === 'BASIC_UPDATE_POSTCOMMENTS' ? 17 : 21;
@@ -235,7 +255,7 @@ function () {
 
           case 5:
             _context2.next = 7;
-            return (0, _simpleBotController.basicReply)(pageID, userID, text, user, data);
+            return directReply(pageID, userID, text, user, data);
 
           case 7:
             out = _context2.sent;
@@ -259,7 +279,7 @@ function () {
 
           case 17:
             _context2.next = 19;
-            return (0, _simpleBotController.basicPostComments)(pageID, userID, text, user);
+            return (0, _simpleBotController.basicPostComments)(pageID, userID, text, user, autoReplyMsg);
 
           case 19:
             out = _context2.sent;

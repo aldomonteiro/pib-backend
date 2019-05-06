@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.basicPostComments = exports.basicComments = exports.basicOption = exports.basicReply = void 0;
+exports.basicAutoReply = exports.basicPostComments = exports.basicComments = exports.basicOption = exports.basicReply = void 0;
 
 var _simpleOrdersController = require("../controllers/simpleOrdersController");
 
@@ -12,6 +12,8 @@ var _util = require("../util/util");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+// import { emitEventBotWebapp } from './redisController';
 
 /**
  *
@@ -177,8 +179,8 @@ var basicPostComments =
 function () {
   var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee4(pageId, userId, text, user) {
-    var _phone;
+  regeneratorRuntime.mark(function _callee4(pageId, userId, text, user, autoReplyMsg) {
+    var _phone, order;
 
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
@@ -193,13 +195,15 @@ function () {
               waitingFor: 'typed_comments',
               postComments: text,
               user: user,
-              mergeComments: true
+              mergeComments: true,
+              autoReplyMsg: autoReplyMsg
             });
 
           case 3:
-            return _context4.abrupt("return", true);
+            order = _context4.sent;
+            return _context4.abrupt("return", order);
 
-          case 4:
+          case 5:
           case "end":
             return _context4.stop();
         }
@@ -207,10 +211,54 @@ function () {
     }, _callee4);
   }));
 
-  return function basicPostComments(_x17, _x18, _x19, _x20) {
+  return function basicPostComments(_x17, _x18, _x19, _x20, _x21) {
     return _ref4.apply(this, arguments);
+  };
+}(); // WhatsappWebBot-Delay - This solution works well with delay managed by whatsapp-web-bot.
+// export const basicAutoReply = async (pageId, userId, text) => {
+//     await updateOrder({
+//         pageId, userId, sentAutoReply: true, comments: text, mergeComments: true,
+//     });
+//     return { type: 'text', text: text, msgType: 'withdelay' };
+// }
+
+
+exports.basicPostComments = basicPostComments;
+
+var basicAutoReply =
+/*#__PURE__*/
+function () {
+  var _ref5 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee5(pageId, userId, text) {
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            _context5.next = 2;
+            return (0, _simpleOrdersController.updateOrder)({
+              pageId: pageId,
+              userId: userId,
+              sentAutoReply: true,
+              comments: text,
+              mergeComments: true
+            });
+
+          case 2:
+            return _context5.abrupt("return", true);
+
+          case 3:
+          case "end":
+            return _context5.stop();
+        }
+      }
+    }, _callee5);
+  }));
+
+  return function basicAutoReply(_x22, _x23, _x24) {
+    return _ref5.apply(this, arguments);
   };
 }();
 
-exports.basicPostComments = basicPostComments;
+exports.basicAutoReply = basicAutoReply;
 //# sourceMappingURL=simpleBotController.js.map

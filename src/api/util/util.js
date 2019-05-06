@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 
 export const configSortQuery = sortString => {
     var sortObj = {};
@@ -155,3 +156,15 @@ export const fixNonCapitalizeWords = word => {
         return word.replace(' Com ', ' com ');
     else return word;
 }
+
+export const addTimedMessage = (previous, current) => {
+    const dateTime = DateTime.local().setZone('America/Sao_Paulo');
+    const minute = '0' + dateTime.minute;
+    const formattedMinute = minute.substr(minute.length - 2, minute.length);
+    const hours = dateTime.hour + ':' + formattedMinute + '> ';
+
+    if (previous)
+        return previous + '\n' + hours + current;
+    else return hours + current;
+}
+

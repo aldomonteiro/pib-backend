@@ -26,6 +26,8 @@ var setupSocketIo = function setupSocketIo(server, allowedOrigins) {
     }
   });
   io.on('connection', function (socket) {
+    _nodeColorLog["default"].color('yellow').log('socket.handshake.query: ' + socket.handshake.query + ' level:' + _nodeColorLog["default"].level);
+
     socket.on('acknowledgment', function (originID) {
       _nodeColorLog["default"].color('green').log('aknowledment: ' + (originID.user || originID));
 
@@ -68,12 +70,23 @@ var setupSocketIo = function setupSocketIo(server, allowedOrigins) {
     });
   });
 
-  _messenger["default"].consume('redis').subscribe(function (msg) {
+  _messenger["default"].consume('bot-to-webapp').subscribe(function (msg) {
     var msgJSON = JSON.parse(msg);
     var pageID = msgJSON.pageID,
         eventName = msgJSON.eventName,
         data = msgJSON.data;
     emitEvent(pageID, eventName, data);
+  });
+
+  _messenger["default"].consume('bot-to-whats').subscribe(function (msg) {
+    var msgJSON = JSON.parse(msg);
+    var whatsAppId = msgJSON.whatsAppId,
+        userId = msgJSON.userId,
+        message = msgJSON.message;
+    emitEventWhats(whatsAppId, 'notify', {
+      userId: userId,
+      message: message
+    });
   }); // setInterval(() => {
   //     const pages = ['278383016327989']
   //     pages.forEach(page => emitEvent(page, 'talk-to-human', { id: page + Math.round(Math.random() * 100), first_name: 'Try ' }))

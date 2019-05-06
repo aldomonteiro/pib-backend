@@ -11,7 +11,7 @@ import { DateTime } from 'luxon';
 // import { Bot, Elements } from 'facebook-messenger-bot';
 // import { getOnePageToken } from './pagesController';
 import { sendShippingNotification, sendRejectionNotification } from '../bot/botController';
-import { emitEvent } from './redisController';
+import { emitEventBotWebapp } from './redisController';
 import { emitEventWhats } from './socketController';
 export const ORDERSTATUS_PENDING = 0;
 export const ORDERSTATUS_CONFIRMED = 1;
@@ -584,9 +584,9 @@ export const updateOrder = async orderData => {
                 // every time new comments are stores I am passing the confirmOrder parameter. So,
                 // here I check if this order was not already confirmed.
                 if (confirmOrder && currentStatus < ORDERSTATUS_CONFIRMED)
-                    emitEvent(pageId, 'new-order', order);
+                    emitEventBotWebapp(pageId, 'new-order', order);
                 else if (comments || postComments)
-                    emitEvent(pageId, 'new-comment', order);
+                    emitEventBotWebapp(pageId, 'new-comment', order);
             }
 
         } else {

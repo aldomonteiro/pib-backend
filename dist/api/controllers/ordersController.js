@@ -1037,7 +1037,7 @@ function () {
             if (confirmOrder || comments || postComments) {
               // every time new comments are stores I am passing the confirmOrder parameter. So,
               // here I check if this order was not already confirmed.
-              if (confirmOrder && currentStatus < ORDERSTATUS_CONFIRMED) (0, _redisController.emitEvent)(pageId, 'new-order', order);else if (comments || postComments) (0, _redisController.emitEvent)(pageId, 'new-comment', order);
+              if (confirmOrder && currentStatus < ORDERSTATUS_CONFIRMED) (0, _redisController.emitEventBotWebapp)(pageId, 'new-order', order);else if (comments || postComments) (0, _redisController.emitEventBotWebapp)(pageId, 'new-comment', order);
             }
 
             _context6.next = 84;

@@ -49,6 +49,7 @@ const schema = new Schema({
     surcharge_percent: { type: Number },
     surcharge_amount: { type: Number },
     store_address: { type: String },
+    sent_autoreply: { type: Boolean },
 }, { timestamps: true });
 
 schema.pre('save', function (next) {

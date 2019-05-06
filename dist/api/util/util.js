@@ -3,7 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.fixNonCapitalizeWords = exports.formatAsCurrency = exports.formatWhatsappNumber = exports.distanceBetweenCoordinates = exports.shuffle = exports.choices_kinds = exports.choices_sizes = exports.configFilterQueryMultiple = exports.configFilterQuery = exports.configRangeQueryNew = exports.configRangeQuery = exports.configSortQuery = void 0;
+exports.addTimedMessage = exports.fixNonCapitalizeWords = exports.formatAsCurrency = exports.formatWhatsappNumber = exports.distanceBetweenCoordinates = exports.shuffle = exports.choices_kinds = exports.choices_sizes = exports.configFilterQueryMultiple = exports.configFilterQuery = exports.configRangeQueryNew = exports.configRangeQuery = exports.configSortQuery = void 0;
+
+var _luxon = require("luxon");
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -224,4 +226,15 @@ var fixNonCapitalizeWords = function fixNonCapitalizeWords(word) {
 };
 
 exports.fixNonCapitalizeWords = fixNonCapitalizeWords;
+
+var addTimedMessage = function addTimedMessage(previous, current) {
+  var dateTime = _luxon.DateTime.local().setZone('America/Sao_Paulo');
+
+  var minute = '0' + dateTime.minute;
+  var formattedMinute = minute.substr(minute.length - 2, minute.length);
+  var hours = dateTime.hour + ':' + formattedMinute + '> ';
+  if (previous) return previous + '\n' + hours + current;else return hours + current;
+};
+
+exports.addTimedMessage = addTimedMessage;
 //# sourceMappingURL=util.js.map
