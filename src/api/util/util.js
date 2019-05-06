@@ -161,7 +161,11 @@ export const addTimedMessage = (previous, current) => {
     const dateTime = DateTime.local().setZone('America/Sao_Paulo');
     const minute = '0' + dateTime.minute;
     const formattedMinute = minute.substr(minute.length - 2, minute.length);
-    const hours = dateTime.hour + ':' + formattedMinute + '> ';
+
+    const sec = '0' + dateTime.second;
+    const formattedSec = sec.substr(sec.length - 2, sec.length);
+
+    const hours = dateTime.hour + ':' + formattedMinute + ':' + formattedSec + '> ';
 
     if (previous)
         return previous + '\n' + hours + current;

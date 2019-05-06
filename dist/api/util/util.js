@@ -232,7 +232,9 @@ var addTimedMessage = function addTimedMessage(previous, current) {
 
   var minute = '0' + dateTime.minute;
   var formattedMinute = minute.substr(minute.length - 2, minute.length);
-  var hours = dateTime.hour + ':' + formattedMinute + '> ';
+  var sec = '0' + dateTime.second;
+  var formattedSec = sec.substr(sec.length - 2, sec.length);
+  var hours = dateTime.hour + ':' + formattedMinute + ':' + formattedSec + '> ';
   if (previous) return previous + '\n' + hours + current;else return hours + current;
 };
 
