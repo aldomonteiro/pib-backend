@@ -32,7 +32,7 @@ function () {
   var _ref = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee(args) {
-    var myId, message, userId, contactName, profileImg, quotedMsg, processedMsg, names, first_name, last_name, _profile_pic, user, store, pageId, order, key;
+    var myId, message, userId, contactName, profileImg, quotedMsg, processedMsg, names, first_name, last_name, _profile_pic, user, store, pageId, order, timeout, key;
 
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -60,7 +60,7 @@ function () {
             store = _context.sent;
 
             if (!store) {
-              _context.next = 20;
+              _context.next = 21;
               break;
             }
 
@@ -78,23 +78,24 @@ function () {
 
           case 17:
             order = _context.sent;
+            timeout = store.autoreply_delay * 1000;
 
             if (store.autoreply_notification) {
               if (!order.sent_autoreply) {
                 key = order.pageId + order.userId;
 
                 if (!delayedTimeoutMSGS[key]) {
-                  delayedTimeoutMSGS[key] = setTimeout(directReply, 10000, myId, pageId, order.userId, store.autoreply_notification);
+                  delayedTimeoutMSGS[key] = setTimeout(directReply, timeout, myId, pageId, order.userId, store.autoreply_notification);
                 } else {
                   clearTimeout(delayedTimeoutMSGS[key]);
-                  delayedTimeoutMSGS[key] = setTimeout(directReply, 10000, myId, pageId, order.userId, store.autoreply_notification);
+                  delayedTimeoutMSGS[key] = setTimeout(directReply, timeout, myId, pageId, order.userId, store.autoreply_notification);
                 }
               }
             }
 
             return _context.abrupt("return", true);
 
-          case 20:
+          case 21:
           case "end":
             return _context.stop();
         }

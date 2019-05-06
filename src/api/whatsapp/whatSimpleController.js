@@ -48,14 +48,16 @@ export const w_controller = async (args) => {
             autoReplyMsg: store.autoreply_notification,
         });
 
+        const timeout = store.autoreply_delay * 1000;
+
         if (store.autoreply_notification) {
             if (!order.sent_autoreply) {
                 const key = order.pageId + order.userId;
                 if (!delayedTimeoutMSGS[key]) {
-                    delayedTimeoutMSGS[key] = setTimeout(directReply, 10000, myId, pageId, order.userId, store.autoreply_notification);
+                    delayedTimeoutMSGS[key] = setTimeout(directReply, timeout, myId, pageId, order.userId, store.autoreply_notification);
                 } else {
                     clearTimeout(delayedTimeoutMSGS[key]);
-                    delayedTimeoutMSGS[key] = setTimeout(directReply, 10000, myId, pageId, order.userId, store.autoreply_notification);
+                    delayedTimeoutMSGS[key] = setTimeout(directReply, timeout, myId, pageId, order.userId, store.autoreply_notification);
                 }
             }
         }

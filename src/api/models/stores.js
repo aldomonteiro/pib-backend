@@ -58,6 +58,7 @@ const schema = new Schema(
         total_notification: { type: String },
         default_messages: [{ default_message: { type: String } }],
         autoreply_notification: { type: String },
+        autoreply_delay: { type: Number, default: 10 },
     }, { timestamps: true },
 );
 

@@ -121,7 +121,8 @@ var store_create = function store_create(req, res) {
       accept_notification: req.body.accept_notification,
       deliver_notification: req.body.deliver_notification,
       total_notification: req.body.total_notification,
-      autoreply_notification: req.body.autoreply_notification
+      autoreply_notification: req.body.autoreply_notification,
+      autoreply_delay: req.body.autoreply_delay
     });
     newRecord.save().then(function (result) {
       res.status(200).json(result);
@@ -217,6 +218,7 @@ var store_update = function store_update(req, res) {
           doc.total_notification = req.body.total_notification;
           doc.default_messages = req.body.default_messages;
           doc.autoreply_notification = req.body.autoreply_notification;
+          doc.autoreply_delay = req.body.autoreply_delay;
           doc.save(function (err, result) {
             if (err) {
               res.status(500).json({

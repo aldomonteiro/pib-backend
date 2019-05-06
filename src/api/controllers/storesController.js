@@ -98,6 +98,7 @@ export const store_create = (req, res) => {
             deliver_notification: req.body.deliver_notification,
             total_notification: req.body.total_notification,
             autoreply_notification: req.body.autoreply_notification,
+            autoreply_delay: req.body.autoreply_delay,
         });
 
         newRecord.save()
@@ -186,6 +187,7 @@ export const store_update = (req, res) => {
                     doc.total_notification = req.body.total_notification;
                     doc.default_messages = req.body.default_messages;
                     doc.autoreply_notification = req.body.autoreply_notification;
+                    doc.autoreply_delay = req.body.autoreply_delay;
 
                     doc.save((err, result) => {
                         if (err) {

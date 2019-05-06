@@ -200,6 +200,10 @@ var schema = new Schema({
   }],
   autoreply_notification: {
     type: String
+  },
+  autoreply_delay: {
+    type: Number,
+    "default": 10
   }
 }, {
   timestamps: true
