@@ -248,6 +248,29 @@ export const order_update = async (req, res) => {
 }
 
 /**
+ * Only finding and returning. Currently, I am not deleting this records in the database.
+ * I am using this method because in simpleOrder I have a operation that needs to refresh
+ * the view, but it is invoking this methdod. So, to prevent errors, I am just finding
+ * a new record and returning it to the view.
+ * @param {*} req 
+ * @param {*} res 
+ */
+export const order_delete = (req, res) => {
+
+    const pageId = req.currentUser.activePage;
+
+    res.status(200).json({ id: req.params.id, pageId: pageId });
+    // Order.findOne({ pageId: pageId, id: req.params.id })
+    //     .then((result) => {
+    //         res.status(200).json(result);
+    //     })
+    //     .catch((err) => {
+    //         res.status(500).json({ message: err.errmsg });
+    //     });
+};
+
+
+/**
  * Delete all records from a pageID
  * @param {*} pageID
  */

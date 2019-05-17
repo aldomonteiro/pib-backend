@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getOrdersCustomerStat = exports.getLastPendingOrders = exports.getLastOrder = exports.getLastUserOrder = exports.getOrderPending = exports.updateOrder = exports.getOrderJson = exports.deleteManyOrders = exports.order_update = exports.order_get_one = exports.order_get_all = exports.ORDERSTATUS_CANCELLED = exports.ORDERSTATUS_REJECTED = exports.ORDERSTATUS_FINISHED = exports.ORDERSTATUS_DELIVERED = exports.ORDERSTATUS_PRINTED = exports.ORDERSTATUS_ACCEPTED = exports.ORDERSTATUS_VIEWED = exports.ORDERSTATUS_CONFIRMED = exports.ORDERSTATUS_PENDING = void 0;
+exports.getOrdersCustomerStat = exports.getLastPendingOrders = exports.getLastOrder = exports.getLastUserOrder = exports.getOrderPending = exports.updateOrder = exports.getOrderJson = exports.deleteManyOrders = exports.order_delete = exports.order_update = exports.order_get_one = exports.order_get_all = exports.ORDERSTATUS_CANCELLED = exports.ORDERSTATUS_REJECTED = exports.ORDERSTATUS_FINISHED = exports.ORDERSTATUS_DELIVERED = exports.ORDERSTATUS_PRINTED = exports.ORDERSTATUS_ACCEPTED = exports.ORDERSTATUS_VIEWED = exports.ORDERSTATUS_CONFIRMED = exports.ORDERSTATUS_PENDING = void 0;
 
 var _orders = _interopRequireDefault(require("../models/orders"));
 
@@ -567,12 +567,37 @@ function () {
   };
 }();
 /**
+ * Only finding and returning. Currently, I am not deleting this records in the database.
+ * I am using this method because in simpleOrder I have a operation that needs to refresh
+ * the view, but it is invoking this methdod. So, to prevent errors, I am just finding
+ * a new record and returning it to the view.
+ * @param {*} req 
+ * @param {*} res 
+ */
+
+
+exports.order_update = order_update;
+
+var order_delete = function order_delete(req, res) {
+  var pageId = req.currentUser.activePage;
+  res.status(200).json({
+    id: req.params.id,
+    pageId: pageId
+  }); // Order.findOne({ pageId: pageId, id: req.params.id })
+  //     .then((result) => {
+  //         res.status(200).json(result);
+  //     })
+  //     .catch((err) => {
+  //         res.status(500).json({ message: err.errmsg });
+  //     });
+};
+/**
  * Delete all records from a pageID
  * @param {*} pageID
  */
 
 
-exports.order_update = order_update;
+exports.order_delete = order_delete;
 
 var deleteManyOrders =
 /*#__PURE__*/

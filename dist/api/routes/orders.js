@@ -23,6 +23,8 @@ router.get('/:id', _simpleOrdersController.order_get_one); // GET_ONE
 
 router.put('/:id', _simpleOrdersController.order_update); // UPDATE
 
+router["delete"]('/:id', _simpleOrdersController.order_delete); // DELETE
+
 var _default = router;
 exports["default"] = _default;
 //# sourceMappingURL=orders.js.map

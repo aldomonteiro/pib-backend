@@ -1,22 +1,113 @@
 dev Server listening on port 8080
 ###### w_controller SIMPLE ######
 ###### w_controller SIMPLE ######
-mber is- 
-[33msocket.handshake.query: [object Object] level:undefined[0m
-[32maknowledment: 938611509676235[0m
-[32mjoining from web: 938611509676235[0m
-user has been saved: userID:1858850134137175, name:Aldo Monteiro, hasLong:true
-[31mdisconnecting from web 938611509676235[0m
-[33msocket.handshake.query: [object Object] level:undefined[0m
-[32maknowledment: 938611509676235[0m
-[32mjoining from web: 938611509676235[0m
-[32maknowledment: 938611509676235[0m
-[32mjoining from web: 938611509676235[0m
-[33msocket.handshake.query: [object Object] level:undefined[0m
-[32maknowledment: 554499485760[0m
-[32mjoining from whatsapp: 554499485760[0m
-[34memitted for 554499485760 with data:undefined sadkasl[0m
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+###### w_controller SIMPLE ######
+ageID":"938611509676235","timeStamp":"1558120116959"}[0m
+[32m16:09:28> joining from web (new): {"origin":"web","pageID":"938611509676235","timeStamp":"1558120116959"}[0m
+[35mclientsWeb:[0m
+[35m16:09:28> ack: {"origin":"web","pageID":"938611509676235","timeStamp":"1558120116959"}[0m
+[32m16:09:28> joining from web (new): {"origin":"web","pageID":"938611509676235","timeStamp":"1558120116959"}[0m
+[35mclientsWeb:[0m
+[35m16:09:28> ack: {"origin":"web","pageID":"938611509676235","timeStamp":"1558120116959"}[0m
+[32m16:09:28> joining from web (new): {"origin":"web","pageID":"938611509676235","timeStamp":"1558120116959"}[0m
+[35mclientsWeb:[0m
+[35m16:09:28> ack: {"origin":"web","pageID":"938611509676235","timeStamp":"1558120116959"}[0m
+[32m16:09:28> joining from web (new): {"origin":"web","pageID":"938611509676235","timeStamp":"1558120116959"}[0m
+[35mclientsWeb:[0m
 [34memitted for 938611509676235[0m
+[33m16:14:19> socket.handshake.query: {"EIO":"3","transport":"polling","t":"Mh7Dsk_"} socket.id:-Z1NWHqI0K8OABo3AAAC[0m
+user has been saved: userID:171581173796245, name:Aldo Monteiro, hasLong:true
+[33m16:14:21> socket.handshake.query: {"EIO":"3","transport":"polling","t":"Mh7DtHv"} socket.id:OyGTmwPntluM8XRbAAAD[0m
+[35m16:14:21> ack: {"origin":"web","pageID":"307519123184673","timeStamp":"1558120461639"}[0m
+[32m16:14:21> joining from web (new): {"origin":"web","pageID":"307519123184673","timeStamp":"1558120461639"}[0m
+[35mclientsWeb:[0m
 [34memitted for 938611509676235[0m
-[34memitted for 554499485760 with data:554184163676@c.us Bom dia, boa tarde, boa noite! Essa é a mensagem automática.[0m
+[34memitted for 307519123184673[0m
 [34memitted for 938611509676235[0m
+[34memitted for 307519123184673[0m
+[34memitted for 938611509676235[0m
+[34memitted for 307519123184673[0m
+[34memitted for 938611509676235[0m
+[34memitted for 307519123184673[0m
+[34memitted for 938611509676235[0m
+[34memitted for 307519123184673[0m
+[34memitted for 938611509676235[0m
+[34memitted for 307519123184673[0m
+[34memitted for 938611509676235[0m
+[34memitted for 307519123184673[0m
+[34memitted for 938611509676235[0m
+[34memitted for 307519123184673[0m
+[34memitted for 938611509676235[0m
+[34memitted for 307519123184673[0m
+[34memitted for 938611509676235[0m
+[34memitted for 307519123184673[0m
+[34memitted for 938611509676235[0m
+[34memitted for 307519123184673[0m
+[34memitted for 938611509676235[0m
+[34memitted for 307519123184673[0m
+[34memitted for 938611509676235[0m
+[34memitted for 307519123184673[0m
+[34memitted for 938611509676235[0m
+[34memitted for 307519123184673[0m
+[34memitted for 938611509676235[0m
+[34memitted for 307519123184673[0m
+[34memitted for 938611509676235[0m
+[34memitted for 307519123184673[0m
+[34memitted for 938611509676235[0m
+[34memitted for 307519123184673[0m
+[34memitted for 938611509676235[0m
+[34memitted for 307519123184673[0m
+[31mdisconnecting from web: socket OyGTmwPntluM8XRbAAAD page:307519123184673[0m
+[31mdisconnecting from web: socket rTDF-PJb17e5dEhKAAAB page:938611509676235[0m

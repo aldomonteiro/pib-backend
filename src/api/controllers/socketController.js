@@ -2,6 +2,7 @@ import socketIo from 'socket.io';
 import logger from 'node-color-log';
 
 import messenger from '../../messenger';
+import { addTimedMessage } from '../util/util';
 
 var io;
 var clientsWeb = {};
@@ -22,27 +23,48 @@ export const setupSocketIo = (server, allowedOrigins) => {
 
     io.on('connection', socket => {
 
-        logger.color('yellow').log('socket.handshake.query: ' + socket.handshake.query + ' level:' + logger.level);
+        logger.color('yellow').log(addTimedMessage(null, 'socket.handshake.query: ' + JSON.stringify(socket.handshake.query) + ' socket.id:' + socket.id));
 
         socket.on('acknowledgment', originID => {
-            logger.color('green').log('aknowledment: ' + (originID.user || originID));
-            if (originID.hasOwnProperty('origin') && originID.origin === 'whatsapp') {
-                clientsWhats[originID.user] = socket.id;
-                logger.color('green').log('joining from whatsapp: ' + originID.user);
-                emitEventWhats(originID.user, 'notify', { user: originID.user, message: 'sadkasl' })
+            logger.color('magenta').log(addTimedMessage(null, 'ack: ' + JSON.stringify(originID)));
+            if (originID.hasOwnProperty('origin')) {
+                if (originID.origin === 'whatsapp') {
+                    clientsWhats[originID.user] = socket.id;
+                    logger.color('green').log('joining from whatsapp: ' + originID.user);
+                    emitEventWhats(originID.user, 'notify', { user: originID.user, message: 'CONNECTED' })
+                } else if (originID.origin === 'web') {
+                    let sockets = clientsWeb[originID.pageID];
+                    if (!sockets)
+                        sockets = {};
+                    sockets[originID.timeStamp] = socket.id;
+                    clientsWeb[originID.pageID] = sockets;
+                    // clientsWeb[originID.pageID] = socket.id;
+                    logger.color('green').log(addTimedMessage(null, 'joining from web (new): ' + JSON.stringify(originID)));
+                    socket.emit('ack_ok');
+                }
             } else {
                 // this identifier is from a pageID
                 clientsWeb[originID] = socket.id;
                 logger.color('green').log('joining from web: ' + originID);
             }
+            logger.color('magenta').log('clientsWeb:');
+            console.dir(clientsWeb);
         });
 
         socket.on('disconnect', () => {
-            for (const id in clientsWeb) {
-                if (clientsWeb[id] === socket.id) {
-                    delete clientsWeb[id];
-                    logger.color('red').log('disconnecting from web ' + id);
-                    break;
+            const pages = Object.keys(clientsWeb);
+            for (const pageID of pages) {
+                const socketsByTimeStamp = clientsWeb[pageID];
+                const timeStamps = Object.keys(socketsByTimeStamp);
+                for (const timeStamp of timeStamps) {
+                    const id = socketsByTimeStamp[timeStamp];
+                    if (id === socket.id) {
+                        delete socketsByTimeStamp[timeStamp];
+                        clientsWeb[pageID] = socketsByTimeStamp;
+                        logger.color('red').log('disconnecting from web: socket ' + id + ' page:' + pageID);
+                        console.dir(clientsWeb);
+                        break;
+                    }
                 }
             }
             for (const id in clientsWhats) {
@@ -53,7 +75,17 @@ export const setupSocketIo = (server, allowedOrigins) => {
                 }
             }
         });
+
+        socket.on('connect_error', error => {
+            logger.color('red').log('socket connect_error: ' + JSON.stringify(error));
+        })
+
     });
+
+    io.on('connect_error', error => {
+        logger.color('red').log('io connect_error: ' + JSON.stringify(error));
+    })
+
 
     messenger.consume('bot-to-webapp')
         .subscribe(msg => {
@@ -97,36 +129,18 @@ export const setupSocketIo = (server, allowedOrigins) => {
 
 export const emitEvent = (pageID, event, data) => {
     try {
-        // emiting the event to all sockets created by the pageID query.
-        // I am facing some issue that there are a lot of connected sockets
-        // and it seems that some of then doesn't work.
-        // for (const socketID in io.sockets.connected) {
-        //     const socket = io.sockets.connected[socketID];
-        //     if (socket.handshake.query.pageID === pageID) {
-        //         // sending to all clients in pageID room, except sender
-        //         socket.to(pageID).emit(event, data);
-        //         break;
-        //     }
-        // }
-
-        // This line works, but duplicates the messages.
-        // io.in(pageID).emit(event, data);
-
-        // Here I am storing the socketId for each pageID, but, it seems
-        // the connected socket used on connect is not working to emit events
-        // after awhile.
-        const socketID = clientsWeb[pageID];
-        if (socketID) {
-            const socket = io.sockets.connected[socketID];
-            if (socket) {
-                socket.emit(event, data);
-                logger.color('blue').log('emitted for ' + pageID)
+        const sockets = clientsWeb[pageID];
+        for (const socketID of Object.values(sockets)) {
+            // const socketID = clientsWeb[pageID];
+            if (socketID) {
+                const socket = io.sockets.connected[socketID];
+                if (socket) {
+                    socket.emit(event, data);
+                    logger.color('blue').log('emitted for ' + pageID)
+                } else {
+                    logger.color('red').log('no socket for ' + pageID)
+                }
             }
-            else {
-                logger.color('red').log('no socket for ' + pageID)
-            }
-        } else {
-            logger.color('red').log('no socket for ' + pageID)
         }
     } catch (error) {
         console.error(`Error: ${error.message}`);
