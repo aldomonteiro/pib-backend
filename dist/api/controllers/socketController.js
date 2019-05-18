@@ -142,31 +142,27 @@ exports.setupSocketIo = setupSocketIo;
 
 var emitEvent = function emitEvent(pageID, event, data) {
   try {
-    _nodeColorLog["default"].color('magenta').log('emitEvent clientsWeb:');
-
-    console.dir(clientsWeb);
-
-    _nodeColorLog["default"].color('magenta').log('pageID:' + pageID);
-
     var sockets = clientsWeb[pageID];
 
-    _nodeColorLog["default"].color('magenta').log('sockets:' + JSON.stringify(sockets));
+    if (sockets) {
+      for (var _i3 = 0, _Object$values = Object.values(sockets); _i3 < _Object$values.length; _i3++) {
+        var socketID = _Object$values[_i3];
 
-    for (var _i3 = 0, _Object$values = Object.values(sockets); _i3 < _Object$values.length; _i3++) {
-      var socketID = _Object$values[_i3];
+        // const socketID = clientsWeb[pageID];
+        if (socketID) {
+          var socket = io.sockets.connected[socketID];
 
-      // const socketID = clientsWeb[pageID];
-      if (socketID) {
-        var socket = io.sockets.connected[socketID];
+          if (socket) {
+            socket.emit(event, data);
 
-        if (socket) {
-          socket.emit(event, data);
-
-          _nodeColorLog["default"].color('blue').log('emitted for ' + pageID);
-        } else {
-          _nodeColorLog["default"].color('red').log('no socket for ' + pageID);
+            _nodeColorLog["default"].color('blue').log('emitted for ' + pageID);
+          } else {
+            _nodeColorLog["default"].color('red').log('no socket for ' + pageID);
+          }
         }
       }
+    } else {
+      _nodeColorLog["default"].color('red').log('no clientWeb for ' + pageID);
     }
   } catch (error) {
     console.error("emit event Error: ".concat(error.message));

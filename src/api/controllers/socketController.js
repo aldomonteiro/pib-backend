@@ -127,24 +127,22 @@ export const setupSocketIo = (server, allowedOrigins) => {
 
 export const emitEvent = (pageID, event, data) => {
     try {
-        logger.color('magenta').log('emitEvent clientsWeb:');
-        console.dir(clientsWeb);
-        logger.color('magenta').log('pageID:' + pageID);
-
         const sockets = clientsWeb[pageID];
-        logger.color('magenta').log('sockets:' + JSON.stringify(sockets));
-
-        for (const socketID of Object.values(sockets)) {
-            // const socketID = clientsWeb[pageID];
-            if (socketID) {
-                const socket = io.sockets.connected[socketID];
-                if (socket) {
-                    socket.emit(event, data);
-                    logger.color('blue').log('emitted for ' + pageID)
-                } else {
-                    logger.color('red').log('no socket for ' + pageID)
+        if (sockets) {
+            for (const socketID of Object.values(sockets)) {
+                // const socketID = clientsWeb[pageID];
+                if (socketID) {
+                    const socket = io.sockets.connected[socketID];
+                    if (socket) {
+                        socket.emit(event, data);
+                        logger.color('blue').log('emitted for ' + pageID)
+                    } else {
+                        logger.color('red').log('no socket for ' + pageID)
+                    }
                 }
             }
+        } else {
+            logger.color('red').log('no clientWeb for ' + pageID)
         }
     } catch (error) {
         console.error(`emit event Error: ${error.message}`);
