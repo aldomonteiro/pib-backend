@@ -113,8 +113,6 @@ export const store_create = (req, res) => {
 
 // UPDATE
 export const store_update = (req, res) => {
-    console.info('store_update req.body:', req.body);
-
     if (req.body && req.body.id) {
 
         const pageId = req.currentUser.activePage;

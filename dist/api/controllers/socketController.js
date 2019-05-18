@@ -165,7 +165,8 @@ var emitEvent = function emitEvent(pageID, event, data) {
       }
     }
   } catch (error) {
-    console.error("Error: ".concat(error.message));
+    console.error("emit event Error: ".concat(error.message));
+    console.error(error);
   }
 };
 
@@ -192,7 +193,8 @@ var emitEventWhats = function emitEventWhats(userID, event, data) {
       _nodeColorLog["default"].color('red').log('no socket for ' + userID);
     }
   } catch (error) {
-    console.error("Error: ".concat(error.message));
+    console.error("emitEventWhats Error: ".concat(error.message));
+    console.error(error);
   }
 };
 

@@ -138,8 +138,6 @@ var store_create = function store_create(req, res) {
 exports.store_create = store_create;
 
 var store_update = function store_update(req, res) {
-  console.info('store_update req.body:', req.body);
-
   if (req.body && req.body.id) {
     var pageId = req.currentUser.activePage;
     var _req$body = req.body,

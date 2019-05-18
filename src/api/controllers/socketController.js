@@ -143,7 +143,8 @@ export const emitEvent = (pageID, event, data) => {
             }
         }
     } catch (error) {
-        console.error(`Error: ${error.message}`);
+        console.error(`emit event Error: ${error.message}`);
+        console.error(error);
     }
 };
 
@@ -165,7 +166,8 @@ export const emitEventWhats = (userID, event, data) => {
             logger.color('red').log('no socket for ' + userID)
         }
     } catch (error) {
-        console.error(`Error: ${error.message}`);
+        console.error(`emitEventWhats Error: ${error.message}`);
+        console.error(error);
     }
 };
 
