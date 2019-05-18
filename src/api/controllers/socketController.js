@@ -47,8 +47,6 @@ export const setupSocketIo = (server, allowedOrigins) => {
                 clientsWeb[originID] = socket.id;
                 logger.color('green').log('joining from web: ' + originID);
             }
-            logger.color('magenta').log('clientsWeb:');
-            console.dir(clientsWeb);
         });
 
         socket.on('disconnect', () => {
@@ -129,6 +127,9 @@ export const setupSocketIo = (server, allowedOrigins) => {
 
 export const emitEvent = (pageID, event, data) => {
     try {
+        logger.color('magenta').log('emitEvent clientsWeb:');
+        console.dir(clientsWeb);
+
         const sockets = clientsWeb[pageID];
         for (const socketID of Object.values(sockets)) {
             // const socketID = clientsWeb[pageID];

@@ -59,10 +59,6 @@ var setupSocketIo = function setupSocketIo(server, allowedOrigins) {
 
         _nodeColorLog["default"].color('green').log('joining from web: ' + originID);
       }
-
-      _nodeColorLog["default"].color('magenta').log('clientsWeb:');
-
-      console.dir(clientsWeb);
     });
     socket.on('disconnect', function () {
       var pages = Object.keys(clientsWeb);
@@ -146,6 +142,9 @@ exports.setupSocketIo = setupSocketIo;
 
 var emitEvent = function emitEvent(pageID, event, data) {
   try {
+    _nodeColorLog["default"].color('magenta').log('emitEvent clientsWeb:');
+
+    console.dir(clientsWeb);
     var sockets = clientsWeb[pageID];
 
     for (var _i3 = 0, _Object$values = Object.values(sockets); _i3 < _Object$values.length; _i3++) {
