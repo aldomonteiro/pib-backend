@@ -145,7 +145,12 @@ var emitEvent = function emitEvent(pageID, event, data) {
     _nodeColorLog["default"].color('magenta').log('emitEvent clientsWeb:');
 
     console.dir(clientsWeb);
+
+    _nodeColorLog["default"].color('magenta').log('pageID:' + pageID);
+
     var sockets = clientsWeb[pageID];
+
+    _nodeColorLog["default"].color('magenta').log('sockets:' + JSON.stringify(sockets));
 
     for (var _i3 = 0, _Object$values = Object.values(sockets); _i3 < _Object$values.length; _i3++) {
       var socketID = _Object$values[_i3];

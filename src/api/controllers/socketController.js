@@ -129,8 +129,11 @@ export const emitEvent = (pageID, event, data) => {
     try {
         logger.color('magenta').log('emitEvent clientsWeb:');
         console.dir(clientsWeb);
+        logger.color('magenta').log('pageID:' + pageID);
 
         const sockets = clientsWeb[pageID];
+        logger.color('magenta').log('sockets:' + JSON.stringify(sockets));
+
         for (const socketID of Object.values(sockets)) {
             // const socketID = clientsWeb[pageID];
             if (socketID) {
