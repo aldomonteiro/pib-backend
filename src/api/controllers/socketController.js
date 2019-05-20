@@ -125,6 +125,12 @@ export const setupSocketIo = (server, allowedOrigins) => {
 
 }
 
+/**
+ * Bot to webapp
+ * @param {*} pageID 
+ * @param {*} event 
+ * @param {*} data 
+ */
 export const emitEvent = (pageID, event, data) => {
     try {
         const sockets = clientsWeb[pageID];
@@ -135,7 +141,7 @@ export const emitEvent = (pageID, event, data) => {
                     const socket = io.sockets.connected[socketID];
                     if (socket) {
                         socket.emit(event, data);
-                        logger.color('blue').log('emitted for ' + pageID)
+                        logger.color('blue').log('From Whats to Web - to pageID:' + pageID + ' using socket:' + socket.id)
                     } else {
                         logger.color('red').log('no socket for ' + pageID)
                     }

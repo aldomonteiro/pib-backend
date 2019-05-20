@@ -137,6 +137,13 @@ var setupSocketIo = function setupSocketIo(server, allowedOrigins) {
   // }, 12000);
 
 };
+/**
+ * Bot to webapp
+ * @param {*} pageID 
+ * @param {*} event 
+ * @param {*} data 
+ */
+
 
 exports.setupSocketIo = setupSocketIo;
 
@@ -155,7 +162,7 @@ var emitEvent = function emitEvent(pageID, event, data) {
           if (socket) {
             socket.emit(event, data);
 
-            _nodeColorLog["default"].color('blue').log('emitted for ' + pageID);
+            _nodeColorLog["default"].color('blue').log('From Whats to Web - to pageID:' + pageID + ' using socket:' + socket.id);
           } else {
             _nodeColorLog["default"].color('red').log('no socket for ' + pageID);
           }
