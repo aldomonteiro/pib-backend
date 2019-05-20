@@ -26,11 +26,11 @@ export const setupSocketIo = (server, allowedOrigins) => {
         logger.color('yellow').log(addTimedMessage(null, 'socket.handshake.query: ' + JSON.stringify(socket.handshake.query) + ' socket.id:' + socket.id));
 
         socket.on('acknowledgment', originID => {
-            logger.color('magenta').log(addTimedMessage(null, 'ack: ' + JSON.stringify(originID)));
+            logger.color('magenta').log(addTimedMessage(null, 'socket.id:' + socket.id + ' ack: ' + JSON.stringify(originID)));
             if (originID.hasOwnProperty('origin')) {
                 if (originID.origin === 'whatsapp') {
                     clientsWhats[originID.user] = socket.id;
-                    logger.color('green').log('joining from whatsapp: ' + originID.user);
+                    logger.color('green').log(addTimedMessage(null, 'socket.id:' + socket.id + ' joining from whatsapp: ' + originID.user));
                     emitEventWhats(originID.user, 'notify', { user: originID.user, message: 'CONNECTED' })
                 } else if (originID.origin === 'web') {
                     let sockets = clientsWeb[originID.pageID];
@@ -39,7 +39,7 @@ export const setupSocketIo = (server, allowedOrigins) => {
                     sockets[originID.timeStamp] = socket.id;
                     clientsWeb[originID.pageID] = sockets;
                     // clientsWeb[originID.pageID] = socket.id;
-                    logger.color('green').log(addTimedMessage(null, 'joining from web (new): ' + JSON.stringify(originID)));
+                    logger.color('green').log(addTimedMessage(null, 'socket.id:' + socket.id + ' joining from web (new): ' + JSON.stringify(originID)));
                     socket.emit('ack_ok');
                 }
             } else {
@@ -59,7 +59,7 @@ export const setupSocketIo = (server, allowedOrigins) => {
                     if (id === socket.id) {
                         delete socketsByTimeStamp[timeStamp];
                         clientsWeb[pageID] = socketsByTimeStamp;
-                        logger.color('red').log('disconnecting from web: socket ' + id + ' page:' + pageID);
+                        logger.color('red').log(addTimedMessage(null, 'socket.id:' + socket.id + ' disconnecting from web: socket ' + id + ' page:' + pageID));
                         console.dir(clientsWeb);
                         break;
                     }
@@ -68,14 +68,14 @@ export const setupSocketIo = (server, allowedOrigins) => {
             for (const id in clientsWhats) {
                 if (clientsWhats[id] === socket.id) {
                     delete clientsWhats[id];
-                    logger.color('red').log('disconnecting from whatsapp ' + id);
+                    logger.color('red').log(addTimedMessage(null, 'socket.id:' + socket.id + ' disconnecting from whatsapp ' + id));
                     break;
                 }
             }
         });
 
         socket.on('connect_error', error => {
-            logger.color('red').log('socket connect_error: ' + JSON.stringify(error));
+            logger.color('red').log(addTimedMessage(null, 'socket.id:' + socket.id + ' socket connect_error: ' + JSON.stringify(error)));
         })
 
     });

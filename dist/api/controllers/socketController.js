@@ -31,13 +31,13 @@ var setupSocketIo = function setupSocketIo(server, allowedOrigins) {
     _nodeColorLog["default"].color('yellow').log((0, _util.addTimedMessage)(null, 'socket.handshake.query: ' + JSON.stringify(socket.handshake.query) + ' socket.id:' + socket.id));
 
     socket.on('acknowledgment', function (originID) {
-      _nodeColorLog["default"].color('magenta').log((0, _util.addTimedMessage)(null, 'ack: ' + JSON.stringify(originID)));
+      _nodeColorLog["default"].color('magenta').log((0, _util.addTimedMessage)(null, 'socket.id:' + socket.id + ' ack: ' + JSON.stringify(originID)));
 
       if (originID.hasOwnProperty('origin')) {
         if (originID.origin === 'whatsapp') {
           clientsWhats[originID.user] = socket.id;
 
-          _nodeColorLog["default"].color('green').log('joining from whatsapp: ' + originID.user);
+          _nodeColorLog["default"].color('green').log((0, _util.addTimedMessage)(null, 'socket.id:' + socket.id + ' joining from whatsapp: ' + originID.user));
 
           emitEventWhats(originID.user, 'notify', {
             user: originID.user,
@@ -49,7 +49,7 @@ var setupSocketIo = function setupSocketIo(server, allowedOrigins) {
           sockets[originID.timeStamp] = socket.id;
           clientsWeb[originID.pageID] = sockets; // clientsWeb[originID.pageID] = socket.id;
 
-          _nodeColorLog["default"].color('green').log((0, _util.addTimedMessage)(null, 'joining from web (new): ' + JSON.stringify(originID)));
+          _nodeColorLog["default"].color('green').log((0, _util.addTimedMessage)(null, 'socket.id:' + socket.id + ' joining from web (new): ' + JSON.stringify(originID)));
 
           socket.emit('ack_ok');
         }
@@ -76,7 +76,7 @@ var setupSocketIo = function setupSocketIo(server, allowedOrigins) {
             delete socketsByTimeStamp[timeStamp];
             clientsWeb[pageID] = socketsByTimeStamp;
 
-            _nodeColorLog["default"].color('red').log('disconnecting from web: socket ' + _id + ' page:' + pageID);
+            _nodeColorLog["default"].color('red').log((0, _util.addTimedMessage)(null, 'socket.id:' + socket.id + ' disconnecting from web: socket ' + _id + ' page:' + pageID));
 
             console.dir(clientsWeb);
             break;
@@ -88,14 +88,14 @@ var setupSocketIo = function setupSocketIo(server, allowedOrigins) {
         if (clientsWhats[id] === socket.id) {
           delete clientsWhats[id];
 
-          _nodeColorLog["default"].color('red').log('disconnecting from whatsapp ' + id);
+          _nodeColorLog["default"].color('red').log((0, _util.addTimedMessage)(null, 'socket.id:' + socket.id + ' disconnecting from whatsapp ' + id));
 
           break;
         }
       }
     });
     socket.on('connect_error', function (error) {
-      _nodeColorLog["default"].color('red').log('socket connect_error: ' + JSON.stringify(error));
+      _nodeColorLog["default"].color('red').log((0, _util.addTimedMessage)(null, 'socket.id:' + socket.id + ' socket connect_error: ' + JSON.stringify(error)));
     });
   });
   io.on('connect_error', function (error) {
