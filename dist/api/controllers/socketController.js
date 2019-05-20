@@ -39,6 +39,8 @@ var setupSocketIo = function setupSocketIo(server, allowedOrigins) {
 
           _nodeColorLog["default"].color('green').log((0, _util.addTimedMessage)(null, 'socket.id:' + socket.id + ' joining from whatsapp: ' + originID.user));
 
+          console.dir(clientsWeb);
+          console.dir(clientsWhats);
           emitEventWhats(originID.user, 'notify', {
             user: originID.user,
             message: 'CONNECTED'
@@ -51,6 +53,8 @@ var setupSocketIo = function setupSocketIo(server, allowedOrigins) {
 
           _nodeColorLog["default"].color('green').log((0, _util.addTimedMessage)(null, 'socket.id:' + socket.id + ' joining from web (new): ' + JSON.stringify(originID)));
 
+          console.dir(clientsWeb);
+          console.dir(clientsWhats);
           socket.emit('ack_ok');
         }
       } else {
@@ -79,6 +83,7 @@ var setupSocketIo = function setupSocketIo(server, allowedOrigins) {
             _nodeColorLog["default"].color('red').log((0, _util.addTimedMessage)(null, 'socket.id:' + socket.id + ' disconnecting from web: socket ' + _id + ' page:' + pageID));
 
             console.dir(clientsWeb);
+            console.dir(clientsWhats);
             break;
           }
         }
