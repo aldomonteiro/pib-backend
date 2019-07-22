@@ -27,6 +27,7 @@ import accounts from './api/routes/accounts';
 import categories from './api/routes/categories';
 import webForms from './api/routes/webForms';
 import { setupSocketIo } from './api/controllers/socketController';
+import { connectDB } from './mongo';
 
 const app = express();
 
@@ -34,7 +35,7 @@ const app = express();
 // https://medium.com/front-end-hacking/node-js-logs-in-local-timezone-on-morgan-and-winston-9e98b2b9ca45
 // [Node.js] Logs in Local Timezone on Morgan
 logger.token('date', (req, res, tz) => {
-    return moment().tz(tz).format();
+  return moment().tz(tz).format();
 })
 logger.format('myformat', '[:date[America/Sao_Paulo]] ":method :url" :status :res[content-length] - :response-time ms');
 
@@ -48,86 +49,32 @@ app.use(bodyParser.json());
 dotenv.config();
 const env = process.env.NODE_ENV || 'production';
 
-var allowedOrigins = process.env.DEV_ALLOWED_ORIGIN.split(' ');
-if (env === 'production')
-    allowedOrigins = process.env.PRD_ALLOWED_ORIGIN.split(' ');
+let mongo_url = process.env.DEV_MONGODB_URL;
+let allowedOrigins = process.env.DEV_ALLOWED_ORIGIN.split(' ');
+if (env === 'production') {
+  mongo_url = process.env.PRD_MONGODB_URL;
+  allowedOrigins = process.env.PRD_ALLOWED_ORIGIN.split(' ');
+}
+
+// Connect MongoDB
+connectDB('SERVER-WEBAPP', env, mongo_url);
 
 app.use(function (req, res, next) {
-    let origin = req.headers.origin;
-    if (allowedOrigins.indexOf(origin) > -1) {
-        res.header('Access-Control-Allow-Origin', origin);
-    }
-    res.header('Access-Control-Allow-Credentials', true);
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Authorization,Origin,X-Requested-With,Content-Type,Accept,application/json,Content-Range');
-    res.header('Access-Control-Expose-Headers', 'Content-Range');
+  let origin = req.headers.origin;
+  if (allowedOrigins.indexOf(origin) > -1) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Authorization,Origin,X-Requested-With,Content-Type,Accept,application/json,Content-Range');
+  res.header('Access-Control-Expose-Headers', 'Content-Range');
 
-    if (req.method === 'OPTIONS') {
-        res.sendStatus(200);
-    } else {
-        next();
-    }
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
 });
-
-const RETRY_TIMEOUT = 3000
-
-const options = {
-    useNewUrlParser: true,
-    autoReconnect: true,
-    keepAlive: 30000,
-    reconnectInterval: RETRY_TIMEOUT,
-    reconnectTries: 10000,
-}
-
-let isConnectedBefore = false
-let mongo_url = process.env.DEV_MONGODB_URL;
-if (env === 'production')
-    mongo_url = process.env.PRD_MONGODB_URL;
-
-
-const connect = () => {
-    return mongoose.connect(mongo_url, options)
-        .catch(err => console.error('Mongoose connect(...) failed with err: ', err))
-}
-
-connect();
-
-mongoose.set('useCreateIndex', true);
-
-if (env !== 'production') { // dev
-    mongoose.set('debug', true);
-}
-
-mongoose.Promise = Promise;
-
-mongoose.connection.on('error', () => {
-    console.error('SERVER-WEBAPP - Could not connect to MongoDB')
-});
-
-mongoose.connection.on('disconnected', () => {
-    console.error('SERVER-WEBAPP - Lost MongoDB connection...')
-    if (!isConnectedBefore) {
-        setTimeout(() => connect(), RETRY_TIMEOUT)
-    }
-});
-
-mongoose.connection.on('connected', () => {
-    isConnectedBefore = true
-    console.info('SERVER-WEBAPP - Connection established to MongoDB')
-});
-
-mongoose.connection.on('reconnected', () => {
-    console.info('SERVER-WEBAPP - Reconnected to MongoDB')
-});
-
-// Close the Mongoose connection, when receiving SIGINT
-process.on('SIGINT', () => {
-    mongoose.connection.close(function () {
-        console.warn('SERVER-WEBAPP - Force to close the MongoDB connection after SIGINT')
-        process.exit(0)
-    })
-});
-
 
 // Setup the routes
 app.use('/users', users);
@@ -148,27 +95,25 @@ app.use('/reportOrders', orders);
 app.use('/reportFlavors', items);
 app.use('/webforms', webForms);
 
-// const env = process.env.NODE_ENV || 'production';
-
 let server;
 
 if (env === 'production') {
-    // app.listen(8080, () => console.log(env + 'env. Server listening on port 8080'));
-    server = http
-        .createServer(app)
-        .listen(8080, () => console.log(env + ' Server listening on port 8080'));
+  // app.listen(8080, () => console.log(env + 'env. Server listening on port 8080'));
+  server = http
+    .createServer(app)
+    .listen(8080, () => console.log(env + ' Server listening on port 8080'));
 } else {
-    // dev server
-    // Lift the https server
-    server = https
-        .createServer(
-            {
-                key: fs.readFileSync('/Users/aldo/.localhost-ssl/localhost.key'),
-                cert: fs.readFileSync('/Users/aldo/.localhost-ssl/localhost.crt'),
-            },
-            app
-        )
-        .listen(8080, () => console.log(env + ' Server listening on port 8080'));
+  // dev server
+  // Lift the https server
+  server = https
+    .createServer(
+      {
+        key: fs.readFileSync('/Users/aldo/.localhost-ssl/localhost.key'),
+        cert: fs.readFileSync('/Users/aldo/.localhost-ssl/localhost.crt'),
+      },
+      app
+    )
+    .listen(8080, () => console.log(env + ' Server listening on port 8080'));
 }
 
 setupSocketIo(server, allowedOrigins);

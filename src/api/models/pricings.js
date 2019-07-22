@@ -4,13 +4,13 @@ import paginate from 'mongoose-paginate';
 const Schema = mongoose.Schema;
 
 const schema = new Schema(
-    {
-        id: { type: Number, required: true },
-        categoryId: { type: Number, required: true },
-        sizeId: { type: Number, required: true },
-        price: { type: Number, required: true },
-        pageId: { type: String, required: true },
-    }, { timestamps: true },
+  {
+    id: { type: Number, required: true },
+    categoryId: { type: Number, required: true },
+    sizeId: { type: Number, required: true },
+    price: { type: Number, required: true },
+    pageId: { type: String, required: true },
+  }, { timestamps: true },
 );
 
 schema.index({ pageId: 1, categoryId: 1, sizeId: 1 }, { unique: true });
