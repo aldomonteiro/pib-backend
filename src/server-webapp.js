@@ -1,13 +1,10 @@
-import '@babel/polyfill';
 import express from 'express';
 import logger from 'morgan';
 import bodyParser from 'body-parser';
 import https from 'https';
 import http from 'http';
 import fs from 'fs';
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import Promise from 'bluebird';
 import moment from 'moment-timezone';
 
 import users from './api/routes/users';

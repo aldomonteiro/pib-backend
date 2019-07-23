@@ -18,7 +18,6 @@ import {
 import { getMktContact } from './api/controllers/mkt_contact_controller';
 import { m_checkLastQuestion } from './api/bot/botMarkController';
 import {
-  w_sendMainMenu, waboxapp_sendMessage,
   w_controller,
 } from './api/whatsapp/whatSimpleController';
 import { connectDB } from './mongo';
@@ -118,36 +117,13 @@ app.use('/buckets/facebook', async (req, res, next) => {
 
 app.use('/buckets/whatsapp', async (req, res, next) => {
   if (req.body) {
-    // ---------> Waboxapp <----------
-    if (req.body.event === 'message') {
-      try {
-        const message = req.body;
-        console.info('##### WHATSAPP req.body #####');
-        console.info(message);
-        console.info('#############################');
+    // ---------> Receiving data from Whatsapp Web <----------
+    const { args } = req.body;
 
-        const sender = message.contact.uid;
-        if (message.message.type === 'chat' && message.message.dir === 'i') {
-          const text = await w_sendMainMenu();
-          const response = await waboxapp_sendMessage(sender, text);
-
-          console.info('##### WHATSAPP response #####');
-          console.info(response);
-          console.info('#############################');
-        }
-
-      } catch (err) {
-        console.error({ err });
-      }
-    } else {
-      // ---------> Receiving data from Whatsapp Web <----------
-      const { args } = req.body;
-
-      if (args) {
-        const replyData = await w_controller(args);
-        if (replyData)
-          res.json({ message: replyData });
-      }
+    if (args) {
+      const replyData = await w_controller(args);
+      if (replyData)
+        res.json({ message: replyData });
     }
   } else {
     console.info('***** No Body?? ****');

@@ -1,0 +1,12 @@
+*.your-new-domain.com.csr
+*.your-new-domain.com.key
+.env
+keys/
+certificates/
+csr_details.txt
+launch.json
+node_modules/
+server.cert
+server.key
+yarn-error.log
+yarn.lockdist/
