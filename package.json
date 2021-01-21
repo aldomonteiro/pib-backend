@@ -34,7 +34,7 @@
         "redis": "^2.8.0",
         "redis-messaging-manager": "^1.6.0",
         "simple-node-logger": "^0.93.40",
-        "socket.io": "^2.2.0",
+        "socket.io": "^2.4.0",
         "string-capitalize-name": "^1.0.3",
         "string-similarity": "^2.0.0",
         "util": "^0.11.0"
