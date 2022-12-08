@@ -14,7 +14,7 @@
         "debug": "^4.1.1",
         "dotenv": "^6.0.0",
         "esm": "^3.2.25",
-        "express": "^4.16.3",
+        "express": "^4.17.3",
         "express-range": "^2.0.1",
         "facebook-messenger-bot": "file:../Bot/",
         "fb": "^2.0.0",
